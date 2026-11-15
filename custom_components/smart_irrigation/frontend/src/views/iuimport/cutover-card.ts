@@ -168,15 +168,6 @@ export class SmartIrrigationIuCutover extends LitElement {
             ? html`<div class="notice">${this.t("full-controller-off")}</div>`
             : ""}
           ${this.renderPrograms(status)}
-          ${status.main_also_waters?.length
-            ? html`<div class="notice" role="alert">
-                ${this.t(
-                  "main-also-waters",
-                  "zones",
-                  status.main_also_waters.join(", "),
-                )}
-              </div>`
-            : ""}
           ${status.zones_off_in_iu?.length
             ? html`<div class="notice">
                 ${this.t(

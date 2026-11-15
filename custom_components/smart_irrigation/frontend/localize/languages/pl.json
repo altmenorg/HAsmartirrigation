@@ -155,6 +155,8 @@
         "review": {
           "question": "Gotowe do utworzenia",
           "zone": "Strefa",
+          "program": "Podlewa ją",
+          "new-program": "Nowy program",
           "environment": "Środowisko",
           "engine": "Moduł",
           "sources": "Źródła",
@@ -166,7 +168,7 @@
         },
         "mode": {
           "question": "Co ma robić Smart Irrigation?",
-          "water-help": "Oblicza, czego potrzebuje każda strefa, i sam otwiera zawory, z programem głównym, który podlewa wszystkie strefy do wschodu słońca. Harmonogram możesz potem zmienić.",
+          "water-help": "Oblicza, czego potrzebuje każda strefa, i sam otwiera zawory, z programem, który podlewa twoje strefy, do wschodu słońca. Jego harmonogram możesz potem zmienić.",
           "calculate-help": "Oblicza, czego potrzebuje każda strefa; zawory otwiera twoja automatyzacja, Irrigation Unlimited lub sterownik."
         }
       },
@@ -181,7 +183,9 @@
       "calc-failed": "Obliczenie się nie udało. Strefa podaje powód w zakładce Strefy.",
       "open-zone": "Otwórz strefę",
       "another": "Skonfiguruj kolejną strefę",
-      "done-next-water": "Program główny podlewa ją z innymi strefami, do wschodu słońca. Znajdziesz go w Podlewaniu.",
+      "done-next-added": "Jest teraz ostatnim krokiem programu {program}, który podlewa ją według swoich harmonogramów. Znajdziesz go w Podlewaniu.",
+      "done-next-new-program": "Nowy program {program} podlewa ją codziennie, do wschodu słońca. Znajdziesz go w Podlewaniu.",
+      "new-program-name": "Podlewanie",
       "done-next-no-valve": "Podłącz do niej zawór w Strefach, aby była podlewana."
     },
     "weatherservice": {
@@ -316,7 +320,7 @@
           "calculate-note": "Tylko obliczanie: Smart Irrigation liczy bilanse wodne i czasy oraz wysyła zdarzenie startu, ale nie otwiera żadnego zaworu. Podlewa Twoja automatyzacja, Irrigation Unlimited lub sterownik z tymi czasami.",
           "confirm-off": "Wyłączyć Smart Irrigation? Trwające podlewanie zatrzyma się teraz, a nic nie będzie obliczane ani podlewane do ponownego włączenia.",
           "confirm-calculate": "Tylko obliczać? Smart Irrigation przestaje otwierać zawory: to, co podlewa, zatrzyma się teraz, a od teraz podlewa Twoja automatyzacja z jego czasami.",
-          "water-note": "Obliczaj i podlewaj: Smart Irrigation oblicza, czego potrzebuje każda strefa, i sam otwiera zawory swoimi programami. Program główny podlewa wszystkie strefy według swoich harmonogramów."
+          "water-note": "Obliczanie i podlewanie: Smart Irrigation oblicza, czego potrzebuje każda strefa, i sam otwiera zawory, ze swoimi programami. Każdy program podlewa strefy swoich kroków według swoich harmonogramów."
         }
       },
       "description": "Ta strona zawiera ustawienia globalne.",
@@ -371,7 +375,7 @@
           "calc-daily": "codziennie o {time}",
           "calc-before-start": "tuż przed każdym startem",
           "calc-manual": "tylko na żądanie",
-          "main-schedules": "Uruchamiane przez harmonogramy programu głównego (wyzwalacz startu na razie nie jest używany)",
+          "program-schedules": "Uruchamiane przez harmonogramy programów (wyzwalacz startu na razie nie jest używany)",
           "accounts-for-duration": "policzone wstecz, żeby nawadnianie skończyło się wtedy",
           "starts-at-trigger": "zaczyna w tej chwili",
           "sequencing-sequential": "jedna strefa po drugiej, więc całość to suma wszystkich stref",
@@ -439,7 +443,7 @@
           "detail-dry": "Nie pada",
           "detail-held": "pomija to nawadnianie",
           "check-postponed": "Odłożone przez ciebie",
-          "title-main": "Czy program główny zostanie pominięty?"
+          "title-next": "Czy następne podlewanie zostanie pominięte?"
         },
         "estimate": {
           "title": "Na czym stoi teraz każda strefa",
@@ -964,7 +968,6 @@
         "no-schedules": "Brak harmonogramu.",
         "schedules-off": "Jego harmonogramy są wyłączone, dopóki ich nie włączysz.",
         "schedules-stay-on": "Włączyłeś jego harmonogramy: zostają bez zmian.",
-        "disabled": "Wyłączony w Irrigation Unlimited, i tutaj też.",
         "removed": "Nie ma ich już w Irrigation Unlimited, usunięto: {programs}."
       },
       "supplies": {
@@ -1080,8 +1083,7 @@
           "uses": "Używa {uses}."
         },
         "left-off": "Pozostawione wyłączone, bo Irrigation Unlimited miał je wyłączone: {names}.",
-        "unrecorded": "Pozostawione wyłączone, bo import nie zapisał, które z ich harmonogramów Irrigation Unlimited miał włączone: {names}. Włącz ich harmonogramy sam albo wróć do Irrigation Unlimited, zaimportuj ponownie (to je zapisze) i przełącz się jeszcze raz.",
-        "main-also-waters": "Program główny podlewa też {zones}, codziennie z wyzwalacza: obok Irrigation Unlimited, a po przełączeniu obok zaimportowanych programów, te strefy dostają wodę dwa razy. Jeśli zaimportowane programy podlewają wszystko, wyłącz program główny w Programach albo ustaw wyzwalacz na Brak."
+        "unrecorded": "Pozostawione wyłączone, bo import nie zapisał, które z ich harmonogramów Irrigation Unlimited miał włączone: {names}. Włącz ich harmonogramy sam albo wróć do Irrigation Unlimited, zaimportuj ponownie (to je zapisze) i przełącz się jeszcze raz."
       },
       "notes": {
         "blueprint_zone_gone": "automatyzacja z blueprintu zasila ją ze strefy {zone}, która już nie istnieje: nie jest przenoszona jako obliczona",
@@ -1299,19 +1301,16 @@
   "programs": {
     "title": "Programy",
     "description": "Program podlewa swoje kroki jeden po drugim. Krok to jedna strefa lub kilka podlewanych razem i domyślnie trwa tyle, ile Smart Irrigation dla niego obliczył. Programy, których strefy dzielą zasilanie albo go nie mają, nigdy nie działają jednocześnie: następny czeka na swoją kolej. Programy z własnym zasilaniem podlewają równolegle.",
-    "main_description": "Podlewa wszystkie strefy, jedna po drugiej lub razem, według swoich harmonogramów.",
+    "none_yet": "Nie ma jeszcze programu. Strefa jest podlewana, gdy program ma ją w którymś kroku: dodaj go przyciskiem Nowy program.",
     "run_options": "Opcje tego uruchomienia",
     "adjust_empty": "Podaj procent lub sekundy, aby dostosować czasy.",
     "more_options": "Więcej opcji",
     "more_options_set": "z dodatkowymi regułami",
-    "sequencing_title": "Kolejność stref i przerwy",
-    "others_title": "Inne programy",
     "confirm_run": "Uruchomić {name} teraz? Jego zawory otworzą się od razu.",
     "run_started": "{name} wystartował.",
     "run_queued": "{name} czeka w kolejce: wystartuje, gdy skończy się trwające podlewanie.",
     "run_nothing": "{name} nie znalazł nic do podlania.",
     "run_failed": "{name} nie mógł wystartować: {error}",
-    "main_schedules_hint": "Bez włączonego harmonogramu program główny uruchamia wyzwalacz startu ustawiony niżej na tej stronie. Gdy tylko jeden harmonogram jest włączony, harmonogramy zastępują ten wyzwalacz. Jego ustawienia zostają zachowane i wraca on, jeśli wyłączysz lub usuniesz harmonogramy.",
     "name": "Nazwa",
     "step": "Krok",
     "step_zones": "Strefy",
@@ -1328,21 +1327,20 @@
     "tours": "Rundy",
     "tours_help": "Cała lista kroków jest podlewana tyle razy, każda runda ze swoją częścią wody. W przeciwieństwie do przejść, które powtarzają jeden krok przed następnym, runda pozwala każdej strefie wchłaniać, gdy inne są podlewane.",
     "enabled": "Włączony",
-    "program_enabled": "Program włączony",
-    "schedule_enabled": "Harmonogram włączony",
-    "step_enabled": "Krok włączony",
     "add_step": "Dodaj krok",
     "delete_step": "Usuń krok",
     "add": "Nowy program",
+    "all_zones_now_title": "Podlej teraz wszystkie strefy",
+    "all_zones_now_help": "Tylko dla przycisku Podlej wszystkie strefy: każda strefa z zaworem, w tej kolejności, z tymi przejściami i tą przerwą. Programy zachowują własne kroki.",
     "delete": "Usuń program",
     "schedule": "Harmonogram",
     "add_schedule": "Dodaj harmonogram",
     "delete_schedule": "Usuń harmonogram",
-    "schedule_moment": "O",
+    "schedule_moment": "Kiedy",
     "moment_time": "Pora dnia",
     "moment_sunrise": "Wschód słońca",
     "moment_sunset": "Zachód słońca",
-    "moment_azimuth": "Gdy słońce osiągnie azymut",
+    "moment_azimuth": "Słońce osiąga azymut",
     "schedule_time": "Godzina",
     "schedule_offset": "Przed (-) lub po (+) słońcu",
     "schedule_anchor": "Ten moment to chwila, w której program",
@@ -1396,7 +1394,6 @@
     "max_litres": "Limit objętości",
     "max_litres_help": "Strefa tego kroku zatrzymuje się, gdy jej wodomierz naliczy tę objętość, w litrach lub galonach, tak jak panel pokazuje objętości. 0: bez limitu. Wodomierz raportuje co jakiś czas, więc objętość nie jest dokładna. Strefa bez wodomierza to ignoruje.",
     "new_program": "Program",
-    "main_name": "Program główny",
     "run_now": "Uruchom teraz",
     "run_seconds": "Całkowity czas trwania",
     "run_seconds_help": "Opcjonalne. Puste: zaplanowane czasy trwania. W przeciwnym razie cały program trwa tyle, rozdzielone między jego kroki proporcjonalnie do zaplanowanych czasów.",
@@ -1418,8 +1415,6 @@
     "adjust_apply": "Zastosuj",
     "adjust_reset": "Resetuj",
     "confirm_reset_adjustment": "Usunąć korektę tego programu?",
-    "main_settings": "Program główny: start i kolejność",
-    "main_settings_description": "Jak podlewa program główny: strefy jedna po drugiej lub razem, przerwa między dwiema strefami oraz cycle and soak.",
     "mode_off": "Pełny kontroler jest wyłączony. Włącz go w Ustawienia, Ogólne.",
     "no_zone": "brak strefy",
     "mode_calculated_short": "obliczony",
@@ -1432,14 +1427,13 @@
     "schedules_none": "brak harmonogramu",
     "schedules_one": "1 harmonogram",
     "schedules_many": "harmonogramy: {n}",
-    "off": "wyłączony",
+    "no_schedule_on": "żaden harmonogram nie jest włączony",
     "steps_title": "Kroki",
     "schedules_title": "Harmonogramy",
     "passes_help": "Cycle and soak dla tego kroku: jego woda podzielona na tyle przejść, a każda strefa wchłania między dwoma z nich. 1: za jednym razem.",
     "schedule_fallback_skip": "Pomiń ten dzień",
     "schedule_fallback_previous": "Użyj godziny ostatnio widzianego",
     "schedule_fallback_at": "Uruchom o stałej godzinie",
-    "main_steps_hint": "Program główny podlewa wszystkie strefy. Aby podlewać tylko niektóre z nich albo we własnej kolejności, dodaj program poniżej w sekcji Inne programy.",
     "summary_start_sunrise": "start o wschodzie słońca",
     "summary_start_sunset": "start o zachodzie słońca",
     "summary_start_azimuth": "startuje, gdy słońce jest na {deg}°",
@@ -1465,7 +1459,7 @@
     "passes_short": "Przejścia: {n}",
     "overlap_short": "uruchamia następny {time} wcześniej",
     "wait_short": "czeka {time} przed następnym",
-    "soak_shared_help": "Jeden czas wsiąkania dla wszystkich kroków w przejściach, w każdym programie i w programie głównym.",
+    "soak_shared_help": "Jeden czas wsiąkania dla wszystkich kroków w przejściach, w każdym programie.",
     "min_over_max": "Minimum jest wyższe niż maksimum: wygrywa maksimum, {max}.",
     "confirm_run_replace": "Uruchomić {name} teraz? Trwające podlewanie zostanie najpierw zatrzymane, potem otworzą się jego zawory.",
     "run_replacing": "Trwające podlewanie jest zatrzymywane; {name} rusza zaraz potem.",
@@ -1630,10 +1624,8 @@
         "running": "działa",
         "waiting": "oczekuje",
         "paused": "wstrzymany",
-        "suspended": "zawieszony",
-        "disabled": "wyłączony"
+        "suspended": "zawieszony"
       },
-      "main_name": "Program główny",
       "after": "startuje po {name}",
       "next_in_line": "startuje jako następny"
     },

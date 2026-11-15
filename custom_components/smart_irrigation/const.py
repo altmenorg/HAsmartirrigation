@@ -207,6 +207,9 @@ CONF_LAST_ZONE_ID = "last_zone_id"
 CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER = "direct_valve_control_before_full_controller"
 # Set once the installation was moved to the one choice of 2026.11 (one_choice.py).
 CONF_ONE_CHOICE_MIGRATED = "one_choice_migrated"
+# Set once the main program was converted into an ordinary program with steps,
+# and the program-level "Program on" into its schedules (program_migration.py).
+CONF_MAIN_PROGRAM_CONVERTED = "main_program_converted"
 SUSPEND_ZONE = "zone"
 SUSPEND_PROGRAM = "program"
 # A cycle older than this is not resumed: it belongs to another day's watering.
@@ -222,6 +225,9 @@ RUN_DELIVERED = "delivered"
 # Keys inside a program of the full controller (see programs.py).
 PROGRAM_ID = "id"
 PROGRAM_NAME = "name"
+# Read from old stores only, by the conversion of the main program and of the
+# program-level on/off: no program carries them any more.
+# deprecated: remove in 2027.11
 PROGRAM_ENABLED = "enabled"
 PROGRAM_MAIN = "main"
 PROGRAM_STEPS = "steps"
@@ -800,8 +806,8 @@ HISTORY_ZONE_ID = "zone_id"
 HISTORY_ZONE_NAME = "zone_name"
 HISTORY_DURATION = "duration"
 HISTORY_WATER_USED = "water_used"
-# What started the run: a program's id, "main", "manual", or none (watered
-# from outside, or before this was kept).
+# What started the run: a program's id ("main" for the old main program too),
+# "manual", or none (watered from outside, or before this was kept).
 HISTORY_PROGRAM_ID = "program_id"
 # Older runs are pruned whenever a new one is recorded. The panel charts a
 # month, so a quarter of history covers it with room to look further back while

@@ -24,8 +24,12 @@ describe("nextRuns", () => {
     expect(runs.map((r) => r.program_id)).toEqual(["morgens", "main"]);
   });
 
-  it("says nothing more when the main program is all that comes", () => {
-    expect(nextRuns([run("main", "2026-11-14T06:18:00Z")], NOW)).toEqual([]);
+  it("names a single run too, whatever its id", () => {
+    expect(
+      nextRuns([run("main", "2026-11-14T06:18:00Z")], NOW).map(
+        (r) => r.program_id,
+      ),
+    ).toEqual(["main"]);
   });
 
   it("leaves out what has begun and keeps at most five", () => {

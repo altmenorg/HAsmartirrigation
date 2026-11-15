@@ -5,9 +5,8 @@ A program can say who to tell when it has watered: a notify entity, a phone's
 It listens to the events the runners already fire, so an automation of one's
 own keeps working beside it, and it never changes how a run goes.
 
-- The main program is the classic cycle: ``irrigation_started`` and
-  ``irrigation_finished``.
-- Any other program: ``program_started`` and ``program_finished``.
+- A program: ``program_started`` and ``program_finished`` (the old main
+  program too, which became an ordinary program and kept its id).
 - A valve that will not close, or a pump that does not do what it is told, is
   told at once, to the program under way: the end-of-run summary does not list
   them, and they are the ones not to learn about the next morning.
@@ -23,7 +22,7 @@ from typing import Any
 from homeassistant.core import Event, HomeAssistant, callback
 
 from . import const
-from .programs import MAIN_PROGRAM_ID, find_program, normalize_notify
+from .programs import find_program, normalize_notify
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -157,8 +156,6 @@ class ProgramNotifier:
     def start(self) -> None:
         listen = self.hass.bus.async_listen
         for event, handler in (
-            (const.EVENT_IRRIGATE_STARTED, self._main_started),
-            (const.EVENT_IRRIGATE_FINISHED, self._main_finished),
             (const.EVENT_PROGRAM_STARTED, self._program_started),
             (const.EVENT_PROGRAM_FINISHED, self._program_finished),
             (const.EVENT_ZONE_PROBLEM, self._zone_problem),
@@ -185,13 +182,13 @@ class ProgramNotifier:
             return None
         return program, notify
 
-    def _running_program_id(self) -> str:
-        """The program under way: one of the others if one waters, else main."""
+    def _running_program_id(self) -> str | None:
+        """The program under way, or None (a zone watered by hand)."""
         registry = getattr(self.coordinator, "_program_runs_by_id", None) or {}
         for program_id, run in registry.items():
             if getattr(run, "running_since", None) is not None:
                 return program_id
-        return MAIN_PROGRAM_ID
+        return None
 
     def _name(self, program: dict) -> str:
         return str(program.get(const.PROGRAM_NAME) or program.get(const.PROGRAM_ID))
@@ -199,16 +196,8 @@ class ProgramNotifier:
     # --- the events -------------------------------------------------------
 
     @callback
-    def _main_started(self, event: Event) -> None:
-        self._started(MAIN_PROGRAM_ID, dict(event.data))
-
-    @callback
     def _program_started(self, event: Event) -> None:
         self._started(event.data.get("program_id"), dict(event.data))
-
-    @callback
-    def _main_finished(self, event: Event) -> None:
-        self._finished(MAIN_PROGRAM_ID, dict(event.data))
 
     @callback
     def _program_finished(self, event: Event) -> None:
@@ -274,13 +263,38 @@ class ProgramNotifier:
         self.hass.async_create_task(self._send_finished(program, notify, data))
 
     def _problem_now(self, what, reason) -> None:
-        found = self._program(self._running_program_id())
-        if found is None:
+        """Tell the program under way; with none (a zone watered by hand, or
+        every zone at once), every program that notifies, each target once:
+        a valve that will not close is no less urgent outside a program."""
+        program_id = self._running_program_id()
+        if program_id is not None:
+            found = self._program(program_id)
+            if found is not None:
+                program, notify = found
+                self.hass.async_create_task(
+                    self._send_problem(program, notify, str(what or ""), reason)
+                )
             return
-        program, notify = found
-        self.hass.async_create_task(
-            self._send_problem(program, notify, str(what or ""), reason)
-        )
+        config = self.coordinator.store.config
+        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
+            return
+        told: set = set()
+        for program in getattr(config, const.CONF_PROGRAMS, None) or []:
+            notify = normalize_notify(program.get(const.PROGRAM_NOTIFY))
+            if notify is None:
+                continue
+            targets = [t for t in notify[const.NOTIFY_TARGETS] if t not in told]
+            if not targets:
+                continue
+            told.update(targets)
+            self.hass.async_create_task(
+                self._send_problem(
+                    program,
+                    {**notify, const.NOTIFY_TARGETS: targets},
+                    str(what or ""),
+                    reason,
+                )
+            )
 
     async def _send_started(self, program, notify, data) -> None:
         t = await _text(self.hass)

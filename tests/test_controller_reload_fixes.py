@@ -219,14 +219,27 @@ async def test_a_manual_program_run_is_recorded_as_the_last_run(monkeypatch):
     assert overview["last_run"] == started["evening"]
 
 
-async def test_a_main_program_run_is_recorded_as_the_last_run(monkeypatch):
-    hass, coord, _ = _setup(monkeypatch, [{"id": "main"}, _program()])
-    main = [p for p in coord.store.config.programs if p.get(const.PROGRAM_MAIN)][0]
+async def test_the_old_main_program_records_its_last_run_like_any_other(monkeypatch):
+    hass, coord, _ = _setup(
+        monkeypatch, [{"id": "main", "steps": [{"zones": [0]}]}, _program()]
+    )
+
+    await coord.async_run_program("main", manual=True)
+
+    assert "main" in coord.store.config.program_last_started
+
+
+async def test_watering_every_zone_at_once_is_no_programs_run(monkeypatch):
+    # "Irrigate all zones now" is a one-off run of the zones, not a program:
+    # it leaves no program's last run behind.
+    hass, coord, _ = _setup(
+        monkeypatch, [{"id": "main", "steps": [{"zones": [0]}]}, _program()]
+    )
     coord.store.config.direct_valve_control_enabled = True
 
     await coord.async_run_direct_valves([0])
 
-    assert main[const.PROGRAM_ID] in coord.store.config.program_last_started
+    assert not (getattr(coord.store.config, "program_last_started", None) or {})
 
 
 async def test_the_last_run_is_dropped_with_its_program():
@@ -243,26 +256,26 @@ async def test_the_last_run_is_dropped_with_its_program():
     }
 
 
-async def test_the_main_program_shows_the_next_start_of_the_active_trigger(monkeypatch):
+async def test_no_program_is_given_the_next_start_of_the_trigger(monkeypatch):
+    # Every program starts by its own schedules: one with none has no next
+    # start, and the trigger's time is not put in its place.
     hass, coord, _ = _setup(monkeypatch, [_program()])
     coord.async_program_overview = AsyncMock(
-        return_value=[
-            {"program_id": "main", "main": True, "state": "idle", "next_start": None}
-        ]
+        return_value=[{"program_id": "main", "state": "idle", "next_start": None}]
     )
     coord.async_live_state = MagicMock(return_value={})
-    monkeypatch.setattr(
-        websockets,
-        "build_irrigation_info",
-        AsyncMock(return_value={"next_irrigation_start": "2026-06-02T04:00:00+00:00"}),
+    info = AsyncMock(
+        return_value={"next_irrigation_start": "2026-06-02T04:00:00+00:00"}
     )
+    monkeypatch.setattr(websockets, "build_irrigation_info", info)
     hass.data = {const.DOMAIN: {"coordinator": coord}}
     connection = MagicMock()
 
     await _call(hass, websockets.websocket_get_programs_state, connection)
 
     result = connection.send_result.call_args.args[1]
-    assert result["programs"][0]["next_start"] == "2026-06-02T04:00:00+00:00"
+    assert result["programs"][0]["next_start"] is None
+    info.assert_not_awaited()
 
 
 # --- A11: the sensor hangs off the hub device -----------------------------------

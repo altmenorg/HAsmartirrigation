@@ -21,9 +21,7 @@ from custom_components.smart_irrigation import (
     iu_import_ha,
     websockets,
 )
-from custom_components.smart_irrigation.programs import (
-    ensure_main_program,
-)
+from custom_components.smart_irrigation.programs import normalize_programs
 from custom_components.smart_irrigation.store import Config, ZoneEntry
 from custom_components.smart_irrigation.supplies import normalize_supplies
 
@@ -62,10 +60,15 @@ class FakeCoordinator:
     def __init__(self, zones=(), full_controller=True):
         self.store = SimpleNamespace(
             zones={zone[const.ZONE_ID]: ZoneEntry(**zone) for zone in zones},
-            # Switched on, the full controller has its main program.
+            # Switched on, the full controller has a program of the user's: the
+            # old main program, converted, under its id.
             config=Config(
                 full_controller=full_controller,
-                programs=ensure_main_program([]) if full_controller else [],
+                programs=(
+                    normalize_programs([{"id": "main", "name": "Watering"}])
+                    if full_controller
+                    else []
+                ),
             ),
         )
 
@@ -479,7 +482,7 @@ def test_a_program_or_supply_no_import_made_is_not_overwritten():
     coordinator = FakeCoordinator()
     coordinator.store.config = attr.evolve(
         coordinator.store.config,
-        programs=[{"id": "main", "main": True}, {"id": "iu_c1_1", "name": "Mine"}],
+        programs=[{"id": "main"}, {"id": "iu_c1_1", "name": "Mine"}],
         supplies=[{"id": "iu_c1_supply", "name": "My pump"}],
     )
     preview = iu_import_ha.plan(CONFIG, coordinator.store, [], None)
@@ -503,8 +506,10 @@ def test_a_zone_off_in_iu_matched_to_an_own_zone_is_left_out_of_the_programs():
     morning = programs["iu_c1_1"]["steps"]
     assert [s["zones"] for s in morning] == [["c1_z1"], ["c1_z2"]]
     assert [s["enabled"] for s in morning] == [True, False]
-    # A program that waters only that zone is off as a whole.
-    assert programs["iu_c1_2"]["enabled"] is False
+    # A program that waters only that zone starts on its own no more.
+    assert "enabled" not in programs["iu_c1_2"]
+    assert programs["iu_c1_2"]["schedules"]
+    assert all(s["enabled"] is False for s in programs["iu_c1_2"]["schedules"])
     # Our zone keeps its state.
     beds = next(z for z in preview["zones"] if z["key"] == "c1_z2")
     assert "state" not in beds["fields"]
@@ -555,7 +560,7 @@ async def test_the_first_import_creates_everything_switched_off():
     assert [s["seconds"] for s in programs["iu_c1_1"]["steps"]] == [600, 300]
     assert all(s["enabled"] is False for p in programs.values() for s in p["schedules"])
     assert "source" not in programs["iu_c1_1"]
-    # The main program stays first.
+    # The program that was there stays first.
     assert coordinator.store.config.programs[0]["id"] == "main"
     assert [s["id"] for s in coordinator.store.config.supplies] == ["iu_c1_supply"]
     record = coordinator.store.config.iu_import
@@ -824,7 +829,7 @@ async def test_programs_of_the_user_are_kept_in_their_place():
     await coordinator.async_update_config(
         {
             const.CONF_PROGRAMS: [
-                {"id": "main", "main": True},
+                {"id": "main"},
                 {"id": "mine", "name": "Mine", "steps": [{"zones": []}]},
             ]
         }
@@ -1581,45 +1586,14 @@ async def test_the_preview_says_whether_iu_waters_at_all(running):
     assert set(coordinator.programs()) == {"iu_c1_1", "iu_c1_2"}
 
 
-async def test_the_main_program_watering_the_same_zones_is_said(hass):
-    """The full controller the import asks for starts the main program too.
-
-    Its start trigger runs it every day over every zone: next to IU, and after
-    the cut-over next to the imported programs, those zones were watered twice
-    while the page said only IU watered (UX walk of 14 Nov.).
-    """
-    await _iu_in(hass, (True, True))
-    coordinator = await _imported()
-    zones = sorted(
-        (zone.name for zone in coordinator.store.zones.values()), key=str.lower
-    )
-    assert zones
-
-    # Nothing starts it: no trigger armed, no schedule of its own.
-    coordinator.start_trigger_armed = False
-    status = await iu_import_ha.async_status(hass, coordinator)
-    assert status["main_also_waters"] == []
-
-    coordinator.start_trigger_armed = True
-    status = await iu_import_ha.async_status(hass, coordinator)
-    assert sorted(status["main_also_waters"], key=str.lower) == zones
-
-    # Switched off under Programs: said no more.
-    programs = [
-        {**p, "enabled": False} if p.get("main") else p
-        for p in coordinator.store.config.programs
-    ]
-    await coordinator.async_update_config({"programs": programs})
-    status = await iu_import_ha.async_status(hass, coordinator)
-    assert status["main_also_waters"] == []
-
-
-async def test_with_the_full_controller_off_the_main_program_waters_nothing(hass):
+async def test_no_program_waters_the_imported_zones_behind_the_users_back(hass):
+    """The main program used to water every zone next to IU (UX walk of 14
+    Nov.). A program waters only the zones its steps name now: the status has
+    nothing of the kind to say."""
     await _iu_in(hass, (True, True))
     coordinator = await _imported()
     coordinator.start_trigger_armed = True
-    coordinator.store.config = attr.evolve(
-        coordinator.store.config, full_controller=False
-    )
+
     status = await iu_import_ha.async_status(hass, coordinator)
-    assert status["main_also_waters"] == []
+
+    assert "main_also_waters" not in status

@@ -197,18 +197,21 @@ async def test_the_preview_names_the_zones_the_run_leaves_out():
     assert [z["zone_id"] for z in preview["timeline"]["zones"]] == [1]
 
 
-async def test_the_main_program_is_drawn_from_the_classic_cycle():
-    status = _Status(
-        [_zone(1, "Lawn"), _zone(2, "Hedges", duration=120)],
-        zone_sequencing="sequential",
-        pause_between_zones=30,
-        watering_passes=1,
+async def test_the_converted_main_program_is_drawn_as_its_cycle_ran():
+    from custom_components.smart_irrigation.program_migration import (
+        classic_cycle_steps,
     )
-    status._planned_run_seconds = AsyncMock(return_value=450)
 
-    preview = await status.async_program_preview({"id": "main", "main": True})
+    zones = [_zone(1, "Lawn"), _zone(2, "Hedges", duration=120)]
+    status = _Status(zones)
+    steps = classic_cycle_steps(
+        {"zone_sequencing": "sequential", "pause_between_zones": 30}, zones
+    )
 
-    assert preview["program"][const.PROGRAM_MAIN] is True
+    preview = await status.async_program_preview({"id": "main", "steps": steps})
+
+    # One zone after the other, the pause between them: what the cycle did.
+    assert const.PROGRAM_MAIN not in preview["program"]
     assert [
         (s["zone_id"], s["start"], s["end"]) for s in preview["timeline"]["segments"]
     ] == [(1, 0, 300), (2, 330, 450)]
@@ -230,29 +233,6 @@ async def test_a_preview_of_nothing_is_an_empty_program():
     preview = await _Status([]).async_program_preview(None)
 
     assert preview["timeline"]["segments"] == []
-
-
-# --- the main program's settings written in its YAML
-
-
-def test_main_settings_are_read_and_bounded():
-    from custom_components.smart_irrigation.program_status import main_settings
-
-    assert main_settings(
-        {
-            "sequencing": "parallel",
-            "passes": 9,
-            "soak_minutes": "20",
-            "pause_between_zones": -5,
-            "name": "kept apart",
-        }
-    ) == {
-        const.CONF_ZONE_SEQUENCING: "parallel",
-        const.CONF_WATERING_PASSES: 6,
-        const.CONF_SOAK_MINUTES: 20.0,
-        const.CONF_PAUSE_BETWEEN_ZONES: 0.0,
-    }
-    assert main_settings({"sequencing": "sideways", "passes": "two"}) == {}
 
 
 # --- a schedule at a bearing of the sun

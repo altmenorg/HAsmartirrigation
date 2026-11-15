@@ -3,8 +3,8 @@
 The answer is the one the panel gives, worked out by the same code: the
 Info page's next start (build_irrigation_info) when the start trigger runs the
 watering, and the planning (async_planning) in full controller mode, where
-programs other than the main one can water a zone sooner. A zone is watered
-by a run when it has something to water in it.
+the programs whose steps name a zone water it. A zone is watered by a run
+when it has something to water in it.
 
 It is worked out for every zone at once, since the estimates behind it are
 shared, every few minutes and shortly after something changes; the sensors
@@ -68,7 +68,7 @@ async def async_zone_next_runs(hass: HomeAssistant, coordinator) -> dict:
         # Switched off: no zone has a next run.
         return result
     by_schedules = (
-        getattr(coordinator, "main_program_uses_schedules", lambda: False)() is True
+        getattr(coordinator, "schedules_start_watering", lambda: False)() is True
     )
     # Not under the "none" trigger, nor while no trigger is armed: the time is
     # then arithmetic, and nothing will start at it (#969).
@@ -78,16 +78,13 @@ async def async_zone_next_runs(hass: HomeAssistant, coordinator) -> dict:
 
     config = coordinator.store.config
     if getattr(config, const.CONF_FULL_CONTROLLER, False) is True:
-        planning = await coordinator.async_planning(
-            PLANNING_DAYS, trigger_start=trigger_start
-        )
+        planning = await coordinator.async_planning(PLANNING_DAYS)
         for run in planning:
             start = _parse(run.get("start"))
             if start is None:
                 continue
-            by_trigger = run.get("schedule_id") is None
             sheltered = set(run.get("sheltered_zone_ids") or [])
-            skipped = trigger_skips if by_trigger else bool(run.get("skipped_reason"))
+            skipped = bool(run.get("skipped_reason"))
             for step in run.get("steps") or []:
                 for member in step.get("zones") or []:
                     zone_id = member.get("zone_id")

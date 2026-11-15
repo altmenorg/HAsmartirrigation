@@ -38,19 +38,7 @@
           "waiting": "Oczekuje",
           "running": "Działa",
           "paused": "Wstrzymany",
-          "suspended": "Zawieszony",
-          "disabled": "Wyłączony"
-        }
-      },
-      "program_main": {
-        "name": "Program główny",
-        "state": {
-          "idle": "Bezczynny",
-          "waiting": "Oczekuje",
-          "running": "Działa",
-          "paused": "Wstrzymany",
-          "suspended": "Zawieszony",
-          "disabled": "Wyłączony"
+          "suspended": "Zawieszony"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Obliczaj i podlewaj"
-      },
-      "program_on": {
-        "name": "Program {name} włączony"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Włącz lub wyłącz program",
-      "description": "Włącz lub wyłącz program pełnego kontrolera, tak jak przełącznik w jego ustawieniach.",
+      "name": "Włącz lub wyłącz wszystkie harmonogramy programu (przestarzała)",
+      "description": "Przestarzała: włącza lub wyłącza wszystkie harmonogramy programu. Program nie ma już własnego włącznika; dla jednego harmonogramu użyj set_schedule_enabled. Zostanie usunięta w 2027.11.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -769,6 +754,10 @@
     "deprecated_action": {
       "title": "Akcja {action} zostanie usunięta",
       "description": "Automatyzacja, skrypt lub dashboard wywołał **{action}**. Nadal działa, ale zostanie usunięta od wersji {version}, zimą, poza sezonem podlewania.\n\nUżyj zamiast niej **{replacement}**: robi to samo, a dla wszystkich stref, gdy żadna nie jest wybrana. To powiadomienie wraca przy każdym wywołaniu starej nazwy, dopóki żadne nie zostanie."
+    },
+    "deprecated_program_enabled": {
+      "title": "Akcja {action} zniknie",
+      "description": "Automatyzacja, skrypt lub pulpit wywołał **{action}**. Program nie ma już własnego włącznika, więc akcja włącza lub wyłącza teraz wszystkie harmonogramy programu. Zostanie usunięta od wersji {version}, zimą, poza sezonem podlewania.\n\nUżyj zamiast niej **{replacement}**, raz dla każdego harmonogramu. To powiadomienie wraca przy każdym wywołaniu starej nazwy, dopóki żadne nie zostanie."
     },
     "deprecated_recurring_schedule": {
       "title": "Harmonogramy cykliczne zostaną usunięte: {action}",

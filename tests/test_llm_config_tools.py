@@ -292,18 +292,23 @@ async def test_a_program_naming_an_unknown_zone_is_refused():
     coordinator.async_update_config.assert_not_awaited()
 
 
-async def test_the_main_program_is_never_deleted():
-    coordinator = _coordinator(programs=[{"id": "main", "main": True}, {"id": "p"}])
+async def test_any_program_is_deleted_but_the_last_one():
+    coordinator = _coordinator(programs=[{"id": "main"}, {"id": "p"}])
     hass = _hass(coordinator)
 
-    refused = _data(
+    deleted = _data(
         await llm_config_tools.DeleteProgramTool().async_call(
             hass, _call("DeleteProgram", program_id="main"), None
         )
     )
-    await llm_config_tools.DeleteProgramTool().async_call(
-        hass, _call("DeleteProgram", program_id="p"), None
+    refused = _data(
+        await llm_config_tools.DeleteProgramTool().async_call(
+            hass, _call("DeleteProgram", program_id="p"), None
+        )
     )
 
+    # The old main program goes like any other; the last one stays.
+    assert deleted["success"] is True
     assert refused["success"] is False
-    assert [p["id"] for p in coordinator.store.config.programs] == ["main"]
+    assert "last program" in refused["error"]
+    assert [p["id"] for p in coordinator.store.config.programs] == ["p"]

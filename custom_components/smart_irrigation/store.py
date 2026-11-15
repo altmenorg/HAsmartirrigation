@@ -98,6 +98,7 @@ from .const import (
     CONF_IU_IMPORT,
     CONF_LAST_ZONE_ID,
     CONF_LEAK_ALERT_LITRES,
+    CONF_MAIN_PROGRAM_CONVERTED,
     CONF_MANUAL_COORDINATES_ENABLED,
     CONF_MANUAL_ELEVATION,
     CONF_MANUAL_LATITUDE,
@@ -788,6 +789,8 @@ class Config:
     direct_valve_control_before_full_controller = attr.ib(type=bool, default=None)
     # Moved to the one choice of 2026.11 (one_choice.py).
     one_choice_migrated = attr.ib(type=bool, default=False)
+    # The mark of the main program's conversion. deprecated: remove in 2027.11
+    main_program_converted = attr.ib(type=bool, default=False)
     # The highest zone id ever given. A new zone took the highest id in use
     # plus one, so deleting the last zone and adding one gave the new zone the
     # deleted one's id, and with it the deleted zone's entities: Home
@@ -1321,6 +1324,9 @@ class SmartIrrigationStorage:
                     CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER
                 ),
                 one_choice_migrated=data["config"].get(CONF_ONE_CHOICE_MIGRATED, False),
+                main_program_converted=data["config"].get(
+                    CONF_MAIN_PROGRAM_CONVERTED, False
+                ),
                 last_zone_id=data["config"].get(CONF_LAST_ZONE_ID),
             )
 

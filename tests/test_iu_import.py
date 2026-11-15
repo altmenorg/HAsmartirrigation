@@ -434,7 +434,7 @@ def test_what_cannot_come_along_is_said():
     assert "no valve" in notes
 
 
-def test_a_disabled_controller_imports_its_programs_disabled():
+def test_a_disabled_controller_imports_its_schedules_switched_off():
     plan = plan_import(
         {
             "controllers": {
@@ -444,7 +444,11 @@ def test_a_disabled_controller_imports_its_programs_disabled():
             }
         }
     )
-    assert plan["programs"][0]["enabled"] is False
+    program = plan["programs"][0]
+    # A program has no on/off of its own: nothing starts it on its own.
+    assert "enabled" not in program
+    assert program["schedules"]
+    assert all(s["enabled"] is False for s in program["schedules"])
 
 
 def test_nothing_to_import_is_no_error():

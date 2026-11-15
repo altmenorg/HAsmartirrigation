@@ -38,19 +38,7 @@
           "waiting": "En espera",
           "running": "En marcha",
           "paused": "En pausa",
-          "suspended": "Suspendido",
-          "disabled": "Desactivado"
-        }
-      },
-      "program_main": {
-        "name": "Programa principal",
-        "state": {
-          "idle": "Inactivo",
-          "waiting": "En espera",
-          "running": "En marcha",
-          "paused": "En pausa",
-          "suspended": "Suspendido",
-          "disabled": "Desactivado"
+          "suspended": "Suspendido"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Calcular y regar"
-      },
-      "program_on": {
-        "name": "Programa {name} activo"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Activar o desactivar un programa",
-      "description": "Activar o desactivar un programa del controlador completo, como hace el interruptor de sus ajustes.",
+      "name": "Activar o desactivar todos los horarios de un programa (obsoleta)",
+      "description": "Obsoleta: activa o desactiva todos los horarios de un programa. Un programa ya no tiene interruptor propio; usa set_schedule_enabled para un horario. Se eliminará en 2027.11.",
       "fields": {
         "program_id": {
           "name": "Programa",
@@ -769,6 +754,10 @@
     "deprecated_action": {
       "title": "La acción {action} va a desaparecer",
       "description": "Una automatización, un script o un panel ha llamado a **{action}**. Todavía funciona, pero se eliminará a partir de la versión {version}, en invierno, fuera de la temporada de riego.\n\nUsa **{replacement}** en su lugar: hace lo mismo, y para todas las zonas cuando no se elige ninguna. Este aviso vuelve con cada llamada al nombre antiguo, hasta que no quede ninguna."
+    },
+    "deprecated_program_enabled": {
+      "title": "La acción {action} va a desaparecer",
+      "description": "Una automatización, un script o un panel llamó a **{action}**. Un programa ya no tiene interruptor propio, así que ahora activa o desactiva todos los horarios del programa. Se eliminará a partir de la versión {version}, en invierno, fuera de la temporada de riego.\n\nUsa **{replacement}** en su lugar, una vez por horario. Este aviso vuelve con cada llamada al nombre antiguo, hasta que no quede ninguna."
     },
     "deprecated_recurring_schedule": {
       "title": "Las programaciones recurrentes van a desaparecer: {action}",

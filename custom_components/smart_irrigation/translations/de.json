@@ -38,19 +38,7 @@
           "waiting": "Wartet",
           "running": "Läuft",
           "paused": "Pausiert",
-          "suspended": "Ausgesetzt",
-          "disabled": "Deaktiviert"
-        }
-      },
-      "program_main": {
-        "name": "Hauptprogramm",
-        "state": {
-          "idle": "Bereit",
-          "waiting": "Wartet",
-          "running": "Läuft",
-          "paused": "Pausiert",
-          "suspended": "Ausgesetzt",
-          "disabled": "Deaktiviert"
+          "suspended": "Ausgesetzt"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Berechnen und bewässern"
-      },
-      "program_on": {
-        "name": "Programm {name} an"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Programm ein- oder ausschalten",
-      "description": "Schaltet ein Programm der vollen Steuerung ein oder aus, wie der Schalter in seinen Einstellungen.",
+      "name": "Alle Zeitpläne eines Programms schalten (veraltet)",
+      "description": "Veraltet: schaltet alle Zeitpläne eines Programms ein oder aus. Ein Programm hat keinen eigenen Ein/Aus-Schalter mehr; nutze set_schedule_enabled für einen Zeitplan. Wird in 2027.11 entfernt.",
       "fields": {
         "program_id": {
           "name": "Programm",
@@ -775,6 +760,10 @@
     "deprecated_action": {
       "title": "Die Aktion {action} fällt weg",
       "description": "Eine Automatisierung, ein Skript oder ein Dashboard hat **{action}** aufgerufen. Sie funktioniert noch, wird aber ab Version {version} entfernt, im Winter, außerhalb der Bewässerungszeit.\n\nNutze stattdessen **{replacement}**: Sie tut dasselbe, und für alle Zonen, wenn keine gewählt ist. Dieser Hinweis kommt mit jedem Aufruf des alten Namens wieder, bis keiner mehr übrig ist."
+    },
+    "deprecated_program_enabled": {
+      "title": "Die Aktion {action} fällt weg",
+      "description": "Eine Automatisierung, ein Skript oder ein Dashboard hat **{action}** aufgerufen. Ein Programm hat keinen eigenen Ein/Aus-Schalter mehr, daher schaltet sie jetzt alle Zeitpläne des Programms ein oder aus. Sie wird ab Version {version} entfernt, im Winter, außerhalb der Bewässerungszeit.\n\nNutze stattdessen **{replacement}**, einmal pro Zeitplan. Dieser Hinweis kommt mit jedem Aufruf des alten Namens wieder, bis keiner mehr übrig ist."
     },
     "deprecated_recurring_schedule": {
       "title": "Wiederkehrende Zeitpläne fallen weg: {action}",

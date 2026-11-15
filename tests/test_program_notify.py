@@ -143,8 +143,7 @@ def _event(**data):
 _PROGRAMS = [
     {
         "id": "main",
-        "name": "Main program",
-        "main": True,
+        "name": "Watering",
         "notify": {"targets": ["notify.mobile_app_pixel"], "when": "finish"},
     },
     {
@@ -166,17 +165,22 @@ async def _run_all(hass):
     hass.created.clear()
 
 
-async def test_the_main_cycle_tells_the_phone_at_the_end():
+async def test_the_old_main_program_tells_the_phone_at_the_end_once():
     hass = _hass(actions={"mobile_app_pixel"})
     notifier = _notifier(hass, _PROGRAMS)
 
-    notifier._main_finished(_event(zones=[{"zone": "Lawn", "seconds": 600}]))
+    # Its run fires program_finished (heard) and, for old automations, the
+    # cycle's irrigation_finished, which nothing here listens to any more:
+    # told once, not twice.
+    notifier._program_finished(
+        _event(program_id="main", zones=[{"zone": "Lawn", "seconds": 600}])
+    )
     await _run_all(hass)
 
     hass.services.async_call.assert_awaited_once()
     domain, action, data = hass.services.async_call.await_args.args
     assert (domain, action) == ("notify", "mobile_app_pixel")
-    assert data["title"] == "Main program: watering done"
+    assert data["title"] == "Watering: watering done"
     assert data["message"] == "Lawn: 10 min"
     assert data["data"] == {"tag": "smart_irrigation_main"}
 
@@ -209,7 +213,9 @@ async def test_the_start_is_told_only_when_asked():
     hass = _hass(entities={"notify.kitchen"})
     notifier = _notifier(hass, _PROGRAMS)
 
-    notifier._main_started(_event(zones=[{"zone": "Lawn", "seconds": 60}]))
+    notifier._program_started(
+        _event(program_id="main", zones=[{"zone": "Lawn", "seconds": 60}])
+    )
     assert hass.created == []
     notifier._program_started(
         _event(program_id="evening", zones=[{"zone": "Lawn", "seconds": 60}])
@@ -220,7 +226,9 @@ async def test_the_start_is_told_only_when_asked():
 
 def test_nothing_without_the_full_controller_or_a_target():
     hass = _hass(actions={"mobile_app_pixel"})
-    _notifier(hass, _PROGRAMS, full=False)._main_finished(_event(zones=[]))
+    _notifier(hass, _PROGRAMS, full=False)._program_finished(
+        _event(program_id="main", zones=[])
+    )
     _notifier(hass, _PROGRAMS)._program_finished(_event(program_id="quiet"))
     _notifier(hass, _PROGRAMS)._program_finished(_event(program_id="gone"))
     assert hass.created == []
@@ -228,7 +236,8 @@ def test_nothing_without_the_full_controller_or_a_target():
 
 async def test_a_valve_that_will_not_close_is_told_at_once_and_urgently():
     hass = _hass(actions={"mobile_app_pixel"})
-    notifier = _notifier(hass, _PROGRAMS)
+    running = {"main": SimpleNamespace(running_since=12.0)}
+    notifier = _notifier(hass, _PROGRAMS, running=running)
 
     notifier._zone_problem(_event(zone="Lawn", reason="valve_did_not_open"))
     assert hass.created == []  # in the summary at the end
@@ -253,6 +262,22 @@ async def test_a_problem_goes_to_the_program_that_is_watering():
     assert titles == {"Evening: a problem"}
 
 
+async def test_outside_a_program_every_program_that_notifies_is_told(caplog):
+    hass = _hass(entities={"notify.kitchen"}, actions={"mobile_app_pixel"})
+    notifier = _notifier(hass, _PROGRAMS)
+
+    # A zone watered by hand, nothing running: no program is under way.
+    notifier._zone_problem(_event(zone="Lawn", reason="valve_did_not_close"))
+    await _run_all(hass)
+
+    calls = sorted(c.args[:2] for c in hass.services.async_call.await_args_list)
+    assert calls == [
+        ("notify", "mobile_app_pixel"),
+        ("notify", "send_message"),
+        ("persistent_notification", "create"),
+    ]
+
+
 async def test_a_target_that_fails_does_not_stop_the_others(caplog):
     hass = _hass(entities={"notify.kitchen"})
     hass.services.async_call = AsyncMock(side_effect=[RuntimeError("down"), None])
@@ -271,7 +296,7 @@ async def test_a_target_that_is_gone_is_skipped(caplog):
     hass = _hass()
     notifier = _notifier(hass, _PROGRAMS)
 
-    notifier._main_finished(_event(zones=[]))
+    notifier._program_finished(_event(program_id="main", zones=[]))
     await _run_all(hass)
 
     hass.services.async_call.assert_not_awaited()
@@ -280,7 +305,7 @@ async def test_a_target_that_is_gone_is_skipped(caplog):
 
 def test_the_listeners_come_and_go():
     hass = _hass()
-    unsubs = [MagicMock() for _ in range(7)]
+    unsubs = [MagicMock() for _ in range(5)]
     hass.bus.async_listen = MagicMock(side_effect=unsubs)
 
     notifier = program_notify.async_setup_program_notify(hass, MagicMock())

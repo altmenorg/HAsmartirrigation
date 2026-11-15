@@ -155,6 +155,8 @@
         "review": {
           "question": "Klart att skapa",
           "zone": "Zon",
+          "program": "Vattnas av",
+          "new-program": "Ett nytt program",
           "environment": "Miljö",
           "engine": "Modul",
           "sources": "Källor",
@@ -166,7 +168,7 @@
         },
         "mode": {
           "question": "Vad ska Smart Irrigation göra?",
-          "water-help": "Det beräknar vad varje zon behöver och öppnar ventilerna själv, med ett huvudprogram som vattnar alla zoner, klart vid soluppgång. Du kan ändra schemat efteråt.",
+          "water-help": "Den räknar ut vad varje zon behöver och öppnar ventilerna själv, med ett program som vattnar dina zoner, klart vid soluppgång. Du kan ändra dess schema efteråt.",
           "calculate-help": "Det beräknar vad varje zon behöver; din automation, Irrigation Unlimited eller din styrenhet öppnar ventilerna."
         }
       },
@@ -181,7 +183,9 @@
       "calc-failed": "Beräkningen misslyckades. Orsaken visas för zonen på fliken Zoner.",
       "open-zone": "Öppna zonen",
       "another": "Ställ in en zon till",
-      "done-next-water": "Huvudprogrammet vattnar den med de andra zonerna, klart vid soluppgång. Du hittar det under Bevattning.",
+      "done-next-added": "Den är nu sista steget i {program}, som vattnar den enligt sina scheman. Du hittar det under Bevattning.",
+      "done-next-new-program": "Ett nytt program, {program}, vattnar den varje dag, klart vid soluppgång. Du hittar det under Bevattning.",
+      "new-program-name": "Bevattning",
       "done-next-no-valve": "Koppla en ventil till den under Zoner så att den vattnas."
     },
     "weatherservice": {
@@ -316,7 +320,7 @@
           "calculate-note": "Bara beräkna: Smart Irrigation beräknar vattenbalanser och varaktigheter och skickar sin starthändelse, men öppnar ingen ventil. Din egen automation, Irrigation Unlimited eller din styrenhet vattnar med de varaktigheterna.",
           "confirm-off": "Vill du stänga av Smart Irrigation? Pågående bevattning avbryts direkt. Beräkningarna och bevattningen pausas tills du slår på funktionen igen.",
           "confirm-calculate": "Bara beräkna? Smart Irrigation slutar öppna ventilerna: det som vattnas stoppas nu, och från och med nu vattnar din egen automation med dess varaktigheter.",
-          "water-note": "Beräkna och vattna: Smart Irrigation beräknar vad varje zon behöver och öppnar ventilerna själv, med sina program. Huvudprogrammet vattnar alla zoner enligt sina scheman."
+          "water-note": "Beräkna och vattna: Smart Irrigation räknar ut vad varje zon behöver och öppnar ventilerna själv, med sina program. Varje program vattnar zonerna i sina steg enligt sina scheman."
         }
       },
       "description": "Här ändrar du inställningar som gäller hela integrationen.",
@@ -371,7 +375,7 @@
           "calc-daily": "dagligen kl. {time}",
           "calc-before-start": "strax före varje start",
           "calc-manual": "bara när du ber om det",
-          "main-schedules": "Startas enligt huvudprogrammets scheman. Startutlösaren används inte just nu.",
+          "program-schedules": "Startas enligt programmens scheman. Startutlösaren används inte just nu.",
           "accounts-for-duration": "starttiden beräknas bakåt så att bevattningen blir klar då",
           "starts-at-trigger": "börjar vid den tidpunkten",
           "sequencing-sequential": "en zon i taget, så den totala tiden är summan av zonernas bevattningstider",
@@ -439,7 +443,7 @@
           "detail-dry": "Det regnar inte",
           "detail-held": "vattnas inte vid den här körningen",
           "check-postponed": "Uppskjuten av dig",
-          "title-main": "Kommer huvudprogrammet att hoppas över?"
+          "title-next": "Kommer nästa bevattning att hoppas över?"
         },
         "estimate": {
           "title": "Aktuellt läge per zon",
@@ -964,7 +968,6 @@
         "no-schedules": "Inget schema.",
         "schedules-off": "Programmets scheman är inaktiverade tills du aktiverar dem.",
         "schedules-stay-on": "Du har redan aktiverat programmets scheman. De fortsätter att gälla.",
-        "disabled": "Inaktiverat både här och i Irrigation Unlimited.",
         "removed": "Följande program finns inte längre i Irrigation Unlimited och tas bort: {programs}."
       },
       "supplies": {
@@ -1080,8 +1083,7 @@
           "uses": "Använder {uses}."
         },
         "left-off": "Följande förblir inaktiverade eftersom de var inaktiverade i Irrigation Unlimited: {names}.",
-        "unrecorded": "Följande förblir inaktiverade eftersom importen saknar uppgift om vilka scheman som var aktiva i Irrigation Unlimited: {names}. Aktivera schemana själv eller byt tillbaka till Irrigation Unlimited, importera på nytt så att uppgifterna registreras och byt sedan till Smart Irrigation igen.",
-        "main-also-waters": "Huvudprogrammet bevattnar också {zones}, varje dag från utlösaren: bredvid Irrigation Unlimited, och efter bytet bredvid de importerade programmen, får de här zonerna sitt vatten två gånger. Om de importerade programmen bevattnar allt, stäng av huvudprogrammet under Program eller sätt utlösaren till Ingen."
+        "unrecorded": "Följande förblir inaktiverade eftersom importen saknar uppgift om vilka scheman som var aktiva i Irrigation Unlimited: {names}. Aktivera schemana själv eller byt tillbaka till Irrigation Unlimited, importera på nytt så att uppgifterna registreras och byt sedan till Smart Irrigation igen."
       },
       "notes": {
         "blueprint_zone_gone": "en automation baserad på en automationsmall hämtar tiden från zon {zone}, som inte längre finns. Bevattningstiden importeras därför inte som beräknad",
@@ -1299,19 +1301,16 @@
   "programs": {
     "title": "Program",
     "description": "Programmet kör ett steg i taget. I varje steg bevattnas en zon eller flera zoner samtidigt, normalt under den tid som Smart Irrigation har beräknat. Bara ett program körs åt gången. Program vars zoner delar en försörjning, eller saknar en, körs aldrig samtidigt: nästa väntar på sin tur. Program med egen försörjning vattnar sida vid sida.",
-    "main_description": "Vattnar alla zoner, efter varandra eller samtidigt, enligt sina scheman.",
+    "none_yet": "Inget program än. En zon vattnas så fort ett program har den i ett steg: lägg till ett med Nytt program.",
     "run_options": "Alternativ för den här starten",
     "adjust_empty": "Ange en procentsats eller sekunder för att justera tiderna.",
     "more_options": "Fler alternativ",
     "more_options_set": "med fler regler",
-    "sequencing_title": "Zonernas ordning och pauser",
-    "others_title": "Andra program",
     "confirm_run": "Vill du köra {name} nu? Ventilerna öppnas direkt.",
     "run_started": "{name} har startat.",
     "run_queued": "{name} står i kö och startar när den pågående bevattningen är klar.",
     "run_nothing": "{name} hittade inget att vattna.",
     "run_failed": "{name} kunde inte starta: {error}",
-    "main_schedules_hint": "Så länge inget schema är aktiverat startas huvudprogrammet av startutlösaren som du väljer längre ned på sidan. Så snart du aktiverar ett schema tar schemaläggningen över. Startutlösarens inställningar sparas och används igen om du inaktiverar eller tar bort alla scheman.",
     "name": "Namn",
     "step": "Steg",
     "step_zones": "Zoner",
@@ -1328,21 +1327,20 @@
     "tours": "Varv",
     "tours_help": "Antal gånger hela steglistan körs. Vattenmängden delas upp mellan varven. Mellan varven hinner vattnet tränga ner i marken i varje zon medan de andra zonerna bevattnas. Med flera pass i ett steg upprepas i stället samma steg innan programmet går vidare.",
     "enabled": "Aktiverat",
-    "program_enabled": "Program på",
-    "schedule_enabled": "Schema på",
-    "step_enabled": "Steg på",
     "add_step": "Lägg till ett steg",
     "delete_step": "Ta bort steget",
     "add": "Nytt program",
+    "all_zones_now_title": "Vattna alla zoner nu",
+    "all_zones_now_help": "Bara för knappen Vattna alla zoner: varje zon med en ventil, i den här ordningen, med de här passen och den här pausen. Programmen behåller sina egna steg.",
     "delete": "Ta bort programmet",
     "schedule": "Schema",
     "add_schedule": "Lägg till ett schema",
     "delete_schedule": "Ta bort schemat",
-    "schedule_moment": "Vid",
+    "schedule_moment": "När",
     "moment_time": "En tid på dygnet",
     "moment_sunrise": "Soluppgång",
     "moment_sunset": "Solnedgång",
-    "moment_azimuth": "När solen når en azimut",
+    "moment_azimuth": "Solen når en azimut",
     "schedule_time": "Tid",
     "schedule_offset": "Före (-) eller efter (+) soluppgången eller solnedgången",
     "schedule_anchor": "Vid den angivna tidpunkten ska programmet",
@@ -1396,7 +1394,6 @@
     "max_litres": "Volymgräns",
     "max_litres_help": "Bevattningen i en zon stoppas när vattenmätaren har registrerat den angivna volymen. Enheten är liter eller gallon beroende på panelens inställningar. Ange 0 för att ta bort gränsen. Eftersom mätaren skickar värden med vissa mellanrum blir volymen ungefärlig. Gränsen gäller endast zoner med vattenmätare.",
     "new_program": "Program",
-    "main_name": "Huvudprogram",
     "run_now": "Kör nu",
     "run_seconds": "Total bevattningstid",
     "run_seconds_help": "Lämna fältet tomt för att använda de planerade bevattningstiderna. Om du anger en total tid fördelas den mellan stegen i proportion till deras planerade tider.",
@@ -1418,8 +1415,6 @@
     "adjust_apply": "Tillämpa",
     "adjust_reset": "Återställ",
     "confirm_reset_adjustment": "Ta bort justeringen av det här programmet?",
-    "main_settings": "Huvudprogram: start och bevattningsordning",
-    "main_settings_description": "Välj om zonerna ska bevattnas efter varandra eller samtidigt. Här ställer du även in pausen mellan zonerna och hur bevattningen delas upp i pass med tid för infiltration.",
     "mode_off": "Fullständig bevattningsstyrning är avstängd. Aktivera den under Inställningar → Allmänt.",
     "no_zone": "ingen zon",
     "mode_calculated_short": "beräknad",
@@ -1432,14 +1427,13 @@
     "schedules_none": "inget schema",
     "schedules_one": "1 schema",
     "schedules_many": "{n} scheman",
-    "off": "av",
+    "no_schedule_on": "inget schema på",
     "steps_title": "Steg",
     "schedules_title": "Scheman",
     "passes_help": "Dela upp bevattningen i flera pass så att vattnet hinner tränga ner i marken mellan passen. Ange 1 för att bevattna i ett enda pass.",
     "schedule_fallback_skip": "Hoppa över den dagen",
     "schedule_fallback_previous": "Använd tiden för den senaste soluppgången eller solnedgången",
     "schedule_fallback_at": "Starta vid en fast tid",
-    "main_steps_hint": "Huvudprogrammet vattnar alla zoner. Om du bara vill vattna några av dem, eller i en egen ordning, lägger du till ett under Andra program nedan.",
     "summary_start_sunrise": "startar vid soluppgång",
     "summary_start_sunset": "startar vid solnedgång",
     "summary_start_azimuth": "startar när solen står i {deg}°",
@@ -1465,7 +1459,7 @@
     "passes_short": "{n} pass",
     "overlap_short": "startar nästa {time} tidigare",
     "wait_short": "väntar {time} före nästa",
-    "soak_shared_help": "En gemensam infiltrationspaus för alla steg i pass, i alla program och i huvudprogrammet.",
+    "soak_shared_help": "En gemensam infiltrationspaus för alla steg i pass, i alla program.",
     "min_over_max": "Minimum är högre än maximum: maximum gäller, {max}.",
     "confirm_run_replace": "Kör {name} nu? Det som vattnar nu stoppas först, sedan öppnas ventilerna.",
     "run_replacing": "Det som vattnade stoppas; {name} startar direkt efter.",
@@ -1630,10 +1624,8 @@
         "running": "körs",
         "waiting": "väntar",
         "paused": "pausat",
-        "suspended": "uppskjutet",
-        "disabled": "inaktiverat"
+        "suspended": "uppskjutet"
       },
-      "main_name": "Huvudprogram",
       "after": "startar efter {name}",
       "next_in_line": "startar härnäst"
     },

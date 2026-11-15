@@ -223,22 +223,16 @@ class Triggers(TriggersMixin):
         self.is_suspended = lambda kind, ident: suspended
 
 
-def test_the_main_program_switched_off_holds_the_start_trigger():
-    main = {const.PROGRAM_ID: "main", const.PROGRAM_MAIN: True}
+def test_who_starts_the_watering_follows_the_controller_alone():
+    # No program holds the start trigger back any more: with the controller on
+    # the programs' schedules start the watering, and the trigger is unarmed;
+    # with it off the trigger fires the start event, whatever the programs.
+    held = [{const.PROGRAM_ID: "main", const.PROGRAM_SCHEDULES: []}]
 
-    assert Triggers([main])._main_program_held() is None
-    assert (
-        Triggers([{**main, const.PROGRAM_ENABLED: False}])._main_program_held()
-        == "disabled"
-    )
-    assert Triggers([main], suspended=True)._main_program_held() == "suspended"
-    # Outside the full controller there is no main program to hold anything.
-    assert (
-        Triggers(
-            [{**main, const.PROGRAM_ENABLED: False}], full=False
-        )._main_program_held()
-        is None
-    )
+    assert Triggers(held).schedules_start_watering() is True
+    assert Triggers(held, suspended=True).schedules_start_watering() is True
+    assert Triggers(held, full=False).schedules_start_watering() is False
+    assert not hasattr(TriggersMixin, "_main_program_held")
 
 
 async def test_a_program_resets_the_counters_of_its_zones_only():

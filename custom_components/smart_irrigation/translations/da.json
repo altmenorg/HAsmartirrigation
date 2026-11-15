@@ -38,19 +38,7 @@
           "waiting": "Venter",
           "running": "Kører",
           "paused": "På pause",
-          "suspended": "Suspenderet",
-          "disabled": "Deaktiveret"
-        }
-      },
-      "program_main": {
-        "name": "Hovedprogram",
-        "state": {
-          "idle": "Inaktiv",
-          "waiting": "Venter",
-          "running": "Kører",
-          "paused": "På pause",
-          "suspended": "Suspenderet",
-          "disabled": "Deaktiveret"
+          "suspended": "Suspenderet"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Beregn og vand"
-      },
-      "program_on": {
-        "name": "Program {name} til"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Aktivér eller deaktivér et program",
-      "description": "Slå et program i den fulde styring til eller fra, som kontakten i dets indstillinger gør.",
+      "name": "Slå alle tidsplaner for et program til eller fra (forældet)",
+      "description": "Forældet: slår alle tidsplaner for et program til eller fra. Et program har ikke længere sin egen tænd/sluk; brug set_schedule_enabled til én tidsplan. Fjernes i 2027.11.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -769,6 +754,10 @@
     "deprecated_action": {
       "title": "Handlingen {action} forsvinder",
       "description": "En automatisering, et script eller et dashboard kaldte **{action}**. Den virker stadig, men den fjernes fra version {version}, om vinteren, uden for vandingssæsonen.\n\nBrug **{replacement}** i stedet: den gør det samme, og for alle zoner, når ingen zone er valgt. Denne besked kommer igen ved hvert kald til det gamle navn, indtil der ikke er flere."
+    },
+    "deprecated_program_enabled": {
+      "title": "Handlingen {action} forsvinder",
+      "description": "En automatisering, et script eller et dashboard kaldte **{action}**. Et program har ikke længere sin egen tænd/sluk, så den slår nu alle programmets tidsplaner til eller fra. Den fjernes fra version {version}, om vinteren, uden for vandingssæsonen.\n\nBrug **{replacement}** i stedet, én gang pr. tidsplan. Denne besked kommer igen ved hvert kald af det gamle navn, indtil der ikke er flere."
     },
     "deprecated_recurring_schedule": {
       "title": "Tilbagevendende tidsplaner forsvinder: {action}",

@@ -654,9 +654,9 @@ export class SmartIrrigationCard extends LitElement {
           }),
         );
       }
-      // The main program run by its trigger waters zone by zone without a
-      // run of its own: its line was empty. It names the zones open now, or
-      // those the pause holds.
+      // A program said to run without a live run of its own (one finishing
+      // what a restart interrupted) had an empty line. It names the zones
+      // open now, or those the pause holds.
       const open = liveValves(this._live);
       if (!live && open.length) {
         parts.push(
@@ -684,14 +684,14 @@ export class SmartIrrigationCard extends LitElement {
       );
       detail = ahead
         ? this._t("programs.after", {
-            name: programLabel(ahead, this._t("programs.main_name")),
+            name: programLabel(ahead),
           })
         : this._t("programs.next_in_line");
     } else if (program.state === "suspended" && program.suspended_until) {
       detail = this._t("programs.until", {
         when: this._moment(program.suspended_until),
       });
-    } else if (program.state !== "disabled") {
+    } else {
       detail = program.next_start
         ? `${this._t("next_start")} ${this._moment(program.next_start)}`
         : this._t("no_start");
@@ -703,7 +703,7 @@ export class SmartIrrigationCard extends LitElement {
     return html`
       <div class="zone program">
         <div class="zone-name">
-          ${programLabel(program, this._t("programs.main_name"))}
+          ${programLabel(program)}
           ${program.state === "idle"
             ? ""
             : html`<span class="chip ${running ? "on" : ""}"

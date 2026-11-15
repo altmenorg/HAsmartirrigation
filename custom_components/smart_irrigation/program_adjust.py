@@ -62,10 +62,6 @@ class ProgramAdjustMixin:
         program = find_program(getattr(config, const.CONF_PROGRAMS, None), program_id)
         if program is None:
             raise ServiceValidationError(f"{program_id} is not a program")
-        if program.get(const.PROGRAM_MAIN):
-            raise ServiceValidationError(
-                "the main program has no steps to adjust: adjust a program with steps"
-            )
         now = dt_util.utcnow()
         adjustments = {
             k: v

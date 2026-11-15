@@ -155,6 +155,8 @@
         "review": {
           "question": "Pripravljeno za ustvarjanje",
           "zone": "Cona",
+          "program": "Zaliva ga",
+          "new-program": "Nov program",
           "environment": "Okolje",
           "engine": "Modul",
           "sources": "Viri",
@@ -166,7 +168,7 @@
         },
         "mode": {
           "question": "Kaj naj počne Smart Irrigation?",
-          "water-help": "Izračuna, kaj potrebuje vsako območje, in sam odpira ventile, z glavnim programom, ki zalije vsa območja do sončnega vzhoda. Urnik lahko spremeniš pozneje.",
+          "water-help": "Izračuna, kaj potrebuje vsako območje, in sam odpira ventile, s programom, ki zaliva tvoja območja, končano do sončnega vzhoda. Njegov urnik lahko pozneje spremeniš.",
           "calculate-help": "Izračuna, kaj potrebuje vsako območje; ventile odpira tvoja avtomatizacija, Irrigation Unlimited ali tvoj krmilnik."
         }
       },
@@ -181,7 +183,9 @@
       "calc-failed": "Izračun ni uspel. Zakaj, piše pri coni na zavihku Cone.",
       "open-zone": "Odpri cono",
       "another": "Nastavi še eno cono",
-      "done-next-water": "Glavni program ga zaliva z ostalimi območji, končano do sončnega vzhoda. Najdeš ga pod Zalivanje.",
+      "done-next-added": "Zdaj je zadnji korak programa {program}, ki ga zaliva po svojih urnikih. Najdeš ga pod Zalivanje.",
+      "done-next-new-program": "Nov program, {program}, ga zaliva vsak dan, končano do sončnega vzhoda. Najdeš ga pod Zalivanje.",
+      "new-program-name": "Zalivanje",
       "done-next-no-valve": "Poveži ga z ventilom v Območjih, da bo zalito."
     },
     "weatherservice": {
@@ -316,7 +320,7 @@
           "calculate-note": "Samo računanje: Smart Irrigation izračuna vodne bilance in trajanja ter pošlje začetni dogodek, a ne odpre nobenega ventila. Zaliva vaša avtomatizacija, Irrigation Unlimited ali vaš krmilnik s temi trajanji.",
           "confirm-off": "Izklopim Smart Irrigation? Zalivanje, ki poteka, se takoj ustavi, in nič se ne računa ali zaliva, dokler ga znova ne vklopiš.",
           "confirm-calculate": "Samo računati? Smart Irrigation preneha odpirati ventile: kar zaliva, se zdaj ustavi, odslej pa zaliva vaša avtomatizacija z njegovimi trajanji.",
-          "water-note": "Računaj in zalivaj: Smart Irrigation izračuna, kaj potrebuje vsako območje, in sam odpira ventile s svojimi programi. Glavni program zaliva vsa območja po svojih urnikih."
+          "water-note": "Računaj in zalivaj: Smart Irrigation izračuna, kaj potrebuje vsako območje, in sam odpira ventile, s svojimi programi. Vsak program zaliva območja svojih korakov po svojih urnikih."
         }
       },
       "description": "Ta stran vsebuje splošne nastavitve.",
@@ -371,7 +375,7 @@
           "calc-daily": "vsak dan ob {time}",
           "calc-before-start": "tik pred vsakim zagonom",
           "calc-manual": "samo na zahtevo",
-          "main-schedules": "Zažene ga urnik glavnega programa (sprožilec zagona se za zdaj ne uporablja)",
+          "program-schedules": "Zaženejo ga urniki programov (sprožilec zagona se za zdaj ne uporablja)",
           "accounts-for-duration": "šteto nazaj, da se zagon takrat konča",
           "starts-at-trigger": "začne se v tistem trenutku",
           "sequencing-sequential": "ena cona naenkrat, zato je skupaj vsota vseh con",
@@ -439,7 +443,7 @@
           "detail-dry": "Ne dežuje",
           "detail-held": "ta zagon izpusti",
           "check-postponed": "Odložil si ti",
-          "title-main": "Bo glavni program preskočen?"
+          "title-next": "Bo naslednje zalivanje preskočeno?"
         },
         "estimate": {
           "title": "Kje je vsaka cona zdaj",
@@ -964,7 +968,6 @@
         "no-schedules": "Ni urnika.",
         "schedules-off": "Njegovi urniki ostanejo izklopljeni, dokler jih ne vklopiš.",
         "schedules-stay-on": "Vklopil si njegove urnike: ostanejo, kot so.",
-        "disabled": "Izklopljeno v Irrigation Unlimited, in tudi tukaj.",
         "removed": "Niso več v Irrigation Unlimited, odstranjeni: {programs}."
       },
       "supplies": {
@@ -1080,8 +1083,7 @@
           "uses": "Uporablja {uses}."
         },
         "left-off": "Ostali so izklopljeni, ker jih je imel Irrigation Unlimited izklopljene: {names}.",
-        "unrecorded": "Ostali so izklopljeni, ker uvoz ni zabeležil, katere od njihovih urnikov je imel Irrigation Unlimited vklopljene: {names}. Njihove urnike vklopi sam ali se vrni na Irrigation Unlimited, znova uvozi (to jih zabeleži) in znova preklopi.",
-        "main-also-waters": "Glavni program zaliva tudi {zones}, vsak dan iz sprožilca: poleg Irrigation Unlimited, po preklopu pa poleg uvoženih programov, te cone dobijo vodo dvakrat. Če uvoženi programi zalivajo vse, izklopi glavni program v Programih ali nastavi sprožilec na Brez."
+        "unrecorded": "Ostali so izklopljeni, ker uvoz ni zabeležil, katere od njihovih urnikov je imel Irrigation Unlimited vklopljene: {names}. Njihove urnike vklopi sam ali se vrni na Irrigation Unlimited, znova uvozi (to jih zabeleži) in znova preklopi."
       },
       "notes": {
         "blueprint_zone_gone": "avtomatizacija iz načrta (blueprint) jo napaja iz cone {zone}, ki ne obstaja več: ne prenese se kot izračunana",
@@ -1299,19 +1301,16 @@
   "programs": {
     "title": "Programi",
     "description": "Program zaliva svoje korake drug za drugim. Korak je ena cona ali več con, ki se zalivajo skupaj, in privzeto traja toliko, kot je zanj izračunal Smart Irrigation. Programi, katerih območja si delijo napajanje ali ga nimajo, nikoli ne tečejo hkrati: naslednji počaka na vrsto. Programi z lastnim napajanjem zalivajo vzporedno.",
-    "main_description": "Zaliva vsa območja, drugo za drugim ali skupaj, po svojih urnikih.",
+    "none_yet": "Še ni programa. Območje se zaliva, ko ga ima program v enem od korakov: dodaj ga z gumbom Nov program.",
     "run_options": "Možnosti tega zagona",
     "adjust_empty": "Vnesi odstotek ali sekunde, da prilagodiš trajanja.",
     "more_options": "Več možnosti",
     "more_options_set": "z dodatnimi pravili",
-    "sequencing_title": "Vrstni red con in premori",
-    "others_title": "Drugi programi",
     "confirm_run": "Zaženem {name} zdaj? Njegovi ventili se takoj odprejo.",
     "run_started": "{name} se je zagnal.",
     "run_queued": "{name} je v vrsti: zažene se, ko se trenutno zalivanje konča.",
     "run_nothing": "{name} ni našel ničesar za zalivanje.",
     "run_failed": "{name} se ni mogel zagnati: {error}",
-    "main_schedules_hint": "Brez vklopljenega urnika glavni program zažene sprožilec zagona, nastavljen niže na tej strani. Takoj ko je vklopljen en urnik, urniki nadomestijo ta sprožilec. Njegove nastavitve se ohranijo in vrne se, če so urniki izklopljeni ali odstranjeni.",
     "name": "Ime",
     "step": "Korak",
     "step_zones": "Cone",
@@ -1328,21 +1327,20 @@
     "tours": "Krogi",
     "tours_help": "Celoten seznam korakov se zalije tolikokrat, vsak krog s svojim deležem vode. Za razliko od prehodov, ki ponovijo en korak pred naslednjim, krog pusti vsaki coni vpijati, medtem ko se druge zalivajo.",
     "enabled": "Vklopljeno",
-    "program_enabled": "Program vklopljen",
-    "schedule_enabled": "Urnik vklopljen",
-    "step_enabled": "Korak vklopljen",
     "add_step": "Dodaj korak",
     "delete_step": "Izbriši korak",
     "add": "Nov program",
+    "all_zones_now_title": "Zalij vsa območja zdaj",
+    "all_zones_now_help": "Samo za gumb Zalij vsa območja: vsako območje z ventilom, v tem vrstnem redu, s temi prehodi in s tem premorom. Programi obdržijo svoje korake.",
     "delete": "Izbriši program",
     "schedule": "Urnik",
     "add_schedule": "Dodaj urnik",
     "delete_schedule": "Izbriši urnik",
-    "schedule_moment": "Ob",
+    "schedule_moment": "Kdaj",
     "moment_time": "Ura dneva",
     "moment_sunrise": "Sončni vzhod",
     "moment_sunset": "Sončni zahod",
-    "moment_azimuth": "Ko sonce doseže azimut",
+    "moment_azimuth": "Sonce doseže azimut",
     "schedule_time": "Ura",
     "schedule_offset": "Pred (-) ali po (+) soncu",
     "schedule_anchor": "Ta trenutek je, ko program",
@@ -1396,7 +1394,6 @@
     "max_litres": "Omejitev prostornine",
     "max_litres_help": "Cona tega koraka se ustavi, ko njen vodomer našteje to prostornino, v litrih ali galonah, kot plošča prikazuje prostornine. 0: brez omejitve. Vodomer poroča le občasno, zato prostornina ni točna. Cona brez vodomera to prezre.",
     "new_program": "Program",
-    "main_name": "Glavni program",
     "run_now": "Zaženi zdaj",
     "run_seconds": "Skupno trajanje",
     "run_seconds_help": "Neobvezno. Prazno: načrtovana trajanja. Sicer celoten program traja toliko, razdeljeno med korake sorazmerno z njihovimi načrtovanimi trajanji.",
@@ -1418,8 +1415,6 @@
     "adjust_apply": "Uporabi",
     "adjust_reset": "Ponastavi",
     "confirm_reset_adjustment": "Odstranim prilagoditev tega programa?",
-    "main_settings": "Glavni program: zagon in zaporedje",
-    "main_settings_description": "Kako zaliva glavni program: cone drugo za drugo ali skupaj, premor med dvema conama ter cikel in vpijanje.",
     "mode_off": "Celoten krmilnik je izklopljen. Vklopi ga v Nastavitve, Splošno.",
     "no_zone": "brez cone",
     "mode_calculated_short": "izračunano",
@@ -1432,14 +1427,13 @@
     "schedules_none": "brez urnika",
     "schedules_one": "1 urnik",
     "schedules_many": "urniki: {n}",
-    "off": "izklopljeno",
+    "no_schedule_on": "noben urnik ni vklopljen",
     "steps_title": "Koraki",
     "schedules_title": "Urniki",
     "passes_help": "Cikel in vpijanje za ta korak: njegova voda razdeljena na toliko prehodov, vsaka cona pa med dvema prehodoma vpija. 1: naenkrat.",
     "schedule_fallback_skip": "Preskoči ta dan",
     "schedule_fallback_previous": "Uporabi čas zadnjega videnega",
     "schedule_fallback_at": "Začni ob določeni uri",
-    "main_steps_hint": "Glavni program zaliva vse cone. Če želiš zalivati samo nekatere ali v svojem vrstnem redu, dodaj program spodaj pod Drugi programi.",
     "summary_start_sunrise": "začne ob sončnem vzhodu",
     "summary_start_sunset": "začne ob sončnem zahodu",
     "summary_start_azimuth": "začne, ko je sonce na {deg}°",
@@ -1465,7 +1459,7 @@
     "passes_short": "Prehodi: {n}",
     "overlap_short": "naslednjega zažene {time} prej",
     "wait_short": "počaka {time} pred naslednjim",
-    "soak_shared_help": "En čas vpijanja za vse korake v prehodih, v vseh programih in v glavnem programu.",
+    "soak_shared_help": "En čas vpijanja za vse korake v prehodih, v vseh programih.",
     "min_over_max": "Minimum je nad maksimumom: obvelja maksimum, {max}.",
     "confirm_run_replace": "Zaženem {name} zdaj? Trenutno zalivanje se najprej ustavi, nato se odprejo njegovi ventili.",
     "run_replacing": "Trenutno zalivanje se ustavlja; {name} se začne takoj zatem.",
@@ -1630,10 +1624,8 @@
         "running": "teče",
         "waiting": "čaka",
         "paused": "začasno ustavljeno",
-        "suspended": "zadržano",
-        "disabled": "izklopljeno"
+        "suspended": "zadržano"
       },
-      "main_name": "Glavni program",
       "after": "zažene se po {name}",
       "next_in_line": "zažene se naslednji"
     },

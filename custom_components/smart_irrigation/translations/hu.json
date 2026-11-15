@@ -38,19 +38,7 @@
           "waiting": "Várakozik",
           "running": "Fut",
           "paused": "Szünetel",
-          "suspended": "Felfüggesztve",
-          "disabled": "Letiltva"
-        }
-      },
-      "program_main": {
-        "name": "Főprogram",
-        "state": {
-          "idle": "Tétlen",
-          "waiting": "Várakozik",
-          "running": "Fut",
-          "paused": "Szünetel",
-          "suspended": "Felfüggesztve",
-          "disabled": "Letiltva"
+          "suspended": "Felfüggesztve"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Számolás és öntözés"
-      },
-      "program_on": {
-        "name": "{name} program bekapcsolva"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Program engedélyezése vagy letiltása",
-      "description": "A teljes vezérlő egy programjának be- vagy kikapcsolása, ahogy a beállításaiban lévő kapcsoló teszi.",
+      "name": "Egy program összes ütemezésének be- vagy kikapcsolása (elavult)",
+      "description": "Elavult: egy program összes ütemezését be- vagy kikapcsolja. A programnak már nincs saját kapcsolója; egy ütemezéshez használd a set_schedule_enabled műveletet. A 2027.11 verzióban megszűnik.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -769,6 +754,10 @@
     "deprecated_action": {
       "title": "A(z) {action} művelet megszűnik",
       "description": "Egy automatizálás, szkript vagy irányítópult meghívta a(z) **{action}** műveletet. Még működik, de a(z) {version} verziótól el lesz távolítva, télen, az öntözési szezonon kívül.\n\nHasználd helyette a(z) **{replacement}** műveletet: ugyanazt teszi, és az összes zónára, ha nincs zóna kiválasztva. Ez az értesítés a régi név minden hívásakor visszatér, amíg egy sem marad."
+    },
+    "deprecated_program_enabled": {
+      "title": "A(z) {action} művelet megszűnik",
+      "description": "Egy automatizálás, szkript vagy irányítópult meghívta: **{action}**. A programnak már nincs saját kapcsolója, ezért most a program összes ütemezését be- vagy kikapcsolja. A(z) {version} verziótól eltávolítjuk, télen, az öntözési szezonon kívül.\n\nHasználd helyette ezt: **{replacement}**, ütemezésenként egyszer. Ez az értesítés a régi név minden hívásakor visszatér, amíg egy sem marad."
     },
     "deprecated_recurring_schedule": {
       "title": "Az ismétlődő ütemezések megszűnnek: {action}",

@@ -38,19 +38,7 @@
           "waiting": "Wachtend",
           "running": "Bezig",
           "paused": "Gepauzeerd",
-          "suspended": "Opgeschort",
-          "disabled": "Uitgeschakeld"
-        }
-      },
-      "program_main": {
-        "name": "Hoofdprogramma",
-        "state": {
-          "idle": "Inactief",
-          "waiting": "Wachtend",
-          "running": "Bezig",
-          "paused": "Gepauzeerd",
-          "suspended": "Opgeschort",
-          "disabled": "Uitgeschakeld"
+          "suspended": "Opgeschort"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Berekenen en bewateren"
-      },
-      "program_on": {
-        "name": "Programma {name} aan"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Een programma in- of uitschakelen",
-      "description": "Zet een programma van de volledige controller aan of uit, zoals de schakelaar in zijn instellingen.",
+      "name": "Alle schema's van een programma schakelen (verouderd)",
+      "description": "Verouderd: zet alle schema's van een programma aan of uit. Een programma heeft geen eigen aan/uit meer; gebruik set_schedule_enabled voor één schema. Verdwijnt in 2027.11.",
       "fields": {
         "program_id": {
           "name": "Programma",
@@ -769,6 +754,10 @@
     "deprecated_action": {
       "title": "De actie {action} verdwijnt",
       "description": "Een automatisering, een script of een dashboard heeft **{action}** aangeroepen. Die werkt nog, maar wordt verwijderd vanaf versie {version}, in de winter, buiten het bewateringsseizoen.\n\nGebruik in plaats daarvan **{replacement}**: die doet hetzelfde, en voor alle zones als er geen zone is gekozen. Deze melding komt terug bij elke aanroep van de oude naam, tot er geen meer over is."
+    },
+    "deprecated_program_enabled": {
+      "title": "De actie {action} verdwijnt",
+      "description": "Een automatisering, script of dashboard riep **{action}** aan. Een programma heeft geen eigen aan/uit meer, dus zet deze actie nu alle schema's van het programma aan of uit. Ze wordt verwijderd vanaf versie {version}, in de winter, buiten het sproeiseizoen.\n\nGebruik in plaats daarvan **{replacement}**, één keer per schema. Deze melding komt terug bij elke aanroep van de oude naam, tot er geen meer over is."
     },
     "deprecated_recurring_schedule": {
       "title": "Terugkerende schema's verdwijnen: {action}",

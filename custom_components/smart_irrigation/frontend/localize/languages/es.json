@@ -155,6 +155,8 @@
         "review": {
           "question": "Listo para crear",
           "zone": "Zona",
+          "program": "Regada por",
+          "new-program": "Un programa nuevo",
           "environment": "Entorno",
           "engine": "Módulo",
           "sources": "Fuentes",
@@ -166,7 +168,7 @@
         },
         "mode": {
           "question": "¿Qué debe hacer Smart Irrigation?",
-          "water-help": "Calcula lo que necesita cada zona y abre él mismo las válvulas, con un programa principal que riega todas las zonas, terminado al amanecer. Luego puedes cambiar su horario.",
+          "water-help": "Calcula lo que necesita cada zona y abre las válvulas él mismo, con un programa que riega tus zonas, terminado al amanecer. Puedes cambiar su horario después.",
           "calculate-help": "Calcula lo que necesita cada zona; tu automatización, Irrigation Unlimited o tu programador abre las válvulas."
         }
       },
@@ -181,7 +183,9 @@
       "calc-failed": "El cálculo no ha funcionado. La zona indica el motivo en Zonas.",
       "open-zone": "Abrir la zona",
       "another": "Configurar otra zona",
-      "done-next-water": "El programa principal la riega con las demás zonas, terminado al amanecer. Lo encuentras en Riego.",
+      "done-next-added": "Ahora es el último paso de {program}, que la riega en sus horarios. Lo encuentras en Riego.",
+      "done-next-new-program": "Un programa nuevo, {program}, la riega cada día, terminado al amanecer. Lo encuentras en Riego.",
+      "new-program-name": "Riego",
       "done-next-no-valve": "Vincúlale una válvula en Zonas para que se riegue."
     },
     "weatherservice": {
@@ -316,7 +320,7 @@
           "calculate-note": "Solo calcular: Smart Irrigation calcula los balances hídricos y las duraciones y envía su evento de inicio, pero no abre ninguna válvula. Tu propia automatización, Irrigation Unlimited o tu controlador riega con esas duraciones.",
           "confirm-off": "¿Desactivar Smart Irrigation? Lo que esté regando se detiene ahora, y no se calcula ni se riega nada hasta que se vuelva a activar.",
           "confirm-calculate": "¿Solo calcular? Smart Irrigation deja de abrir las válvulas: lo que esté regando se detiene ahora y, a partir de ahora, tu propia automatización riega con sus duraciones.",
-          "water-note": "Calcular y regar: Smart Irrigation calcula lo que necesita cada zona y abre él mismo las válvulas, con sus programas. El programa principal riega todas las zonas en sus horarios."
+          "water-note": "Calcular y regar: Smart Irrigation calcula lo que necesita cada zona y abre las válvulas él mismo, con sus programas. Cada programa riega las zonas de sus pasos en sus horarios."
         }
       },
       "description": "Esta página provee configuraciones globales.",
@@ -371,7 +375,7 @@
           "calc-daily": "cada día a las {time}",
           "calc-before-start": "justo antes de cada inicio",
           "calc-manual": "solo cuando lo pides",
-          "main-schedules": "Iniciado por los horarios del programa principal (el disparador de inicio no se usa por ahora)",
+          "program-schedules": "Iniciado por los horarios de los programas (el disparador de inicio no se usa por ahora)",
           "accounts-for-duration": "calculado hacia atrás para que el ciclo termine entonces",
           "starts-at-trigger": "empieza en ese momento",
           "sequencing-sequential": "una zona cada vez, así que el total es la suma de todas las zonas",
@@ -439,7 +443,7 @@
           "detail-dry": "No llueve",
           "detail-held": "se salta este ciclo",
           "check-postponed": "Aplazado por ti",
-          "title-main": "¿Se va a omitir el programa principal?"
+          "title-next": "¿Se va a omitir el próximo riego?"
         },
         "estimate": {
           "title": "Cómo está cada zona ahora",
@@ -964,7 +968,6 @@
         "no-schedules": "Sin horario.",
         "schedules-off": "Sus horarios quedan desactivados hasta que los actives.",
         "schedules-stay-on": "Activaste sus horarios: se quedan como están.",
-        "disabled": "Desactivado en Irrigation Unlimited, y aquí también.",
         "removed": "Ya no están en Irrigation Unlimited, eliminados: {programs}."
       },
       "supplies": {
@@ -1080,8 +1083,7 @@
           "uses": "Usa {uses}."
         },
         "left-off": "Se dejan desactivados, porque Irrigation Unlimited los tenía desactivados: {names}.",
-        "unrecorded": "Se dejan desactivados, porque la importación no registró cuáles de sus horarios tenía activados Irrigation Unlimited: {names}. Activa tú sus horarios, o vuelve a Irrigation Unlimited, importa de nuevo (así se registran) y vuelve a hacer el cambio.",
-        "main-also-waters": "El programa principal también riega {zones}, cada día desde el disparador: junto a Irrigation Unlimited, y tras el cambio junto a los programas importados, estas zonas reciben el agua dos veces. Si los programas importados lo riegan todo, desactiva el programa principal en Programas o pon el disparador en Ninguno."
+        "unrecorded": "Se dejan desactivados, porque la importación no registró cuáles de sus horarios tenía activados Irrigation Unlimited: {names}. Activa tú sus horarios, o vuelve a Irrigation Unlimited, importa de nuevo (así se registran) y vuelve a hacer el cambio."
       },
       "notes": {
         "blueprint_zone_gone": "una automatización de blueprint la alimenta desde la zona {zone}, que ya no existe: no se trae como calculada",
@@ -1299,19 +1301,16 @@
   "programs": {
     "title": "Programas",
     "description": "Un programa riega sus pasos uno tras otro. Un paso es una zona, o varias regadas a la vez, y por defecto dura lo que Smart Irrigation calculó para él. Los programas cuyas zonas comparten un suministro, o no tienen ninguno, nunca funcionan a la vez: el siguiente espera su turno. Los que tienen su propio suministro riegan en paralelo.",
-    "main_description": "Riega todas las zonas, una tras otra o juntas, en sus horarios.",
+    "none_yet": "Aún no hay ningún programa. Una zona se riega en cuanto un programa la tiene en un paso: añade uno con Nuevo programa.",
     "run_options": "Opciones de este arranque",
     "adjust_empty": "Indica un porcentaje o segundos para ajustar las duraciones.",
     "more_options": "Más opciones",
     "more_options_set": "con más reglas",
-    "sequencing_title": "Orden de las zonas y pausas",
-    "others_title": "Otros programas",
     "confirm_run": "¿Ejecutar {name} ahora? Sus válvulas se abren de inmediato.",
     "run_started": "{name} se ha iniciado.",
     "run_queued": "{name} está en cola: empieza cuando termine el riego en curso.",
     "run_nothing": "{name} no encontró nada que regar.",
     "run_failed": "{name} no pudo iniciarse: {error}",
-    "main_schedules_hint": "Sin ningún horario activado, el disparador de inicio definido más abajo en esta página inicia el programa principal. En cuanto se activa un horario, los horarios sustituyen a ese disparador. Sus ajustes se conservan, y vuelve si desactivas o eliminas los horarios.",
     "name": "Nombre",
     "step": "Paso",
     "step_zones": "Zonas",
@@ -1328,21 +1327,20 @@
     "tours": "Vueltas",
     "tours_help": "Toda la lista de pasos se riega tantas veces, cada vuelta con su parte del agua. A diferencia de las pasadas, que repiten un paso antes de seguir, una vuelta deja que cada zona absorba mientras las demás riegan.",
     "enabled": "Activado",
-    "program_enabled": "Programa activado",
-    "schedule_enabled": "Horario activado",
-    "step_enabled": "Paso activado",
     "add_step": "Añadir un paso",
     "delete_step": "Eliminar el paso",
     "add": "Nuevo programa",
+    "all_zones_now_title": "Regar todas las zonas ahora",
+    "all_zones_now_help": "Solo para el botón Regar todas las zonas: cada zona con válvula, en este orden, con estas pasadas y esta pausa. Los programas conservan sus propios pasos.",
     "delete": "Eliminar el programa",
     "schedule": "Horario",
     "add_schedule": "Añadir un horario",
     "delete_schedule": "Eliminar el horario",
-    "schedule_moment": "A",
+    "schedule_moment": "Cuándo",
     "moment_time": "Una hora del día",
     "moment_sunrise": "Amanecer",
     "moment_sunset": "Atardecer",
-    "moment_azimuth": "Cuando el sol alcanza un azimut",
+    "moment_azimuth": "El sol alcanza un azimut",
     "schedule_time": "Hora",
     "schedule_offset": "Antes (-) o después (+) del sol",
     "schedule_anchor": "Ese momento es cuando el programa",
@@ -1396,7 +1394,6 @@
     "max_litres": "Límite de volumen",
     "max_litres_help": "Una zona de este paso se detiene cuando su contador de agua ha contado este volumen, en litros o galones según como el panel muestre los volúmenes. 0: sin límite. El contador informa cada cierto tiempo, así que el volumen no es exacto. Una zona sin contador lo ignora.",
     "new_program": "Programa",
-    "main_name": "Programa principal",
     "run_now": "Ejecutar ahora",
     "run_seconds": "Duración total",
     "run_seconds_help": "Opcional. Vacío: las duraciones planificadas. Si no, todo el programa dura esto, repartido entre sus pasos en proporción a sus duraciones planificadas.",
@@ -1418,8 +1415,6 @@
     "adjust_apply": "Aplicar",
     "adjust_reset": "Restablecer",
     "confirm_reset_adjustment": "¿Quitar el ajuste de este programa?",
-    "main_settings": "Programa principal: inicio y secuencia",
-    "main_settings_description": "Cómo riega el programa principal: las zonas una tras otra o juntas, la pausa entre dos zonas y cycle and soak.",
     "mode_off": "El controlador completo está desactivado. Actívalo en Ajustes, General.",
     "no_zone": "ninguna zona",
     "mode_calculated_short": "calculada",
@@ -1432,14 +1427,13 @@
     "schedules_none": "sin horario",
     "schedules_one": "1 horario",
     "schedules_many": "{n} horarios",
-    "off": "desactivado",
+    "no_schedule_on": "ningún horario activo",
     "steps_title": "Pasos",
     "schedules_title": "Horarios",
     "passes_help": "Cycle and soak para este paso: su agua repartida en tantas pasadas, y cada zona absorbe entre dos de ellas. 1: de una vez.",
     "schedule_fallback_skip": "Saltar ese día",
     "schedule_fallback_previous": "Usar la hora del último visto",
     "schedule_fallback_at": "Empezar a una hora fija",
-    "main_steps_hint": "El programa principal riega todas las zonas. Para regar solo algunas, o en tu propio orden, añade uno en Otros programas, abajo.",
     "summary_start_sunrise": "empieza al amanecer",
     "summary_start_sunset": "empieza al atardecer",
     "summary_start_azimuth": "empieza cuando el sol está a {deg}°",
@@ -1465,7 +1459,7 @@
     "passes_short": "{n} pasadas",
     "overlap_short": "inicia el siguiente {time} antes",
     "wait_short": "espera {time} antes del siguiente",
-    "soak_shared_help": "Un único tiempo de absorción para todos los pasos en pasadas, en todos los programas y en el programa principal.",
+    "soak_shared_help": "Un único tiempo de absorción para todos los pasos en pasadas, en todos los programas.",
     "min_over_max": "El mínimo supera al máximo: prevalece el máximo, {max}.",
     "confirm_run_replace": "¿Ejecutar {name} ahora? Primero se detiene el riego en curso y luego se abren sus válvulas.",
     "run_replacing": "El riego en curso se está deteniendo; {name} empieza justo después.",
@@ -1630,10 +1624,8 @@
         "running": "en marcha",
         "waiting": "en espera",
         "paused": "en pausa",
-        "suspended": "suspendido",
-        "disabled": "desactivado"
+        "suspended": "suspendido"
       },
-      "main_name": "Programa principal",
       "after": "empieza después de {name}",
       "next_in_line": "empieza a continuación"
     },

@@ -38,19 +38,7 @@
           "waiting": "Čeká",
           "running": "Běží",
           "paused": "Pozastaven",
-          "suspended": "Přerušen",
-          "disabled": "Vypnuto"
-        }
-      },
-      "program_main": {
-        "name": "Hlavní program",
-        "state": {
-          "idle": "Nečinný",
-          "waiting": "Čeká",
-          "running": "Běží",
-          "paused": "Pozastaven",
-          "suspended": "Přerušen",
-          "disabled": "Vypnuto"
+          "suspended": "Přerušen"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Počítat a zalévat"
-      },
-      "program_on": {
-        "name": "Program {name} zapnutý"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Povolit nebo zakázat program",
-      "description": "Zapnout nebo vypnout program plného řadiče, stejně jako přepínač v jeho nastavení.",
+      "name": "Zapnout nebo vypnout všechny rozvrhy programu (zastaralé)",
+      "description": "Zastaralé: zapne nebo vypne všechny rozvrhy programu. Program už nemá vlastní vypínač; pro jeden rozvrh použij set_schedule_enabled. Bude odstraněna ve verzi 2027.11.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -769,6 +754,10 @@
     "deprecated_action": {
       "title": "Akce {action} končí",
       "description": "Automatizace, skript nebo dashboard zavolal **{action}**. Stále funguje, ale od verze {version} bude odstraněna, v zimě, mimo zavlažovací sezónu.\n\nPoužijte místo ní **{replacement}**: dělá totéž, a pro všechny zóny, když není zvolena žádná. Toto oznámení se vrací s každým voláním starého názvu, dokud žádné nezůstane."
+    },
+    "deprecated_program_enabled": {
+      "title": "Akce {action} končí",
+      "description": "Automatizace, skript nebo dashboard zavolal **{action}**. Program už nemá vlastní vypínač, proto akce nyní zapne nebo vypne všechny rozvrhy programu. Bude odstraněna od verze {version}, v zimě, mimo sezónu zavlažování.\n\nPoužij místo ní **{replacement}**, jednou pro každý rozvrh. Toto upozornění se vrací při každém volání starého názvu, dokud žádné nezbude."
     },
     "deprecated_recurring_schedule": {
       "title": "Opakované rozvrhy končí: {action}",

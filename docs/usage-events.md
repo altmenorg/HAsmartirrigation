@@ -13,9 +13,9 @@ After installation, the following events are available:
 
 | Event | Description|
 | --- | --- |
-|`smart_irrigation_start_irrigation_all_zones`|Fired when an [irrigation start trigger](configuration-general.md) is reached, or, with the [full controller](usage-full-controller.md#schedules-of-the-main-program), when a schedule of the main program is due (`trigger_type` is then `program`). Listen to it to start your irrigation. See [automations](usage-automations.md) for examples.|
+|`smart_irrigation_start_irrigation_all_zones`|Fired when an [irrigation start trigger](configuration-general.md) is reached, or, with the [full controller](usage-full-controller.md#no-main-program), when a schedule of the program that was the main one (id `main`) is due (`trigger_type` is then `program`). Listen to it to start your irrigation. See [automations](usage-automations.md) for examples.|
 |`smart_irrigation_leak`|Fired when a zone's meter counts water with every valve closed, with [Leak alert after](configuration-closed-loop.md#water-flowing-with-every-valve-closed-advanced-mode) set. Data: `flow_sensor`, `litres`, `zone_ids`, `zones`.|
-|`smart_irrigation_irrigation_skipped`|Fired when a start trigger is reached and the day is a skip day, so nothing is watered. Data: the trigger's identity, plus `reason` and `checks`, the same detail the Home page shows. The reason is the skip condition that held the day back: `postponed`, `rain_sensor`, `freeze`, `wind`, `precipitation`, `days_between` or `soil_moisture`. With the [full controller](usage-full-controller.md), a trigger reached while the main program is off or suspended fires it with the reason `main_program_disabled` or `main_program_suspended` (and no `checks`). A trigger reached while Smart Irrigation is [stopped](configuration-general.md#stop-everything) fires it with the reason `irrigation_off`, and while it [calculates only](configuration-general.md#calculate-and-water-calculate-only-or-stop-everything) with the reason `calculate_only` (and no `checks`).|
+|`smart_irrigation_irrigation_skipped`|Fired when a start trigger is reached and the day is a skip day, so nothing is watered. Data: the trigger's identity, plus `reason` and `checks`, the same detail the Home page shows. The reason is the skip condition that held the day back: `postponed`, `rain_sensor`, `freeze`, `wind`, `precipitation`, `days_between` or `soil_moisture`. A trigger reached while Smart Irrigation is [stopped](configuration-general.md#stop-everything) fires it with the reason `irrigation_off`, and while it [calculates only](configuration-general.md#calculate-and-water-calculate-only-or-stop-everything) with the reason `calculate_only` (and no `checks`).|
 
 When Smart Irrigation waters, it fires three more, described in [closed-loop irrigation](configuration-closed-loop.md). The [full controller](usage-full-controller.md#seeing-what-is-going-on) adds its own, with the data of each described there: `program_started`, `program_finished`, `valve_on`, `valve_off`, `valve_out_of_sync` and `supply_problem`. These three are also fired:
 
@@ -66,7 +66,7 @@ The event carries the identity of the trigger that fired, so a single automation
 | field | meaning |
 | --- | --- |
 | `trigger_name` | the name you gave the trigger |
-| `trigger_type` | `sunrise`, `sunset`, `solar_azimuth` or `time`. With the full controller, a start or a skip decided for a program's schedule (the main program's included) has `program`, and carries `program_id` and `schedule_id` too |
+| `trigger_type` | `sunrise`, `sunset`, `solar_azimuth` or `time`. With the full controller, a start or a skip decided for a program's schedule has `program`, and carries `program_id` and `schedule_id` too |
 | `at` | for a `time` trigger, the clock time it is set to |
 | `offset_minutes` | the configured offset, in minutes |
 | `account_for_duration` | whether timing is shifted so watering finishes at the target moment |

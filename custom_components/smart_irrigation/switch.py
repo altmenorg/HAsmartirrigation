@@ -1,4 +1,4 @@
-"""Switch platform for Smart Irrigation: the hub's switches and one per program.
+"""Switch platform for Smart Irrigation: the hub's switches.
 
 Exposes the panel's "Weather-based Irrigation Skip" setting as a switch on
 the hub device, so it can be controlled from automations and dashboards, not
@@ -14,6 +14,7 @@ from homeassistant.components.switch import DOMAIN as SWITCH_PLATFORM
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.dispatcher import (
     async_dispatcher_connect,
     async_dispatcher_send,
@@ -23,7 +24,6 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import const
 from .entity import hub_device_info
-from .program_switch import async_setup_program_switches
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,15 +41,33 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_devices: AddEntitiesCallback,
 ) -> None:
-    """Set up the hub's two switches, and one per program."""
+    """Set up the hub's two switches."""
     async_add_devices(
         [
             SmartIrrigationEnabledSwitch(hass),
             SmartIrrigationSkipOnPrecipitationSwitch(hass),
         ]
     )
-    # "Program on" of each program of the full controller, following them.
-    await async_setup_program_switches(hass, config_entry, async_add_devices)
+    _remove_program_switches(hass, config_entry)
+
+
+def _remove_program_switches(hass: HomeAssistant, config_entry: ConfigEntry) -> None:
+    """Take the old "Program on" switches out of the entity registry.
+
+    A program has no on/off of its own any more (its schedules are switched
+    instead), and a switch left in the registry would stay "unavailable" for
+    ever. deprecated: remove in 2027.11
+    """
+    registry = er.async_get(hass)
+    prefix, suffix = f"{const.DOMAIN}_program_", "_enabled"
+    for entry in er.async_entries_for_config_entry(registry, config_entry.entry_id):
+        unique_id = str(entry.unique_id or "")
+        if (
+            entry.domain == SWITCH_PLATFORM
+            and unique_id.startswith(prefix)
+            and unique_id.endswith(suffix)
+        ):
+            registry.async_remove(entry.entity_id)
 
 
 class SmartIrrigationSkipOnPrecipitationSwitch(SwitchEntity):

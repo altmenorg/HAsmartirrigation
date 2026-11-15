@@ -244,7 +244,9 @@ export interface IrrigationHistoryRecord {
   zone_name: string | null;
   duration: number;
   water_used: number;
-  /** What started it: a program's id, "main", "manual", or none (from outside). */
+  /**
+   * What started it: a program's id, "manual", or none (from outside).
+   */
   program_id?: string | null;
 }
 
@@ -408,8 +410,6 @@ export interface IuImportStatus {
   both_on: boolean;
   /** Zones IU runs switched off that a step of an imported sequence waters. */
   zones_off_in_iu?: { zone: string; program: string }[];
-  /** The imported programs' zones the main program waters as well. */
-  main_also_waters?: string[];
   follow_ups: IuFollowUp[];
 }
 

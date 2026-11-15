@@ -5,8 +5,7 @@
  *
  * The steps come from the run's timeline (programs.plan_timeline, the same the
  * runner follows), not from the steps as written: a step with no zone left, a
- * disabled one, the main program's one zone after the other, all read as they
- * will be watered. The wait between two steps is the gap the timeline leaves,
+ * disabled one, all read as they will be watered. The wait between two steps is the gap the timeline leaves,
  * negative when the next starts before the last ends. Kept free of Lit.
  */
 

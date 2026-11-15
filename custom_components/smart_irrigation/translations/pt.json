@@ -38,19 +38,7 @@
           "waiting": "Em espera",
           "running": "Em execução",
           "paused": "Em pausa",
-          "suspended": "Suspenso",
-          "disabled": "Desativado"
-        }
-      },
-      "program_main": {
-        "name": "Programa principal",
-        "state": {
-          "idle": "Inativo",
-          "waiting": "Em espera",
-          "running": "Em execução",
-          "paused": "Em pausa",
-          "suspended": "Suspenso",
-          "disabled": "Desativado"
+          "suspended": "Suspenso"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Calcular e regar"
-      },
-      "program_on": {
-        "name": "Programa {name} ativo"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Ativar ou desativar um programa",
-      "description": "Ligar ou desligar um programa do controlador completo, como o interruptor nas suas definições.",
+      "name": "Ativar ou desativar todos os horários de um programa (obsoleta)",
+      "description": "Obsoleta: ativa ou desativa todos os horários de um programa. Um programa já não tem interruptor próprio; usa set_schedule_enabled para um horário. Removida na 2027.11.",
       "fields": {
         "program_id": {
           "name": "Programa",
@@ -769,6 +754,10 @@
     "deprecated_action": {
       "title": "A ação {action} vai desaparecer",
       "description": "Uma automatização, um script ou um painel chamou **{action}**. Ainda funciona, mas será removida a partir da versão {version}, no inverno, fora da época de rega.\n\nUse **{replacement}** em vez disso: faz o mesmo, e para todas as zonas quando nenhuma zona é escolhida. Este aviso volta a cada chamada do nome antigo, até não restar nenhuma."
+    },
+    "deprecated_program_enabled": {
+      "title": "A ação {action} vai desaparecer",
+      "description": "Uma automação, um script ou um painel chamou **{action}**. Um programa já não tem interruptor próprio, por isso agora ativa ou desativa todos os horários do programa. Será removida a partir da versão {version}, no inverno, fora da época de rega.\n\nUsa **{replacement}** em vez disso, uma vez por horário. Este aviso volta a cada chamada do nome antigo, até não restar nenhuma."
     },
     "deprecated_recurring_schedule": {
       "title": "Os agendamentos recorrentes vão desaparecer: {action}",

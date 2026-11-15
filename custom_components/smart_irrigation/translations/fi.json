@@ -38,19 +38,7 @@
           "waiting": "Odottaa",
           "running": "Käynnissä",
           "paused": "Tauolla",
-          "suspended": "Keskeytetty",
-          "disabled": "Poistettu käytöstä"
-        }
-      },
-      "program_main": {
-        "name": "Pääohjelma",
-        "state": {
-          "idle": "Lepotilassa",
-          "waiting": "Odottaa",
-          "running": "Käynnissä",
-          "paused": "Tauolla",
-          "suspended": "Keskeytetty",
-          "disabled": "Poistettu käytöstä"
+          "suspended": "Keskeytetty"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Laske ja kastele"
-      },
-      "program_on": {
-        "name": "Ohjelma {name} päällä"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Ota ohjelma käyttöön tai poista käytöstä",
-      "description": "Kytke täyden ohjaimen ohjelma päälle tai pois, kuten sen asetusten kytkin tekee.",
+      "name": "Kytke ohjelman kaikki aikataulut päälle tai pois (vanhentunut)",
+      "description": "Vanhentunut: kytkee ohjelman kaikki aikataulut päälle tai pois. Ohjelmalla ei ole enää omaa päälle/pois-kytkintä; käytä yhdelle aikataululle set_schedule_enabled-toimintoa. Poistetaan versiossa 2027.11.",
       "fields": {
         "program_id": {
           "name": "Ohjelma",
@@ -769,6 +754,10 @@
     "deprecated_action": {
       "title": "Toiminto {action} poistuu",
       "description": "Automaatio, skripti tai kojelauta kutsui toimintoa **{action}**. Se toimii yhä, mutta se poistetaan versiosta {version} alkaen, talvella, kastelukauden ulkopuolella.\n\nKäytä sen sijaan toimintoa **{replacement}**: se tekee saman, ja kaikille vyöhykkeille, kun vyöhykettä ei ole valittu. Tämä ilmoitus palaa jokaisella vanhan nimen kutsulla, kunnes niitä ei ole enää jäljellä."
+    },
+    "deprecated_program_enabled": {
+      "title": "Toiminto {action} poistuu",
+      "description": "Automaatio, skripti tai kojelauta kutsui **{action}**. Ohjelmalla ei ole enää omaa päälle/pois-kytkintä, joten se kytkee nyt ohjelman kaikki aikataulut päälle tai pois. Se poistetaan versiosta {version} alkaen, talvella, kastelukauden ulkopuolella.\n\nKäytä sen sijaan **{replacement}**, kerran kutakin aikataulua kohden. Tämä ilmoitus palaa jokaisella vanhan nimen kutsulla, kunnes yhtään ei ole jäljellä."
     },
     "deprecated_recurring_schedule": {
       "title": "Toistuvat aikataulut poistuvat: {action}",

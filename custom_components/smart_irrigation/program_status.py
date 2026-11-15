@@ -31,7 +31,7 @@ from .programs import (
     plan_timeline,
     plan_wall_seconds,
 )
-from .schedules import ANCHOR_END, next_fire, schedule_skip_conditions, upcoming
+from .schedules import next_fire, schedule_skip_conditions, upcoming
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,50 +40,10 @@ STATE_WAITING = "waiting"
 STATE_RUNNING = "running"
 STATE_PAUSED = "paused"
 STATE_SUSPENDED = "suspended"
-STATE_DISABLED = "disabled"
 
 # How far ahead of now a planned start still has a rain forecast to read: the
 # hourly window of the skip check. Beyond it no reason is given.
 PLANNING_FORECAST_HOURS = 48
-
-
-# The main program's settings the YAML editor shows beside it: stored with the
-# general settings, so they are kept apart from the program on a save.
-MAIN_SETTINGS = {
-    "sequencing": const.CONF_ZONE_SEQUENCING,
-    "passes": const.CONF_WATERING_PASSES,
-    "soak_minutes": const.CONF_SOAK_MINUTES,
-    "pause_between_zones": const.CONF_PAUSE_BETWEEN_ZONES,
-}
-
-
-def main_settings(program: dict) -> dict:
-    """The main program's settings written in ``program``, as config keys.
-
-    Out of range or of the wrong kind, a value is left out, and the stored one
-    stands: the save checks them again.
-    """
-    out: dict = {}
-    for key, config_key in MAIN_SETTINGS.items():
-        if key not in program:
-            continue
-        value = program[key]
-        try:
-            if key == "sequencing":
-                if value in (
-                    const.CONF_ZONE_SEQUENCING_SEQUENTIAL,
-                    const.CONF_ZONE_SEQUENCING_PARALLEL,
-                ):
-                    out[config_key] = value
-            elif key == "passes":
-                out[config_key] = max(1, min(6, int(value)))
-            elif key == "soak_minutes":
-                out[config_key] = max(0.0, min(240.0, float(value)))
-            else:
-                out[config_key] = max(0.0, min(3600.0, float(value)))
-        except (TypeError, ValueError):
-            continue
-    return out
 
 
 class ProgramStatusMixin:
@@ -115,16 +75,6 @@ class ProgramStatusMixin:
             raise
         except Exception as e:  # noqa: BLE001 - a display must never stop a run
             _LOGGER.warning("Could not record the start of %s: %s", program_id, e)
-
-    async def _note_main_program_started(self) -> None:
-        """The main program is the cycle the start triggers run."""
-        config = self.store.config
-        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
-            return
-        for program in getattr(config, const.CONF_PROGRAMS, None) or []:
-            if program.get(const.PROGRAM_MAIN):
-                await self._note_program_started(program.get(const.PROGRAM_ID))
-                return
 
     # --- live -------------------------------------------------------------------
 
@@ -294,8 +244,8 @@ class ProgramStatusMixin:
             # and the run is not over (UX walk of 13 Nov., Q6, Q18).
             "soaking": self._soaking(),
             "starting": self._starting(),
-            # The main program's cycle: one zone after the other, or all at
-            # once (counted while it lasts).
+            # The one-off run of every zone ("irrigate all zones now"): one
+            # zone after the other, or all at once (counted while it lasts).
             "cycle": self._sequential_cycle is not None
             or getattr(self, "_parallel_cycles", 0) > 0,
         }
@@ -365,7 +315,7 @@ class ProgramStatusMixin:
         The durations the last calculation stored, or, with the recalculation
         before the start on, the live estimate of each automatic zone: what the
         calculation will find when the run starts. One answer for every program,
-        the main one and the others, and for everything that shows or arms them
+        and for everything that shows or arms them
         (the planning, the next starts, the schedules), so they cannot disagree:
         the steps of the other programs used to read the stored durations
         whatever the setting said (#912).
@@ -404,91 +354,6 @@ class ProgramStatusMixin:
             planned.append(zone)
         return planned
 
-    async def _main_program_plan(self, zones, settings: dict | None = None) -> tuple:
-        """``(plan, total)`` of the classic cycle the main program runs.
-
-        The main program has no steps: it waters every eligible zone for its
-        duration, one after the other or all at once as the sequencing setting
-        says. The plan has the shape of any program's, so the planning shows it
-        the same way. ``zones`` carry the durations of ``zones_as_planned``, and
-        the total is the one the schedules are placed with. ``settings``, as
-        the YAML editor writes them (MAIN_SETTINGS), stand in for the stored
-        ones, for a preview.
-        """
-        config = self.store.config
-        settings = settings or {}
-
-        def setting(key: str, default):
-            if key in settings:
-                return settings[key]
-            return getattr(config, key, default)
-
-        members = []
-        for zone in zones:
-            seconds = zone.get(const.ZONE_DURATION)
-            if (
-                not zone.get(const.ZONE_LINKED_ENTITY)
-                or zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED
-                or not isinstance(seconds, (int, float))
-                or seconds <= 0
-            ):
-                continue
-            members.append(
-                {
-                    "zone_id": int(zone.get(const.ZONE_ID)),
-                    "seconds": float(seconds),
-                    # In the passes of its own settings, the lead time paid
-                    # again on each: what the timeline draws.
-                    "passes": int(setting(const.CONF_WATERING_PASSES, 1) or 1),
-                    "max_litres": 0.0,
-                    "lead": min(
-                        max(0.0, float(zone.get(const.ZONE_LEAD_TIME) or 0.0)),
-                        float(seconds),
-                    ),
-                }
-            )
-        if not members:
-            # Nothing to water still has a start, placed for the length the
-            # scheduler arms it with.
-            return [], float(await self._planned_run_seconds() or 0)
-        sequencing = setting(
-            const.CONF_ZONE_SEQUENCING, const.CONF_DEFAULT_ZONE_SEQUENCING
-        )
-        if sequencing == const.CONF_ZONE_SEQUENCING_PARALLEL:
-            steps = [{"id": "main", "zones": members, "delay": 0.0}]
-        else:
-            # The pause between zones is waited after each, as in the classic run.
-            pause = float(
-                setting(
-                    const.CONF_PAUSE_BETWEEN_ZONES,
-                    const.CONF_DEFAULT_PAUSE_BETWEEN_ZONES,
-                )
-                or 0.0
-            )
-            steps = [
-                {"id": f"zone_{m['zone_id']}", "zones": [m], "delay": max(0.0, pause)}
-                for m in members
-            ]
-        total = await self._planned_run_seconds()
-        return [steps], float(total)
-
-    async def _main_program_total(self, program: dict) -> float:
-        """The length the main program's "done by" starts are placed for.
-
-        The figure the scheduler arms them with (``_planned_run_seconds``), so
-        what is shown is what is armed, whatever the zones have stored: after a
-        morning watering they have nothing, while the run is planned on the
-        estimate. Only a schedule anchored at its end needs it, and the
-        estimate is slow, so it is not worked out for the others.
-        """
-        if not any(
-            schedule.get(const.SCHEDULE_ENABLED) is not False
-            and schedule.get(const.SCHEDULE_ANCHOR) == ANCHOR_END
-            for schedule in program.get(const.PROGRAM_SCHEDULES) or []
-        ):
-            return 0.0
-        return float(await self._planned_run_seconds() or 0)
-
     def _schedules_next_start(self, program: dict, total, last_runs, now, tz):
         """The soonest start of the program's enabled schedules, or None."""
         program_id = program.get(const.PROGRAM_ID)
@@ -515,28 +380,21 @@ class ProgramStatusMixin:
                     next_start = fire
         return next_start
 
-    async def async_main_program_next_start(self):
-        """When the main program's own schedules start it next, or None.
+    async def async_next_program_start(self):
+        """When a program's schedules start one next, the soonest of all, or None.
 
-        None when they do not start it (the start trigger does), when it is
-        disabled, or when no occurrence is to come.
+        None with the full controller off (the start trigger starts the
+        watering then), or when no schedule has an occurrence to come.
         """
-        if not self.main_program_uses_schedules():
+        if not self.schedules_start_watering():
             return None
-        config = self.store.config
-        for program in getattr(config, const.CONF_PROGRAMS, None) or []:
-            if not program.get(const.PROGRAM_MAIN):
-                continue
-            if program.get(const.PROGRAM_ENABLED) is False:
-                return None
-            return self._schedules_next_start(
-                program,
-                await self._main_program_total(program),
-                dict(getattr(config, const.CONF_PROGRAM_LAST_RUNS, None) or {}),
-                dt_util.utcnow(),
-                dt_util.get_default_time_zone(),
-            )
-        return None
+        starts = [
+            dt_util.parse_datetime(p["next_start"])
+            for p in await self.async_program_overview()
+            if p.get("next_start")
+        ]
+        starts = [s for s in starts if s is not None]
+        return min(starts) if starts else None
 
     async def async_program_overview(self) -> list:
         """Each program's state and next start."""
@@ -558,11 +416,8 @@ class ProgramStatusMixin:
         overview = []
         for program in programs:
             program_id = program.get(const.PROGRAM_ID)
-            main = bool(program.get(const.PROGRAM_MAIN))
             suspended = self.suspended_until(const.SUSPEND_PROGRAM, program_id)
-            if program.get(const.PROGRAM_ENABLED) is False:
-                state = STATE_DISABLED
-            elif suspended is not None:
+            if suspended is not None:
                 state = STATE_SUSPENDED
             elif program_id in running:
                 state = (
@@ -570,24 +425,14 @@ class ProgramStatusMixin:
                     if live["paused"] and running[program_id]["state"] == STATE_RUNNING
                     else running[program_id]["state"]
                 )
-            elif main and live["cycle"]:
-                state = STATE_PAUSED if live["paused"] else STATE_RUNNING
             else:
                 state = STATE_IDLE
             next_start = None
-            # The main program has a next start only when schedules of its own
-            # start it; otherwise it is the start trigger's. It does not depend
-            # on there being anything to water: a run with nothing to water
-            # still starts (and finds nothing), the planning lists nothing.
-            if (
-                state != STATE_DISABLED
-                and not watering_off(self.store)
-                and (not main or self.main_program_uses_schedules())
-            ):
-                if main:
-                    total = await self._main_program_total(program)
-                else:
-                    _plan, total = self._program_totals(program, zones)
+            # It does not depend on there being anything to water: a run with
+            # nothing to water still starts (and finds nothing), the planning
+            # lists nothing.
+            if not watering_off(self.store):
+                _plan, total = self._program_totals(program, zones)
                 next_start = self._schedules_next_start(
                     program, total, last_runs, now, tz
                 )
@@ -597,7 +442,7 @@ class ProgramStatusMixin:
                 if k.startswith(f"{program_id}:")
             ]
             stamps = [s for s in stamps if s is not None]
-            # A manual or main run leaves no mark among the schedules'.
+            # A manual run leaves no mark among the schedules'.
             started = dt_util.parse_datetime(started_at.get(program_id) or "")
             if started is not None:
                 stamps.append(started)
@@ -605,7 +450,6 @@ class ProgramStatusMixin:
                 {
                     "program_id": program_id,
                     "name": program.get(const.PROGRAM_NAME) or program_id,
-                    "main": main,
                     "state": state,
                     "next_start": next_start.isoformat() if next_start else None,
                     "last_run": max(stamps).isoformat() if stamps else None,
@@ -615,8 +459,7 @@ class ProgramStatusMixin:
                     "adjustment": self.program_adjustment(program_id),
                     # Whether there is anything to start: the card offered
                     # "start" for a program with no zone in its steps.
-                    "can_run": main
-                    or any(
+                    "can_run": any(
                         step.get(const.STEP_ENABLED, True) is not False
                         and step.get(const.STEP_ZONES)
                         for step in program.get(const.PROGRAM_STEPS) or []
@@ -627,20 +470,8 @@ class ProgramStatusMixin:
 
     # --- planning ---------------------------------------------------------------------
 
-    async def async_planning(
-        self, days: int = 3, trigger_start=None, trigger_starts=None
-    ) -> list:
-        """Every start of every schedule over the next days, soonest first.
-
-        ``trigger_start`` is when the start trigger runs the main program next,
-        as the Info page works it out. A main program without schedules of its
-        own is started by that trigger alone, and the planning used to leave it
-        out: "no program is planned" above a garden watered every morning.
-        ``trigger_starts`` are its starts on every day of the window, the next
-        one first: it was listed once under a heading of three days (Q10).
-        """
-        if trigger_starts is None:
-            trigger_starts = [trigger_start] if trigger_start is not None else []
+    async def async_planning(self, days: int = 3) -> list:
+        """Every start of every schedule over the next days, soonest first."""
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
             return []
@@ -657,39 +488,35 @@ class ProgramStatusMixin:
         forecasts: dict = {}
         soak_minutes = float(getattr(config, const.CONF_SOAK_MINUTES, 0) or 0)
         sheltered = await self._planning_sheltered_zones()
-        # The main program leaves a zone with no valve out of its run, and the
-        # planning said "no zone of this run is short enough of water" over a
-        # zone 10 mm dry (#969). It names them instead.
-        without_valve = [
-            {"zone_id": entry["id"], "zone": entry["name"]}
+        # A zone of a program's steps with no valve is left out of its run,
+        # and the planning said "no zone of this run is short enough of water"
+        # over a zone 10 mm dry (#969). It names them instead.
+        without_valve = {
+            entry["id"]: {"zone_id": entry["id"], "zone": entry["name"]}
             for entry in zones_without_valve(zones)
-        ]
+        }
         for program in getattr(config, const.CONF_PROGRAMS, None) or []:
-            main = bool(program.get(const.PROGRAM_MAIN))
-            # The main program waters in the passes of its own settings.
-            main_passes = (
-                int(getattr(config, const.CONF_WATERING_PASSES, 1) or 1) if main else 1
-            )
-            if program.get(const.PROGRAM_ENABLED) is False:
-                continue
-            by_trigger = main and not self.main_program_uses_schedules()
-            trigger_in_window = [t for t in trigger_starts if now <= t <= until]
-            if by_trigger and not trigger_in_window:
-                continue
             program_id = program.get(const.PROGRAM_ID)
-            if main:
-                plan, total = await self._main_program_plan(zones)
-            else:
-                plan, total = self._program_totals(program, zones)
+            plan, total = self._program_totals(program, zones)
             # A start with nothing to water is still a start: the schedule fires
             # and finds nothing. Leaving it out said "no program is planned"
             # under a schedule that was, and hid the reason (#912). It is listed
             # with nothing in it, where the scheduler places it.
             nothing = not plan
             placed_at_moment = nothing and total <= 0
-            no_valve = without_valve if main else []
+            named = [
+                int(zone_id)
+                for step in program.get(const.PROGRAM_STEPS) or []
+                if step.get(const.STEP_ENABLED) is not False
+                for zone_id in step.get(const.STEP_ZONES) or []
+            ]
+            no_valve = [
+                without_valve[zone_id]
+                for zone_id in dict.fromkeys(named)
+                if zone_id in without_valve
+            ]
 
-            def steps_of(plan, main_passes=main_passes):
+            def steps_of(plan):
                 return [
                     {
                         "zones": [
@@ -703,7 +530,7 @@ class ProgramStatusMixin:
                                 # In passes with a soak between, and up to a
                                 # volume: the planning said "Hecken 2 min" over
                                 # an expected 19 min 45 s (UX walk of 13 Nov.).
-                                "passes": max(1, int(m.get("passes") or main_passes)),
+                                "passes": max(1, int(m.get("passes") or 1)),
                                 "max_litres": float(m.get("max_litres") or 0.0) or None,
                             }
                             for m in step["zones"]
@@ -720,42 +547,7 @@ class ProgramStatusMixin:
             # A run before the end of a suspension does not take place: the
             # scheduler lets it pass. The planning listed it as any other.
             suspended = self.suspended_until(const.SUSPEND_PROGRAM, program_id)
-            adjustment_now = None if main else self.program_adjustment(program_id, now)
-            if by_trigger:
-                planned.extend(
-                    {
-                        "program_id": program_id,
-                        "program": program.get(const.PROGRAM_NAME) or program_id,
-                        "schedule_id": None,
-                        "start": moment.isoformat(),
-                        "end": (moment + timedelta(seconds=total)).isoformat(),
-                        "target": moment.isoformat(),
-                        "anchor": None,
-                        "weather": True,
-                        "tours": len(plan),
-                        "soak_seconds": int(soak_minutes * 60),
-                        "expected_seconds": int(total),
-                        "steps": steps,
-                        "timeline": timeline_of(plan),
-                        "nothing_to_water": nothing,
-                        "zones_without_valve": no_valve,
-                        # The Info page says whether the trigger's run will be
-                        # skipped, with every condition: not guessed here.
-                        "skipped_reason": (
-                            "suspended"
-                            if suspended is not None and moment < suspended
-                            else None
-                        ),
-                        "suspended_until": (
-                            suspended.isoformat() if suspended is not None else None
-                        ),
-                        "forecast": None,
-                        "forecast_known": False,
-                        "sheltered_zone_ids": [],
-                    }
-                    for moment in trigger_in_window
-                )
-                continue
+            adjustment_now = self.program_adjustment(program_id, now)
             for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
                 if schedule.get(const.SCHEDULE_ENABLED) is False:
                     continue
@@ -778,9 +570,7 @@ class ProgramStatusMixin:
                     # The adjustment of the run's start, not of now: one that
                     # ends before the run no longer lengthens or shortens it.
                     run_plan, run_total = plan, total
-                    if not main and (
-                        self.program_adjustment(program_id, start) != adjustment_now
-                    ):
+                    if self.program_adjustment(program_id, start) != adjustment_now:
                         run_plan, run_total = self._program_totals(
                             program, zones, at=start
                         )
@@ -826,9 +616,8 @@ class ProgramStatusMixin:
                             **prediction,
                         }
                     )
-        # By the moment, not the text: the main program's start is written in
-        # local time, the schedules' in UTC, and 05:54+01:00 came after
-        # 05:00+00:00 (06:00 here).
+        # By the moment, not the text, whatever the time zone each is written
+        # in: 05:54+01:00 comes after 05:00+00:00 (06:00 here).
         planned.sort(key=lambda item: _moment(item["start"]))
         return planned
 
@@ -867,15 +656,10 @@ class ProgramStatusMixin:
         if not isinstance(program, dict):
             program = {}
 
-        main = program.get(const.PROGRAM_MAIN) is True or (
-            program.get(const.PROGRAM_ID) == "main"
-        )
         zones = await self.zones_as_planned(await self.store.async_get_zones())
         program, unknown_names = _zones_by_name(program, zones)
         cleaned = normalize_programs([program])
-        normalized = next(
-            (p for p in cleaned if bool(p.get(const.PROGRAM_MAIN)) == main), None
-        ) or (cleaned[0] if cleaned else {})
+        normalized = cleaned[0] if cleaned else {}
         by_id = {int(z[const.ZONE_ID]): z for z in zones}
         names = {zone_id: z.get(const.ZONE_NAME) for zone_id, z in by_id.items()}
         unknown, not_watered = [], []
@@ -888,21 +672,10 @@ class ProgramStatusMixin:
                     zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED
                 ):
                     not_watered.append(int(zone_id))
-        settings: dict = {}
-        if main:
-            settings = main_settings(program)
-            plan, _total = await self._main_program_plan(zones, settings)
-        else:
-            plan, _total = self._program_totals(normalized, zones)
-        soak_minutes = settings.get(
-            const.CONF_SOAK_MINUTES,
-            getattr(self.store.config, const.CONF_SOAK_MINUTES, 0),
-        )
-        soak = float(soak_minutes or 0) * 60.0
+        plan, _total = self._program_totals(normalized, zones)
+        soak = float(getattr(self.store.config, const.CONF_SOAK_MINUTES, 0) or 0) * 60.0
         return {
             "program": normalized,
-            # The main program's own settings as understood, saved beside it.
-            "settings": settings,
             "timeline": self._timeline(plan, soak, names),
             "unknown_zones": sorted(set(unknown)),
             "unknown_zone_names": unknown_names,

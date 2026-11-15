@@ -38,19 +38,7 @@
           "waiting": "Čaká",
           "running": "Beží",
           "paused": "Pozastavený",
-          "suspended": "Odložený",
-          "disabled": "Vypnutý"
-        }
-      },
-      "program_main": {
-        "name": "Hlavný program",
-        "state": {
-          "idle": "Nečinný",
-          "waiting": "Čaká",
-          "running": "Beží",
-          "paused": "Pozastavený",
-          "suspended": "Odložený",
-          "disabled": "Vypnutý"
+          "suspended": "Odložený"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Počítať a zalievať"
-      },
-      "program_on": {
-        "name": "Program {name} zapnutý"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Povoliť alebo zakázať program",
-      "description": "Zapnite alebo vypnite program plného ovládača, rovnako ako prepínač v jeho nastaveniach.",
+      "name": "Zapnúť alebo vypnúť všetky rozvrhy programu (zastarané)",
+      "description": "Zastarané: zapne alebo vypne všetky rozvrhy programu. Program už nemá vlastný vypínač; pre jeden rozvrh použi set_schedule_enabled. Bude odstránená vo verzii 2027.11.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -769,6 +754,10 @@
     "deprecated_action": {
       "title": "Akcia {action} končí",
       "description": "Automatizácia, skript alebo dashboard zavolal **{action}**. Stále funguje, ale od verzie {version} bude odstránená, v zime, mimo sezóny zavlažovania.\n\nPoužite namiesto nej **{replacement}**: robí to isté, a pre všetky zóny, keď nie je zvolená žiadna. Toto upozornenie sa vracia s každým volaním starého názvu, kým žiadne nezostane."
+    },
+    "deprecated_program_enabled": {
+      "title": "Akcia {action} končí",
+      "description": "Automatizácia, skript alebo dashboard zavolal **{action}**. Program už nemá vlastný vypínač, preto akcia teraz zapne alebo vypne všetky rozvrhy programu. Bude odstránená od verzie {version}, v zime, mimo sezóny zavlažovania.\n\nPouži namiesto nej **{replacement}**, raz pre každý rozvrh. Toto upozornenie sa vracia pri každom volaní starého názvu, kým žiadne nezostane."
     },
     "deprecated_recurring_schedule": {
       "title": "Opakované rozvrhy končia: {action}",

@@ -301,15 +301,17 @@ describe("nextStartState", () => {
     ).toBe("nothing");
   });
 
-  it("goes by the main program's schedules when they start the run", () => {
-    expect(
-      nextStartState({
-        ...owed,
-        start_source: "main_schedules",
-        start_trigger_armed: false,
-        active_start_trigger: "none",
-      }),
-    ).toBe("start");
+  it("goes by the programs' schedules when they start the run", () => {
+    for (const source of ["programs", "main_schedules"]) {
+      expect(
+        nextStartState({
+          ...owed,
+          start_source: source,
+          start_trigger_armed: false,
+          active_start_trigger: "none",
+        }),
+      ).toBe("start");
+    }
   });
 
   it("says a run held back is held back", () => {
@@ -339,28 +341,15 @@ describe("zoneWithoutValve", () => {
 });
 
 describe("programLabel", () => {
-  it("shows the main program in the user's language", () => {
-    expect(
-      programLabel(
-        { program_id: "main", name: "Main program" },
-        "Hauptprogramm",
-      ),
-    ).toBe("Hauptprogramm");
-    expect(programLabel({ program_id: "main" }, "Hauptprogramm")).toBe(
-      "Hauptprogramm",
+  it("shows the stored name, whatever the id", () => {
+    expect(programLabel({ program_id: "main", name: "Garten" })).toBe("Garten");
+    expect(programLabel({ program_id: "evening", name: "Main program" })).toBe(
+      "Main program",
     );
   });
 
-  it("keeps a name of the user's own", () => {
-    expect(
-      programLabel({ program_id: "main", name: "Garten" }, "Hauptprogramm"),
-    ).toBe("Garten");
-    expect(
-      programLabel(
-        { program_id: "evening", name: "Main program" },
-        "Hauptprogramm",
-      ),
-    ).toBe("Main program");
+  it("falls back to the id without a name", () => {
+    expect(programLabel({ program_id: "main" })).toBe("main");
   });
 });
 

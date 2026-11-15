@@ -151,10 +151,10 @@ async def _simulate(iu, homeassistant, start, end) -> list:
     soak = const.CONF_DEFAULT_SOAK_MINUTES * 60.0
     fires = []
     for program in programs:
-        if not program.get(const.PROGRAM_ENABLED):
-            continue
         total = plan_wall_seconds(plan_program(program, zones), soak)
         for schedule in program[const.PROGRAM_SCHEDULES]:
+            if schedule.get(const.SCHEDULE_ENABLED) is False:
+                continue
             for occurrence in upcoming(
                 schedule, since, total, None, sun, tz, window_end
             ):

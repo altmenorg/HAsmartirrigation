@@ -34,7 +34,7 @@ export class SmartIrrigationWeekView extends LitElement {
   @property({ attribute: false }) planning: WeekRun[] = [];
   @property() lang = "en";
   @property({ type: Number }) days = 7;
-  // Names as the panel shows them (the main program in the user's language).
+  // Names as the panel shows them.
   @property({ attribute: false }) programLabel: (
     id: string,
     name: string,

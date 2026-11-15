@@ -213,12 +213,13 @@ def registered(hass):
     return coordinator
 
 
-async def test_24_actions_once_the_old_names_are_gone(hass, registered):
+async def test_23_actions_once_the_old_names_are_gone(hass, registered):
     services = set(hass.services.async_services()[const.DOMAIN])
     old = set(deprecated_actions.DEPRECATED_ACTIONS)
     assert old <= services
     assert len(services) == 38
-    assert len(services - old) == 24
+    # set_program_enabled went too: a program has no on/off of its own.
+    assert len(services - old) == 23
     assert {
         "calculate",
         "update_weather",

@@ -161,8 +161,8 @@ class RunControl:
         self.watered = 0.0
         self.soak_until: datetime | None = None
         self.max_litres: float | None = None
-        # What started the run, for the history: a program's id, "main" for the
-        # main program's cycle, "manual" for a zone watered by hand.
+        # What started the run, for the history: a program's id, or "manual"
+        # for a zone watered by hand or the one-off run of every zone.
         self.source: str | None = None
 
 
@@ -1476,10 +1476,10 @@ class ValveRunnerMixin(
         )
 
     def _announce_cycle(self) -> None:
-        """Tell the program sensors that a cycle began or ended.
+        """Tell the panel and the sensors that a cycle began or ended.
 
-        The main program's state follows the cycle, and its sensor reads the
-        state only when told: it stayed "idle" through a whole run.
+        They read the live state only when told: it stayed "idle" through a
+        whole run.
         """
         notify = getattr(self, "_notify_programs", None)
         if notify is not None:
@@ -1547,9 +1547,6 @@ class ValveRunnerMixin(
         if not eligible:
             _LOGGER.debug("Direct valve control: no eligible zones to run")
             return
-        note_main = getattr(self, "_note_main_program_started", None)
-        if note_main is not None:
-            await note_main()
         sequencing = getattr(
             cfg, const.CONF_ZONE_SEQUENCING, const.CONF_DEFAULT_ZONE_SEQUENCING
         )
@@ -1562,8 +1559,8 @@ class ValveRunnerMixin(
                 "Direct valve control: running %d zone(s) (parallel)", len(eligible)
             )
             self._announce_start(sequencing, eligible)
-            # Counted, so the main program reads as running while it lasts:
-            # without a cycle record it said idle the whole time.
+            # Counted, so the live state says a run of every zone is under way
+            # while it lasts: without a cycle record it said idle the whole time.
             self._parallel_cycles = getattr(self, "_parallel_cycles", 0) + 1
             self._announce_cycle()
             try:
@@ -1773,13 +1770,9 @@ class ValveRunnerMixin(
             return None
         claimed.add(zone_id)
         control = self._run_controls()[zone_id] = RunControl(*self._pause_events())
-        # A program says which it is; otherwise the main program's cycle, or a
-        # zone watered by hand.
-        main_cycle = (
-            getattr(self, "_sequential_cycle", None) is not None
-            or getattr(self, "_parallel_cycles", 0) > 0
-        )
-        control.source = source or ("main" if main_cycle else "manual")
+        # A program says which it is; otherwise a zone watered by hand, or the
+        # one-off run of every zone.
+        control.source = source or "manual"
         try:
             return await self._run_claimed_valve(
                 zone, entity_id, duration, passes, max_litres, owed

@@ -89,15 +89,16 @@ from .master_switch import irrigation_off, watering_off
 from .observed_watering import ObservedWateringMixin
 from .one_choice import (
     ISSUE_MOVED,
+    first_program,
     migration_changes,
     moved_the_valves,
-    seed_main_schedules,
 )
 from .panel import async_register_panel, remove_panel
 from .program_adjust import ADJUST_PROGRAM_SCHEMA
+from .program_migration import conversion_changes
 from .program_notify import async_setup_program_notify
 from .program_scheduler import ProgramSchedulerMixin
-from .programs import ensure_main_program, normalize_programs
+from .programs import LastProgramError, normalize_programs
 from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
 from .service_handlers import ServiceHandlersMixin
 from .set_aside import SetAsideMixin
@@ -439,6 +440,26 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 )
     except Exception as err:  # noqa: BLE001 - never hold the setup up
         _LOGGER.warning("Could not move to the single setting yet: %s", err)
+
+    # The main program converted once into an ordinary program with steps that
+    # water as its cycle did, and "Program on" into the program's schedules
+    # (program_migration.py), after the move above, which may give the main
+    # program its schedule. deprecated: remove in 2027.11
+    try:
+        changes = conversion_changes(
+            coordinator.store.config,
+            await coordinator.store.async_get_zones(),
+            hass.config.language,
+        )
+        if changes:
+            await coordinator.store.async_update_config(changes)
+            if const.CONF_PROGRAMS in changes:
+                _LOGGER.info(
+                    "Programs converted: the main program is an ordinary program "
+                    "with steps now, and no program has a switch of its own"
+                )
+    except Exception as err:  # noqa: BLE001 - never hold the setup up
+        _LOGGER.warning("Could not convert the main program yet: %s", err)
 
     # Closed-loop bucket: start watching linked valves if the feature is enabled.
     await coordinator.async_setup_observed_watering()
@@ -895,12 +916,12 @@ class SmartIrrigationCoordinator(
 
         _LOGGER.info("Unit system change processing complete")
 
-    def _full_controller_changes(self, data: dict) -> dict:
+    async def _full_controller_changes(self, data: dict) -> dict:
         """What switching the full controller on carries with it.
 
         It drives the valves itself, so direct valve control goes on, and it
-        needs its main program, made from the settings that run the watering
-        today. Switching it off puts direct valve control back as it was before
+        needs a program when there is none, made from the settings that run the
+        watering today (one_choice.first_program). Switching it off puts direct valve control back as it was before
         (the programs stay stored for the day it is switched on again), and what
         ran before runs again.
         """
@@ -930,11 +951,16 @@ class SmartIrrigationCoordinator(
             data[const.CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER] = current is True
         data[const.CONF_DIRECT_VALVE_CONTROL_ENABLED] = True
         stored = getattr(self.store.config, const.CONF_PROGRAMS, None)
-        # The main program is started by its schedules: one without any gets
-        # the moment the start trigger had (one_choice.py).
-        data[const.CONF_PROGRAMS] = seed_main_schedules(
-            config, ensure_main_program(data.get(const.CONF_PROGRAMS, stored))
-        )
+        programs = data.get(const.CONF_PROGRAMS, stored)
+        if not programs:
+            # Nothing would water: a first program with the zones that have a
+            # valve, started at the moment the start trigger had.
+            data[const.CONF_PROGRAMS] = first_program(
+                config,
+                await self.store.async_get_zones(),
+                programs,
+                getattr(self.hass.config, "language", None),
+            )
         return data
 
     def _programs_changes(self, data: dict) -> dict:
@@ -962,6 +988,9 @@ class SmartIrrigationCoordinator(
             program_id, _, schedule_id = str(key).partition(":")
             reserved.setdefault(program_id, set()).add(schedule_id)
         programs = normalize_programs(data[const.CONF_PROGRAMS], reserved)
+        if not programs and any(isinstance(p, dict) for p in old_programs or []):
+            # The last program stays (programs.LastProgramError).
+            raise LastProgramError
         data = {**data, const.CONF_PROGRAMS: programs}
         alive = {
             f"{p.get(const.PROGRAM_ID)}:{s.get(const.SCHEDULE_ID)}"
@@ -1033,7 +1062,7 @@ class SmartIrrigationCoordinator(
                         threshold_value,
                     )
 
-        data = self._full_controller_changes(data)
+        data = await self._full_controller_changes(data)
         if const.CONF_PROGRAMS in data:
             data = self._programs_changes(data)
         if const.CONF_SUPPLIES in data:
@@ -1049,7 +1078,7 @@ class SmartIrrigationCoordinator(
         was_watering = not watering_off(self.store)
         # Who starts the main program's cycle (its own schedules, or the start
         # trigger) before and after this change.
-        was_scheduled = self.main_program_uses_schedules()
+        was_scheduled = self.schedules_start_watering()
         # handle auto calc changes
         await self.set_up_auto_calc_time(data)
         # handle auto update changes, includings updating OWMClient cache settings
@@ -1061,7 +1090,7 @@ class SmartIrrigationCoordinator(
             # counted, or the first calculation would take weeks at once.
             await self._start_windows_now()
         await self.store.async_update_config(data)
-        start_source_changed = self.main_program_uses_schedules() != was_scheduled
+        start_source_changed = self.schedules_start_watering() != was_scheduled
         if was_full and data.get(const.CONF_FULL_CONTROLLER) is False:
             # Switched off: the extra valves of the zones not running are
             # closed once, the alignment having nothing to do while it is off.
@@ -2952,7 +2981,13 @@ def register_services(hass: HomeAssistant):
     hass.services.async_register(
         const.DOMAIN,
         const.SERVICE_SET_PROGRAM_ENABLED,
-        coordinator.handle_set_program_enabled,
+        # Switches every schedule of the program now that a program has no
+        # on/off of its own; set_schedule_enabled replaces it.
+        deprecated(
+            hass,
+            const.SERVICE_SET_PROGRAM_ENABLED,
+            coordinator.handle_set_program_enabled,
+        ),
         schema=SET_PROGRAM_ENABLED_SCHEMA,
     )
     hass.services.async_register(

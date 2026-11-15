@@ -9,13 +9,11 @@
 """
 
 import json
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from custom_components.smart_irrigation import const, websockets
 from custom_components.smart_irrigation.planning_sequence import sequence_planning
 from tests.test_program_status import (
     _paris_clock,  # noqa: F401
@@ -122,76 +120,6 @@ def test_the_order_is_by_moment_whatever_the_time_zone():
     ]
 
 
-_MAIN = {"id": "main", "name": "Main program", "main": True, "enabled": True}
-
-
-def test_a_clock_trigger_comes_back_at_the_same_time_of_day():
-    start = datetime(2026, 11, 14, 5, 0, tzinfo=UTC)
-
-    following = websockets._following_trigger_start(
-        None, None, {}, {"trigger_base": const.TRIGGER_TYPE_TIME}, start
-    )
-
-    assert following == start + timedelta(days=1)
-
-
-def test_without_sun_data_the_next_days_keep_the_time_of_day():
-    hass = MagicMock()
-    hass.states.get.return_value = None
-    start = datetime(2026, 11, 14, 5, 0, tzinfo=UTC)
-
-    following = websockets._following_trigger_start(
-        hass, None, {}, {"trigger_base": "sunrise"}, start
-    )
-
-    assert following == start + timedelta(days=1)
-
-
-def test_a_sunrise_start_keeps_its_distance_to_sunrise():
-    sunrises = [
-        datetime(2026, 11, 14, 6, 30, tzinfo=UTC),
-        datetime(2026, 11, 15, 6, 32, tzinfo=UTC),
-    ]
-
-    def next_sunrise(hass, event, after):
-        assert event == "sunrise"
-        return next(s for s in sunrises if s > after)
-
-    start = sunrises[0] - timedelta(minutes=10)  # done by sunrise, 10 min run
-    with patch.object(websockets, "get_astral_event_next", side_effect=next_sunrise):
-        following = websockets._following_trigger_start(
-            MagicMock(), None, {}, {"trigger_base": "sunrise"}, start
-        )
-
-    assert following == sunrises[1] - timedelta(minutes=10)
-
-
-def test_an_unknown_trigger_is_not_guessed():
-    start = datetime(2026, 11, 14, 5, 0, tzinfo=UTC)
-    assert (
-        websockets._following_trigger_start(
-            None, None, {}, {"trigger_base": "something else"}, start
-        )
-        is None
-    )
-
-
-async def test_the_trigger_starts_run_over_the_days_asked_for(freezer):
-    freezer.move_to("2026-11-13T20:00:00+00:00")
-    first = datetime(2026, 11, 14, 5, 54, tzinfo=UTC)
-    coordinator = AsyncMock()
-    coordinator.store.async_get_config = AsyncMock(return_value={})
-
-    with patch.object(
-        websockets,
-        "_trigger_start_and_info",
-        AsyncMock(return_value=(first, {"trigger_base": const.TRIGGER_TYPE_TIME})),
-    ):
-        starts = await websockets._trigger_starts(None, coordinator, 3)
-
-    assert starts == [first + timedelta(days=n) for n in range(3)]
-
-
 TEXTS = {
     ("planning", "waits_for"): {"{program}", "{start}", "{end}"},
     ("planning", "watered_twice"): {"{zones}", "{program}"},
@@ -204,7 +132,7 @@ TEXTS = {
     ("panels", "info", "cards", "next-run", "run-skipped"): set(),
     ("panels", "info", "cards", "next-run", "run-suspended"): {"{when}"},
     ("panels", "info", "cards", "next-run", "run-twice"): {"{zones}"},
-    ("panels", "info", "cards", "decision", "title-main"): set(),
+    ("panels", "info", "cards", "decision", "title-next"): set(),
 }
 
 

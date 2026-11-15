@@ -6,10 +6,7 @@ import pytest
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from custom_components.smart_irrigation import SmartIrrigationCoordinator, const
-from custom_components.smart_irrigation.programs import (
-    MAIN_PROGRAM_ID,
-    default_main_program,
-)
+from custom_components.smart_irrigation.programs import MAIN_PROGRAM_ID
 
 
 def _coordinator(programs=None):
@@ -21,6 +18,15 @@ def _coordinator(programs=None):
     coordinator.store.config.programs = programs or []
     coordinator.store.get_config = MagicMock(return_value={})
     coordinator.store.async_update_config = AsyncMock()
+    coordinator.store.async_get_zones = AsyncMock(
+        return_value=[
+            {const.ZONE_ID: 0, const.ZONE_LINKED_ENTITY: "switch.a"},
+            # No valve: not watered by Smart Irrigation, not in a program.
+            {const.ZONE_ID: 1},
+            {const.ZONE_ID: 2, const.ZONE_LINKED_ENTITY: "switch.c"},
+        ]
+    )
+    coordinator.hass.config.language = "fr"
     coordinator.use_weather_service = False
     coordinator._track_auto_calc_time_unsub = None
     coordinator._track_auto_update_time_unsub = None
@@ -49,17 +55,27 @@ async def _update(coordinator, changes):
 
 
 @pytest.mark.asyncio
-async def test_switching_it_on_drives_the_valves_and_makes_the_main_program():
-    written = await _update(_coordinator(), {const.CONF_FULL_CONTROLLER: True})
+async def test_switching_it_on_drives_the_valves_and_makes_a_first_program():
+    coordinator = _coordinator()
+    coordinator.store.config.zone_sequencing = const.CONF_ZONE_SEQUENCING_SEQUENTIAL
+    coordinator.store.config.watering_passes = 2
+    coordinator.store.config.pause_between_zones = 30
+
+    written = await _update(coordinator, {const.CONF_FULL_CONTROLLER: True})
 
     assert written[const.CONF_DIRECT_VALVE_CONTROL_ENABLED] is True
-    [main] = written[const.CONF_PROGRAMS]
-    assert {k: v for k, v in main.items() if k != "schedules"} == (
-        default_main_program()
-    )
+    [first] = written[const.CONF_PROGRAMS]
+    # An ordinary program, named in the language of Home Assistant, that waters
+    # the zones with a valve as the general settings order them: nothing is
+    # left watering nothing.
+    assert first[const.PROGRAM_NAME] == "Arrosage"
+    assert "main" not in first and "enabled" not in first
+    assert [s["zones"] for s in first["steps"]] == [[0], [2]]
+    assert [s["delay"] for s in first["steps"]] == [30.0, None]
+    assert [s["passes"] for s in first["steps"]] == [2, 2]
     # Started by its schedules: it gets the start trigger's moment, done by
     # sunrise by default (one_choice.py).
-    [schedule] = main["schedules"]
+    [schedule] = first["schedules"]
     assert (schedule["type"], schedule["event"], schedule["anchor"]) == (
         "sun",
         "sunrise",
@@ -76,10 +92,8 @@ async def test_switching_it_on_keeps_the_programs_already_stored():
 
     written = await _update(_coordinator(stored), {const.CONF_FULL_CONTROLLER: True})
 
-    # Cleaned on the way in, but nobody is dropped or renamed.
-    programs = written[const.CONF_PROGRAMS]
-    assert [p[const.PROGRAM_ID] for p in programs] == [MAIN_PROGRAM_ID, "evening"]
-    assert programs[0][const.PROGRAM_NAME] == "Mine"
+    # Left as they are stored: no first program is added beside them.
+    assert const.CONF_PROGRAMS not in written
 
 
 @pytest.mark.asyncio

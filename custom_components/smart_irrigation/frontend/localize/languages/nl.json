@@ -155,6 +155,8 @@
         "review": {
           "question": "Klaar om aan te maken",
           "zone": "Zone",
+          "program": "Bewaterd door",
+          "new-program": "Een nieuw programma",
           "environment": "Omgeving",
           "engine": "Module",
           "sources": "Bronnen",
@@ -166,7 +168,7 @@
         },
         "mode": {
           "question": "Wat moet Smart Irrigation doen?",
-          "water-help": "Het berekent wat elke zone nodig heeft en opent de kleppen zelf, met een hoofdprogramma dat alle zones beregent, klaar bij zonsopgang. Het schema kun je daarna wijzigen.",
+          "water-help": "Het berekent wat elke zone nodig heeft en opent de kleppen zelf, met een programma dat je zones bewatert, klaar bij zonsopgang. Je kunt het schema daarna wijzigen.",
           "calculate-help": "Het berekent wat elke zone nodig heeft; je automatisering, Irrigation Unlimited of je controller opent de kleppen."
         }
       },
@@ -181,7 +183,9 @@
       "calc-failed": "De berekening is niet gelukt. De zone vertelt waarom onder Zones.",
       "open-zone": "Zone openen",
       "another": "Nog een zone instellen",
-      "done-next-water": "Het hoofdprogramma beregent haar met de andere zones, klaar bij zonsopgang. Je vindt het onder Bewatering.",
+      "done-next-added": "Ze is nu de laatste stap van {program}, dat haar op zijn schema's bewatert. Je vindt het onder Bewatering.",
+      "done-next-new-program": "Een nieuw programma, {program}, bewatert haar elke dag, klaar bij zonsopgang. Je vindt het onder Bewatering.",
+      "new-program-name": "Bewatering",
       "done-next-no-valve": "Koppel er in Zones een klep aan zodat ze beregend wordt."
     },
     "weatherservice": {
@@ -316,7 +320,7 @@
           "calculate-note": "Alleen berekenen: Smart Irrigation berekent waterbalansen en duren en stuurt zijn startevent, maar opent geen klep. Je eigen automatisering, Irrigation Unlimited of je controller beregent met die duren.",
           "confirm-off": "Smart Irrigation uitschakelen? Wat nu beregent stopt meteen, en er wordt niets berekend of beregend tot het weer ingeschakeld wordt.",
           "confirm-calculate": "Alleen berekenen? Smart Irrigation opent geen kleppen meer: wat het beregent stopt nu, en voortaan beregent je eigen automatisering met zijn duren.",
-          "water-note": "Berekenen en beregenen: Smart Irrigation berekent wat elke zone nodig heeft en opent de kleppen zelf, met zijn programma's. Het hoofdprogramma beregent alle zones volgens zijn schema's."
+          "water-note": "Berekenen en bewateren: Smart Irrigation berekent wat elke zone nodig heeft en opent de kleppen zelf, met zijn programma's. Elk programma bewatert de zones van zijn stappen op zijn schema's."
         }
       },
       "description": "Dit zijn de algemene instellingen.",
@@ -371,7 +375,7 @@
           "calc-daily": "dagelijks om {time}",
           "calc-before-start": "vlak voor elke start",
           "calc-manual": "alleen als je erom vraagt",
-          "main-schedules": "Gestart door de schema's van het hoofdprogramma (de starttrigger wordt nu niet gebruikt)",
+          "program-schedules": "Gestart door de schema's van de programma's (de starttrigger wordt nu niet gebruikt)",
           "accounts-for-duration": "teruggerekend zodat de ronde dan klaar is",
           "starts-at-trigger": "begint op dat moment",
           "sequencing-sequential": "één zone per keer, dus het totaal is de som van alle zones",
@@ -439,7 +443,7 @@
           "detail-dry": "Het regent niet",
           "detail-held": "slaat deze ronde over",
           "check-postponed": "Door jou uitgesteld",
-          "title-main": "Wordt het hoofdprogramma overgeslagen?"
+          "title-next": "Wordt de volgende beurt overgeslagen?"
         },
         "estimate": {
           "title": "Waar elke zone nu staat",
@@ -964,7 +968,6 @@
         "no-schedules": "Geen schema.",
         "schedules-off": "De schema's blijven uit tot je ze aanzet.",
         "schedules-stay-on": "Je hebt de schema's aangezet: ze blijven zoals ze zijn.",
-        "disabled": "Uitgeschakeld in Irrigation Unlimited, en hier ook.",
         "removed": "Niet meer in Irrigation Unlimited, verwijderd: {programs}."
       },
       "supplies": {
@@ -1080,8 +1083,7 @@
           "uses": "Gebruikt {uses}."
         },
         "left-off": "Uit gelaten, omdat Irrigation Unlimited ze had uitgezet: {names}.",
-        "unrecorded": "Uit gelaten, omdat de import niet heeft vastgelegd welke van hun schema's Irrigation Unlimited aan had: {names}. Zet hun schema's zelf aan, of ga terug naar Irrigation Unlimited, importeer opnieuw (dat legt ze vast) en stap opnieuw over.",
-        "main-also-waters": "Het hoofdprogramma bewatert ook {zones}, elke dag vanuit de trigger: naast Irrigation Unlimited, en na de overstap naast de geïmporteerde programma's, krijgen deze zones hun water twee keer. Als de geïmporteerde programma's alles bewateren, zet het hoofdprogramma uit onder Programma's, of zet de trigger op Geen."
+        "unrecorded": "Uit gelaten, omdat de import niet heeft vastgelegd welke van hun schema's Irrigation Unlimited aan had: {names}. Zet hun schema's zelf aan, of ga terug naar Irrigation Unlimited, importeer opnieuw (dat legt ze vast) en stap opnieuw over."
       },
       "notes": {
         "blueprint_zone_gone": "een blueprint-automatisering voedt haar vanuit zone {zone}, die niet meer bestaat: ze wordt niet als berekend overgenomen",
@@ -1299,19 +1301,16 @@
   "programs": {
     "title": "Programma's",
     "description": "Een programma bewatert zijn stappen na elkaar. Een stap is één zone, of meerdere zones die samen worden bewaterd, en duurt standaard zo lang als Smart Irrigation ervoor berekende. Programma's waarvan de zones een voeding delen, of er geen hebben, lopen nooit tegelijk: de volgende wacht op zijn beurt. Programma's op een eigen voeding beregenen naast elkaar.",
-    "main_description": "Bewatert alle zones, na elkaar of samen, volgens zijn schema's.",
+    "none_yet": "Nog geen programma. Een zone wordt bewaterd zodra een programma haar in een stap heeft: voeg er een toe met Nieuw programma.",
     "run_options": "Opties voor deze start",
     "adjust_empty": "Vul een percentage of seconden in om de duur aan te passen.",
     "more_options": "Meer opties",
     "more_options_set": "met meer regels",
-    "sequencing_title": "Volgorde van de zones en pauzes",
-    "others_title": "Andere programma's",
     "confirm_run": "{name} nu uitvoeren? Zijn ventielen gaan meteen open.",
     "run_started": "{name} is gestart.",
     "run_queued": "{name} staat in de wachtrij: het start zodra de lopende bewatering klaar is.",
     "run_nothing": "{name} vond niets om te bewateren.",
     "run_failed": "{name} kon niet starten: {error}",
-    "main_schedules_hint": "Zonder ingeschakeld schema start de starttrigger die verderop op deze pagina is ingesteld het hoofdprogramma. Zodra er één schema is ingeschakeld, vervangen de schema's die trigger. De instellingen ervan blijven bewaard, en hij komt terug als je de schema's uitschakelt of verwijdert.",
     "name": "Naam",
     "step": "Stap",
     "step_zones": "Zones",
@@ -1328,21 +1327,20 @@
     "tours": "Rondes",
     "tours_help": "De hele lijst stappen wordt zo vaak bewaterd, elke ronde met zijn deel van het water. Anders dan beurten, die één stap herhalen voor de volgende komt, laat een ronde elke zone intrekken terwijl de andere bewateren.",
     "enabled": "Ingeschakeld",
-    "program_enabled": "Programma aan",
-    "schedule_enabled": "Schema aan",
-    "step_enabled": "Stap aan",
     "add_step": "Een stap toevoegen",
     "delete_step": "De stap verwijderen",
     "add": "Nieuw programma",
+    "all_zones_now_title": "Alle zones nu bewateren",
+    "all_zones_now_help": "Alleen voor de knop Alle zones bewateren: elke zone met een klep, in deze volgorde, met deze beurten en deze pauze. De programma's houden hun eigen stappen.",
     "delete": "Het programma verwijderen",
     "schedule": "Schema",
     "add_schedule": "Een schema toevoegen",
     "delete_schedule": "Het schema verwijderen",
-    "schedule_moment": "Om",
+    "schedule_moment": "Wanneer",
     "moment_time": "Een tijdstip van de dag",
     "moment_sunrise": "Zonsopgang",
     "moment_sunset": "Zonsondergang",
-    "moment_azimuth": "Als de zon een azimut bereikt",
+    "moment_azimuth": "De zon bereikt een azimut",
     "schedule_time": "Tijd",
     "schedule_offset": "Voor (-) of na (+) de zon",
     "schedule_anchor": "Dat moment is wanneer het programma",
@@ -1396,7 +1394,6 @@
     "max_litres": "Volumelimiet",
     "max_litres_help": "Een zone van deze stap stopt zodra haar watermeter dit volume heeft geteld, in liters of gallons zoals het paneel volumes toont. 0: geen limiet. De meter meldt zich af en toe, dus het volume is niet exact. Een zone zonder meter negeert het.",
     "new_program": "Programma",
-    "main_name": "Hoofdprogramma",
     "run_now": "Nu uitvoeren",
     "run_seconds": "Totale duur",
     "run_seconds_help": "Optioneel. Leeg: de geplande duren. Anders duurt het hele programma zo lang, verdeeld over zijn stappen naar verhouding van hun geplande duren.",
@@ -1418,8 +1415,6 @@
     "adjust_apply": "Toepassen",
     "adjust_reset": "Resetten",
     "confirm_reset_adjustment": "De aanpassing van dit programma verwijderen?",
-    "main_settings": "Hoofdprogramma: start en volgorde",
-    "main_settings_description": "Hoe het hoofdprogramma bewatert: de zones na elkaar of samen, de pauze tussen twee zones en cycle and soak.",
     "mode_off": "De volledige controller is uit. Zet hem aan in Instellingen, Algemeen.",
     "no_zone": "geen zone",
     "mode_calculated_short": "berekend",
@@ -1432,14 +1427,13 @@
     "schedules_none": "geen schema",
     "schedules_one": "1 schema",
     "schedules_many": "{n} schema's",
-    "off": "uit",
+    "no_schedule_on": "geen schema aan",
     "steps_title": "Stappen",
     "schedules_title": "Schema's",
     "passes_help": "Cycle and soak voor deze stap: het water verdeeld over zoveel beurten, elke zone trekt tussen twee beurten in. 1: in één keer.",
     "schedule_fallback_skip": "Die dag overslaan",
     "schedule_fallback_previous": "De tijd van de laatst geziene gebruiken",
     "schedule_fallback_at": "Op een vaste tijd starten",
-    "main_steps_hint": "Het hoofdprogramma bewatert elke zone. Om er maar enkele te bewateren, of in je eigen volgorde, voeg je er hieronder een toe onder Andere programma's.",
     "summary_start_sunrise": "begint bij zonsopgang",
     "summary_start_sunset": "begint bij zonsondergang",
     "summary_start_azimuth": "start als de zon op {deg}° staat",
@@ -1465,7 +1459,7 @@
     "passes_short": "{n} beurten",
     "overlap_short": "start de volgende {time} eerder",
     "wait_short": "wacht {time} voor de volgende",
-    "soak_shared_help": "Eén intrektijd voor elke stap in beurten, in elk programma en in het hoofdprogramma.",
+    "soak_shared_help": "Eén intrektijd voor elke stap in beurten, in elk programma.",
     "min_over_max": "Het minimum ligt boven het maximum: het maximum wint, {max}.",
     "confirm_run_replace": "{name} nu uitvoeren? Wat nu sproeit wordt eerst gestopt, daarna gaan de kleppen open.",
     "run_replacing": "Wat aan het sproeien was wordt gestopt; {name} begint direct daarna.",
@@ -1630,10 +1624,8 @@
         "running": "bezig",
         "waiting": "wachtend",
         "paused": "gepauzeerd",
-        "suspended": "opgeschort",
-        "disabled": "uitgeschakeld"
+        "suspended": "opgeschort"
       },
-      "main_name": "Hoofdprogramma",
       "after": "start na {name}",
       "next_in_line": "start als volgende"
     },

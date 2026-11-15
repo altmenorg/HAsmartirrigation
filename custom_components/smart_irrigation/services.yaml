@@ -182,10 +182,11 @@ stop_program:
       selector:
         text:
 set_program_enabled:
-  name: Enable or disable a program
+  name: Switch all schedules of a program (deprecated)
   description: >-
-    Switch a program of the full controller on or off, as the switch in its
-    settings does.
+    Deprecated, removed in 2027.11: switches every schedule of a program on or
+    off. A program has no on/off of its own any more; use set_schedule_enabled
+    for one schedule.
   fields:
     program_id:
       name: Program

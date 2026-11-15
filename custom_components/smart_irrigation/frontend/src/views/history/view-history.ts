@@ -99,11 +99,11 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
     const id = record.program_id;
     if (!id) return "";
     if (id === "manual") return localize("panels.history.table.by_hand", lang);
-    if (id === "main") return localize("programs.main_name", lang);
     const program = (this._config?.programs || []).find(
       (p: any) => p.id === id,
     );
-    return program?.name || "";
+    // A program that is gone is still named by what started the run.
+    return program?.name || id;
   }
 
   private async _fetchData(): Promise<void> {

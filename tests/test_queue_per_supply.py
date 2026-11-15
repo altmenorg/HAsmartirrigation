@@ -458,10 +458,12 @@ def test_without_supplies_the_planning_waits_behind_every_run():
 
 def test_the_coordinator_names_the_supplies_of_a_program(monkeypatch):
     hass, coord, clock, timeline = _setup(
-        monkeypatch, [*PROGRAMS, {"id": "main", "name": "Main", "main": True}]
+        monkeypatch,
+        [*PROGRAMS, {"id": "main", "name": "Watering", "steps": [{"zones": [2]}]}],
     )
 
     assert coord.program_turn_keys("well") == frozenset({"well"})
     assert coord.program_turn_keys("both") == frozenset({"well", NO_SUPPLY})
-    assert coord.program_turn_keys("main") is None
+    # The old main program takes the turn on the supplies of its zones only.
+    assert coord.program_turn_keys("main") == frozenset({NO_SUPPLY})
     assert coord.program_turn_keys("gone") == frozenset()

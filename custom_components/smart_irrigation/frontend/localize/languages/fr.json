@@ -155,6 +155,8 @@
         "review": {
           "question": "Prêt à créer",
           "zone": "Zone",
+          "program": "Arrosée par",
+          "new-program": "Un nouveau programme",
           "environment": "Environnement",
           "engine": "Module",
           "sources": "Sources",
@@ -166,7 +168,7 @@
         },
         "mode": {
           "question": "Que doit faire Smart Irrigation ?",
-          "water-help": "Il calcule ce dont chaque zone a besoin et ouvre lui-même les vannes, avec un programme principal qui arrose toutes les zones, fini au lever du soleil. Tu pourras changer son horaire ensuite.",
+          "water-help": "Il calcule ce dont chaque zone a besoin et ouvre lui-même les vannes, avec un programme qui arrose tes zones, fini au lever du soleil. Tu pourras changer son horaire ensuite.",
           "calculate-help": "Il calcule ce dont chaque zone a besoin ; ton automatisation, Irrigation Unlimited ou ton programmateur ouvre les vannes."
         }
       },
@@ -181,7 +183,9 @@
       "calc-failed": "Le calcul n'a pas abouti. La zone en donne la raison dans Zones.",
       "open-zone": "Ouvrir la zone",
       "another": "Configurer une autre zone",
-      "done-next-water": "Le programme principal l'arrose avec les autres zones, pour qu'elle ait fini au lever du soleil. Tu le retrouves dans Arrosage.",
+      "done-next-added": "Elle est maintenant la dernière étape de {program}, qui l'arrose à ses horaires. Tu le retrouves dans Arrosage.",
+      "done-next-new-program": "Un nouveau programme, {program}, l'arrose chaque jour, fini au lever du soleil. Tu le retrouves dans Arrosage.",
+      "new-program-name": "Arrosage",
       "done-next-no-valve": "Lie-lui une vanne dans Zones pour qu'elle soit arrosée."
     },
     "weatherservice": {
@@ -316,7 +320,7 @@
           "calculate-note": "Calcul seulement : Smart Irrigation calcule les bilans hydriques et les durées et envoie son événement de départ, mais n'ouvre aucune vanne. Ton automatisation, Irrigation Unlimited ou ton contrôleur arrose avec ces durées.",
           "confirm-off": "Désactiver Smart Irrigation ? Tout arrosage en cours s'arrête maintenant, et rien n'est calculé ni arrosé jusqu'à sa réactivation.",
           "confirm-calculate": "Calculer seulement ? Smart Irrigation cesse d'ouvrir les vannes : ce qu'il arrose s'arrête maintenant, et c'est ton automatisation qui arrose désormais avec ses durées.",
-          "water-note": "Calculer et arroser : Smart Irrigation calcule ce dont chaque zone a besoin et ouvre lui-même les vannes, avec ses programmes. Le programme principal arrose toutes les zones à ses horaires."
+          "water-note": "Calculer et arroser : Smart Irrigation calcule ce dont chaque zone a besoin et ouvre lui-même les vannes, avec ses programmes. Chaque programme arrose les zones de ses étapes à ses horaires."
         }
       },
       "description": "Cette page fournit les réglages globaux.",
@@ -371,7 +375,7 @@
           "calc-daily": "chaque jour à {time}",
           "calc-before-start": "juste avant chaque départ",
           "calc-manual": "seulement quand tu le demandes",
-          "main-schedules": "Lancé par les horaires du programme principal (le déclencheur n'est pas utilisé pour l'instant)",
+          "program-schedules": "Lancé par les horaires des programmes (le déclencheur n'est pas utilisé pour l'instant)",
           "accounts-for-duration": "calculé à rebours pour finir à ce moment",
           "starts-at-trigger": "démarre à ce moment",
           "sequencing-sequential": "une zone à la fois, le total est donc la somme des zones",
@@ -439,7 +443,7 @@
           "detail-dry": "Il ne pleut pas",
           "detail-held": "n'arrose pas cette fois",
           "check-postponed": "Reporté par toi",
-          "title-main": "Le programme principal sera-t-il annulé ?"
+          "title-next": "Le prochain arrosage sera-t-il annulé ?"
         },
         "estimate": {
           "title": "Où en est chaque zone",
@@ -964,7 +968,6 @@
         "no-schedules": "Aucun horaire.",
         "schedules-off": "Ses horaires restent désactivés jusqu'à ce que tu les actives.",
         "schedules-stay-on": "Tu as activé ses horaires : ils restent tels quels.",
-        "disabled": "Désactivé dans Irrigation Unlimited, et ici aussi.",
         "removed": "Plus dans Irrigation Unlimited, supprimés : {programs}."
       },
       "supplies": {
@@ -1080,8 +1083,7 @@
           "uses": "Utilise {uses}."
         },
         "left-off": "Laissés désactivés, car Irrigation Unlimited les avait désactivés : {names}.",
-        "unrecorded": "Laissés désactivés, car l'import n'a pas noté lesquels de leurs horaires Irrigation Unlimited avait activés : {names}. Active leurs horaires toi-même, ou reviens à Irrigation Unlimited, importe à nouveau (cela les note) et bascule de nouveau.",
-        "main-also-waters": "Le programme principal arrose aussi {zones}, chaque jour depuis le déclencheur : à côté d'Irrigation Unlimited, puis à côté des programmes importés après la bascule, ces zones reçoivent leur eau deux fois. Si les programmes importés arrosent tout, désactive le programme principal dans Programmes, ou règle le déclencheur sur Aucun."
+        "unrecorded": "Laissés désactivés, car l'import n'a pas noté lesquels de leurs horaires Irrigation Unlimited avait activés : {names}. Active leurs horaires toi-même, ou reviens à Irrigation Unlimited, importe à nouveau (cela les note) et bascule de nouveau."
       },
       "notes": {
         "blueprint_zone_gone": "une automatisation de blueprint l'alimente depuis la zone {zone}, qui n'existe plus : elle n'est pas reprise comme calculée",
@@ -1299,19 +1301,16 @@
   "programs": {
     "title": "Programmes",
     "description": "Un programme arrose ses étapes l'une après l'autre. Une étape est une zone, ou plusieurs arrosées en même temps, et prend par défaut la durée calculée par Smart Irrigation. Les programmes dont les zones partagent une alimentation, ou n'en ont pas, ne tournent jamais en même temps : le suivant attend son tour. Ceux qui ont chacun leur alimentation arrosent côte à côte.",
-    "main_description": "Arrose toutes les zones, l'une après l'autre ou ensemble, à ses horaires.",
+    "none_yet": "Pas encore de programme. Une zone est arrosée dès qu'un programme l'a dans une étape : ajoutes-en un avec Nouveau programme.",
     "run_options": "Options de ce lancement",
     "adjust_empty": "Indique un pourcentage ou des secondes pour ajuster les durées.",
     "more_options": "Plus d'options",
     "more_options_set": "avec d'autres règles",
-    "sequencing_title": "Ordre des zones et pauses",
-    "others_title": "Autres programmes",
     "confirm_run": "Lancer {name} maintenant ? Ses vannes s'ouvrent tout de suite.",
     "run_started": "{name} a démarré.",
     "run_queued": "{name} est en file d'attente : il démarre quand l'arrosage en cours est terminé.",
     "run_nothing": "{name} n'a rien trouvé à arroser.",
     "run_failed": "{name} n'a pas pu démarrer : {error}",
-    "main_schedules_hint": "Sans horaire activé, c'est le déclencheur réglé plus bas sur cette page qui lance le programme principal. Dès qu'un horaire est activé, les horaires remplacent ce déclencheur. Ses réglages sont gardés, et il revient si tu désactives ou supprimes les horaires.",
     "name": "Nom",
     "step": "Étape",
     "step_zones": "Zones",
@@ -1328,21 +1327,20 @@
     "tours": "Tours d'arrosage",
     "tours_help": "Toute la liste des étapes est arrosée autant de fois, chaque tour avec sa part de l'eau. Contrairement aux passes, qui répètent une étape avant de passer à la suivante, un tour laisse chaque zone absorber pendant que les autres arrosent.",
     "enabled": "Activé",
-    "program_enabled": "Programme activé",
-    "schedule_enabled": "Horaire activé",
-    "step_enabled": "Étape activée",
     "add_step": "Ajouter une étape",
     "delete_step": "Supprimer l'étape",
     "add": "Nouveau programme",
+    "all_zones_now_title": "Arroser toutes les zones maintenant",
+    "all_zones_now_help": "Seulement pour le bouton Arroser toutes les zones : chaque zone avec une vanne, dans cet ordre, avec ces passes et cette pause. Les programmes gardent leurs propres étapes.",
     "delete": "Supprimer le programme",
     "schedule": "Horaire",
     "add_schedule": "Ajouter un horaire",
     "delete_schedule": "Supprimer l'horaire",
-    "schedule_moment": "À",
+    "schedule_moment": "Quand",
     "moment_time": "Une heure",
     "moment_sunrise": "Le lever du soleil",
     "moment_sunset": "Le coucher du soleil",
-    "moment_azimuth": "Quand le soleil atteint un azimut",
+    "moment_azimuth": "Le soleil atteint un azimut",
     "schedule_time": "Heure",
     "schedule_offset": "Avant (-) ou après (+) le soleil",
     "schedule_anchor": "Ce moment est celui où le programme",
@@ -1396,7 +1394,6 @@
     "max_litres": "Limite de volume",
     "max_litres_help": "Une zone de cette étape s'arrête quand son compteur d'eau a compté ce volume, en litres ou en gallons comme le panneau affiche les volumes. 0 : pas de limite. Le compteur ne rapporte que de temps en temps, le volume n'est donc pas exact. Une zone sans compteur l'ignore.",
     "new_program": "Programme",
-    "main_name": "Programme principal",
     "run_now": "Lancer maintenant",
     "run_seconds": "Durée totale",
     "run_seconds_help": "Facultatif. Vide : les durées prévues. Sinon tout le programme dure ce temps, réparti entre ses étapes au prorata de leurs durées prévues.",
@@ -1418,8 +1415,6 @@
     "adjust_apply": "Appliquer",
     "adjust_reset": "Réinitialiser",
     "confirm_reset_adjustment": "Supprimer l'ajustement de ce programme ?",
-    "main_settings": "Programme principal : départ et enchaînement",
-    "main_settings_description": "Comment le programme principal arrose : les zones l'une après l'autre ou ensemble, la pause entre deux zones et le cycle-and-soak.",
     "mode_off": "Le contrôleur complet est désactivé. Active-le dans Réglages, Général.",
     "no_zone": "aucune zone",
     "mode_calculated_short": "calculée",
@@ -1432,14 +1427,13 @@
     "schedules_none": "aucun horaire",
     "schedules_one": "1 horaire",
     "schedules_many": "{n} horaires",
-    "off": "désactivé",
+    "no_schedule_on": "aucun horaire activé",
     "steps_title": "Étapes",
     "schedules_title": "Horaires",
     "passes_help": "Cycle and soak pour cette étape : son eau répartie en autant de passes, chaque zone absorbant entre deux passes. 1 : en une seule fois.",
     "schedule_fallback_skip": "Sauter ce jour",
     "schedule_fallback_previous": "Reprendre l'heure du dernier vu",
     "schedule_fallback_at": "Démarrer à une heure fixe",
-    "main_steps_hint": "Le programme principal arrose toutes les zones. Pour n'en arroser que certaines, ou dans ton propre ordre, ajoute-en un sous Autres programmes ci-dessous.",
     "summary_start_sunrise": "démarre au lever du soleil",
     "summary_start_sunset": "démarre au coucher du soleil",
     "summary_start_azimuth": "démarre quand le soleil est à {deg}°",
@@ -1465,7 +1459,7 @@
     "passes_short": "{n} passes",
     "overlap_short": "lance la suivante {time} plus tôt",
     "wait_short": "attend {time} avant la suivante",
-    "soak_shared_help": "Un seul temps d'absorption pour toutes les étapes en passes, dans chaque programme et dans le programme principal.",
+    "soak_shared_help": "Un seul temps d'absorption pour toutes les étapes en passes, dans chaque programme.",
     "min_over_max": "Le minimum dépasse le maximum : c'est le maximum qui l'emporte, {max}.",
     "confirm_run_replace": "Lancer {name} maintenant ? L'arrosage en cours est d'abord arrêté, puis ses vannes s'ouvrent.",
     "run_replacing": "L'arrosage en cours s'arrête ; {name} démarre juste après.",
@@ -1630,10 +1624,8 @@
         "running": "en cours",
         "waiting": "en attente",
         "paused": "en pause",
-        "suspended": "suspendu",
-        "disabled": "désactivé"
+        "suspended": "suspendu"
       },
-      "main_name": "Programme principal",
       "after": "démarre après {name}",
       "next_in_line": "démarre ensuite"
     },

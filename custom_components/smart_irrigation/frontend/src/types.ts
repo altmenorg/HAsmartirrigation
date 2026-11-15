@@ -215,12 +215,13 @@ export interface SmartIrrigationSchedule {
   hard_deadline?: boolean;
 }
 
-/** A program of the full controller. The main one has no steps of its own. */
+/**
+ * A program of the full controller. Every program is the same kind: steps of
+ * zones, started on its own by its schedules that are on, or by hand.
+ */
 export interface SmartIrrigationProgram {
   id?: string;
   name: string;
-  enabled: boolean;
-  main?: boolean;
   steps?: SmartIrrigationStep[];
   delay?: number;
   tours?: number;

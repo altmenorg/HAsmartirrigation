@@ -215,10 +215,9 @@ async def test_a_program_asked_twice_runs_once(monkeypatch):
     assert _log(hass).count("zone_0 on") == 1
 
 
-async def test_a_disabled_program_or_the_controller_off_runs_nothing(monkeypatch):
-    hass, coord, _ = _setup(monkeypatch, [_program(enabled=False)])
+async def test_an_unknown_program_or_the_controller_off_runs_nothing(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch, [_program()])
 
-    assert await coord.async_run_program("evening") is False
     assert await coord.async_run_program("nope") is False
 
     coord.store.config.programs = normalize_programs([_program()])

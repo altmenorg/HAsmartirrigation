@@ -32,7 +32,7 @@ from homeassistant.helpers import config_validation as cv
 
 from . import const
 from .master_switch import watering_off
-from .programs import find_program
+from .programs import find_program, set_schedules_enabled
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -433,10 +433,48 @@ class WateringControlMixin:
 
     # --- switching a program, a step or a schedule on or off ------------------------------
 
+    async def async_set_schedules_enabled(self, program_id, enabled: bool) -> bool:
+        """Switch every schedule of a program on or off, as one save.
+
+        What ``set_program_enabled`` does now that a program has no on/off of
+        its own. Returns True when a schedule changed; False when the full
+        controller is off, the program is unknown, or nothing changed.
+        """
+        config = self.store.config
+        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
+            _LOGGER.warning("Nothing changed: the full controller is off")
+            return False
+        programs = copy.deepcopy(getattr(config, const.CONF_PROGRAMS, None) or [])
+        program = find_program(programs, program_id)
+        if program is None:
+            _LOGGER.warning("Program %s does not exist", program_id)
+            return False
+        enabled = bool(enabled)
+        if all(
+            (s.get(const.SCHEDULE_ENABLED) is not False) == enabled
+            for s in program.get(const.PROGRAM_SCHEDULES) or []
+        ):
+            return False
+        programs = [
+            (
+                set_schedules_enabled(p, enabled)
+                if p.get(const.PROGRAM_ID) == program_id
+                else p
+            )
+            for p in programs
+        ]
+        await self.async_update_config({const.CONF_PROGRAMS: programs})
+        _LOGGER.info(
+            "Program %s: every schedule %s",
+            program_id,
+            "switched on" if enabled else "switched off",
+        )
+        return True
+
     async def async_set_enabled(
         self, program_id, enabled: bool, step_id=None, schedule_id=None
     ) -> bool:
-        """Change the ``enabled`` flag of a program, one of its steps or schedules.
+        """Switch one step or one schedule of a program on or off.
 
         The change goes through the coordinator's configuration update, as a save
         from the panel does: the programs are normalized, stored, the schedules
@@ -453,36 +491,34 @@ class WateringControlMixin:
         if program is None:
             _LOGGER.warning("Program %s does not exist", program_id)
             return False
-        target, key, kind, ident = program, const.PROGRAM_ENABLED, "Program", program_id
         if step_id is not None:
             kind, key, ident = "Step", const.STEP_ENABLED, step_id
             items, id_key = program.get(const.PROGRAM_STEPS), const.STEP_ID
         elif schedule_id is not None:
             kind, key, ident = "Schedule", const.SCHEDULE_ENABLED, schedule_id
             items, id_key = program.get(const.PROGRAM_SCHEDULES), const.SCHEDULE_ID
-        if kind != "Program":
-            target = next(
-                (
-                    i
-                    for i in items or []
-                    if isinstance(i, dict) and i.get(id_key) == ident
-                ),
-                None,
+        else:
+            # The program itself has no on/off: its schedules are switched.
+            return await self.async_set_schedules_enabled(program_id, enabled)
+        target = next(
+            (i for i in items or [] if isinstance(i, dict) and i.get(id_key) == ident),
+            None,
+        )
+        if target is None:
+            _LOGGER.warning(
+                "%s %s does not exist in program %s", kind, ident, program_id
             )
-            if target is None:
-                _LOGGER.warning(
-                    "%s %s does not exist in program %s", kind, ident, program_id
-                )
-                return False
+            return False
         enabled = bool(enabled)
         if (target.get(key) is not False) == enabled:
             return False
         target[key] = enabled
         await self.async_update_config({const.CONF_PROGRAMS: programs})
         _LOGGER.info(
-            "%s %s %s",
+            "%s %s/%s %s",
             kind,
-            program_id if kind == "Program" else f"{program_id}/{ident}",
+            program_id,
+            ident,
             "enabled" if enabled else "disabled",
         )
         return True

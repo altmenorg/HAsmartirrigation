@@ -7,8 +7,8 @@ are when the program starts its turn). This module walks the plan.
 Runs that share a supply take turns: a second one waits behind the first,
 which is what keeps the pressure of a home network and what a manual run asked
 for during a program is owed. Zones without a supply share the mains, and the
-main program's cycle takes the turn on every supply. Runs on supplies of their
-own water side by side (turns.py). The plan is worked out after the turn comes,
+one-off run of every zone ("irrigate all zones now") takes the turn on every
+supply. Runs on supplies of their own water side by side (turns.py). The plan is worked out after the turn comes,
 not when the run was asked for, since the zones may well have been watered or
 changed meanwhile.
 
@@ -34,6 +34,7 @@ import homeassistant.util.dt as dt_util
 from . import const
 from .master_switch import watering_off
 from .programs import (
+    MAIN_PROGRAM_ID,
     below_deficit,
     find_program,
     overlap_seconds,
@@ -205,8 +206,7 @@ class ProgramRunnerMixin:
         A running program closes its open zones the normal way (each is credited
         for what it delivered) and starts no further step. Returns ``"stopped"``,
         ``"dequeued"``, or None for a program that neither runs nor waits (an
-        unknown id included: nothing happens). The main program has no run of its
-        own; ``stop_watering`` stops it.
+        unknown id included: nothing happens).
         """
         registry = self._program_registry()
         run = registry.get(program_id)
@@ -254,16 +254,13 @@ class ProgramRunnerMixin:
         """The supplies of every zone a program's steps name, as it is now.
 
         Every zone, not only those the plan will water: the plan is only worked
-        out once the turn has come. The main program waters every automatic
-        zone and takes the turn on all of them (None).
+        out once the turn has come.
         """
         program = find_program(
             getattr(self.store.config, const.CONF_PROGRAMS, None), program_id
         )
         if program is None:
             return frozenset()
-        if program.get(const.PROGRAM_MAIN):
-            return None
         zone_ids = [
             zone_id
             for step in program.get(const.PROGRAM_STEPS) or []
@@ -289,17 +286,15 @@ class ProgramRunnerMixin:
     # --- asking for a run ----------------------------------------------------
 
     def _program_allowed(self, program_id) -> bool:
-        """Whether the program may water: it is there, enabled, not suspended."""
+        """Whether the program may water: it is there and not suspended."""
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
             return False
         if watering_off(config):
             return False
         program = find_program(getattr(config, const.CONF_PROGRAMS, None), program_id)
-        return (
-            program is not None
-            and program.get(const.PROGRAM_ENABLED) is not False
-            and not self.is_suspended(const.SUSPEND_PROGRAM, program_id)
+        return program is not None and not self.is_suspended(
+            const.SUSPEND_PROGRAM, program_id
         )
 
     async def async_run_program(
@@ -340,17 +335,11 @@ class ProgramRunnerMixin:
         if program is None:
             _LOGGER.warning("Program %s does not exist", program_id)
             return False
-        if program.get(const.PROGRAM_ENABLED) is False:
-            _LOGGER.info("Program %s is disabled, not run", program_id)
-            return False
         if self.is_suspended(const.SUSPEND_PROGRAM, program_id):
             _LOGGER.info("Program %s is suspended, not run", program_id)
             return False
         if mode == const.RUN_MODE_REPLACE:
             await self._stop_for_replacement(program_id)
-        if program.get(const.PROGRAM_MAIN):
-            await self.async_run_direct_valves()
-            return True
         registry = self._program_registry()
         if program_id in registry:
             _LOGGER.info("Program %s is already running or waiting", program_id)
@@ -548,7 +537,7 @@ class ProgramRunnerMixin:
                     await self._cut_at_deadline(run)
                     return
                 if not self._program_allowed(run.program_id):
-                    # Deleted, disabled or suspended while it ran, or the full
+                    # Deleted or suspended while it ran, or the full
                     # controller switched off: no further step opens a valve.
                     _LOGGER.info(
                         "Program %s can no longer run, stopped before its step %s",
@@ -958,8 +947,8 @@ class ProgramRunnerMixin:
             return
         if not self._program_allowed(program_id):
             _LOGGER.info(
-                "Program %s can no longer run (deleted, disabled, suspended or the "
-                "full controller is off), its interrupted run is dropped",
+                "Program %s can no longer run (deleted, suspended or the full "
+                "controller is off), its interrupted run is dropped",
                 program_id,
             )
             await self._drop_program_record(program_id)
@@ -1023,6 +1012,40 @@ class ProgramRunnerMixin:
         self.hass.bus.async_fire(
             f"{const.DOMAIN}_{const.EVENT_PROGRAM_STARTED}", payload
         )
+        if run.program_id == MAIN_PROGRAM_ID and not resumed:
+            self._announce_legacy_start(plan)
+
+    def _announce_legacy_start(self, plan: list) -> None:
+        """The ``irrigation_started`` of the old main program, for its own.
+
+        The main program became an ordinary program that kept its id; the
+        automations that listened to the events of its cycle still hear them,
+        with the payload they had: the sequencing (parallel when a step waters
+        several zones together), and the zones with their seconds.
+        deprecated: remove in 2027.11
+        """
+        steps = plan[0] if plan else []
+        announce = getattr(self, "_announce_start", None)
+        if announce is None:
+            return
+        announce(
+            (
+                const.CONF_ZONE_SEQUENCING_PARALLEL
+                if any(len(step["zones"]) > 1 for step in steps)
+                else const.CONF_ZONE_SEQUENCING_SEQUENTIAL
+            ),
+            [
+                {
+                    const.ZONE_ID: member["zone_id"],
+                    const.ZONE_NAME: (self.store.get_zone(member["zone_id"]) or {}).get(
+                        const.ZONE_NAME
+                    ),
+                    const.ZONE_DURATION: member["seconds"],
+                }
+                for step in steps
+                for member in step["zones"]
+            ],
+        )
 
     def _report_program_finished(self, run: ProgramRun) -> None:
         by_zone: dict = {}
@@ -1069,3 +1092,9 @@ class ProgramRunnerMixin:
                 ),
             },
         )
+        report = getattr(self, "_report_finished", None)
+        if run.program_id == MAIN_PROGRAM_ID and report is not None:
+            # The ``irrigation_finished`` of the old main program's cycle, with
+            # its payload (see _announce_legacy_start). deprecated: remove in
+            # 2027.11
+            report(run.results)

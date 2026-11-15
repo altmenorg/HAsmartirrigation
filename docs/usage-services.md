@@ -24,7 +24,7 @@ After installation, the following services are available. Where an action acts o
 |`Smart Irrigation: resume_irrigation`|Lifts a postponement now.|
 |`Smart Irrigation: set_seasonal_adjustment`|Scales the crop factor, and shifts the irrigation threshold, over a range of months. Without `adjustment_id` it creates an adjustment; with it, it changes that one, and with `remove: true` as well it removes it.|
 |`Smart Irrigation: use_measured_throughput`|Sets a zone's throughput to the flow its water meter measured over its runs. The measurement is advice, never applied on its own: this is how to accept it.|
-|`Smart Irrigation: run_program` / `water_zone` / `pause_watering` / `resume_watering` / `next_step` / `stop_watering` / `stop_program` / `suspend` / `adjust_program` / `set_program_enabled` / `set_step_enabled` / `set_schedule_enabled`|Drive the watering of the [full controller](usage-full-controller.md#driving-the-watering): run a program or a zone now, pause, skip a step, stop, make a program water longer or shorter for a while, or set a zone or a program aside. `suspend` refuses an `until` more than 8760 hours (a year) ahead.|
+|`Smart Irrigation: run_program` / `water_zone` / `pause_watering` / `resume_watering` / `next_step` / `stop_watering` / `stop_program` / `suspend` / `adjust_program` / `set_step_enabled` / `set_schedule_enabled`|Drive the watering of the [full controller](usage-full-controller.md#driving-the-watering): run a program or a zone now, pause, skip a step, stop, make a program water longer or shorter for a while, or set a zone or a program aside. `suspend` refuses an `until` more than 8760 hours (a year) ahead. `set_program_enabled` is deprecated (removed in 2027.11): use `set_schedule_enabled`.|
 
 ## Dry run
 

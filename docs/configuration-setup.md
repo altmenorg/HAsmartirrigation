@@ -58,3 +58,12 @@ the last step lists what is about to be created before anything is written.
 
 Afterwards, the zone is an ordinary zone: change the mode, repoint the sensors,
 add more zones to the same sensor group, or delete it.
+
+<a id="with-calculate-and-water"></a>**With Calculate and water**, a zone is
+only watered once a [program](usage-full-controller.md#programs) has it in a
+step, so the assistant puts a new zone with a valve in one. With one program,
+the zone becomes its last step; with none, it creates a program (named
+"Watering" in your language) with that step and a schedule done by sunrise
+every day; with several, the last step asks which one, or a new program. The
+step takes the calculated duration. Change it, or move the zone to another
+program, under Watering > Programs.

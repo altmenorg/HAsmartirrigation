@@ -318,11 +318,15 @@ def test_the_schemas_take_a_mode_and_the_new_services_their_fields():
         SET_PROGRAM_ENABLED_SCHEMA({"program_id": "a", "enabled": "maybe"})
 
 
-async def test_the_main_program_takes_no_duration(monkeypatch):
-    hass, handlers = _handlers(monkeypatch, _two_programs())
+async def test_the_old_main_program_takes_a_duration_like_any_other(monkeypatch):
+    programs = [*_two_programs(), _program(id="main", name="Watering")]
+    hass, handlers = _handlers(monkeypatch, programs)
+    handlers.async_run_program = AsyncMock()
 
-    with pytest.raises(ServiceValidationError, match="main program"):
-        await handlers.handle_run_program(_call(program_id="main", seconds=60))
+    await handlers.handle_run_program(_call(program_id="main", seconds=60))
+    await asyncio.gather(*hass.created)
+
+    assert handlers.async_run_program.await_args.kwargs["seconds"] == 60.0
 
 
 async def test_the_handlers_refuse_a_bad_mode_or_seconds_before_a_task_exists(
@@ -401,13 +405,24 @@ async def test_the_stop_program_service_ignores_an_unknown_id(monkeypatch):
     assert hass.calls == []
 
 
-async def test_a_program_is_switched_off_and_on_by_service(monkeypatch):
-    hass, handlers = _handlers(monkeypatch, _two_programs())
+def _schedules_on(program):
+    return [s["enabled"] for s in program[const.PROGRAM_SCHEDULES]]
 
+
+async def test_switching_a_program_switches_every_one_of_its_schedules(monkeypatch):
+    two = [{"time": "06:00"}, {"time": "20:00"}]
+    programs = [
+        _program(schedules=two),
+        _program(id="night", name="Night", steps=[{"zones": [1]}], schedules=two),
+    ]
+    hass, handlers = _handlers(monkeypatch, programs)
+
+    # The deprecated set_program_enabled: no program-level flag, its schedules.
     await handlers.handle_set_program_enabled(_call(program_id="night", enabled=False))
     stored = {p["id"]: p for p in handlers.store.config.programs}
-    assert stored["night"][const.PROGRAM_ENABLED] is False
-    assert stored["evening"][const.PROGRAM_ENABLED] is True
+    assert _schedules_on(stored["night"]) == [False, False]
+    assert _schedules_on(stored["evening"]) == [True, True]
+    assert const.PROGRAM_ENABLED not in stored["night"]
     assert handlers.rearmed == 1
 
     # Already as asked: nothing is written.
@@ -416,7 +431,7 @@ async def test_a_program_is_switched_off_and_on_by_service(monkeypatch):
 
     await handlers.handle_set_program_enabled(_call(program_id="night", enabled=True))
     stored = {p["id"]: p for p in handlers.store.config.programs}
-    assert stored["night"][const.PROGRAM_ENABLED] is True
+    assert _schedules_on(stored["night"]) == [True, True]
     assert handlers.rearmed == 2
 
 
@@ -438,14 +453,15 @@ async def test_a_step_and_a_schedule_are_switched_by_service(monkeypatch):
     [stored] = handlers.store.config.programs
     assert [s["enabled"] for s in stored[const.PROGRAM_STEPS]] == [True, False]
     assert stored[const.PROGRAM_SCHEDULES][0]["enabled"] is False
-    assert stored[const.PROGRAM_ENABLED] is True
     assert handlers.rearmed == 2
 
 
 async def test_unknown_ids_are_refused_and_a_controller_that_is_off_changes_nothing(
     monkeypatch,
 ):
-    program = _program(steps=[{"id": "s1", "zones": [0]}])
+    program = _program(
+        steps=[{"id": "s1", "zones": [0]}], schedules=[{"time": "06:00"}]
+    )
     hass, handlers = _handlers(monkeypatch, [program])
 
     with pytest.raises(ServiceValidationError):
@@ -470,4 +486,4 @@ async def test_unknown_ids_are_refused_and_a_controller_that_is_off_changes_noth
     )
 
     assert handlers.rearmed == 0
-    assert handlers.store.config.programs[0][const.PROGRAM_ENABLED] is True
+    assert _schedules_on(handlers.store.config.programs[0]) == [True]

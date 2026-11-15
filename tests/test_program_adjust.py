@@ -195,10 +195,6 @@ async def test_service_refuses_politely():
         await coord.handle_adjust_program(
             SimpleNamespace(data={"program_id": "nope", "percent": 120})
         )
-    with pytest.raises(ServiceValidationError):
-        await coord.handle_adjust_program(
-            SimpleNamespace(data={"program_id": "main", "percent": 120})
-        )
     coord.store.async_update_config.assert_not_called()
 
 

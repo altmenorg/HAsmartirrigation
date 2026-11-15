@@ -166,14 +166,12 @@ async def test_the_record_stays_until_the_first_step_writes_it_again(monkeypatch
     assert writes[-1] is None
 
 
-@pytest.mark.parametrize("case", ["deleted", "disabled", "suspended", "controller_off"])
+@pytest.mark.parametrize("case", ["deleted", "suspended", "controller_off"])
 async def test_a_program_that_may_no_longer_run_is_not_resumed(monkeypatch, case):
     hass, coord, _ = _setup(monkeypatch, [_program()])
     config = coord.store.config
     if case == "deleted":
         config.programs = normalize_programs([])
-    elif case == "disabled":
-        config.programs = normalize_programs([_program(enabled=False)])
     elif case == "suspended":
         config.suspensions = {
             "program:evening": (dt_util.utcnow() + timedelta(hours=2)).isoformat()
@@ -222,7 +220,7 @@ async def test_the_last_step_of_a_tour_goes_on_with_the_next_tour(monkeypatch):
 # --- 5: a running program stops when it may no longer run ----------------------
 
 
-@pytest.mark.parametrize("case", ["deleted", "disabled", "suspended"])
+@pytest.mark.parametrize("case", ["deleted", "suspended"])
 async def test_a_running_program_stops_before_its_next_step(monkeypatch, case):
     program = _program(steps=[{"zones": [0]}, {"zones": [1]}])
     hass, coord, sleeps = _setup(monkeypatch, [program])
@@ -231,8 +229,6 @@ async def test_a_running_program_stops_before_its_next_step(monkeypatch, case):
         config = coord.store.config
         if case == "deleted":
             config.programs = normalize_programs([])
-        elif case == "disabled":
-            config.programs = normalize_programs([_program(enabled=False)])
         else:
             config.suspensions = {
                 "program:evening": (dt_util.utcnow() + timedelta(hours=2)).isoformat()
@@ -245,6 +241,26 @@ async def test_a_running_program_stops_before_its_next_step(monkeypatch, case):
     assert [i for i in _log(hass) if i.endswith(" on")] == ["zone_0 on"]
     [finished] = _events(hass, const.EVENT_PROGRAM_FINISHED)
     assert finished["stopped"] is True
+
+
+async def test_switching_its_schedules_off_does_not_stop_a_running_program(
+    monkeypatch,
+):
+    # A program has no on/off of its own: its schedules say when it starts on
+    # its own, and a run under way, by hand or not, goes to its end.
+    program = _program(steps=[{"zones": [0]}, {"zones": [1]}])
+    hass, coord, sleeps = _setup(monkeypatch, [program])
+
+    async def _change():
+        coord.store.config.programs = normalize_programs([_program(enabled=False)])
+
+    sleeps.on(300, _change)
+
+    await coord.async_run_program("evening")
+
+    assert [i for i in _log(hass) if i.endswith(" on")] == ["zone_0 on", "zone_1 on"]
+    [finished] = _events(hass, const.EVENT_PROGRAM_FINISHED)
+    assert finished["stopped"] is False
 
 
 # --- 6: input ------------------------------------------------------------------
@@ -561,6 +577,7 @@ def _coordinator(programs=None, last_runs=None, suspensions=None):
     )
     coordinator.store.get_config = MagicMock(return_value={})
     coordinator.store.async_update_config = AsyncMock()
+    coordinator.store.async_get_zones = AsyncMock(return_value=[])
     coordinator.use_weather_service = False
     coordinator.update_subscriptions = AsyncMock()
     coordinator.async_setup_observed_watering = AsyncMock()
@@ -659,30 +676,26 @@ def test_an_auto_id_does_not_steal_the_id_a_later_schedule_carries():
     assert [s["id"] for s in schedules] == ["schedule_2", "schedule_1"]
 
 
-def test_a_program_named_main_does_not_displace_the_real_main():
+def test_the_old_main_program_keeps_its_id_beside_one_named_main():
     programs = normalize_programs(
         [
+            {"id": MAIN_PROGRAM_ID, "name": "The main", "steps": [{"zones": [1]}]},
             {"name": "Main", "steps": [{"zones": [0]}]},
-            {"id": MAIN_PROGRAM_ID, "main": True, "name": "The main"},
         ]
     )
 
     ids = [p["id"] for p in programs]
     assert ids[0] == MAIN_PROGRAM_ID
-    assert programs[0]["main"] is True
-    assert programs[0]["name"] == "The main"
     assert ids.count(MAIN_PROGRAM_ID) == 1
-    other = programs[1]
-    assert other["id"] != MAIN_PROGRAM_ID
-    assert other["main"] is False
-    assert other["steps"]
+    assert programs[1]["id"] != MAIN_PROGRAM_ID
+    # Every program keeps its steps, and nothing sets one apart.
+    assert all(p["steps"] and "main" not in p for p in programs)
     # And it stays what it is when the list is saved again.
     again = normalize_programs(programs)
     assert [p["id"] for p in again] == ids
-    assert again[1]["steps"]
 
 
-async def test_a_program_named_main_without_a_main_in_the_payload_keeps_its_steps():
+async def test_switching_on_with_programs_adds_no_first_program():
     written = await _update(
         _coordinator(),
         {
@@ -691,10 +704,26 @@ async def test_a_program_named_main_without_a_main_in_the_payload_keeps_its_step
         },
     )
 
-    programs = written[const.CONF_PROGRAMS]
-    assert programs[0]["main"] is True
-    [mine] = [p for p in programs if not p["main"]]
+    [mine] = written[const.CONF_PROGRAMS]
     assert mine["steps"]
+    assert "main" not in mine
+
+
+async def test_switching_on_without_a_program_creates_the_first_one():
+    coordinator = _coordinator()
+    coordinator.store.async_get_zones = AsyncMock(
+        return_value=[
+            {const.ZONE_ID: 0, const.ZONE_LINKED_ENTITY: "switch.a"},
+            {const.ZONE_ID: 1},
+        ]
+    )
+
+    written = await _update(coordinator, {const.CONF_FULL_CONTROLLER: True})
+
+    [first] = written[const.CONF_PROGRAMS]
+    # The zones with a valve, as the general settings order them.
+    assert [s["zones"] for s in first["steps"]] == [[0]]
+    assert first["schedules"]
 
 
 # --- 1: direct valve control comes back ----------------------------------------

@@ -1,7 +1,7 @@
 """A zone with no valve, under full control, is not promised a run (#969).
 
-The main program opens a zone's linked valve and leaves a zone with none out
-of its run. The zone, the Info page, the card and the planning said it would
+A program opens the linked valves of the zones its steps name and leaves a
+zone with none out of its run. The zone, the Info page, the card and the planning said it would
 water all the same, from its duration alone, and the planning gave the wrong
 reason for its empty run. Such a zone is a setup that isn't finished: the Info
 page and the planning name it, and the run they announce leaves it out. The
@@ -13,7 +13,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 from custom_components.smart_irrigation import const, websockets
 from custom_components.smart_irrigation.delivery import zones_without_valve
-from tests.test_main_program_schedules import _main, _status_with
+from tests.test_program_schedules_start import _main, _status_with
 from tests.test_program_status import _paris_clock  # noqa: F401
 
 LAWN = {
@@ -44,7 +44,7 @@ def test_a_zone_with_nothing_to_water_or_turned_off_is_not():
     assert zones_without_valve([dry, off]) == []
 
 
-def test_a_manual_zone_counts_as_the_main_program_waters_it():
+def test_a_manual_zone_counts_as_a_program_waters_it():
     manual = {**LAWN, const.ZONE_STATE: const.ZONE_STATE_MANUAL}
 
     assert zones_without_valve([manual]) == [{"id": 0, "name": "Lawn"}]
@@ -62,8 +62,8 @@ def test_the_durations_of_the_next_run_replace_the_stored_ones():
 
 def _info_coordinator(full_controller):
     coordinator = MagicMock()
-    coordinator.main_program_uses_schedules = lambda: False
-    coordinator.async_main_program_next_start = AsyncMock(return_value=None)
+    coordinator.schedules_start_watering = lambda: False
+    coordinator.async_next_program_start = AsyncMock(return_value=None)
     coordinator.store.async_get_zones = AsyncMock(return_value=[LAWN, HEDGE])
     coordinator.store.async_get_config = AsyncMock(return_value={})
     coordinator.store.config = SimpleNamespace(
@@ -123,7 +123,7 @@ async def test_without_full_control_a_zone_with_no_valve_is_watered_by_you():
 # --- the planning ---------------------------------------------------------------
 
 
-async def test_the_planning_names_the_zone_the_main_program_leaves_out():
+async def test_the_planning_names_the_zone_a_program_leaves_out():
     hass, coord = _status_with([_main([{"time": "06:00"}])])
     coord.store.by_id[0][const.ZONE_LINKED_ENTITY] = None
     coord.store.by_id[0][const.ZONE_NAME] = "Lawn"
@@ -148,12 +148,12 @@ async def test_an_empty_run_says_why_when_no_zone_has_a_valve():
     ]
 
 
-async def test_other_programs_carry_no_such_list():
-    """Their steps name their zones; plan_program leaves a zone with no valve
-    out of them, and it is not theirs to report."""
+async def test_a_zone_its_steps_do_not_name_is_not_its_to_report():
+    """Only the zones of the program's own steps are listed: a zone with no
+    valve that no step names is not left out of this run."""
     from tests.test_program_status import _program
 
-    hass, coord = _status_with([_program([{"time": "06:00"}])])
+    hass, coord = _status_with([_program([{"time": "06:00"}], steps=[{"zones": [1]}])])
     coord.store.by_id[0][const.ZONE_LINKED_ENTITY] = None
 
     [first, *_] = await coord.async_planning(1)

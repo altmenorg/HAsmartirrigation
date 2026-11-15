@@ -107,7 +107,7 @@ The per-zone **safety off mode** picks the behaviour: `auto` (the default) uses 
 
 ### Cycle and soak, and the pause between zones
 
-Two settings of the main program, in **Watering**, under **Order of the zones and pauses** (and in its [YAML](usage-full-controller.md#a-program-in-yaml) as `passes`, `soak_minutes` and `pause_between_zones`), both off by default, for an installation that is already tuned.
+Two general settings, both off by default, for an installation that is already tuned. With **Calculate and water**, each step of a [program](usage-full-controller.md#programs) has its own number of passes, and the soak time between them is one setting for every program, shown next to a step's passes; the order, passes and pause of the [Irrigate all zones](usage-full-controller.md#irrigate-all-zones-now) button are folded at the bottom of **Watering > Programs**. With **Calculate only** they are in the settings, for the start trigger's timing.
 
 **Water in several passes** splits a run into shorter passes with a pause between them. Clay and compacted soil have an infiltration rate: past it the water runs off or puddles, and the zone is billed for water the roots never see. Three passes of five minutes with fifteen minutes of soaking deliver the same water as one run of fifteen minutes, and the soil keeps more of it. Guidance: sand takes water as fast as you can give it, so leave this at one pass; loam rarely needs more than two; clay and slopes are what it is for.
 
@@ -119,7 +119,7 @@ Both lengthen the run without adding water to it, and a start trigger that has t
 
 ### Events for your own automations
 
-When Smart Irrigation waters, it fires events you can use to notify or react, so you do not need one automation per zone:
+When Smart Irrigation waters, it fires events you can use to notify or react, so you do not need one automation per zone. With **Calculate and water**, the first two come from the run of the [Irrigate all zones](usage-full-controller.md#irrigate-all-zones-now) button, and from the program with the id `main` (the one that was the [main program](usage-full-controller.md#no-main-program)), so an automation written for them keeps working; every program also fires `smart_irrigation_program_started` and `smart_irrigation_program_finished`.
 
 - `smart_irrigation_irrigation_started` when a run begins. Data: `sequencing` (`sequential`/`parallel`) and `zones`, a list of `{zone_id, zone, seconds}` about to be watered.
 - `smart_irrigation_irrigation_finished` when the whole run is done. Data: `zones`, a list of `{zone_id, zone, seconds, volume_l, bucket}` that ran (volume delivered and the new water balance), and `problems`, a list of `{zone_id, zone, reason}` for zones that delivered no water: the valve did not open (`valve_did_not_open`), or it opened and the zone's flow meter did not move (`no_flow`). A valve that watered but would not close is still in `zones`, since the water it delivered is credited, and is reported by its own `smart_irrigation_zone_problem` event.

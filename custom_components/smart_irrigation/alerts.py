@@ -44,22 +44,17 @@ DOCS_URL = (
 def covered_zones(programs, zone_ids, is_suspended) -> set:
     """The zone ids some program will still water.
 
-    The main program (the cycle the start triggers run) waters every zone while
-    it is enabled and not suspended. Another program does when it is enabled,
-    not suspended, has an enabled schedule and an enabled step with the zone in
-    it. ``is_suspended(program_id)`` says whether a program is suspended.
+    A program does when it is not suspended, has a schedule switched on and a
+    step switched on with the zone in it: a zone no program names is watered
+    by nothing. ``is_suspended(program_id)`` says whether a program is
+    suspended.
     """
     covered: set = set()
     everyone = {int(z) for z in zone_ids}
     for program in programs or []:
         if not isinstance(program, dict):
             continue
-        if program.get(const.PROGRAM_ENABLED) is False:
-            continue
         if is_suspended(program.get(const.PROGRAM_ID)):
-            continue
-        if program.get(const.PROGRAM_MAIN):
-            covered |= everyone
             continue
         if not any(
             s.get(const.SCHEDULE_ENABLED) is not False

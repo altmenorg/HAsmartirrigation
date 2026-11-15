@@ -53,8 +53,8 @@ import { askConfirmation } from "../../dialogs/confirmation-dialog";
 
 /**
  * The live state, with the programs the overview has running and the live
- * state does not: the main program run by the start trigger waters zone by
- * zone without a program run of its own, and was left out of the card.
+ * state does not (one finishing what a restart interrupted has no run of its
+ * own yet), which were left out of the card.
  */
 const withOverviewRuns = (state: any): LiveState | null => {
   const live: LiveState | null = state?.live ?? null;
@@ -87,8 +87,9 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
   @property({ type: Array })
   private zones: SmartIrrigationZone[] = [];
 
-  // The main program's next start when its own schedules start it.
-  private mainScheduleStart: string | null = null;
+  // With "Calculate and water", the soonest start of the programs' schedules:
+  // they start the watering, not the start trigger.
+  private programsStart: string | null = null;
   // The runs of the next morning (or evening), in the order they will water,
   // from the planning, with the full controller.
   private nextRuns: any[] = [];
@@ -185,25 +186,22 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       this.info = info;
       this.zones = zones;
       this._fetchRetries = 0;
-      // Started by the main program's schedules, the next start is theirs, not
-      // the one worked out from the start trigger.
-      this.mainScheduleStart = null;
+      // Started by the programs' schedules, the next start is theirs, not the
+      // one worked out from the start trigger.
+      this.programsStart = null;
       this.nextRuns = [];
       if ((config as any)?.full_controller === true) {
         try {
           const state = await this.hass!.callWS<any>({
             type: DOMAIN + "/programs_state",
           });
-          const programs = state?.programs || [];
-          const main = programs.find((p: any) => p.main);
-          if ((info as any)?.start_source === "main_schedules") {
-            this.mainScheduleStart = main?.next_start ?? null;
-          }
-          // The card above is the main program's run. Other programs may
-          // start sooner, and "Next program: Morgens" stood among the main
-          // program's trigger and order as if they were Morgens' (UX walk of
-          // 13 Nov., Q11). The next runs are listed in the order they will
-          // water, each with what holds it back or makes it wait.
+          const starts = (state?.programs || [])
+            .map((p: any) => p.next_start)
+            .filter((start: unknown): start is string => !!start)
+            .sort((a: string, b: string) => Date.parse(a) - Date.parse(b));
+          this.programsStart = starts[0] ?? null;
+          // The next runs are listed in the order they will water, each with
+          // what holds it back or makes it wait (UX walk of 13 Nov., Q11).
           const planning = await this.hass!.callWS<any[]>({
             type: DOMAIN + "/planning",
             days: 2,
@@ -360,9 +358,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     // (UX walk of 13 Nov., Q8).
     const waiting = (live?.programs || []).filter((p) => p.state === "waiting");
     const programName = (p: { program_id?: string; name?: string | null }) =>
-      p.program_id === "main" && (!p.name || p.name === "Main program")
-        ? localize("programs.main_name", this._lang)
-        : p.name || this.t("cards.running.program");
+      p.name || this.t("cards.running.program");
     // With no valve open, "watering" was wrong: the zones soak between two
     // passes, or the pump is coming up (UX walk of 13 Nov., Q6, Q18).
     const headline = paused
@@ -486,11 +482,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
             ${programs.map((program) => {
               // Joined as text: the template's line breaks put a space
               // before the comma ("Schritt 1/2 , noch 1 h 01 min").
-              const name =
-                program.program_id === "main" &&
-                (!program.name || program.name === "Main program")
-                  ? localize("programs.main_name", this._lang)
-                  : program.name || this.t("cards.running.program");
+              const name = program.name || this.t("cards.running.program");
               const bits: string[] = [];
               if (program.steps) {
                 bits.push(
@@ -799,25 +791,42 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
         </ha-card>
       `;
     }
-    const zones = info?.next_irrigation_zones ?? [];
+    // With "Calculate and water" the programs water, each its own zones: the
+    // run above is the first one planned, not every zone of the installation.
+    const full = this.config?.full_controller === true;
+    const firstRun = full ? this.nextRuns[0] : undefined;
+    const zones: string[] = full
+      ? [
+          ...new Set<string>(
+            (firstRun?.steps || []).flatMap((step: any) =>
+              (step.zones || []).map((z: any) => z.zone ?? `#${z.zone_id}`),
+            ),
+          ),
+        ]
+      : (info?.next_irrigation_zones ?? []);
     // Owed a run under full control with no valve to open: left out of the run
     // above, and named, with a way to the zone (#969).
     const withoutValve = ((info as any)?.zones_without_valve ?? []) as {
       id: number;
       name: string;
     }[];
-    const seconds = info?.next_irrigation_duration ?? 0;
+    const seconds = full
+      ? Number(firstRun?.expected_seconds ?? 0)
+      : (info?.next_irrigation_duration ?? 0);
     const postponed = (info as any)?.skip_preview?.checks?.find(
       (check: any) => check.id === "postponed" && check.skip,
     );
     const skipped = info?.skip_preview?.should_skip
       ? info?.skip_preview?.reason
       : null;
-    // The main program's own schedules start it in place of the trigger: the
+    // The programs' schedules start the watering in place of the trigger: the
     // trigger is not armed and its start time is not the one that counts.
-    const bySchedules = (info as any)?.start_source === "main_schedules";
+    const bySchedules =
+      full ||
+      (!!(info as any)?.start_source &&
+        (info as any).start_source !== "trigger");
     const startAt = bySchedules
-      ? this.mainScheduleStart
+      ? (firstRun?.start ?? this.programsStart)
       : info?.next_irrigation_start;
     const start = startAt
       ? localizedDateTime(startAt, this.hass, {
@@ -918,15 +927,13 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
             ? html`<span
                 >${this._setIn(
                   "programs",
-                  this.t("cards.next-run.main-schedules"),
+                  this.t("cards.next-run.program-schedules"),
                 )}</span
               >`
             : html`<span>
                 ${this.t("cards.next-run.labels.trigger")}:
                 ${this._setIn(
-                  // With the full controller the trigger is the main
-                  // program's, and is set with it.
-                  this.config?.full_controller ? "programs" : "general",
+                  "general",
                   info?.trigger_name ??
                     this.t("cards.next-run.trigger-default"),
                 )}
@@ -960,7 +967,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                 )}</span
               >`
             : ""}
-          ${info?.zone_sequencing
+          ${info?.zone_sequencing && !full
             ? html`<span
                 >${this.t(
                   `cards.next-run.sequencing-${info.zone_sequencing}`,
@@ -975,10 +982,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     `;
   }
 
-  /**
-   * The next runs, in the order they will water, then a heading for what
-   * follows: the trigger and the order below are the main program's (Q11).
-   */
+  /** The next runs, in the order they will water (Q11). */
   private renderNextRuns(): TemplateResult {
     if (!this.nextRuns.length) return html``;
     const clock = (iso: string) =>
@@ -992,10 +996,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
         hour: "2-digit",
         minute: "2-digit",
       });
-    const label = (id?: string, name?: string) =>
-      id === "main" && (!name || name === "Main program")
-        ? localize("programs.main_name", this._lang)
-        : (name ?? id ?? "");
+    const label = (id?: string, name?: string) => name || id || "";
     return html`
       <span class="next-runs-head">${this.t("cards.next-run.next-runs")}</span>
       ${this.nextRuns.map((run: any) => {
@@ -1039,9 +1040,6 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
             : ""}</span
         >`;
       })}
-      <span class="next-runs-head"
-        >${localize("programs.main_name", this._lang)}</span
-      >
     `;
   }
 
@@ -1052,10 +1050,10 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     return html`
       <ha-card
         header="${
-          // The answer is for the main program's run: with other runs named
-          // above, "Will it be skipped?" read as about them (Q22).
-          this.nextRuns.length
-            ? this.t("cards.decision.title-main")
+          // The answer is for the next run: with several runs named above,
+          // "Will it be skipped?" did not say which (Q22).
+          this.nextRuns.length > 1
+            ? this.t("cards.decision.title-next")
             : this.t("cards.decision.title")
         }"
       >

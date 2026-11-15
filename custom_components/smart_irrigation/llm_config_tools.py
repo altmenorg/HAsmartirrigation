@@ -25,6 +25,7 @@ from .llm_api import (
     _result,
     _timeline_summary,
 )
+from .programs import LAST_PROGRAM_MESSAGE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -436,10 +437,6 @@ class SaveProgramTool(_WriteTool):
         if unknown:
             return _error(f"Not saved: no such zone: {unknown}")
         program = preview.pop("program")
-        if program.get(const.PROGRAM_MAIN):
-            # The main program is always on: the mode switches the watering
-            # off, not a hidden "Program on" the panel no longer shows.
-            program[const.PROGRAM_ENABLED] = True
         given = written.get(const.PROGRAM_ID) if isinstance(written, dict) else None
         programs = _programs(coordinator)
         index = next(
@@ -472,8 +469,8 @@ class DeleteProgramTool(_DeleteTool):
 
     name = "DeleteProgram"
     description = (
-        "Delete a watering program (not the main one) and its schedules: "
-        "confirm with the user first."
+        "Delete a watering program and its schedules (not the last one left: "
+        "switch its schedules off instead): confirm with the user first."
     )
     parameters = _parameters({vol.Required("program_id"): str})
 
@@ -483,13 +480,11 @@ class DeleteProgramTool(_DeleteTool):
         coordinator = _coordinator(hass)
         program_id = tool_input.tool_args["program_id"]
         programs = _programs(coordinator)
-        kept = [
-            p
-            for p in programs
-            if p.get(const.PROGRAM_ID) != program_id or p.get(const.PROGRAM_MAIN)
-        ]
+        kept = [p for p in programs if p.get(const.PROGRAM_ID) != program_id]
         if len(kept) == len(programs):
-            return _error("No such program, or it is the main program")
+            return _error("No such program")
+        if not kept:
+            return _error(LAST_PROGRAM_MESSAGE)
         await coordinator.async_update_config({const.CONF_PROGRAMS: kept})
         _LOGGER.info("An assistant deleted program %s", program_id)
         return _result({"deleted": program_id})

@@ -48,6 +48,9 @@ DEPRECATED_ACTIONS: dict[str, str | None] = {
     const.SERVICE_CREATE_RECURRING_SCHEDULE: None,
     const.SERVICE_UPDATE_RECURRING_SCHEDULE: None,
     const.SERVICE_DELETE_RECURRING_SCHEDULE: None,
+    # A program has no on/off of its own any more: this switches every one of
+    # its schedules, which set_schedule_enabled does one at a time.
+    const.SERVICE_SET_PROGRAM_ENABLED: const.SERVICE_SET_SCHEDULE_ENABLED,
 }
 
 # Names warned about since start: the log says it once, the repair issue stays.
@@ -68,7 +71,13 @@ def async_notice(hass: HomeAssistant, action: str) -> None:
         placeholders = {"action": old, "version": REMOVED_IN}
         instead = "the programs' schedules (Watering tab)"
     else:
-        translation_key = "deprecated_action"
+        # The program switch does not do "the same" as its replacement: it
+        # switches every schedule, the replacement one at a time.
+        translation_key = (
+            "deprecated_program_enabled"
+            if action == const.SERVICE_SET_PROGRAM_ENABLED
+            else "deprecated_action"
+        )
         placeholders = {
             "action": old,
             "replacement": f"{const.DOMAIN}.{replacement}",

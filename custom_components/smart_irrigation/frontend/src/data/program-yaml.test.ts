@@ -12,8 +12,6 @@ const zones: any[] = [
 const program: any = {
   id: "evening",
   name: "Evening",
-  enabled: true,
-  main: false,
   delay: 0,
   tours: 1,
   steps: [
@@ -123,19 +121,19 @@ describe("programToYaml", () => {
   });
 
   it("says what is not the default on the program", () => {
-    const off: any = programToYaml(
-      { ...program, enabled: false, delay: 60, tours: 2 },
-      zones,
-    );
-    expect([off.enabled, off.delay, off.tours]).toEqual([false, 60, 2]);
+    const off: any = programToYaml({ ...program, delay: 60, tours: 2 }, zones);
+    expect([off.delay, off.tours]).toEqual([60, 2]);
+    // There is no "Program on" any more: a program is off by its schedules.
+    expect("enabled" in off).toBe(false);
   });
 });
 
 describe("programFromYaml", () => {
   it("keeps the program it replaces, renamed or not", () => {
-    expect(
-      programFromYaml({ id: "other", name: "Renamed", main: true }, program),
-    ).toEqual({ id: "evening", name: "Renamed" });
+    expect(programFromYaml({ id: "other", name: "Renamed" }, program)).toEqual({
+      id: "evening",
+      name: "Renamed",
+    });
   });
 
   it("takes a new program as written", () => {
@@ -161,41 +159,21 @@ describe("notifications in YAML", () => {
   });
 });
 
-describe("the main program in YAML", () => {
-  it("has its name, schedules and notifications, and no steps", () => {
-    const main = {
+describe("the program that was the main one, in YAML", () => {
+  it("is written as any other: id, name, steps", () => {
+    const converted = {
       id: "main",
-      name: "Main program",
-      enabled: true,
-      main: true,
+      name: "Watering",
+      steps: [{ id: "zone_1", zones: [1], delay: 30 }],
       schedules: [],
     };
-    const yaml = programToYaml(main as any, zones);
-    expect(yaml.steps).toBeUndefined();
+    const yaml: any = programToYaml(converted as any, zones);
     expect(yaml.id).toBe("main");
-    expect(programFromYaml({ name: "Morning" }, main as any)).toEqual({
+    expect(yaml.steps).toEqual([{ id: "zone_1", zones: ["Lawn"], delay: 30 }]);
+    expect(Object.keys(yaml)).not.toContain("sequencing");
+    expect(programFromYaml({ name: "Morning" }, converted as any)).toEqual({
       id: "main",
       name: "Morning",
     });
-  });
-});
-
-describe("the main program's settings in YAML", () => {
-  it("come after its name", () => {
-    const main = { id: "main", name: "Main", enabled: true, main: true };
-    const yaml = programToYaml(main as any, zones, {
-      sequencing: "sequential",
-      passes: 2,
-      soak_minutes: 15,
-      pause_between_zones: 0,
-    });
-    expect(Object.keys(yaml).slice(0, 6)).toEqual([
-      "id",
-      "name",
-      "sequencing",
-      "passes",
-      "soak_minutes",
-      "pause_between_zones",
-    ]);
   });
 });

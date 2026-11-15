@@ -3,9 +3,8 @@
  * the order they will water.
  *
  * The planning places each run behind the one it waits for
- * (`expected_start`). Start named only the soonest program, among the main
- * program's trigger and order, as if they were its own (UX walk of 13 Nov.,
- * Q11); a second program due the same morning was not mentioned at all.
+ * (`expected_start`). Start named only the soonest program (UX walk of 13
+ * Nov., Q11); a second program due the same morning was not mentioned at all.
  */
 export interface PlannedRun {
   program_id?: string;
@@ -21,8 +20,7 @@ const begins = (run: PlannedRun): number =>
 
 /**
  * The runs still to come that begin within `windowHours` of the first, at
- * most `max`. Empty when the only one is the main program's, which the
- * headline already says.
+ * most `max`.
  */
 export const nextRuns = (
   planning: PlannedRun[],
@@ -38,5 +36,5 @@ export const nextRuns = (
   const runs = ahead
     .filter((run) => begins(run) < first + windowHours * 3600 * 1000)
     .slice(0, max);
-  return runs.some((run) => run.program_id !== "main") ? runs : [];
+  return runs;
 };

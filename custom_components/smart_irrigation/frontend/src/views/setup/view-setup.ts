@@ -20,6 +20,7 @@ import {
   SmartIrrigationConfig,
   SmartIrrigationMapping,
   SmartIrrigationModule,
+  SmartIrrigationProgram,
 } from "../../types";
 import {
   engineModeLabel,
@@ -36,6 +37,7 @@ import {
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
+import { NEW_PROGRAM, placeNewZone } from "../../data/setup-program";
 import {
   DOMAIN,
   MAPPING_CONF_SENSOR,
@@ -140,6 +142,11 @@ class SmartIrrigationViewSetup extends LitElement {
   // asked for. No sensor is suggested: a weather integration's own rain
   // sensors can be a nowcast, which is the forecast this path keeps out.
   @state() private serviceHasRain = true;
+  // With "Calculate and water", the program the zone goes in: its id, or
+  // NEW_PROGRAM; unset, the only program there is (setup-program.ts).
+  @state() private programChoice = "";
+  // Where the zone went, for the last page to say so.
+  @state() private placed?: { name: string; created: boolean };
 
   firstUpdated() {
     loadHaForm().catch(() => undefined);
@@ -318,9 +325,13 @@ class SmartIrrigationViewSetup extends LitElement {
             <div class="note">${this.t(next)}</div>
             ${this.mode === "water"
               ? html`<div class="note">
-                  ${this.t(
-                    this.valve ? "done-next-water" : "done-next-no-valve",
-                  )}
+                  ${this.placed
+                    ? this.t(
+                        this.placed.created
+                          ? "done-next-new-program"
+                          : "done-next-added",
+                      ).replace("{program}", this.placed.name)
+                    : this.t("done-next-no-valve")}
                 </div>`
               : ""}
             ${this.calcResult?.text
@@ -686,6 +697,7 @@ class SmartIrrigationViewSetup extends LitElement {
             ${this.valve || this.t("steps.review.no-valve")}
           </div>
         </div>
+        ${this.renderProgramChoice()}
         <div class="setting-row">
           <div class="setting-label">${this.t("steps.review.environment")}</div>
           <div class="review-value">
@@ -720,6 +732,72 @@ class SmartIrrigationViewSetup extends LitElement {
       </div>
       <div class="note">${this.t("steps.review.help")}</div>
     `;
+  }
+
+  /** The programs of the installation, as last read. */
+  private get programs(): SmartIrrigationProgram[] {
+    return ((this.config as any)?.programs || []) as SmartIrrigationProgram[];
+  }
+
+  /**
+   * Which program waters the zone, asked only when there is a choice: with
+   * "Calculate and water", a valve, and more than one program. With one, the
+   * zone becomes its last step; with none, a new program waters it.
+   */
+  private renderProgramChoice(): TemplateResult {
+    if (this.mode !== "water" || !this.valve || this.programs.length < 2) {
+      return html``;
+    }
+    const chosen = this.programChoice || this.programs[0]?.id || NEW_PROGRAM;
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">${this.t("steps.review.program")}</div>
+        <select
+          class="field"
+          @change=${(e: Event) => {
+            this.programChoice = (e.target as HTMLSelectElement).value;
+          }}
+        >
+          ${this.programs.map(
+            (program) =>
+              html`<option
+                value=${program.id ?? ""}
+                ?selected=${program.id === chosen}
+              >
+                ${program.name || program.id}
+              </option>`,
+          )}
+          <option value=${NEW_PROGRAM} ?selected=${chosen === NEW_PROGRAM}>
+            ${this.t("steps.review.new-program")}
+          </option>
+        </select>
+      </div>
+    `;
+  }
+
+  /**
+   * Put the new zone in a program, so that it is watered: there is no program
+   * that waters every zone. Read again first, as switching to "Calculate and
+   * water" may have just changed the programs.
+   */
+  private async _placeZone(zoneId: number): Promise<void> {
+    if (!this.hass) return;
+    const config = await fetchConfig(this.hass);
+    const placement = placeNewZone(
+      ((config as any)?.programs || []) as SmartIrrigationProgram[],
+      zoneId,
+      {
+        target: this.programChoice || undefined,
+        newName: this.t("new-program-name"),
+        passes: Number((config as any)?.watering_passes ?? 1) || 1,
+        id: () => Math.random().toString(36).slice(2, 8),
+      },
+    );
+    await saveConfig(this.hass, { programs: placement.programs } as any);
+    this.placed = {
+      name: placement.program.name || placement.program.id || "",
+      created: placement.created,
+    };
   }
 
   /**
@@ -882,6 +960,14 @@ class SmartIrrigationViewSetup extends LitElement {
         .filter((zone) => zone.name === this.zoneName.trim())
         .map((zone) => Number(zone.id));
       this.createdZoneId = ids.length ? Math.max(...ids) : undefined;
+      this.placed = undefined;
+      if (
+        this.mode === "water" &&
+        this.valve &&
+        this.createdZoneId !== undefined
+      ) {
+        await this._placeZone(this.createdZoneId);
+      }
       this.done = true;
     } catch (e) {
       console.error("Setup wizard: could not create the zone", e);
@@ -958,6 +1044,14 @@ class SmartIrrigationViewSetup extends LitElement {
     this.sensors = {};
     this.suggested = [];
     this.staticDelta = "";
+    this.programChoice = "";
+    this.placed = undefined;
+    // The zone just made is in a program now: the next one is placed among
+    // the programs as they are.
+    if (this.hass)
+      fetchConfig(this.hass)
+        .then((config) => (this.config = config))
+        .catch(() => undefined);
   }
 
   /**

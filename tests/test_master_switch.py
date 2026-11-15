@@ -163,7 +163,7 @@ async def test_off_the_info_announces_no_start():
     from custom_components.smart_irrigation import websockets
 
     coordinator = MagicMock()
-    coordinator.main_program_uses_schedules = lambda: False
+    coordinator.schedules_start_watering = lambda: False
     coordinator.async_main_program_next_start = AsyncMock(return_value=None)
     coordinator.store.async_get_zones = AsyncMock(return_value=[])
     coordinator.store.async_get_config = AsyncMock(return_value={})

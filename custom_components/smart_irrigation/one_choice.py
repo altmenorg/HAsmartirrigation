@@ -6,12 +6,16 @@ the full controller switch, direct valve control, the start trigger of the main
 program and the main program's own "Program on". Here:
 
 - "Calculate and water" is the full controller, and with it the valves. The
-  main program is started by its own schedules only; the start trigger is for
+  programs are started by their own schedules only; the start trigger is for
   "Calculate only", where it fires the start event an automation listens to.
 - ``migration_changes`` moves an installation over once, so that it keeps
   watering exactly as before: direct valve control alone becomes the full
   controller, the active start trigger becomes a schedule of the main program,
-  and a main program switched off becomes one whose schedules are off.
+  and a main program switched off becomes one whose schedules are off. The
+  main program it works on is then converted into an ordinary program
+  (program_migration.py), so this part only matters to an old store.
+- ``first_program`` gives "Calculate and water" a program when there is none,
+  so that choosing it never leaves the zones watered by nothing.
 """
 
 from __future__ import annotations
@@ -21,9 +25,12 @@ from typing import Any
 from . import const
 from .programs import (
     MAIN_PROGRAM_ID,
-    ensure_main_program,
+    MAIN_PROGRAM_NAME,
     find_program,
     normalize_programs,
+    watering_name,
+    zone_steps,
+    zones_with_valve,
 )
 
 # The repair that tells, once, that direct valve control became "Calculate and
@@ -161,27 +168,58 @@ def schedule_from_trigger(config: Any) -> dict | None:
     return schedule
 
 
-def seed_main_schedules(config: Any, programs) -> list:
-    """The programs, the main program given its trigger's schedule if it has none.
+def first_program(config: Any, zones, programs, language=None) -> list:
+    """The programs, or a first one when there is none.
 
-    A main program with schedules of its own keeps them as they are.
+    "Calculate and water" with no program would water nothing, silently. The
+    first program waters the zones with a valve as the general settings order
+    them (one after the other with the pause between zones, or all at once,
+    in the general passes), and starts at the moment of the active start
+    trigger. Programs that are there are kept as they are. It is named in
+    ``language``, Home Assistant's.
     """
-    programs = ensure_main_program(programs)
-    main = find_program(programs, MAIN_PROGRAM_ID)
-    if main is None or main.get(const.PROGRAM_SCHEDULES):
+    programs = [p for p in programs or [] if isinstance(p, dict)]
+    if programs:
         return programs
     schedule = schedule_from_trigger(config)
-    if schedule is None:
+    program = {
+        const.PROGRAM_ID: "watering",
+        const.PROGRAM_NAME: watering_name(language),
+        const.PROGRAM_STEPS: zone_steps(
+            zones_with_valve(zones, include_disabled=True),
+            _value(
+                config, const.CONF_ZONE_SEQUENCING, const.CONF_DEFAULT_ZONE_SEQUENCING
+            ),
+            _value(
+                config, const.CONF_WATERING_PASSES, const.CONF_DEFAULT_WATERING_PASSES
+            ),
+            _value(
+                config,
+                const.CONF_PAUSE_BETWEEN_ZONES,
+                const.CONF_DEFAULT_PAUSE_BETWEEN_ZONES,
+            ),
+        ),
+        const.PROGRAM_SCHEDULES: [schedule] if schedule is not None else [],
+    }
+    return normalize_programs([program])
+
+
+def _with_legacy_main(programs) -> list:
+    """The programs with the old main program, created if it is missing.
+
+    The full controller always had one, stored or not: the move below gives it
+    the trigger's schedule, and the conversion that follows turns it into an
+    ordinary program. deprecated: remove in 2027.11
+    """
+    programs = [dict(p) for p in (programs or []) if isinstance(p, dict)]
+    if any(p.get(const.PROGRAM_ID) == MAIN_PROGRAM_ID for p in programs):
         return programs
-    seeded = [
-        (
-            {**p, const.PROGRAM_SCHEDULES: [schedule]}
-            if p.get(const.PROGRAM_ID) == MAIN_PROGRAM_ID
-            else p
-        )
-        for p in programs
-    ]
-    return normalize_programs(seeded)
+    legacy = {
+        const.PROGRAM_ID: MAIN_PROGRAM_ID,
+        const.PROGRAM_NAME: MAIN_PROGRAM_NAME,
+        const.PROGRAM_MAIN: True,
+    }
+    return [legacy, *programs]
 
 
 def migration_changes(config: Any) -> dict:
@@ -206,7 +244,7 @@ def migration_changes(config: Any) -> dict:
         return changes
     programs = list(_value(config, const.CONF_PROGRAMS, None) or [])
     seeded = programs
-    main = find_program(ensure_main_program(programs), MAIN_PROGRAM_ID) or {}
+    main = find_program(_with_legacy_main(programs), MAIN_PROGRAM_ID) or {}
     has_enabled = any(
         isinstance(s, dict) and s.get(const.SCHEDULE_ENABLED) is not False
         for s in main.get(const.PROGRAM_SCHEDULES) or []
@@ -228,7 +266,7 @@ def migration_changes(config: Any) -> dict:
                     if p.get(const.PROGRAM_ID) == MAIN_PROGRAM_ID
                     else p
                 )
-                for p in ensure_main_program(programs)
+                for p in _with_legacy_main(programs)
             ]
     if main.get(const.PROGRAM_ENABLED) is False:
         # "Program on" goes for the main program: off, nothing started it on
@@ -246,8 +284,10 @@ def migration_changes(config: Any) -> dict:
                 if p.get(const.PROGRAM_ID) == MAIN_PROGRAM_ID
                 else p
             )
-            for p in ensure_main_program(seeded)
+            for p in _with_legacy_main(seeded)
         ]
     if seeded is not programs:
-        changes[const.CONF_PROGRAMS] = normalize_programs(seeded)
+        # Stored as it was, the main program marked: the conversion of the
+        # main program that runs next gives it its steps.
+        changes[const.CONF_PROGRAMS] = seeded
     return changes

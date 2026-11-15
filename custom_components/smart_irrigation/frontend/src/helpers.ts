@@ -438,8 +438,13 @@ export function showErrorDialog(
 }
 
 export function handleError(err: any, ev: Event | HTMLElement) {
+  // What the backend said when it refused (a save of the programs that would
+  // delete the last one, say), whatever shape the error came in.
+  const message = err?.body?.message ?? err?.message;
   const errorMessage = html`
-    ${err.error}:${err.body.message ? html` ${err.body.message} ` : ""}
+    ${err?.error ?? ""}${err?.error && message ? ":" : ""}${message
+      ? html` ${message} `
+      : ""}
   `;
   showErrorDialog(ev, errorMessage);
 }
@@ -949,15 +954,13 @@ export function countLabel(
 }
 
 /**
- * Whether a program has anything to water: the main program always, another
- * one once a step it runs has a zone. A new program headed its empty card
- * with "Run now" (UX walk of 9 Nov., evening).
+ * Whether a program has anything to water: once a step it runs has a zone. A
+ * new program headed its empty card with "Run now" (UX walk of 9 Nov.,
+ * evening).
  */
 export function programCanRun(program: {
-  main?: boolean;
   steps?: { zones?: unknown[]; enabled?: boolean }[];
 }): boolean {
-  if (program.main) return true;
   return (program.steps || []).some(
     (step) => step.enabled !== false && (step.zones || []).length > 0,
   );

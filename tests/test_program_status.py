@@ -137,6 +137,7 @@ async def test_the_overview_gives_each_programs_state_and_next_start():
         [
             {"id": "main"},
             _program([{"time": "06:00"}]),
+            # The old "Program on" switched off: its schedules are off now.
             _program([{"time": "06:00"}], id="off", name="Off", enabled=False),
             _program([{"time": "06:00"}], id="away", name="Away"),
         ]
@@ -148,7 +149,9 @@ async def test_the_overview_gives_each_programs_state_and_next_start():
     assert overview["main"]["state"] == "idle"
     assert overview["evening"]["state"] == "idle"
     assert overview["evening"]["next_start"] == _utc(1, 6).isoformat()
-    assert overview["off"]["state"] == "disabled"
+    # No program-level "disabled": it is idle, and nothing starts it.
+    assert overview["off"]["state"] == "idle"
+    assert overview["off"]["next_start"] is None
     assert overview["away"]["state"] == "suspended"
     assert overview["away"]["suspended_until"] is not None
 

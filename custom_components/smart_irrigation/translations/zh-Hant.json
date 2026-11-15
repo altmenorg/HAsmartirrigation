@@ -38,19 +38,7 @@
           "waiting": "等待中",
           "running": "執行中",
           "paused": "已暫停",
-          "suspended": "已擱置",
-          "disabled": "已停用"
-        }
-      },
-      "program_main": {
-        "name": "主程式",
-        "state": {
-          "idle": "閒置",
-          "waiting": "等待中",
-          "running": "執行中",
-          "paused": "已暫停",
-          "suspended": "已擱置",
-          "disabled": "已停用"
+          "suspended": "已擱置"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "計算並澆水"
-      },
-      "program_on": {
-        "name": "程式 {name} 開啟"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "啟用或停用程式",
-      "description": "開啟或關閉完整控制器的程式，作用與其設定中的開關相同。",
+      "name": "開啟或關閉程式的所有排程（已棄用）",
+      "description": "已棄用：開啟或關閉一個程式的所有排程。程式不再有自己的開關；單一排程請使用 set_schedule_enabled。將於 2027.11 移除。",
       "fields": {
         "program_id": {
           "name": "程式",
@@ -769,6 +754,10 @@
     "deprecated_action": {
       "title": "動作 {action} 即將移除",
       "description": "有自動化、腳本或儀表板呼叫了 **{action}**。它目前仍可運作，但將自 {version} 版起移除，並安排在冬季、非澆水季節進行。\n\n請改用 **{replacement}**：功能相同，且未選擇區域時會套用於所有區域。每次呼叫舊名稱時，此通知都會再次出現，直到不再有任何呼叫為止。"
+    },
+    "deprecated_program_enabled": {
+      "title": "操作 {action} 即將移除",
+      "description": "某個自動化、腳本或儀表板呼叫了 **{action}**。程式不再有自己的開關，因此它現在會開啟或關閉該程式的所有排程。它將從 {version} 版起移除，在冬季、澆水季節之外。\n\n請改用 **{replacement}**，每個排程呼叫一次。每次呼叫舊名稱時此通知都會再次出現，直到不再有呼叫。"
     },
     "deprecated_recurring_schedule": {
       "title": "週期排程即將移除：{action}",

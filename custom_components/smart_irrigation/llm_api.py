@@ -53,9 +53,9 @@ forecast, frost, wind, a moist soil, days between waterings).
 Programs (mode `water`): a program is an ordered list of steps; a step is \
 one zone, or several watered together. A step takes the duration Smart \
 Irrigation calculated unless it is a percent of it or a fixed number of \
-seconds. Schedules say when a program starts (or must be done). The main \
-program waters every zone in the classic cycle and is started by its own \
-schedules; it is always on (the mode switches the watering off).
+seconds. Schedules say when a program starts (or must be done); a program \
+whose schedules are all off starts only when run by hand. All programs are \
+equal: a zone is watered only by the programs whose steps name it.
 
 Durations are in seconds and depths in mm unless a field says otherwise. \
 Weekdays are numbered from 0 (Monday) to 6 (Sunday). No tool here runs a \
@@ -277,14 +277,11 @@ class GetPlanningTool(_ReadOnlyTool):
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
     ) -> Any:
         from .planning_sequence import sequence_planning
-        from .websockets import _trigger_starts
 
         coordinator = _coordinator(hass)
         days = int(tool_input.tool_args.get("days", 3))
         planned = sequence_planning(
-            await coordinator.async_planning(
-                days, trigger_starts=await _trigger_starts(hass, coordinator, days)
-            ),
+            await coordinator.async_planning(days),
             keys=lambda item: coordinator.program_turn_keys(item.get("program_id")),
         )
         runs: list[Any] = []

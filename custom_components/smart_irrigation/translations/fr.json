@@ -38,19 +38,7 @@
           "waiting": "En attente",
           "running": "En cours",
           "paused": "En pause",
-          "suspended": "Suspendu",
-          "disabled": "Désactivé"
-        }
-      },
-      "program_main": {
-        "name": "Programme principal",
-        "state": {
-          "idle": "Au repos",
-          "waiting": "En attente",
-          "running": "En cours",
-          "paused": "En pause",
-          "suspended": "Suspendu",
-          "disabled": "Désactivé"
+          "suspended": "Suspendu"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Calculer et arroser"
-      },
-      "program_on": {
-        "name": "Programme {name} actif"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Activer ou désactiver un programme",
-      "description": "Activer ou désactiver un programme du contrôleur complet, comme l'interrupteur de ses réglages.",
+      "name": "Activer ou désactiver tous les horaires d'un programme (obsolète)",
+      "description": "Obsolète : active ou désactive tous les horaires d'un programme. Un programme n'a plus d'interrupteur à lui ; utilise set_schedule_enabled pour un horaire. Retirée en 2027.11.",
       "fields": {
         "program_id": {
           "name": "Programme",
@@ -769,6 +754,10 @@
     "deprecated_action": {
       "title": "L'action {action} va disparaître",
       "description": "Une automatisation, un script ou un tableau de bord a appelé **{action}**. Elle fonctionne encore, mais elle sera retirée à partir de la version {version}, en hiver, hors de la saison d'arrosage.\n\nUtilise **{replacement}** à la place : elle fait la même chose, et pour toutes les zones quand aucune zone n'est choisie. Cet avis revient à chaque appel de l'ancien nom, jusqu'à ce qu'il n'en reste plus."
+    },
+    "deprecated_program_enabled": {
+      "title": "L'action {action} va disparaître",
+      "description": "Une automatisation, un script ou un tableau de bord a appelé **{action}**. Un programme n'a plus d'interrupteur à lui : elle active ou désactive donc maintenant tous les horaires du programme. Elle sera retirée à partir de la version {version}, en hiver, hors de la saison d'arrosage.\n\nUtilise **{replacement}** à la place, une fois par horaire. Cet avis revient à chaque appel de l'ancien nom, jusqu'à ce qu'il n'en reste plus."
     },
     "deprecated_recurring_schedule": {
       "title": "Les planifications récurrentes vont disparaître : {action}",

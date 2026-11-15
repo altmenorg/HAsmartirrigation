@@ -5,13 +5,13 @@ that is added gets its sensor, one that is deleted loses it. Each sensor reads
 what the coordinator publishes (program_status.py) when something changes, so it
 is never polled.
 
-The state is one of idle, waiting, running, paused, suspended or disabled. The
+The state is one of idle, waiting, running, paused or suspended. The
 next start, the last run, the length of the suspension and, while it runs, the
 step it is on and how far along it is, are attributes.
 
-The name and the states come from the translations: in German the main
-program's sensor was "Smart Irrigation Program Main program", reading "idle".
-The entity ID stays the English one it always had.
+The name and the states come from the translations: in German a program's
+sensor is "Smart Irrigation Programm <name>", reading "Bereit". The entity ID
+stays the one it was given, the old main program's included.
 """
 
 import logging
@@ -38,7 +38,6 @@ _ICONS = {
     "running": "mdi:sprinkler-variant",
     "paused": "mdi:pause-circle",
     "suspended": "mdi:calendar-remove",
-    "disabled": "mdi:calendar-blank",
 }
 
 
@@ -55,11 +54,8 @@ class SmartIrrigationProgramSensor(SensorEntity):
         self.entity_id = (
             f"{PLATFORM}.{const.DOMAIN}_program_{slugify(self._program_id)}"
         )
-        # The main program has one name, which the panel does not let anyone
-        # change; another program is "Program <its name>".
-        self._attr_translation_key = (
-            "program_main" if overview.get("main") else "program"
-        )
+        # "Program <its name>", whichever program it is.
+        self._attr_translation_key = "program"
         self._attr_translation_placeholders = self._placeholders(overview)
 
     def _placeholders(self, overview: dict) -> dict[str, str]:
@@ -86,7 +82,6 @@ class SmartIrrigationProgramSensor(SensorEntity):
         overview = self._overview
         attributes = {
             "program_id": self._program_id,
-            "main": overview.get("main"),
             "next_start": overview.get("next_start"),
             "last_run": overview.get("last_run"),
             "suspended_until": overview.get("suspended_until"),

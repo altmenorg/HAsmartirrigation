@@ -31,7 +31,7 @@ def _coordinator(zones, *, full=False, planning=None):
     coordinator = MagicMock()
     coordinator.store.async_get_zones = AsyncMock(return_value=zones)
     coordinator.store.config = SimpleNamespace(full_controller=full)
-    coordinator.main_program_uses_schedules = lambda: False
+    coordinator.schedules_start_watering = lambda: False
     coordinator.async_planning = AsyncMock(return_value=planning or [])
     return coordinator
 

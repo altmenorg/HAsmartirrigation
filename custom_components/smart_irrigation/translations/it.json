@@ -38,19 +38,7 @@
           "waiting": "In attesa",
           "running": "In corso",
           "paused": "In pausa",
-          "suspended": "Sospeso",
-          "disabled": "Disattivato"
-        }
-      },
-      "program_main": {
-        "name": "Programma principale",
-        "state": {
-          "idle": "Inattivo",
-          "waiting": "In attesa",
-          "running": "In corso",
-          "paused": "In pausa",
-          "suspended": "Sospeso",
-          "disabled": "Disattivato"
+          "suspended": "Sospeso"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Calcola e irriga"
-      },
-      "program_on": {
-        "name": "Programma {name} attivo"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Attiva o disattiva un programma",
-      "description": "Attiva o disattiva un programma del controller completo, come fa l'interruttore nelle sue impostazioni.",
+      "name": "Attivare o disattivare tutte le programmazioni di un programma (deprecata)",
+      "description": "Deprecata: attiva o disattiva tutte le programmazioni di un programma. Un programma non ha più un interruttore proprio; usa set_schedule_enabled per una programmazione. Sarà rimossa nella 2027.11.",
       "fields": {
         "program_id": {
           "name": "Programma",
@@ -769,6 +754,10 @@
     "deprecated_action": {
       "title": "L'azione {action} sta per essere rimossa",
       "description": "Un'automazione, uno script o una dashboard ha chiamato **{action}**. Funziona ancora, ma verrà rimossa a partire dalla versione {version}, in inverno, fuori dalla stagione irrigua.\n\nUsa **{replacement}** al suo posto: fa la stessa cosa, e per tutte le zone quando non ne è scelta nessuna. Questo avviso ritorna a ogni chiamata del vecchio nome, finché non ne resta nessuna."
+    },
+    "deprecated_program_enabled": {
+      "title": "L'azione {action} sta per sparire",
+      "description": "Un'automazione, uno script o una dashboard ha chiamato **{action}**. Un programma non ha più un interruttore proprio, quindi ora attiva o disattiva tutte le programmazioni del programma. Sarà rimossa dalla versione {version}, in inverno, fuori dalla stagione di irrigazione.\n\nUsa invece **{replacement}**, una volta per programmazione. Questo avviso torna a ogni chiamata del vecchio nome, finché non ne resta nessuna."
     },
     "deprecated_recurring_schedule": {
       "title": "Le pianificazioni ricorrenti stanno per essere rimosse: {action}",

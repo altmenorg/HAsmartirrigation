@@ -58,7 +58,7 @@ async def test_the_zone_sensor_has_no_next_run_under_the_none_trigger():
 
 async def test_the_planning_leaves_out_a_main_run_nothing_will_start():
     coordinator = MagicMock()
-    coordinator.main_program_uses_schedules = lambda: False
+    coordinator.schedules_start_watering = lambda: False
     with patch.object(
         websockets,
         "build_irrigation_info",

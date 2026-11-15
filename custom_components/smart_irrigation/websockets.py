@@ -37,6 +37,7 @@ from .engine_binding import (
 from .master_switch import irrigation_off, watering_off
 from .planning_sequence import sequence_planning
 from .presets import apply_preset, describe_zone
+from .programs import LastProgramError
 from .skip_conditions import SkipConditionsMixin, thresholds_for_display
 from .units import zone_from_display, zone_to_display
 
@@ -173,7 +174,11 @@ class SmartIrrigationConfigView(HomeAssistantView):
         _LOGGER.debug("[websocket]: request: %s %s", request, data)
         hass = request.app["hass"]
         coordinator = hass.data[const.DOMAIN]["coordinator"]
-        await coordinator.async_update_config(data)
+        try:
+            await coordinator.async_update_config(data)
+        except LastProgramError as err:
+            # Refused with its reason, which the panel shows.
+            return self.json_message(str(err), HTTPStatus.BAD_REQUEST)
         async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")
         return self.json({"success": True})
 
@@ -893,9 +898,7 @@ async def websocket_get_planning(hass: HomeAssistant, connection, msg):
     connection.send_result(
         msg["id"],
         sequence_planning(
-            await coordinator.async_planning(
-                days, trigger_starts=await _trigger_starts(hass, coordinator, days)
-            ),
+            await coordinator.async_planning(days),
             keys=lambda item: coordinator.program_turn_keys(item.get("program_id")),
         ),
     )
@@ -929,92 +932,13 @@ async def websocket_program_preview(hass: HomeAssistant, connection, msg):
     )
 
 
-async def _trigger_starts(hass: HomeAssistant, coordinator, days) -> list:
-    """Every start of the start trigger over the next days, the next one first.
-
-    The trigger starts the main program every day, and the planning listed it
-    once, on the next day, under a heading of three (UX walk of 13 Nov., Q10).
-    """
-    first, info = await _trigger_start_and_info(hass, coordinator)
-    if first is None:
-        return []
-    if first.tzinfo is None:
-        first = first.replace(tzinfo=dt_util.get_default_time_zone())
-    horizon = dt_util.utcnow() + datetime.timedelta(
-        days=max(1, min(int(days or 3), 14))
-    )
-    starts = [first]
-    config = await coordinator.store.async_get_config()
-    while len(starts) <= 15:
-        following = _following_trigger_start(
-            hass, coordinator, config, info, starts[-1]
-        )
-        if following is None or following <= starts[-1] or following > horizon:
-            break
-        starts.append(following)
-    return starts
-
-
-def _following_trigger_start(hass, coordinator, config, info, start):
-    """The trigger's start on the day after ``start``, or None if unknown.
-
-    A clock time comes back at the same time of day; a sunrise or sunset start
-    keeps its distance to the sun event, which moves; a solar azimuth start is
-    worked out again from the moment the sun reaches the angle.
-    """
-    base = info.get("trigger_base") or "sunrise"
-    if base in ("sunrise", "sunset") and hass.states.get("sun.sun") is None:
-        # Without sun data the first start is an assumed 6 AM: so are the next.
-        base = const.TRIGGER_TYPE_TIME
-    if base == const.TRIGGER_TYPE_TIME:
-        local = dt_util.as_local(start)
-        return dt_util.as_utc(local + datetime.timedelta(days=1))
-    if base in ("sunrise", "sunset"):
-        try:
-            event = get_astral_event_next(
-                hass, base, start - datetime.timedelta(hours=12)
-            )
-            following = get_astral_event_next(
-                hass, base, event + datetime.timedelta(minutes=1)
-            )
-        except Exception as e:  # noqa: BLE001 - the planning must not fail on it
-            _LOGGER.debug("Could not place the trigger's next %s: %s", base, e)
-            return None
-        return following + (start - event)
-    if base == const.TRIGGER_TYPE_SOLAR_AZIMUTH:
-        active = config.get(const.CONF_ACTIVE_START_TRIGGER)
-        selected = next(
-            (
-                t
-                for t in config.get(const.CONF_IRRIGATION_START_TRIGGERS, [])
-                if t.get(const.TRIGGER_CONF_NAME) == active
-            ),
-            None,
-        )
-        if selected is None:
-            return None
-        duration = float(info.get("next_irrigation_duration") or 0)
-        lead = selected.get(const.TRIGGER_CONF_OFFSET_MINUTES, 0) * 60
-        if selected.get(const.TRIGGER_CONF_ACCOUNT_FOR_DURATION, True):
-            lead -= duration
-        reached = start - datetime.timedelta(seconds=lead)
-        return _next_azimuth_trigger_start(
-            selected,
-            duration,
-            getattr(coordinator, "_latitude", None),
-            getattr(coordinator, "_effective_longitude", None),
-            reached + datetime.timedelta(minutes=1),
-        )
-    return None
-
-
 async def _trigger_start(hass: HomeAssistant, coordinator):
-    """When the start trigger runs the main program next, as Info says, or None.
+    """When the start trigger fires next, as Info says, or None.
 
-    None when the main program has schedules of its own: the trigger is then
-    not armed, and its time is not a start.
+    None with the full controller on: the programs' schedules start the
+    watering, the trigger is not armed, and its time is not a start.
     """
-    if getattr(coordinator, "main_program_uses_schedules", lambda: False)() is True:
+    if getattr(coordinator, "schedules_start_watering", lambda: False)() is True:
         return None
     start, _info = await _trigger_start_and_info(hass, coordinator)
     return start
@@ -1022,7 +946,7 @@ async def _trigger_start(hass: HomeAssistant, coordinator):
 
 async def _trigger_start_and_info(hass: HomeAssistant, coordinator):
     """The trigger's next start, or None, and the Info data it comes from."""
-    if getattr(coordinator, "main_program_uses_schedules", lambda: False)() is True:
+    if getattr(coordinator, "schedules_start_watering", lambda: False)() is True:
         return None, {}
     info = await build_irrigation_info(hass, coordinator)
     start = dt_util.parse_datetime(_armed_trigger_start(info) or "")
@@ -1037,7 +961,7 @@ def _armed_trigger_start(info: dict) -> str | None:
 
     The time is worked out whatever the trigger: under the "none" trigger,
     which starts nothing, and while no trigger is armed, it is arithmetic, and
-    the planning and the programs listed the main program at it (#969). The
+    the planning listed a run at it (#969). The
     Info page has said so since #841.
     """
     if info.get("error"):
@@ -1059,20 +983,6 @@ async def websocket_get_programs_state(hass: HomeAssistant, connection, msg):
         connection.send_error(msg["id"], "not_ready", "Smart Irrigation is loading")
         return
     programs = await coordinator.async_program_overview()
-    main = [p for p in programs if p.get("main") and not p.get("next_start")]
-    # Started by schedules of its own, the main program's next start is
-    # theirs, none included: the trigger is not armed, its time is not one.
-    by_schedules = (
-        getattr(coordinator, "main_program_uses_schedules", lambda: False)() is True
-    )
-    if main and not by_schedules and p_state_allows_start(main[0]):
-        # The main program starts at the active start trigger, which the Info
-        # page already works out: the same time is shown here.
-        info = await build_irrigation_info(hass, coordinator)
-        start = _armed_trigger_start(info)
-        if start:
-            for program in main:
-                program["next_start"] = start
     connection.send_result(
         msg["id"],
         {
@@ -1080,11 +990,6 @@ async def websocket_get_programs_state(hass: HomeAssistant, connection, msg):
             "live": coordinator.async_live_state(),
         },
     )
-
-
-def p_state_allows_start(program: dict) -> bool:
-    """Whether a program's next start is worth showing (not disabled or suspended)."""
-    return program.get("state") not in ("disabled", "suspended")
 
 
 def _coordinator_or_none(hass: HomeAssistant):
@@ -1271,14 +1176,14 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
                 next_irrigation_start = exact
                 base_name = selected_type
 
-        # The main program's own schedules start the cycle in place of the
-        # trigger (full controller): the next start is the soonest of theirs,
-        # or none, never the trigger's, which is not armed.
+        # The programs' schedules start the watering in place of the trigger
+        # (full controller): the next start is the soonest of theirs, or none,
+        # never the trigger's, which is not armed.
         by_schedules = (
-            getattr(coordinator, "main_program_uses_schedules", lambda: False)() is True
+            getattr(coordinator, "schedules_start_watering", lambda: False)() is True
         )
         if by_schedules:
-            next_irrigation_start = await coordinator.async_main_program_next_start()
+            next_irrigation_start = await coordinator.async_next_program_start()
 
         # What the skip conditions say, and what they said at the last real
         # decision. The preview is evaluated live, so a forecast can still
@@ -1304,7 +1209,7 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
                 const.CONF_DAYS_BETWEEN_IRRIGATION,
                 const.CONF_DEFAULT_DAYS_BETWEEN_IRRIGATION,
             )
-            # Not for the main program's schedules: the start shown is the
+            # Not for the programs' schedules: the start shown is the
             # occurrence that fires, which need not be daily; the zones the
             # restriction holds back are held when it does.
             if not by_schedules and (
@@ -1384,9 +1289,9 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
             "start_trigger_armed": bool(
                 getattr(coordinator, "start_trigger_armed", False)
             ),
-            # What starts the main program's cycle: the start trigger above, or
-            # the schedules of the main program (full controller only).
-            "start_source": "main_schedules" if by_schedules else "trigger",
+            # What starts the watering: the start trigger above, or the
+            # programs' schedules (full controller only).
+            "start_source": "schedules" if by_schedules else "trigger",
             # Why nothing would water, when that is the case. See
             # delivery_gap().
             "delivery_gap": delivery_gap(config, zones),

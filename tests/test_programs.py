@@ -6,58 +6,96 @@ from custom_components.smart_irrigation.programs import (
     DURATION_FIXED,
     DURATION_PERCENT,
     MAIN_PROGRAM_ID,
-    default_main_program,
-    ensure_main_program,
     find_program,
+    has_schedule_on,
     normalize_programs,
     plan_program,
+    set_schedules_enabled,
     step_seconds,
+    unique_id,
+    watering_name,
+    zone_steps,
+    zones_with_valve,
 )
 
 
-def test_the_main_program_is_created_first():
-    other = {const.PROGRAM_ID: "evening", const.PROGRAM_NAME: "Evening"}
-
-    programs = ensure_main_program([other])
-
-    assert [p[const.PROGRAM_ID] for p in programs] == [MAIN_PROGRAM_ID, "evening"]
-    assert programs[0] == default_main_program()
-
-
-def test_an_existing_main_program_is_left_alone():
-    renamed = {
-        const.PROGRAM_ID: MAIN_PROGRAM_ID,
-        const.PROGRAM_NAME: "My garden",
-        const.PROGRAM_ENABLED: False,
-    }
-
-    programs = ensure_main_program([renamed])
-
-    assert programs == [renamed]
-
-
-def test_nothing_stored_gives_just_the_main_program():
-    assert ensure_main_program(None) == [default_main_program()]
-    assert ensure_main_program([]) == [default_main_program()]
-
-
-def test_the_input_list_is_not_modified():
-    stored = [{const.PROGRAM_ID: "evening"}]
-
-    ensure_main_program(stored)
-
-    assert stored == [{const.PROGRAM_ID: "evening"}]
-
-
-def test_a_malformed_entry_is_dropped():
-    assert ensure_main_program(["junk", None]) == [default_main_program()]
-
-
 def test_find_program():
-    programs = ensure_main_program(None)
-    assert find_program(programs, MAIN_PROGRAM_ID) is programs[0]
+    programs = normalize_programs([{"id": "evening"}, {"id": MAIN_PROGRAM_ID}])
+    assert find_program(programs, MAIN_PROGRAM_ID) is programs[1]
     assert find_program(programs, "nope") is None
     assert find_program(None, MAIN_PROGRAM_ID) is None
+
+
+def test_a_new_name_is_transliterated_into_its_id():
+    assert unique_id("Démo potager", "program_1", set()) == "demo_potager"
+    assert unique_id("Øst bed", "program_1", set()) == "ost_bed"
+    assert unique_id("!!!", "program_1", set()) == "program_1"
+    assert unique_id("", "program_1", set()) == "program_1"
+
+
+def test_a_stored_id_never_changes():
+    # Stored before the ids were transliterated, or simply an id: as it is.
+    for stored in ("d_mo_potager", "main", "a__b", "program_2", "step_1"):
+        assert unique_id(stored, "x", set()) == stored
+    [program] = normalize_programs([{"id": "d_mo_potager", "name": "Démo potager"}])
+    assert program[const.PROGRAM_ID] == "d_mo_potager"
+
+
+def test_a_taken_id_is_numbered():
+    used = {"evening"}
+    assert unique_id("Evening", "x", used) == "evening_2"
+    assert unique_id("Evening", "x", used) == "evening_3"
+
+
+def test_the_neutral_name_follows_the_language():
+    assert watering_name("fr") == "Arrosage"
+    assert watering_name("de") == "Bewässerung"
+    assert watering_name("pt-BR") == "Irrigação"
+    assert watering_name("pt") == "Rega"
+    assert watering_name("en-GB") == "Watering"
+    assert watering_name("nb") == "Vanning"
+    assert watering_name("xx") == "Watering"
+    assert watering_name(None) == "Watering"
+
+
+def test_zone_steps_water_one_after_the_other_with_the_pause():
+    steps = zone_steps([3, 1, 2], "sequential", 2, 30)
+    assert [s[const.STEP_ZONES] for s in steps] == [[3], [1], [2]]
+    # The pause after each zone but the last, which waits for nothing.
+    assert [s[const.STEP_DELAY] for s in steps] == [30.0, 30.0, None]
+    assert all(s[const.STEP_PASSES] == 2 for s in steps)
+    assert all(s[const.STEP_MODE] == DURATION_CALCULATED for s in steps)
+
+
+def test_zone_steps_water_all_at_once_in_parallel():
+    [step] = zone_steps([3, 1, 2], "parallel", 3, 30)
+    assert step[const.STEP_ZONES] == [3, 1, 2]
+    assert step[const.STEP_DELAY] is None
+    assert step[const.STEP_PASSES] == 3
+    assert zone_steps([], "sequential", 1, 0) == []
+
+
+def test_zones_with_valve_keep_their_order():
+    zones = [
+        {const.ZONE_ID: 2, const.ZONE_LINKED_ENTITY: "switch.b"},
+        {const.ZONE_ID: 0},
+        {
+            const.ZONE_ID: 1,
+            const.ZONE_LINKED_ENTITY: "switch.a",
+            const.ZONE_STATE: const.ZONE_STATE_DISABLED,
+        },
+    ]
+    assert zones_with_valve(zones) == [2]
+    assert zones_with_valve(zones, include_disabled=True) == [2, 1]
+
+
+def test_the_schedules_switch_together():
+    program = {"schedules": [{"id": "a"}, {"id": "b", "enabled": False}]}
+    assert has_schedule_on(program)
+    off = set_schedules_enabled(program, False)
+    assert not has_schedule_on(off)
+    assert has_schedule_on(set_schedules_enabled(off, True))
+    assert not has_schedule_on({})
 
 
 # --- what is stored ----------------------------------------------------------
@@ -80,8 +118,9 @@ def test_a_program_is_stored_well_formed():
     assert program[const.PROGRAM_STEPS] == []
     assert program[const.PROGRAM_TOURS] == 1
     assert program[const.PROGRAM_DELAY] == 0.0
-    assert program[const.PROGRAM_ENABLED] is True
-    assert program[const.PROGRAM_MAIN] is False
+    # No on/off of its own, and nothing that sets one program apart.
+    assert const.PROGRAM_ENABLED not in program
+    assert const.PROGRAM_MAIN not in program
 
 
 def test_a_step_is_cleaned():
@@ -112,14 +151,25 @@ def test_a_step_is_cleaned():
     assert step[const.STEP_ENABLED] is True
 
 
-def test_the_main_program_comes_first_and_carries_no_steps():
+def test_every_program_is_stored_alike_main_included():
     programs = normalize_programs(
         [_program(), {"id": "main", "name": "Mine", "steps": [{"zones": [1]}]}]
     )
 
-    assert [p[const.PROGRAM_ID] for p in programs] == ["main", "evening"]
-    assert const.PROGRAM_STEPS not in programs[0]
-    assert programs[0][const.PROGRAM_NAME] == "Mine"
+    # The order the user gave, and the old main program's id kept with its steps.
+    assert [p[const.PROGRAM_ID] for p in programs] == ["evening", "main"]
+    assert programs[1][const.PROGRAM_STEPS][0][const.STEP_ZONES] == [1]
+    assert programs[1][const.PROGRAM_NAME] == "Mine"
+
+
+def test_a_program_that_was_off_has_its_schedules_switched_off():
+    [program] = normalize_programs(
+        [_program(enabled=False, schedules=[{"type": "time", "time": "06:00"}])]
+    )
+    assert const.PROGRAM_ENABLED not in program
+    assert [s[const.SCHEDULE_ENABLED] for s in program[const.PROGRAM_SCHEDULES]] == [
+        False
+    ]
 
 
 def test_program_ids_are_unique():

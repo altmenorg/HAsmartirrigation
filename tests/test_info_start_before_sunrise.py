@@ -64,7 +64,7 @@ def test_a_naive_fallback_start_is_left_alone():
 async def test_the_info_page_gives_tomorrows_start_inside_the_window(freezer):
     freezer.move_to("2026-11-03 05:30:00+00:00")
     coordinator = MagicMock()
-    coordinator.main_program_uses_schedules = lambda: False
+    coordinator.schedules_start_watering = lambda: False
     coordinator.store.async_get_zones = AsyncMock(
         return_value=[
             {
@@ -114,7 +114,7 @@ async def test_without_sun_data_the_start_has_a_time_zone(freezer):
     """
     freezer.move_to("2026-11-13 20:00:00+00:00")
     coordinator = MagicMock()
-    coordinator.main_program_uses_schedules = lambda: False
+    coordinator.schedules_start_watering = lambda: False
     coordinator.store.async_get_zones = AsyncMock(return_value=[])
     coordinator.store.async_get_config = AsyncMock(return_value={})
     coordinator.store.config = SimpleNamespace(full_controller=False, programs=[])
@@ -139,7 +139,7 @@ async def test_without_sun_data_the_start_has_a_time_zone(freezer):
 
 async def test_a_naive_start_is_read_in_the_local_time_zone():
     coordinator = MagicMock()
-    coordinator.main_program_uses_schedules = lambda: False
+    coordinator.schedules_start_watering = lambda: False
     info = {"next_irrigation_start": "2026-11-14T05:54:30"}
 
     with patch.object(

@@ -26,12 +26,13 @@ def _can_run(overview, program_id):
 async def test_a_program_can_run_once_a_step_it_runs_has_a_zone(steps, expected):
     hass, coord = _status(
         [
-            {"id": "main", "name": "Main program", "main": True},
+            {"id": "main", "name": "Watering", "steps": steps, "schedules": []},
             {"id": "evening", "name": "Evening", "steps": steps, "schedules": []},
         ]
     )
 
     overview = await coord.async_program_overview()
 
+    # The old main program's id is a program like any other.
     assert _can_run(overview, "evening") is expected
-    assert _can_run(overview, "main") is True
+    assert _can_run(overview, "main") is expected

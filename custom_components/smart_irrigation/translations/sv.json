@@ -38,19 +38,7 @@
           "waiting": "Väntar",
           "running": "Körs",
           "paused": "Pausat",
-          "suspended": "Uppskjutet",
-          "disabled": "Inaktiverat"
-        }
-      },
-      "program_main": {
-        "name": "Huvudprogram",
-        "state": {
-          "idle": "Inaktivt",
-          "waiting": "Väntar",
-          "running": "Körs",
-          "paused": "Pausat",
-          "suspended": "Uppskjutet",
-          "disabled": "Inaktiverat"
+          "suspended": "Uppskjutet"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Beräkna och vattna"
-      },
-      "program_on": {
-        "name": "Program {name} på"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Aktivera eller inaktivera ett program",
-      "description": "Aktiverar eller inaktiverar ett program i läget Fullständig bevattningsstyrning. Det har samma effekt som reglaget i programmets inställningar.",
+      "name": "Slå på eller av alla scheman för ett program (föråldrad)",
+      "description": "Föråldrad: slår på eller av alla scheman för ett program. Ett program har inte längre egen på/av; använd set_schedule_enabled för ett schema. Tas bort i 2027.11.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -769,6 +754,10 @@
     "deprecated_action": {
       "title": "Åtgärden {action} försvinner",
       "description": "En automation, ett skript eller en instrumentpanel anropade **{action}**. Den fungerar fortfarande, men den tas bort från och med version {version}, på vintern, utanför bevattningssäsongen.\n\nAnvänd **{replacement}** i stället: den gör samma sak, och för alla zoner om ingen zon är vald. Meddelandet visas igen vid varje anrop till det gamla namnet, tills inga anrop finns kvar."
+    },
+    "deprecated_program_enabled": {
+      "title": "Åtgärden {action} försvinner",
+      "description": "En automation, ett skript eller en instrumentpanel anropade **{action}**. Ett program har inte längre egen på/av, så den slår nu på eller av alla programmets scheman. Den tas bort från version {version}, på vintern, utanför bevattningssäsongen.\n\nAnvänd **{replacement}** i stället, en gång per schema. Det här meddelandet kommer tillbaka vid varje anrop av det gamla namnet, tills inga finns kvar."
     },
     "deprecated_recurring_schedule": {
       "title": "Återkommande scheman försvinner: {action}",

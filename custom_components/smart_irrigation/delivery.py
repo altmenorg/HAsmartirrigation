@@ -62,8 +62,8 @@ def delivery_gap(config: dict, zones) -> str | None:
 def zones_without_valve(zones, durations=None) -> list[dict]:
     """The zones owed a run that no valve of theirs can give (full control).
 
-    Under full control the main program opens a zone's linked valve, and a
-    zone with none is left out of its run. That is a setup that isn't finished,
+    Under full control a program opens a zone's linked valve, and a zone with
+    none is left out of its run. That is a setup that isn't finished,
     not one to support (#969): the zone, the Info page, the card and the
     planning promised it a run all the same, from its duration alone. The
     start event still fires for it, as for every run.

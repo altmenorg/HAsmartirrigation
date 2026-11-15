@@ -155,6 +155,8 @@
         "review": {
           "question": "準備建立",
           "zone": "區域",
+          "program": "澆水程式",
+          "new-program": "新程式",
           "environment": "環境",
           "engine": "模組",
           "sources": "來源",
@@ -166,7 +168,7 @@
         },
         "mode": {
           "question": "Smart Irrigation 應該做什麼？",
-          "water-help": "它計算每個區域的需求並自行開啟閥門，由主程式澆灌所有區域，在日出前完成。之後可以修改其排程。",
+          "water-help": "它計算每個區域需要多少水，並自行開啟閥門，由一個程式澆灌你的區域，在日出前完成。之後可以修改它的排程。",
           "calculate-help": "它計算每個區域的需求；由你的自動化、Irrigation Unlimited 或控制器開啟閥門。"
         }
       },
@@ -181,7 +183,9 @@
       "calc-failed": "計算失敗。原因會顯示在「區域」下的該區域中。",
       "open-zone": "開啟區域",
       "another": "設定另一個區域",
-      "done-next-water": "主程式會與其他區域一起澆灌它，在日出前完成。你可以在「澆水」中找到它。",
+      "done-next-added": "它現在是 {program} 的最後一步，依該程式的排程澆水。你可以在「澆水」中找到它。",
+      "done-next-new-program": "新程式 {program} 每天澆灌它，在日出前完成。你可以在「澆水」中找到它。",
+      "new-program-name": "澆水",
       "done-next-no-valve": "在「區域」中為它關聯一個閥門，才能澆水。"
     },
     "weatherservice": {
@@ -316,7 +320,7 @@
           "calculate-note": "僅計算：Smart Irrigation 計算水量平衡和時長並傳送開始事件，但不打開任何閥門。由你的自動化、Irrigation Unlimited 或控制器按這些時長澆水。",
           "confirm-off": "要關閉 Smart Irrigation 嗎？正在澆水的項目會立即停止，在重新開啟之前不會進行任何計算或澆水。",
           "confirm-calculate": "僅計算？Smart Irrigation 將不再打開閥門：正在進行的澆水會立即停止，此後由你的自動化按其時長澆水。",
-          "water-note": "計算並澆水：Smart Irrigation 計算每個區域的需求，並透過其程式自行開啟閥門。主程式依其排程澆灌所有區域。"
+          "water-note": "計算並澆水：Smart Irrigation 計算每個區域需要多少水，並用它的程式自行開啟閥門。每個程式依自己的排程澆灌其步驟中的區域。"
         }
       },
       "description": "此頁面提供全域設定。",
@@ -371,7 +375,7 @@
           "calc-daily": "每天 {time}",
           "calc-before-start": "每次啟動前",
           "calc-manual": "僅在你要求時",
-          "main-schedules": "由主程式的排程啟動（目前不使用啟動觸發條件）",
+          "program-schedules": "由程式的排程啟動（目前不使用啟動觸發條件）",
           "accounts-for-duration": "由結束時間往回推算，使執行在該時間結束",
           "starts-at-trigger": "於該時間點開始",
           "sequencing-sequential": "一次一個區域，因此總時間為所有區域加總",
@@ -439,7 +443,7 @@
           "detail-dry": "沒有下雨",
           "detail-held": "略過這次執行",
           "check-postponed": "已被你延後",
-          "title-main": "主程式會被略過嗎？"
+          "title-next": "下一次澆水會被略過嗎？"
         },
         "estimate": {
           "title": "各區域目前的狀況",
@@ -964,7 +968,6 @@
         "no-schedules": "沒有排程。",
         "schedules-off": "其排程已關閉，直到你開啟為止。",
         "schedules-stay-on": "你已開啟其排程：它們會維持原樣。",
-        "disabled": "在 Irrigation Unlimited 中已關閉，這裡也一樣。",
         "removed": "已不在 Irrigation Unlimited 中，已移除：{programs}。"
       },
       "supplies": {
@@ -1080,8 +1083,7 @@
           "uses": "使用 {uses}。"
         },
         "left-off": "維持關閉，因為 Irrigation Unlimited 原本就將它們關閉：{names}。",
-        "unrecorded": "維持關閉，因為匯入沒有記錄 Irrigation Unlimited 原本開啟了它們的哪些排程：{names}。請自行開啟它們的排程，或切換回 Irrigation Unlimited，重新匯入（匯入會記錄這些資訊）後再次切換。",
-        "main-also-waters": "主程式也會為 {zones} 澆水，每天由啟動觸發條件開始：在 Irrigation Unlimited 旁邊，以及切換後在匯入的程式旁邊，這些區域會被澆兩次水。如果匯入的程式已涵蓋所有澆水，請在「程式」下關閉主程式，或將啟動觸發條件設為「無」。"
+        "unrecorded": "維持關閉，因為匯入沒有記錄 Irrigation Unlimited 原本開啟了它們的哪些排程：{names}。請自行開啟它們的排程，或切換回 Irrigation Unlimited，重新匯入（匯入會記錄這些資訊）後再次切換。"
       },
       "notes": {
         "blueprint_zone_gone": "有藍圖自動化從區域 {zone} 提供資料給它，但該區域已不存在：不會視為已計算",
@@ -1299,19 +1301,16 @@
   "programs": {
     "title": "程式",
     "description": "程式會依序為其步驟澆水。一個步驟可以是一個區域，或同時澆水的多個區域，預設採用 Smart Irrigation 為其計算出的時間長度。區域共用一個供水或沒有供水的程式永遠不會同時執行：下一個會等待輪到它。擁有各自供水的程式會並行澆水。",
-    "main_description": "依其排程澆灌所有區域，依序或同時進行。",
+    "none_yet": "還沒有程式。區域要放進某個程式的步驟裡才會澆水：用「新增程式」新增一個。",
     "run_options": "本次執行的選項",
     "adjust_empty": "請輸入百分比或秒數以調整時間長度。",
     "more_options": "更多選項",
     "more_options_set": "含更多規則",
-    "sequencing_title": "區域與暫停的順序",
-    "others_title": "其他程式",
     "confirm_run": "要現在執行 {name} 嗎？其閥門會立即開啟。",
     "run_started": "{name} 已開始。",
     "run_queued": "{name} 已排入佇列：會在目前澆水的項目結束後開始。",
     "run_nothing": "{name} 找不到需要澆水的項目。",
     "run_failed": "{name} 無法啟動：{error}",
-    "main_schedules_hint": "沒有啟用的排程時，由本頁下方設定的啟動觸發條件啟動主程式。一旦啟用任何一個排程，這些排程就會取代該觸發條件。它的設定會保留，若排程被停用或移除，它就會恢復作用。",
     "name": "名稱",
     "step": "步驟",
     "step_zones": "區域",
@@ -1328,21 +1327,20 @@
     "tours": "輪數",
     "tours_help": "整個步驟清單會依此次數澆水，每一輪各分得一部分水量。與「分輪」不同，分輪是在繼續之前先重複同一個步驟，而這裡的輪是在其他區域澆水時讓每個區域浸潤。",
     "enabled": "已啟用",
-    "program_enabled": "程式已啟用",
-    "schedule_enabled": "排程已啟用",
-    "step_enabled": "步驟已啟用",
     "add_step": "新增步驟",
     "delete_step": "刪除步驟",
     "add": "新增程式",
+    "all_zones_now_title": "立即澆灌所有區域",
+    "all_zones_now_help": "僅用於「澆灌所有區域」按鈕：每個有閥門的區域，依此順序，使用這些分輪與間隔。各程式保留自己的步驟。",
     "delete": "刪除程式",
     "schedule": "排程",
     "add_schedule": "新增排程",
     "delete_schedule": "刪除排程",
-    "schedule_moment": "於",
+    "schedule_moment": "何時",
     "moment_time": "一天中的某個時間",
     "moment_sunrise": "日出",
     "moment_sunset": "日落",
-    "moment_azimuth": "太陽到達某個方位角時",
+    "moment_azimuth": "太陽到達某個方位角",
     "schedule_time": "時間",
     "schedule_offset": "在太陽之前（-）或之後（+）",
     "schedule_anchor": "該時間點是程式",
@@ -1396,7 +1394,6 @@
     "max_litres": "水量上限",
     "max_litres_help": "當此步驟中某區域的水表累計達到此水量時，該區域就會停止，單位為公升或加侖，依面板顯示水量的單位而定。0：不限制。水表只會每隔一段時間回報一次，因此水量並不精確。沒有水表的區域會忽略此設定。",
     "new_program": "程式",
-    "main_name": "主程式",
     "run_now": "立即執行",
     "run_seconds": "總時間長度",
     "run_seconds_help": "選填。留空：採用預定的時間長度。否則整個程式會持續此時間長度，並依各步驟預定時間長度的比例分配給各步驟。",
@@ -1418,8 +1415,6 @@
     "adjust_apply": "套用",
     "adjust_reset": "重設",
     "confirm_reset_adjustment": "要移除此程式的調整嗎？",
-    "main_settings": "主程式：啟動與排序",
-    "main_settings_description": "主程式的澆水方式：區域依序或同時進行、兩個區域之間的暫停，以及循環浸潤。",
     "mode_off": "完整控制器已關閉。請在「設定」、「一般」中開啟。",
     "no_zone": "沒有區域",
     "mode_calculated_short": "已計算",
@@ -1432,14 +1427,13 @@
     "schedules_none": "沒有排程",
     "schedules_one": "1 個排程",
     "schedules_many": "{n} 個排程",
-    "off": "關閉",
+    "no_schedule_on": "沒有啟用的排程",
     "steps_title": "步驟",
     "schedules_title": "排程",
     "passes_help": "此步驟的循環浸潤：將其水量分成這麼多輪，每個區域在兩輪之間浸潤。1：一次完成。",
     "schedule_fallback_skip": "略過該日",
     "schedule_fallback_previous": "使用最近一次的時間",
     "schedule_fallback_at": "在固定時間開始",
-    "main_steps_hint": "主程式會為每個區域澆水。若只想澆其中一些區域，或要自訂順序，請在下方的「其他程式」中新增一個。",
     "summary_start_sunrise": "於日出時開始",
     "summary_start_sunset": "於日落時開始",
     "summary_start_azimuth": "太陽位於 {deg}° 時開始",
@@ -1465,7 +1459,7 @@
     "passes_short": "{n} 輪",
     "overlap_short": "提早 {time} 開始下一個",
     "wait_short": "等待 {time} 後再進行下一個",
-    "soak_shared_help": "所有分輪的步驟共用同一個浸潤時間，涵蓋每個程式與主程式。",
+    "soak_shared_help": "所有分輪的步驟共用同一個浸潤時間，涵蓋每個程式。",
     "min_over_max": "最小值高於最大值：以最大值為準，{max}。",
     "confirm_run_replace": "要現在執行 {name} 嗎？會先停止正在澆水的項目，然後開啟其閥門。",
     "run_replacing": "正在澆水的項目正在停止；{name} 隨後立即開始。",
@@ -1630,10 +1624,8 @@
         "running": "執行中",
         "waiting": "等待中",
         "paused": "已暫停",
-        "suspended": "已擱置",
-        "disabled": "已停用"
+        "suspended": "已擱置"
       },
-      "main_name": "主程式",
       "after": "在 {name} 之後開始",
       "next_in_line": "下一個開始"
     },

@@ -33,7 +33,7 @@ def _zone(zone_id, name, state, duration):
 async def test_a_manual_zone_would_water_the_duration_it_was_given(freezer):
     freezer.move_to("2026-11-14 08:00:00+00:00")
     coordinator = MagicMock()
-    coordinator.main_program_uses_schedules = lambda: False
+    coordinator.schedules_start_watering = lambda: False
     coordinator.store.async_get_zones = AsyncMock(
         return_value=[
             _zone(0, "Lawn", const.ZONE_STATE_AUTOMATIC, 2410),

@@ -676,9 +676,6 @@ export class SmartIrrigationViewIuImport extends LitElement {
                 ${entry.schedules_on
                   ? this.t("programs.schedules-stay-on")
                   : this.t("programs.schedules-off")}
-                ${entry.program.enabled === false
-                  ? html`<br />${this.t("programs.disabled")}`
-                  : ""}
               </div>
             </div>
           `,

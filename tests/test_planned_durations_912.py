@@ -173,16 +173,14 @@ def test_a_change_without_a_bucket_does_not_touch_the_duration():
     }
 
 
-_MAIN = {"id": "main", "name": "Main program", "main": True, "enabled": True}
-
-
-async def test_without_a_trigger_time_the_main_program_is_not_invented():
-    hass, coord = _status([_MAIN])
+async def test_a_program_without_schedules_is_not_planned():
+    hass, coord = _status(
+        [{"id": "main", "name": "Watering", "steps": [{"zones": [0]}]}]
+    )
     coord._planned_run_seconds = AsyncMock(return_value=600)
 
+    # Nothing starts it but a hand: the start trigger is not its start.
     assert await coord.async_planning(1) == []
-    # Beyond the days asked for, it is not listed either.
-    assert await coord.async_planning(1, trigger_start=_utc(5, 8)) == []
 
 
 # --- the step's minimum deficit decides, not the zone's threshold (#912) ------

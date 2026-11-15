@@ -63,13 +63,12 @@ class TriggersMixin:
     bookkeeping attributes, and the direct-valve runner).
     """
 
-    def main_program_uses_schedules(self) -> bool:
-        """Whether the main program's own schedules start the cycle.
+    def schedules_start_watering(self) -> bool:
+        """Whether the programs' schedules start the watering, not the trigger.
 
         Always with the full controller on: the start trigger is for
         "Calculate only", where it fires the start event of an automation
-        (one_choice.py). A main program whose schedules are all off starts on
-        its own no more.
+        (one_choice.py).
         """
         config = self.store.config
         return getattr(config, const.CONF_FULL_CONTROLLER, False) is True
@@ -198,9 +197,9 @@ class TriggersMixin:
                 await register()
         except Exception as ex:  # noqa: BLE001 - the start trigger comes first
             _LOGGER.error("Could not arm the programs' schedules: %s", ex)
-        # The main program's own schedules, when it has any switched on, start
-        # the cycle in place of the trigger (program_scheduler.py).
-        schedules_start = self.main_program_uses_schedules()
+        # With the full controller, the programs' schedules start the watering
+        # in place of the trigger (program_scheduler.py).
+        schedules_start = self.schedules_start_watering()
         total_duration = 0 if schedules_start else await self._planned_run_seconds()
         self.start_trigger_armed = False
         if self._track_sunrise_event_unsub:
@@ -213,7 +212,7 @@ class TriggersMixin:
 
         if schedules_start:
             _LOGGER.info(
-                "The main program has schedules of its own; the start trigger "
+                "The programs' schedules start the watering; the start trigger "
                 "is not armed"
             )
             return
@@ -689,26 +688,13 @@ class TriggersMixin:
                         {**event_data, "reason": reason, "checks": []},
                     )
                     return
-                held = self._main_program_held()
-                if held is not None:
-                    _LOGGER.info(
-                        "Trigger '%s' reached but the main program is %s; not "
-                        "firing event",
-                        name,
-                        held,
-                    )
-                    self.hass.bus.fire(
-                        f"{const.DOMAIN}_{const.EVENT_IRRIGATE_SKIPPED}",
-                        {**event_data, "reason": f"main_program_{held}", "checks": []},
-                    )
-                    return
                 go, _sheltered = await self._prepare_watering_for_today(
                     name, event_data
                 )
                 if not go:
                     return
 
-                await self._release_main_cycle(name, event_data)
+                await self._release_start_event(name, event_data)
             except Exception as e:
                 # Fail safe, not fail open (#804): if we cannot tell whether
                 # today is a watering day, not watering is recoverable (one
@@ -724,13 +710,12 @@ class TriggersMixin:
 
         self.hass.async_create_task(check_and_fire())
 
-    async def _release_main_cycle(self, name, event_data) -> None:
-        """Start the classic cycle once the day has been judged a watering day.
+    async def _release_start_event(self, name, event_data) -> None:
+        """Fire the start event once the day has been judged a watering day.
 
-        Shared by the start trigger and by the schedules of the main program, so
-        that both run the zones in exactly the same way: the start event for the
+        The start trigger's, with "Calculate only": the start event for the
         executors of your own, then the valves driven by Smart Irrigation when
-        direct valve control is on, then the day counted.
+        direct valve control is still on in an old setup, then the day counted.
         """
         if watering_off(self.store):
             # Switched off between the judgement and the start: nothing starts.
@@ -753,26 +738,6 @@ class TriggersMixin:
             self._spawn_valve_run(self.async_run_direct_valves())
 
         await self._note_watering_day(name)
-
-    def _main_program_held(self):
-        """Why the main program must not run ("disabled", "suspended"), or None.
-
-        Only in full controller mode, where the start trigger is the main
-        program's schedule: switching the main program off, or suspending it,
-        has to hold the trigger back as it would any other program.
-        """
-        config = self.store.config
-        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
-            return None
-        for program in getattr(config, const.CONF_PROGRAMS, None) or []:
-            if program.get(const.PROGRAM_MAIN):
-                if program.get(const.PROGRAM_ENABLED) is False:
-                    return "disabled"
-                if self.is_suspended(
-                    const.SUSPEND_PROGRAM, program.get(const.PROGRAM_ID)
-                ):
-                    return "suspended"
-        return None
 
     async def _note_watering_day(self, name, zone_ids=None) -> bool:
         """Count today as a watering day if a start left something to water.

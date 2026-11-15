@@ -21,7 +21,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 from . import const
 from .exceptions import SmartIrrigationError
 from .program_adjust import ProgramAdjustMixin
-from .programs import MAIN_PROGRAM_ID, find_program
+from .programs import find_program
 from .units import depth_from_display, zone_from_display
 from .watering_control import (
     MAX_SUSPEND_HOURS,
@@ -329,11 +329,6 @@ class ServiceHandlersMixin(ProgramAdjustMixin):
         if not program_id:
             return
         seconds = self._checked_seconds(call.data.get(const.ATTR_SECONDS))
-        if seconds is not None and str(program_id) == MAIN_PROGRAM_ID:
-            raise ServiceValidationError(
-                "The main program takes no duration: it waters the zones for the "
-                "durations Smart Irrigation calculated."
-            )
         mode = self._checked_mode(call.data.get(const.ATTR_MODE))
         if seconds is None and mode == const.RUN_MODE_QUEUE:
             # The run takes as long as the watering: the service does not wait.
@@ -407,10 +402,17 @@ class ServiceHandlersMixin(ProgramAdjustMixin):
             )
 
     async def handle_set_program_enabled(self, call):
-        """Enable or disable a program."""
+        """Switch every schedule of a program on or off (deprecated action).
+
+        A program has no on/off of its own: it starts on its own through its
+        schedules, so switching it is switching them. deprecated: remove in
+        2027.11
+        """
         program_id = str(call.data.get(const.ATTR_PROGRAM_ID))
         self._require_known_target(program_id)
-        await self.async_set_enabled(program_id, call.data.get(const.ATTR_ENABLED))
+        await self.async_set_schedules_enabled(
+            program_id, call.data.get(const.ATTR_ENABLED)
+        )
 
     async def handle_set_step_enabled(self, call):
         """Enable or disable one step of a program."""

@@ -157,6 +157,20 @@ export const modernStyle = css`
     padding: 10px 0;
     list-style-position: inside;
   }
+  /* A summary line with a switch on its right (a step's or a schedule's
+     "on"): the text takes the room, the switch keeps its own. */
+  details.fold > summary .fold-head {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: calc(100% - 1.5em);
+    vertical-align: middle;
+  }
+  details.fold > summary .fold-head-text {
+    flex: 1;
+    min-width: 0;
+  }
   details.fold[open] > summary {
     border-bottom: 1px solid var(--divider-color);
     margin-bottom: 8px;

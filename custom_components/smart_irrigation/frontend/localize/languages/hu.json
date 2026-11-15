@@ -155,6 +155,8 @@
         "review": {
           "question": "Kész a létrehozásra",
           "zone": "Zóna",
+          "program": "Öntözi",
+          "new-program": "Új program",
           "environment": "Környezet",
           "engine": "Modul",
           "sources": "Források",
@@ -166,7 +168,7 @@
         },
         "mode": {
           "question": "Mit csináljon a Smart Irrigation?",
-          "water-help": "Kiszámolja, mire van szüksége minden zónának, és maga nyitja a szelepeket, egy főprogrammal, amely napkeltére minden zónát megöntöz. Az ütemezést később módosíthatod.",
+          "water-help": "Kiszámolja, mire van szüksége minden zónának, és maga nyitja a szelepeket, egy programmal, amely napkeltére megöntözi a zónáidat. Az ütemezését később módosíthatod.",
           "calculate-help": "Kiszámolja, mire van szüksége minden zónának; a szelepeket az automatizálásod, az Irrigation Unlimited vagy a vezérlőd nyitja."
         }
       },
@@ -181,7 +183,9 @@
       "calc-failed": "A számítás nem sikerült. Hogy miért, azt a zóna a Zónák alatt mutatja.",
       "open-zone": "Zóna megnyitása",
       "another": "Újabb zóna beállítása",
-      "done-next-water": "A főprogram a többi zónával együtt öntözi, napkeltére végez. Az Öntözés lapon találod.",
+      "done-next-added": "Most ez a(z) {program} utolsó lépése, amely az ütemezései szerint öntözi. Az Öntözés lapon találod.",
+      "done-next-new-program": "Egy új program, a(z) {program}, minden nap öntözi, napkeltére végez. Az Öntözés lapon találod.",
+      "new-program-name": "Öntözés",
       "done-next-no-valve": "Kapcsolj hozzá szelepet a Zónákban, hogy öntözve legyen."
     },
     "weatherservice": {
@@ -316,7 +320,7 @@
           "calculate-note": "Csak számol: a Smart Irrigation kiszámolja a vízmérlegeket és az időtartamokat, és elküldi az indítási eseményt, de egy szelepet sem nyit. A saját automatizálásod, az Irrigation Unlimited vagy a vezérlőd öntöz ezekkel az időkkel.",
           "confirm-off": "Kikapcsolod a Smart Irrigationt? Ami most öntöz, azonnal leáll, és semmi sem számolódik vagy öntöz, amíg újra be nem kapcsolod.",
           "confirm-calculate": "Csak számoljon? A Smart Irrigation nem nyit több szelepet: amit éppen öntöz, most leáll, és mostantól a saját automatizálásod öntöz az időtartamaival.",
-          "water-note": "Számol és öntöz: a Smart Irrigation kiszámolja, mire van szüksége minden zónának, és maga nyitja a szelepeket a programjaival. A főprogram az ütemezései szerint öntöz minden zónát."
+          "water-note": "Számolás és öntözés: a Smart Irrigation kiszámolja, mire van szüksége minden zónának, és maga nyitja a szelepeket, a programjaival. Minden program a lépései zónáit öntözi az ütemezései szerint."
         }
       },
       "description": "Ez az oldal globális beállításokat biztosít.",
@@ -371,7 +375,7 @@
           "calc-daily": "naponta {time}-kor",
           "calc-before-start": "közvetlenül minden indítás előtt",
           "calc-manual": "csak kérésre",
-          "main-schedules": "A főprogram ütemezései indítják (az indítási kiváltó jelenleg nincs használatban)",
+          "program-schedules": "A programok ütemezései indítják (az indítási kiváltó jelenleg nincs használatban)",
           "accounts-for-duration": "visszaszámolva, hogy az öntözés akkor fejeződjön be",
           "starts-at-trigger": "abban a pillanatban kezdődik",
           "sequencing-sequential": "egyszerre egy zóna, így az összeg az összes zóna összege",
@@ -439,7 +443,7 @@
           "detail-dry": "Nem esik",
           "detail-held": "kihagyja ezt az öntözést",
           "check-postponed": "Általad elhalasztva",
-          "title-main": "Ki lesz hagyva a főprogram?"
+          "title-next": "Ki lesz hagyva a következő öntözés?"
         },
         "estimate": {
           "title": "Hol áll most az egyes zónák",
@@ -964,7 +968,6 @@
         "no-schedules": "Nincs ütemezés.",
         "schedules-off": "Az ütemezései kikapcsolva maradnak, amíg be nem kapcsolod őket.",
         "schedules-stay-on": "Bekapcsoltad az ütemezéseit: változatlanul maradnak.",
-        "disabled": "Az Irrigation Unlimitedben ki van kapcsolva, és itt is.",
         "removed": "Már nincsenek az Irrigation Unlimitedben, eltávolítva: {programs}."
       },
       "supplies": {
@@ -1080,8 +1083,7 @@
           "uses": "Használja: {uses}."
         },
         "left-off": "Kikapcsolva maradtak, mert az Irrigation Unlimitedben ki voltak kapcsolva: {names}.",
-        "unrecorded": "Kikapcsolva maradtak, mert az importálás nem jegyezte fel, hogy az ütemezéseik közül melyek voltak bekapcsolva az Irrigation Unlimitedben: {names}. Kapcsold be magad az ütemezéseiket, vagy válts vissza az Irrigation Unlimitedre, importálj újra (ez feljegyzi őket), és válts át ismét.",
-        "main-also-waters": "A főprogram is öntözi ezeket: {zones}, minden nap a kiváltóból: az Irrigation Unlimited mellett, az átállás után pedig az importált programok mellett ezek a zónák kétszer kapnak vizet. Ha az importált programok mindent öntöznek, kapcsold ki a főprogramot a Programok alatt, vagy állítsd a kiváltót Nincs értékre."
+        "unrecorded": "Kikapcsolva maradtak, mert az importálás nem jegyezte fel, hogy az ütemezéseik közül melyek voltak bekapcsolva az Irrigation Unlimitedben: {names}. Kapcsold be magad az ütemezéseiket, vagy válts vissza az Irrigation Unlimitedre, importálj újra (ez feljegyzi őket), és válts át ismét."
       },
       "notes": {
         "blueprint_zone_gone": "egy blueprint-automatizálás táplálja a(z) {zone} zónából, amely már nem létezik: nem számoltként jön át",
@@ -1299,19 +1301,16 @@
   "programs": {
     "title": "Programok",
     "description": "Egy program egymás után öntözi a lépéseit. Egy lépés egy zóna, vagy több együtt öntözött zóna, és alapértelmezés szerint annyi ideig tart, amennyit a Smart Irrigation kiszámolt hozzá. Azok a programok, amelyek zónái közös ellátáson vannak vagy nincs ellátásuk, sosem futnak egyszerre: a következő kivárja a sorát. A saját ellátású programok párhuzamosan öntöznek.",
-    "main_description": "Minden zónát öntöz, egymás után vagy együtt, az ütemezései szerint.",
+    "none_yet": "Még nincs program. Egy zóna akkor kap vizet, ha egy program valamelyik lépésében szerepel: adj hozzá egyet az Új program gombbal.",
     "run_options": "Ennek az indításnak a beállításai",
     "adjust_empty": "Adj meg százalékot vagy másodperceket az időtartamok módosításához.",
     "more_options": "További beállítások",
     "more_options_set": "további szabályokkal",
-    "sequencing_title": "A zónák sorrendje és a szünetek",
-    "others_title": "További programok",
     "confirm_run": "Most futtatod a(z) {name} programot? A szelepei azonnal kinyílnak.",
     "run_started": "{name} elindult.",
     "run_queued": "{name} sorban áll: akkor indul, amikor a folyamatban lévő öntözés véget ér.",
     "run_nothing": "{name} nem talált semmit, amit öntözni kellene.",
     "run_failed": "{name} nem tudott elindulni: {error}",
-    "main_schedules_hint": "Bekapcsolt ütemezés nélkül az oldalon lejjebb beállított indítási kiváltó indítja a főprogramot. Amint egy ütemezés be van kapcsolva, az ütemezések váltják fel ezt a kiváltót. A beállításai megmaradnak, és visszatér, ha kikapcsolod vagy törlöd az ütemezéseket.",
     "name": "Név",
     "step": "Lépés",
     "step_zones": "Zónák",
@@ -1328,12 +1327,11 @@
     "tours": "Körök",
     "tours_help": "A lépések teljes listája ennyiszer kap vizet, minden kör a saját részével. A szakaszokkal ellentétben, amelyek egy lépést ismételnek a következő előtt, egy körben minden zóna beszívja a vizet, amíg a többi öntöz.",
     "enabled": "Engedélyezve",
-    "program_enabled": "Program bekapcsolva",
-    "schedule_enabled": "Ütemezés bekapcsolva",
-    "step_enabled": "Lépés bekapcsolva",
     "add_step": "Lépés hozzáadása",
     "delete_step": "A lépés törlése",
     "add": "Új program",
+    "all_zones_now_title": "Minden zóna öntözése most",
+    "all_zones_now_help": "Csak a Minden zóna öntözése gombhoz: minden szelepes zóna, ebben a sorrendben, ezekkel a szakaszokkal és szünettel. A programok megtartják a saját lépéseiket.",
     "delete": "A program törlése",
     "schedule": "Ütemezés",
     "add_schedule": "Ütemezés hozzáadása",
@@ -1342,7 +1340,7 @@
     "moment_time": "Egy napszak",
     "moment_sunrise": "Napkelte",
     "moment_sunset": "Napnyugta",
-    "moment_azimuth": "Amikor a nap elér egy azimutot",
+    "moment_azimuth": "A nap elér egy azimutot",
     "schedule_time": "Idő",
     "schedule_offset": "A nap előtt (-) vagy után (+)",
     "schedule_anchor": "Ez az időpont az, amikor a program",
@@ -1396,7 +1394,6 @@
     "max_litres": "Térfogatkorlát",
     "max_litres_help": "A lépés egy zónája leáll, amint a vízmérője ennyi térfogatot számolt, literben vagy gallonban, ahogy a panel a térfogatokat mutatja. 0: nincs korlát. A mérő csak időnként jelent, így a térfogat nem pontos. A mérő nélküli zóna figyelmen kívül hagyja.",
     "new_program": "Program",
-    "main_name": "Főprogram",
     "run_now": "Futtatás most",
     "run_seconds": "Teljes időtartam",
     "run_seconds_help": "Opcionális. Üres: a tervezett időtartamok. Egyébként az egész program ennyi ideig tart, a lépései között a tervezett időtartamaik arányában elosztva.",
@@ -1418,8 +1415,6 @@
     "adjust_apply": "Alkalmaz",
     "adjust_reset": "Visszaállítás",
     "confirm_reset_adjustment": "Eltávolítod ennek a programnak a módosítását?",
-    "main_settings": "Főprogram: indítás és sorrend",
-    "main_settings_description": "Hogyan öntöz a főprogram: a zónákat egymás után vagy együtt, a két zóna közti szünetet és a cycle and soak-ot.",
     "mode_off": "A teljes vezérlő ki van kapcsolva. Kapcsold be a Beállítások, Általános részben.",
     "no_zone": "nincs zóna",
     "mode_calculated_short": "számolt",
@@ -1432,14 +1427,13 @@
     "schedules_none": "nincs ütemezés",
     "schedules_one": "1 ütemezés",
     "schedules_many": "{n} ütemezés",
-    "off": "ki",
+    "no_schedule_on": "nincs bekapcsolt ütemezés",
     "steps_title": "Lépések",
     "schedules_title": "Ütemezések",
     "passes_help": "Cycle and soak ennél a lépésnél: a vize ennyi szakaszra osztva, és minden zóna két szakasz között beszívja. 1: egyszerre.",
     "schedule_fallback_skip": "Az a nap kimarad",
     "schedule_fallback_previous": "Az utoljára látott időpontja",
     "schedule_fallback_at": "Indítás rögzített időpontban",
-    "main_steps_hint": "A főprogram minden zónát öntöz. Ha csak néhányat szeretnél öntözni, vagy a saját sorrendedben, adj hozzá egyet lent a További programok alatt.",
     "summary_start_sunrise": "napkeltekor indul",
     "summary_start_sunset": "napnyugtakor indul",
     "summary_start_azimuth": "indul, amikor a nap {deg}°-on áll",
@@ -1465,7 +1459,7 @@
     "passes_short": "{n} szakasz",
     "overlap_short": "a következőt {time} korábban indítja",
     "wait_short": "{time} vár a következő előtt",
-    "soak_shared_help": "Egyetlen beszivárgási idő minden szakaszos lépéshez, minden programban és a főprogramban.",
+    "soak_shared_help": "Egyetlen beszivárgási idő minden szakaszos lépéshez, minden programban.",
     "min_over_max": "A minimum nagyobb a maximumnál: a maximum érvényes, {max}.",
     "confirm_run_replace": "Elindítod most: {name}? A folyamatban lévő öntözés előbb leáll, aztán kinyílnak a szelepei.",
     "run_replacing": "A folyamatban lévő öntözés leáll; utána rögtön indul: {name}.",
@@ -1630,10 +1624,8 @@
         "running": "fut",
         "waiting": "várakozik",
         "paused": "szünetel",
-        "suspended": "felfüggesztve",
-        "disabled": "letiltva"
+        "suspended": "felfüggesztve"
       },
-      "main_name": "Főprogram",
       "after": "{name} után indul",
       "next_in_line": "következőként indul"
     },

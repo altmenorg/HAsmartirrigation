@@ -2,9 +2,9 @@
 
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.one_choice import (
+    first_program,
     migration_changes,
     schedule_from_trigger,
-    seed_main_schedules,
 )
 
 
@@ -100,11 +100,44 @@ def test_every_kind_of_trigger_has_its_schedule():
     assert (default["event"], default["anchor"]) == ("sunrise", "end")
 
 
-def test_a_main_program_without_schedules_is_seeded_once():
-    seeded = seed_main_schedules({}, [_main()])
-    assert len(seeded[0]["schedules"]) == 1
-    again = seed_main_schedules({}, seeded)
-    assert again == seeded
+def _zones():
+    return [
+        {const.ZONE_ID: 0, const.ZONE_LINKED_ENTITY: "switch.lawn"},
+        {const.ZONE_ID: 1},
+        {const.ZONE_ID: 2, const.ZONE_LINKED_ENTITY: "switch.beds"},
+    ]
+
+
+def test_a_first_program_waters_the_zones_with_a_valve():
+    [program] = first_program(
+        {const.CONF_PAUSE_BETWEEN_ZONES: 20, const.CONF_WATERING_PASSES: 2},
+        _zones(),
+        [],
+        "fr",
+    )
+    assert program["name"] == "Arrosage"
+    assert [s["zones"] for s in program["steps"]] == [[0], [2]]
+    assert [s["delay"] for s in program["steps"]] == [20.0, None]
+    assert {s["passes"] for s in program["steps"]} == {2}
+    # Started at the moment of the start trigger: done by sunrise by default.
+    [schedule] = program["schedules"]
+    assert (schedule["event"], schedule["anchor"]) == ("sunrise", "end")
+    assert "main" not in program and "enabled" not in program
+
+
+def test_a_first_program_in_parallel_is_one_step():
+    [program] = first_program({const.CONF_ZONE_SEQUENCING: "parallel"}, _zones(), None)
+    assert [s["zones"] for s in program["steps"]] == [[0, 2]]
+    assert program["name"] == "Watering"
+
+
+def test_programs_that_are_there_are_kept_and_none_starts_nothing():
+    there = [{"id": "evening", "steps": []}]
+    assert first_program({}, _zones(), there) == there
+    [program] = first_program(
+        {const.CONF_ACTIVE_START_TRIGGER: const.START_TRIGGER_NONE}, _zones(), []
+    )
+    assert program["schedules"] == []
 
 
 def test_only_the_valves_moved_to_the_controller_are_told():

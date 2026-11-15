@@ -45,6 +45,7 @@ from . import const
 from .helpers import find_next_solar_azimuth_time
 from .master_switch import watering_off
 from .programs import (
+    MAIN_PROGRAM_ID,
     drop_below_deficit,
     find_program,
     needs_run_length,
@@ -129,34 +130,20 @@ class ProgramSchedulerMixin:
         tz = dt_util.get_default_time_zone()
         timers = self._program_timers()
         for program in programs:
-            if program.get(const.PROGRAM_ENABLED) is False:
-                continue
             program_id = program.get(const.PROGRAM_ID)
-            if program.get(const.PROGRAM_MAIN):
-                # The main program has no steps: its schedules start the classic
-                # cycle, as long as the run it is planned to make.
-                if not any(
-                    s.get(const.SCHEDULE_ENABLED) is not False
-                    for s in program.get(const.PROGRAM_SCHEDULES) or []
-                ):
-                    continue
-                total = await self._planned_run_seconds()
-            else:
-                # The same plan the planning and the sensors use, adjustment
-                # in force included, so a "done by" start is placed for the
-                # run that will really be made.
-                adjust = getattr(self, "program_adjustment", None)
-                for_programs = getattr(self, "zones_for_programs", None)
-                read = for_programs(zones) if for_programs else zones
-                total = plan_wall_seconds(
-                    drop_below_deficit(
-                        plan_program(
-                            program, read, adjust(program_id) if adjust else None
-                        ),
-                        read,
-                    ),
-                    soak,
-                )
+            # The same plan the planning and the sensors use, adjustment in
+            # force included, so a "done by" start is placed for the run that
+            # will really be made.
+            adjust = getattr(self, "program_adjustment", None)
+            for_programs = getattr(self, "zones_for_programs", None)
+            read = for_programs(zones) if for_programs else zones
+            total = plan_wall_seconds(
+                drop_below_deficit(
+                    plan_program(program, read, adjust(program_id) if adjust else None),
+                    read,
+                ),
+                soak,
+            )
             for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
                 if schedule.get(const.SCHEDULE_ENABLED) is False:
                     continue
@@ -324,7 +311,6 @@ class ProgramSchedulerMixin:
         if (
             program is None
             or schedule is None
-            or program.get(const.PROGRAM_ENABLED) is False
             or schedule.get(const.SCHEDULE_ENABLED) is False
             or getattr(config, const.CONF_FULL_CONTROLLER, False) is not True
         ):
@@ -360,9 +346,6 @@ class ProgramSchedulerMixin:
             # Nothing starts, so nothing is counted and no weather is judged.
             _LOGGER.info("Program %s is already running or waiting", program_id)
             return
-        if program.get(const.PROGRAM_MAIN):
-            await self._fire_main_program_schedule(name, program_id, schedule)
-            return
         only_zones = None
         # The weather is judged now, on the day the run starts, and not on the
         # day of the schedule's moment: a "done by Monday 01:00" run that starts
@@ -392,14 +375,15 @@ class ProgramSchedulerMixin:
             if not go:
                 return
             only_zones = sheltered or None
+            self._fire_legacy_start_event(program_id, name, schedule_id)
         else:
             # The weather is not judged, but the durations are still brought up
-            # to date when the setting asks for it, as the main program does:
-            # the preparation above is what did it, and a schedule that ignores
+            # to date when the setting asks for it: the preparation above is what did it, and a schedule that ignores
             # the weather skipped it (#912).
             recalculate = getattr(self, "_recalculate_before_start", None)
             if recalculate is not None:
                 await recalculate()
+            self._fire_legacy_start_event(program_id, name, schedule_id)
 
         async def _count_the_day(zone_ids):
             await self._note_watering_day(name, zone_ids=zone_ids)
@@ -420,36 +404,23 @@ class ProgramSchedulerMixin:
             **extra,
         )
 
-    async def _fire_main_program_schedule(self, name, program_id, schedule) -> None:
-        """A schedule of the main program is due: run the classic cycle.
+    def _fire_legacy_start_event(self, program_id, name, schedule_id) -> None:
+        """The start event the old main program's schedules fired, for its own.
 
-        The cycle is the one the start trigger runs, through the same code
-        (``_release_main_cycle``): the zones that are eligible, the sequencing
-        and the pauses of the settings, the volume credit. The weather is judged
-        as for any schedule: the day's shared decision, or the schedule's own
-        skip conditions, or none when it ignores the weather (the zones are then
-        still calculated again first when the setting asks for it).
+        The main program became an ordinary program that kept its id: the
+        automations that listened to its start event (``start_irrigation_all_
+        zones``, an executor of your own beside the valves) still hear it when
+        one of its schedules starts it, once the day is judged a watering day,
+        with the payload it had. deprecated: remove in 2027.11
         """
-        schedule_id = schedule.get(const.SCHEDULE_ID)
-        event_data = {
-            "trigger_name": name,
-            "trigger_type": "program",
-            "program_id": program_id,
-            "schedule_id": schedule_id,
-        }
-        try:
-            if schedule.get(const.SCHEDULE_WEATHER) is not False:
-                go, _sheltered = await self._prepare_program_watering(
-                    name, event_data, schedule_skip_conditions(schedule)
-                )
-                if not go:
-                    return
-            else:
-                await self._recalculate_before_start()
-            await self._release_main_cycle(name, event_data)
-        except Exception as e:  # noqa: BLE001 - fail safe, as the start trigger does
-            _LOGGER.error(
-                "Main program: could not evaluate the watering conditions, not "
-                "run (fail-safe): %s",
-                e,
-            )
+        if program_id != MAIN_PROGRAM_ID:
+            return
+        self.hass.bus.async_fire(
+            f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}",
+            {
+                "trigger_name": name,
+                "trigger_type": "program",
+                "program_id": program_id,
+                "schedule_id": schedule_id,
+            },
+        )

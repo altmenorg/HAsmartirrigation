@@ -155,6 +155,8 @@
         "review": {
           "question": "Ready to create",
           "zone": "Zone",
+          "program": "Watered by",
+          "new-program": "A new program",
           "environment": "Environment",
           "engine": "Module",
           "sources": "Sources",
@@ -166,7 +168,7 @@
         },
         "mode": {
           "question": "What should Smart Irrigation do?",
-          "water-help": "It works out what each zone needs and opens the valves itself, with a main program that waters every zone, done by sunrise. You can change its schedule afterwards.",
+          "water-help": "It works out what each zone needs and opens the valves itself, with a program that waters your zones, done by sunrise. You can change its schedule afterwards.",
           "calculate-help": "It works out what each zone needs; your automation, Irrigation Unlimited or your controller opens the valves."
         }
       },
@@ -181,7 +183,9 @@
       "calc-failed": "The calculation did not work. The zone says why under Zones.",
       "open-zone": "Open the zone",
       "another": "Set up another zone",
-      "done-next-water": "The main program waters it with the other zones, done by sunrise. You find it under Watering.",
+      "done-next-added": "It is now the last step of {program}, which waters it at its schedules. You find it under Watering.",
+      "done-next-new-program": "A new program, {program}, waters it every day, done by sunrise. You find it under Watering.",
+      "new-program-name": "Watering",
       "done-next-no-valve": "Link it to a valve in Zones so that it is watered."
     },
     "weatherservice": {
@@ -316,7 +320,7 @@
           "calculate-note": "Calculating only: Smart Irrigation works out the water balances and the durations and fires its start event, but opens no valve. Your own automation, Irrigation Unlimited or your controller does the watering with those durations.",
           "confirm-off": "Switch Smart Irrigation off? Whatever is watering stops now, and nothing is calculated or watered until it is switched on again.",
           "confirm-calculate": "Calculate only? Smart Irrigation stops opening the valves: whatever it is watering stops now, and from now on your own automation does the watering with its durations.",
-          "water-note": "Calculating and watering: Smart Irrigation works out what each zone needs and opens the valves itself, with its programs. The main program waters every zone at its schedules."
+          "water-note": "Calculating and watering: Smart Irrigation works out what each zone needs and opens the valves itself, with its programs. Each program waters the zones of its steps at its schedules."
         }
       },
       "description": "This page provides global settings.",
@@ -371,7 +375,7 @@
           "calc-daily": "daily at {time}",
           "calc-before-start": "just before each start",
           "calc-manual": "only when you ask",
-          "main-schedules": "Started by the main program's schedules (the start trigger is not used for now)",
+          "program-schedules": "Started by the programs' schedules (the start trigger is not used for now)",
           "accounts-for-duration": "counted back so the run finishes then",
           "starts-at-trigger": "starts at that moment",
           "sequencing-sequential": "one zone at a time, so the total is every zone added up",
@@ -439,7 +443,7 @@
           "detail-dry": "Not raining",
           "detail-held": "sits out this run",
           "check-postponed": "Postponed by you",
-          "title-main": "Will the main program be skipped?"
+          "title-next": "Will the next run be skipped?"
         },
         "estimate": {
           "title": "Where each zone stands now",
@@ -964,7 +968,6 @@
         "no-schedules": "No schedule.",
         "schedules-off": "Its schedules are switched off until you switch them on.",
         "schedules-stay-on": "You switched its schedules on: they stay as they are.",
-        "disabled": "Switched off in Irrigation Unlimited, and here too.",
         "removed": "No longer in Irrigation Unlimited, removed: {programs}."
       },
       "supplies": {
@@ -1080,8 +1083,7 @@
           "uses": "Uses {uses}."
         },
         "left-off": "Left off, as Irrigation Unlimited had them switched off: {names}.",
-        "unrecorded": "Left off, as the import has no record of which of their schedules Irrigation Unlimited had on: {names}. Switch their schedules on yourself, or go back to Irrigation Unlimited, import again (it records them) and switch over again.",
-        "main-also-waters": "The main program waters {zones} as well, every day from the start trigger: next to Irrigation Unlimited, and after the switch next to the imported programs, these zones get their water twice. If the imported programs water everything, switch the main program off under Programs, or set the start trigger to None."
+        "unrecorded": "Left off, as the import has no record of which of their schedules Irrigation Unlimited had on: {names}. Switch their schedules on yourself, or go back to Irrigation Unlimited, import again (it records them) and switch over again."
       },
       "notes": {
         "blueprint_zone_gone": "a blueprint automation feeds it from zone {zone}, which does not exist any more: it is not taken as calculated",
@@ -1299,19 +1301,16 @@
   "programs": {
     "title": "Programs",
     "description": "A program waters its steps one after the other. A step is one zone, or several watered together, and by default takes the duration Smart Irrigation calculated for it. Programs whose zones share a supply, or have none, never run at the same time: the next one waits its turn. Programs on supplies of their own water side by side.",
-    "main_description": "Waters every zone, one after the other or together, at its schedules.",
+    "none_yet": "No program yet. A zone is watered once a program has it in a step: add one with New program.",
     "run_options": "Options for this run",
     "adjust_empty": "Enter a percentage or seconds to adjust the durations.",
     "more_options": "More options",
     "more_options_set": "with more rules",
-    "sequencing_title": "Order of the zones and pauses",
-    "others_title": "Other programs",
     "confirm_run": "Run {name} now? Its valves open straight away.",
     "run_started": "{name} has started.",
     "run_queued": "{name} is queued: it starts when what is watering now has finished.",
     "run_nothing": "{name} found nothing to water.",
     "run_failed": "{name} could not start: {error}",
-    "main_schedules_hint": "With no enabled schedule, the start trigger set further down this page starts the main program. As soon as one schedule is enabled, the schedules replace that trigger. Its settings are kept, and it comes back if the schedules are disabled or removed.",
     "name": "Name",
     "step": "Step",
     "step_zones": "Zones",
@@ -1328,21 +1327,20 @@
     "tours": "Rounds",
     "tours_help": "The whole list of steps is watered this many times, each round with its share of the water. Unlike passes, which repeat one step before going on, a round lets each zone soak while the others water.",
     "enabled": "Enabled",
-    "program_enabled": "Program on",
-    "schedule_enabled": "Schedule on",
-    "step_enabled": "Step on",
     "add_step": "Add a step",
     "delete_step": "Delete the step",
     "add": "New program",
+    "all_zones_now_title": "Irrigate all zones now",
+    "all_zones_now_help": "Only for the Irrigate all zones button: every zone with a valve, in this order, with these passes and pause. The programs keep their own steps.",
     "delete": "Delete the program",
     "schedule": "Schedule",
     "add_schedule": "Add a schedule",
     "delete_schedule": "Delete the schedule",
-    "schedule_moment": "At",
+    "schedule_moment": "When",
     "moment_time": "A time of day",
     "moment_sunrise": "Sunrise",
     "moment_sunset": "Sunset",
-    "moment_azimuth": "When the sun reaches a bearing",
+    "moment_azimuth": "The sun reaches a bearing",
     "schedule_time": "Time",
     "schedule_offset": "Before (-) or after (+) the sun",
     "schedule_anchor": "That moment is when the program",
@@ -1396,7 +1394,6 @@
     "max_litres": "Volume limit",
     "max_litres_help": "A zone of this step stops once its water meter has counted this volume, in litres or gallons as the panel shows volumes. 0: no limit. The meter reports every so often, so the volume is not exact. A zone without a meter ignores it.",
     "new_program": "Program",
-    "main_name": "Main program",
     "run_now": "Run now",
     "run_seconds": "Total duration",
     "run_seconds_help": "Optional. Empty: the planned durations. Otherwise the whole program lasts this long, shared between its steps in proportion to their planned durations.",
@@ -1418,8 +1415,6 @@
     "adjust_apply": "Apply",
     "adjust_reset": "Reset",
     "confirm_reset_adjustment": "Remove the adjustment of this program?",
-    "main_settings": "Main program: start and sequencing",
-    "main_settings_description": "How the main program waters: the zones one after the other or together, the pause between two zones and cycle and soak.",
     "mode_off": "The full controller is off. Turn it on in Settings, General.",
     "no_zone": "no zone",
     "mode_calculated_short": "calculated",
@@ -1432,14 +1427,13 @@
     "schedules_none": "no schedule",
     "schedules_one": "1 schedule",
     "schedules_many": "{n} schedules",
-    "off": "off",
+    "no_schedule_on": "no schedule on",
     "steps_title": "Steps",
     "schedules_title": "Schedules",
     "passes_help": "Cycle and soak for this step: its water split into this many passes, each zone soaking between two of them. 1: in a single go.",
     "schedule_fallback_skip": "Skip that day",
     "schedule_fallback_previous": "Use the time of the last one seen",
     "schedule_fallback_at": "Start at a fixed time",
-    "main_steps_hint": "The main program waters every zone. To water only some of them, or in an order of your own, add one under Other programs below.",
     "summary_start_sunrise": "starts at sunrise",
     "summary_start_sunset": "starts at sunset",
     "summary_start_azimuth": "starts when the sun is at {deg}°",
@@ -1465,7 +1459,7 @@
     "passes_short": "{n} passes",
     "overlap_short": "starts the next {time} early",
     "wait_short": "waits {time} before the next",
-    "soak_shared_help": "One soak time for every step in passes, in every program and in the main program.",
+    "soak_shared_help": "One soak time for every step in passes, in every program.",
     "min_over_max": "The minimum is above the maximum: the maximum wins, {max}.",
     "confirm_run_replace": "Run {name} now? What is watering is stopped first, then its valves open.",
     "run_replacing": "What was watering is being stopped; {name} starts straight after.",
@@ -1630,10 +1624,8 @@
         "running": "running",
         "waiting": "waiting",
         "paused": "paused",
-        "suspended": "suspended",
-        "disabled": "disabled"
+        "suspended": "suspended"
       },
-      "main_name": "Main program",
       "after": "starts after {name}",
       "next_in_line": "starts next"
     },

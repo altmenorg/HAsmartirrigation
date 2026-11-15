@@ -12,7 +12,6 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 import {
   fetchConfig,
-  fetchIrrigationInfo,
   fetchMappings,
   fetchZones,
   saveConfig,
@@ -148,8 +147,6 @@ interface ProgramPreview {
   unknown_zones: number[];
   unknown_zone_names: string[];
   zones_not_watered: { zone_id: number; zone: string | null }[];
-  /** The main program's settings written beside it, as config keys. */
-  settings?: Record<string, unknown>;
 }
 
 /**
@@ -200,9 +197,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   // What the programs are doing, and what they will do (full controller).
   @property({ attribute: false }) planning: any[] = [];
   @property({ attribute: false }) programsState?: any;
-  // What starts the main program, from the `info` data: "trigger" (the start
-  // trigger) or "main_schedules" (the main program's own schedules).
-  @property({ attribute: false }) startSource?: string;
   private _liveTimer?: number;
   private _unfolded = UNFOLDED;
 
@@ -760,8 +754,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       if (this.section) {
         return this.renderWateringSection(r5);
       }
-      // In full controller mode the start trigger is the main program's, and
-      // lives with it in the Watering tab.
+      // In full controller mode the programs' schedules start the watering:
+      // the start trigger is for "Calculate only".
       const full = this.config.full_controller === true;
       const lang = this.hass.language;
       const icons: Record<string, string> = {
@@ -837,16 +831,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     if (this.section === "supplies") {
       return html`${this.renderSuppliesCard()}`;
     }
-    // The main program, everything of it in one card (how it starts, the order
-    // and pauses of its zones, running it), then the start trigger it uses
-    // when it has no schedule of its own, then the other programs. Its
-    // settings used to come after all the other programs, and nothing showed
-    // which "Run now" belonged to which program (#893).
-    // The main program is started by its schedules: the start trigger card
-    // is for calculating only (one_choice.py).
+    // Every program in one list, each the same way: there is no main program
+    // any more. The start trigger card is for calculating only (one_choice.py).
     void triggers;
-    return html`${this.renderProgramsCard("main")}
-    ${this.renderProgramsCard("others")}`;
+    return html`${this.renderProgramsCard()}`;
   }
 
   /** Links to zones of the Zones page, each opening its zone (#969). */
@@ -985,7 +973,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           }}
           @open-program=${(e: CustomEvent) => {
             const id = e.detail.program_id;
-            if (id && id !== "main") this._setOpen(`program:${id}`, true);
+            if (id) this._setOpen(`program:${id}`, true);
             navigate(this, `/${DOMAIN}/programs`);
           }}
         ></si-week-view>
@@ -1221,7 +1209,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           type: DOMAIN + "/planning",
           days: Math.max(3, this._weekDays),
         });
-        await this._fetchStartSource();
       }
       this._scheduleUpdate();
     } catch (error) {
@@ -1297,27 +1284,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     }, 400);
   }
 
-  /** Whether the start trigger or the main program's schedules start it. */
-  private async _fetchStartSource(): Promise<void> {
-    if (!this.hass || this.config?.full_controller !== true) return;
-    try {
-      const info = await fetchIrrigationInfo(this.hass);
-      this.startSource = info?.start_source ?? "trigger";
-      this._scheduleUpdate();
-    } catch (error) {
-      console.error("Error fetching what starts the main program:", error);
-    }
-  }
-
   /**
    * Programs: what is watered, in what order, for how long.
    *
-   * Only in full controller mode. The main program is made from the settings
-   * below; only its schedules are edited here (when one is enabled they start it
-   * in place of the start trigger). A step is one or several zones watered
-   * together; by default it takes the duration Smart Irrigation calculated.
+   * Only in full controller mode. Every program is the same kind: its steps,
+   * started on its own by its schedules that are on, or by hand. A step is one
+   * or several zones watered together; by default it takes the duration Smart
+   * Irrigation calculated.
    */
-  renderProgramsCard(part: "main" | "others" = "others") {
+  renderProgramsCard() {
     if (!this.config || !this.hass || this.config.full_controller !== true) {
       return html``;
     }
@@ -1338,7 +1313,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       return isNaN(n) ? fallback : n;
     };
     const programName = (program: SmartIrrigationProgram) =>
-      this._programLabel(program.main ? "main" : program.id, program.name);
+      this._programLabel(program.id ?? "", program.name);
     const toast = (message: string) =>
       fireEvent(this, "hass-notification" as any, { message } as any);
     const run = async (program: SmartIrrigationProgram) => {
@@ -1359,7 +1334,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       if (!(await this._ask(question))) return;
       const seconds = Math.round(parseFloat(opts.seconds ?? ""));
       const data: Record<string, unknown> = { program_id: id };
-      if (seconds > 0 && id !== "main") data.seconds = Math.min(seconds, 86400);
+      if (seconds > 0) data.seconds = Math.min(seconds, 86400);
       if (opts.replace) data.mode = "replace";
       try {
         await this.hass!.callService(DOMAIN, "run_program", data);
@@ -1386,34 +1361,31 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         ).replace("{name}", name),
       );
     };
-    // The main program has no steps to share a total over: it takes no duration.
     // What a manual run can be asked for: kept for the next press only, not
     // saved, so folded away rather than shown among the saved settings (#893).
     const runOptions = (id: string | undefined) => html`
       <details class="more">
         <summary>${t("run_options")}</summary>
         <div class="more-body">
-          ${id === "main"
-            ? ""
-            : html`<div class="setting-row">
-                <div class="setting-label">
-                  ${t("run_seconds")}
-                  <span class="unit"
-                    >(${localize("common.units.seconds", lang)})</span
-                  ><si-info>${t("run_seconds_help")}</si-info>
-                </div>
-                <input
-                  class="field"
-                  type="number"
-                  min="1"
-                  max="86400"
-                  .value=${RUN_OPTIONS[id ?? ""]?.seconds ?? ""}
-                  @input=${(e: Event) => {
-                    const o = (RUN_OPTIONS[id ?? ""] ||= {});
-                    o.seconds = (e.target as HTMLInputElement).value;
-                  }}
-                />
-              </div>`}
+          <div class="setting-row">
+            <div class="setting-label">
+              ${t("run_seconds")}
+              <span class="unit"
+                >(${localize("common.units.seconds", lang)})</span
+              ><si-info>${t("run_seconds_help")}</si-info>
+            </div>
+            <input
+              class="field"
+              type="number"
+              min="1"
+              max="86400"
+              .value=${RUN_OPTIONS[id ?? ""]?.seconds ?? ""}
+              @input=${(e: Event) => {
+                const o = (RUN_OPTIONS[id ?? ""] ||= {});
+                o.seconds = (e.target as HTMLInputElement).value;
+              }}
+            />
+          </div>
           <div class="setting-row">
             <div class="setting-label">
               ${t("run_replace")}<si-info>${t("run_replace_help")}</si-info>
@@ -1684,6 +1656,24 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         narrowed ? ` · ${t("more_options_set")}` : ""
       }`;
     };
+    // A switch on the right of a fold's summary line (a step's or a
+    // schedule's "on"): clicking it switches, and never opens or closes the
+    // fold. The new value comes from the data, not from the switch, so the
+    // click's default being cancelled cannot leave the two apart.
+    const headSwitch = (on: boolean, set: (on: boolean) => void) => html`
+      <ha-switch
+        .checked=${on}
+        @click=${(e: Event) => {
+          e.stopPropagation();
+          e.preventDefault();
+          set(!on);
+        }}
+      ></ha-switch>
+    `;
+    const headLine = (text: unknown, on: boolean, set: (on: boolean) => void) =>
+      html`<span class="fold-head"
+        ><span class="fold-head-text">${text}</span>${headSwitch(on, set)}</span
+      >`;
     const fold = (key: string, summary: unknown, body: unknown) => html`
       <details
         class="fold"
@@ -1719,20 +1709,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       </details>
     `;
 
-    // Every zone a program can water: the main program every zone with a
-    // valve that is not off, another the zones of its steps that are on.
+    // Every zone a program can water: the zones of its steps that are on.
     const programZones = (program: SmartIrrigationProgram) => {
-      const ids = program.main
-        ? this.zones
-            .filter((z) => z.linked_entity && String(z.state) !== "disabled")
-            .map((z) => z.id)
-        : [
-            ...new Set(
-              (program.steps || [])
-                .filter((s) => s.enabled !== false)
-                .flatMap((s) => s.zones || []),
-            ),
-          ];
+      const ids = [
+        ...new Set(
+          (program.steps || [])
+            .filter((s) => s.enabled !== false)
+            .flatMap((s) => s.zones || []),
+        ),
+      ];
       return ids
         .map((id) => ({
           id: Number(id),
@@ -1784,14 +1769,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       `;
     };
     // What a run of the program would do, drawn: asked of the backend for
-    // the program as it is now, saved or not, and only for one unfolded
-    // (``foldKey`` null: always, the main program's card has no fold).
-    const preview = (
-      program: SmartIrrigationProgram,
-      foldKey: string | null,
-    ) => {
+    // the program as it is now, saved or not, and only for one unfolded.
+    const preview = (program: SmartIrrigationProgram, foldKey: string) => {
       const id = program.id ?? "";
-      if (foldKey !== null && !this._isOpen(foldKey)) return html``;
+      if (!this._isOpen(foldKey)) return html``;
       const data = this._preview(id, program);
       return html`
         <div class="fold-section">
@@ -1832,15 +1813,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       const notWatered = found?.zones_not_watered || [];
       const apply = () => {
         if (!found) return;
-        // The main program stays the main one; any other never becomes it.
-        const cleaned = { ...found.program, main: replacing?.main === true };
-        // The main program's settings live with the general ones.
-        if (
-          replacing?.main &&
-          found.settings &&
-          Object.keys(found.settings).length
-        )
-          this.handleConfigChange(found.settings);
+        const cleaned = { ...found.program };
         if (index === null) {
           // A new program is unfolded on its form, its timeline at the top.
           this._setOpen(`program:${cleaned.id}`, true);
@@ -1903,21 +1876,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     };
     const yamlButton = (program: SmartIrrigationProgram) =>
       html`${this._actionBtn(mdiCodeBraces, t("yaml_edit"), () =>
-        openYaml(
-          program.id ?? "",
-          programToYaml(
-            program,
-            this.zones,
-            program.main
-              ? {
-                  sequencing: this.config?.zone_sequencing ?? "sequential",
-                  passes: this.config?.watering_passes ?? 1,
-                  soak_minutes: this.config?.soak_minutes ?? 15,
-                  pause_between_zones: this.config?.pause_between_zones ?? 0,
-                }
-              : undefined,
-          ),
-        ),
+        openYaml(program.id ?? "", programToYaml(program, this.zones)),
       )} `;
 
     // In YAML, the button that was "Edit in YAML" goes back to the form.
@@ -1968,11 +1927,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         (step.min_seconds ?? 0) > (step.max_seconds ?? 0);
       return fold(
         `step:${step.id}`,
-        html`<strong>${t("step")} ${stepIndex + 1}</strong> ·
-          ${zoneNames(step.zones)} ·
-          ${durationText(step)}${extras.map(
-            (extra) => html` · ${extra}`,
-          )}${step.enabled === false ? html` · <em>${t("off")}</em>` : ""}`,
+        headLine(
+          html`<strong>${t("step")} ${stepIndex + 1}</strong> ·
+            ${zoneNames(step.zones)} ·
+            ${durationText(step)}${extras.map((extra) => html` · ${extra}`)}`,
+          step.enabled !== false,
+          (on) => patchStep({ enabled: on }),
+        ),
         html`
           <div class="setting-row">
             <div class="setting-label">
@@ -2172,14 +2133,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}
             `,
           )}
-          <div class="setting-row">
-            <div class="setting-label">${t("step_enabled")}</div>
-            <ha-switch
-              .checked=${step.enabled !== false}
-              @change=${(e: Event) =>
-                patchStep({ enabled: (e.target as any).checked })}
-            ></ha-switch>
-          </div>
           <div class="si-actions">
             ${this._actionBtn(
               mdiDelete,
@@ -2229,10 +2182,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       };
       return fold(
         `schedule:${schedule.id}`,
-        html`<strong>${t("schedule")} ${scheduleIndex + 1}</strong> ·
-          ${scheduleText(schedule)}${schedule.enabled === false
-            ? html` · <em>${t("off")}</em>`
-            : ""}`,
+        headLine(
+          html`<strong>${t("schedule")} ${scheduleIndex + 1}</strong> ·
+            ${scheduleText(schedule)}`,
+          schedule.enabled !== false,
+          (on) => patchSchedule({ enabled: on }),
+        ),
         html`
           ${this._selectRow(
             t("schedule_moment"),
@@ -2595,7 +2550,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       : ""}
                   `
                 : ""}
-              ${schedule.anchor === "end" && !program.main
+              ${schedule.anchor === "end"
                 ? html`
                     <div class="setting-row">
                       <div class="setting-label">
@@ -2615,14 +2570,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 : ""}
             `,
           )}
-          <div class="setting-row">
-            <div class="setting-label">${t("schedule_enabled")}</div>
-            <ha-switch
-              .checked=${schedule.enabled !== false}
-              @change=${(e: Event) =>
-                patchSchedule({ enabled: (e.target as any).checked })}
-            ></ha-switch>
-          </div>
           <div class="si-actions">
             ${this._actionBtn(
               mdiDelete,
@@ -2780,173 +2727,123 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       `;
     };
 
-    if (part === "main") {
-      const index = programs.findIndex((p) => p.main);
-      const program = programs[index];
-      if (!program) return html``;
-      return html`
-        <ha-card header="${programName(program)}">
-          <div class="card-content">
-            <!-- What it is first, in one style, then its buttons: it opened
-                 on "Run now" with two descriptions under it, large and small
-                 (UX walk of 13 Nov., Q13). -->
-            <div class="setting-note">
-              ${t("main_description")}<si-info>${t("main_steps_hint")}</si-info>
-            </div>
-            ${runHead(
-              program,
-              yamlOpen(program.id ?? "")
-                ? backButton(program)
-                : yamlButton(program),
-            )}
-            ${yamlOpen(program.id ?? "")
-              ? yamlBlock(program.id ?? "", index)
-              : html`${preview(program, null)}
-                  <div class="fold-section">
-                    ${t("schedules_title")}<si-info
-                      >${t("main_schedules_hint")}</si-info
-                    >
-                  </div>
-                  ${renderSchedules(program, index)}
-                  ${renderNotify(program, index)}
-                  <div class="fold-section">
-                    ${t("sequencing_title")}<si-info
-                      >${t("main_settings_description")}</si-info
-                    >
-                  </div>
-                  ${this.renderExecutionSettings(lang, true)}`}
-          </div>
-        </ha-card>
-      `;
-    }
-
     return html`
       <ha-card>
         <h1 class="card-header">
-          <span
-            >${t("others_title")}<si-info>${t("description")}</si-info></span
-          >
+          <span>${t("title")}<si-info>${t("description")}</si-info></span>
         </h1>
-        ${programs.map((program, index) =>
-          program.main
-            ? ""
-            : html`
-                <div class="card-content">
-                  ${fold(
-                    `program:${program.id}`,
-                    html`<span class="fold-title">${program.name}</span> ·
-                      ${countLabel((program.steps || []).length, {
-                        none: t("steps_none"),
-                        one: t("steps_one"),
-                        many: t("steps_many"),
-                      })}
-                      ·
-                      ${countLabel((program.schedules || []).length, {
-                        none: t("schedules_none"),
-                        one: t("schedules_one"),
-                        many: t("schedules_many"),
-                      })}${program.enabled === false
-                        ? html` · <em>${t("off")}</em>`
-                        : ""}${stateOf(program.id)?.suspended_until
-                        ? html` · <em>${t("suspended")}</em>`
-                        : ""}${adjustmentOf(program)
-                        ? html` · <em>${adjustText(program)}</em>`
-                        : ""}`,
-                    yamlOpen(program.id ?? "")
-                      ? html`${runHead(program, backButton(program))}
-                        ${yamlBlock(program.id ?? "", index)}`
-                      : html`
-                          ${runHead(program, yamlButton(program))}
-                          ${this._textRow(t("name"), "", program.name, (v) =>
-                            patch(index, { name: v }),
-                          )}
-                          ${preview(program, `program:${program.id}`)}
-                          <div class="fold-section">${t("steps_title")}</div>
-                          ${(program.steps || []).map((step, stepIndex) =>
-                            renderStep(program, index, step, stepIndex),
-                          )}
-                          <div class="si-actions">
-                            ${this._actionBtn(mdiPlus, t("add_step"), () =>
-                              patch(index, {
-                                steps: [
-                                  ...(program.steps || []),
-                                  {
-                                    id: this._openNew(
-                                      "step",
-                                      "step_" + random(),
-                                    ),
-                                    zones: [],
-                                    mode: "calculated",
-                                    percent: 100,
-                                    seconds: 0,
-                                    passes: 1,
-                                    max_litres: 0,
-                                    min_seconds: 0,
-                                    max_seconds: 0,
-                                    adjust_seconds: 0,
-                                    delay: null,
-                                    enabled: true,
-                                  },
-                                ],
-                              }),
-                            )}
-                          </div>
-                          <div class="fold-section">
-                            ${t("schedules_title")}
-                          </div>
-                          ${renderSchedules(program, index)}
-                          ${this._numRow(
-                            html`${t("tours")}<si-info
-                                >${t("tours_help")}</si-info
-                              >`,
-                            "",
-                            program.tours ?? 1,
-                            (v) =>
-                              patch(index, {
-                                tours: Math.max(1, Math.round(num(v, 1))),
-                              }),
-                            1,
-                            false,
-                            1,
-                          )}
-                          <div class="setting-row">
-                            <div class="setting-label">
-                              ${t("program_enabled")}
-                            </div>
-                            <ha-switch
-                              .checked=${program.enabled !== false}
-                              @change=${(e: Event) =>
-                                patch(index, {
-                                  enabled: (e.target as any).checked,
-                                })}
-                            ></ha-switch>
-                          </div>
-                          ${renderNotify(program, index)}
-                          ${adjustBlock(program)}
-                          <div class="si-actions">
-                            ${this._actionBtn(
-                              mdiDelete,
-                              t("delete"),
-                              async () => {
-                                if (
-                                  !(await this._ask(
-                                    t("confirm_delete_program").replace(
-                                      "{name}",
-                                      program.name,
-                                    ),
-                                    true,
-                                  ))
-                                )
-                                  return;
-                                save(programs.filter((_, n) => n !== index));
+        ${programs.length
+          ? ""
+          : html`<div class="card-content">
+              <div class="setting-note">${t("none_yet")}</div>
+            </div>`}
+        ${programs.map(
+          (program, index) => html`
+            <div class="card-content">
+              ${fold(
+                `program:${program.id}`,
+                html`<span class="fold-title">${programName(program)}</span> ·
+                  ${countLabel((program.steps || []).length, {
+                    none: t("steps_none"),
+                    one: t("steps_one"),
+                    many: t("steps_many"),
+                  })}
+                  ·
+                  ${countLabel((program.schedules || []).length, {
+                    none: t("schedules_none"),
+                    one: t("schedules_one"),
+                    many: t("schedules_many"),
+                  })}${(program.schedules || []).length &&
+                  !(program.schedules || []).some((s) => s.enabled !== false)
+                    ? html` · <em>${t("no_schedule_on")}</em>`
+                    : ""}${stateOf(program.id)?.suspended_until
+                    ? html` · <em>${t("suspended")}</em>`
+                    : ""}${adjustmentOf(program)
+                    ? html` · <em>${adjustText(program)}</em>`
+                    : ""}`,
+                yamlOpen(program.id ?? "")
+                  ? html`${runHead(program, backButton(program))}
+                    ${yamlBlock(program.id ?? "", index)}`
+                  : html`
+                      ${runHead(program, yamlButton(program))}
+                      ${this._textRow(t("name"), "", program.name, (v) =>
+                        patch(index, { name: v }),
+                      )}
+                      ${preview(program, `program:${program.id}`)}
+                      <div class="fold-section">${t("steps_title")}</div>
+                      ${(program.steps || []).map((step, stepIndex) =>
+                        renderStep(program, index, step, stepIndex),
+                      )}
+                      <div class="si-actions">
+                        ${this._actionBtn(mdiPlus, t("add_step"), () =>
+                          patch(index, {
+                            steps: [
+                              ...(program.steps || []),
+                              {
+                                id: this._openNew("step", "step_" + random()),
+                                zones: [],
+                                mode: "calculated",
+                                percent: 100,
+                                seconds: 0,
+                                passes: 1,
+                                max_litres: 0,
+                                min_seconds: 0,
+                                max_seconds: 0,
+                                adjust_seconds: 0,
+                                delay: null,
+                                enabled: true,
                               },
-                              true,
-                            )}
-                          </div>
-                        `,
-                  )}
-                </div>
-              `,
+                            ],
+                          }),
+                        )}
+                      </div>
+                      <div class="fold-section">${t("schedules_title")}</div>
+                      ${renderSchedules(program, index)}
+                      ${this._numRow(
+                        html`${t("tours")}<si-info
+                            >${t("tours_help")}</si-info
+                          >`,
+                        "",
+                        program.tours ?? 1,
+                        (v) =>
+                          patch(index, {
+                            tours: Math.max(1, Math.round(num(v, 1))),
+                          }),
+                        1,
+                        false,
+                        1,
+                      )}
+                      ${renderNotify(program, index)} ${adjustBlock(program)}
+                      ${
+                        // The last program cannot be deleted (the backend
+                        // refuses it too): switch its schedules off instead.
+                        programs.length > 1
+                          ? html`<div class="si-actions">
+                              ${this._actionBtn(
+                                mdiDelete,
+                                t("delete"),
+                                async () => {
+                                  if (
+                                    !(await this._ask(
+                                      t("confirm_delete_program").replace(
+                                        "{name}",
+                                        program.name,
+                                      ),
+                                      true,
+                                    ))
+                                  )
+                                    return;
+                                  save(programs.filter((_, n) => n !== index));
+                                },
+                                true,
+                              )}
+                            </div>`
+                          : ""
+                      }
+                    `,
+              )}
+            </div>
+          `,
         )}
         <div class="card-content">
           <div class="si-actions">
@@ -2955,8 +2852,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 ...programs,
                 {
                   id: this._openNew("program", "program_" + random()),
-                  name: `${t("new_program")} ${programs.length}`,
-                  enabled: true,
+                  name: `${t("new_program")} ${programs.length + 1}`,
                   steps: [],
                   delay: 0,
                   tours: 1,
@@ -2965,6 +2861,28 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               ]),
             )}
           </div>
+        </div>
+        <div class="card-content">
+          <!-- The order, passes and pause of a one-off run of every zone (the
+               "irrigate all zones now" button and action): no program has
+               them, so they are kept here, folded, for that run alone. -->
+          <details
+            class="more"
+            ?open=${this._isOpen("all_zones_now")}
+            @toggle=${(e: Event) =>
+              this._setOpen(
+                "all_zones_now",
+                (e.target as HTMLDetailsElement).open,
+              )}
+          >
+            <summary>${t("all_zones_now_title")}</summary>
+            <div class="more-body">
+              <div class="setting-hint row-hint">
+                ${t("all_zones_now_help")}
+              </div>
+              ${this.renderExecutionSettings(lang, true)}
+            </div>
+          </details>
         </div>
       </ha-card>
     `;
@@ -4263,7 +4181,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const config = this.config;
     const passes = Number(config.watering_passes ?? 1) || 1;
     // The soak is one setting for every program: shown here too when a step of
-    // another program waters in passes, not only the main program (Q5).
+    // a program waters in passes, not only for this run in passes (Q5).
     const stepsInPasses = (config.programs || []).some((program: any) =>
       (program.steps || []).some((step: any) => Number(step.passes) > 1),
     );
@@ -4593,11 +4511,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       this._scheduleUpdate();
 
       await saveConfig(this.hass, this.data);
-      // Adding, switching or removing a schedule of the main program changes
-      // what starts it: read that again rather than wait for the next refresh.
-      if ("programs" in changes) {
-        this._fetchStartSource();
-      }
     } catch (error) {
       // Save failed: no _config_updated echo will arrive, so clear the guard
       // (otherwise it would swallow the next genuine external refresh).
@@ -4927,11 +4840,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   // Action button: native ha-button, light "filled" appearance,
   // "danger" variant turns it red.
   /**
-   * A program's name as shown: the main program's stored English default in
-   * the user's language. The planning and the live state showed "Main
-   * program" in a French panel.
-   */
-  /**
    * The zones a run waters again right after the run it waits behind, one
    * line per program: they got their water twice that morning, and nothing
    * said so (UX walk of 13 Nov., Q1).
@@ -4959,9 +4867,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   }
 
   private _programLabel(id: string | undefined, name: string | undefined) {
-    return id === "main" && (!name || name === "Main program")
-      ? localize("programs.main_name", this.hass?.language ?? "en")
-      : (name ?? id ?? "");
+    return name || id || "";
   }
 
   /** Asks in a Home Assistant dialog; true to go ahead. */

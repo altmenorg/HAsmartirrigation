@@ -155,6 +155,8 @@
         "review": {
           "question": "Bereit zum Erstellen",
           "zone": "Zone",
+          "program": "Bewässert von",
+          "new-program": "Ein neues Programm",
           "environment": "Umgebung",
           "engine": "Modul",
           "sources": "Quellen",
@@ -166,7 +168,7 @@
         },
         "mode": {
           "question": "Was soll Smart Irrigation tun?",
-          "water-help": "Es berechnet, was jede Zone braucht, und öffnet die Ventile selbst, mit einem Hauptprogramm, das alle Zonen bis Sonnenaufgang bewässert. Den Zeitplan kannst du danach ändern.",
+          "water-help": "Es berechnet, was jede Zone braucht, und öffnet die Ventile selbst, mit einem Programm, das deine Zonen bis Sonnenaufgang bewässert. Den Zeitplan kannst du danach ändern.",
           "calculate-help": "Es berechnet, was jede Zone braucht; deine Automatisierung, Irrigation Unlimited oder dein Steuergerät öffnet die Ventile."
         }
       },
@@ -181,7 +183,9 @@
       "calc-failed": "Die Berechnung hat nicht geklappt. Unter Zonen steht an der Zone, warum.",
       "open-zone": "Zur Zone",
       "another": "Noch eine Zone anlegen",
-      "done-next-water": "Das Hauptprogramm bewässert sie mit den anderen Zonen bis Sonnenaufgang. Du findest es unter Bewässerung.",
+      "done-next-added": "Sie ist jetzt der letzte Schritt von {program}, das sie zu seinen Zeitplänen bewässert. Du findest es unter Bewässerung.",
+      "done-next-new-program": "Ein neues Programm, {program}, bewässert sie jeden Tag bis Sonnenaufgang. Du findest es unter Bewässerung.",
+      "new-program-name": "Bewässerung",
       "done-next-no-valve": "Verknüpfe sie unter Zonen mit einem Ventil, damit sie bewässert wird."
     },
     "weatherservice": {
@@ -316,7 +320,7 @@
           "calculate-note": "Nur berechnen: Smart Irrigation berechnet Wasserbilanzen und Dauern und löst sein Startereignis aus, öffnet aber kein Ventil. Deine eigene Automatisierung, Irrigation Unlimited oder dein Controller bewässert mit diesen Dauern.",
           "confirm-off": "Smart Irrigation ausschalten? Was gerade bewässert, stoppt sofort, und bis zum Wiedereinschalten wird nichts berechnet oder bewässert.",
           "confirm-calculate": "Nur berechnen? Smart Irrigation öffnet keine Ventile mehr: was es gerade bewässert, stoppt jetzt, und ab jetzt bewässert deine eigene Automatisierung mit seinen Dauern.",
-          "water-note": "Berechnen und bewässern: Smart Irrigation berechnet, was jede Zone braucht, und öffnet die Ventile selbst, mit seinen Programmen. Das Hauptprogramm bewässert alle Zonen zu seinen Zeitplänen."
+          "water-note": "Berechnen und bewässern: Smart Irrigation berechnet, was jede Zone braucht, und öffnet die Ventile selbst, mit seinen Programmen. Jedes Programm bewässert die Zonen seiner Schritte zu seinen Zeitplänen."
         }
       },
       "description": "Diese Seite ist für allgemeine Einstellungen.",
@@ -371,7 +375,7 @@
           "calc-daily": "täglich um {time}",
           "calc-before-start": "kurz vor jedem Start",
           "calc-manual": "nur auf Anfrage",
-          "main-schedules": "Gestartet von den Zeitplänen des Hauptprogramms (der Startauslöser wird im Moment nicht verwendet)",
+          "program-schedules": "Gestartet von den Zeitplänen der Programme (der Startauslöser wird im Moment nicht verwendet)",
           "accounts-for-duration": "zurückgerechnet, damit der Durchlauf dann endet",
           "starts-at-trigger": "beginnt zu diesem Zeitpunkt",
           "sequencing-sequential": "eine Zone nach der anderen, die Gesamtdauer ist also die Summe aller Zonen",
@@ -439,7 +443,7 @@
           "detail-dry": "Es regnet nicht",
           "detail-held": "setzt diesen Durchlauf aus",
           "check-postponed": "Von dir verschoben",
-          "title-main": "Wird das Hauptprogramm übersprungen?"
+          "title-next": "Wird der nächste Lauf übersprungen?"
         },
         "estimate": {
           "title": "Wo jede Zone jetzt steht",
@@ -964,7 +968,6 @@
         "no-schedules": "Kein Zeitplan.",
         "schedules-off": "Seine Zeitpläne bleiben aus, bis du sie einschaltest.",
         "schedules-stay-on": "Du hast seine Zeitpläne eingeschaltet: Sie bleiben, wie sie sind.",
-        "disabled": "In Irrigation Unlimited ausgeschaltet, und hier auch.",
         "removed": "Nicht mehr in Irrigation Unlimited, entfernt: {programs}."
       },
       "supplies": {
@@ -1080,8 +1083,7 @@
           "uses": "Nutzt {uses}."
         },
         "left-off": "Aus gelassen, weil Irrigation Unlimited sie ausgeschaltet hatte: {names}.",
-        "unrecorded": "Aus gelassen, weil die Übernahme nicht festgehalten hat, welche ihrer Zeitpläne Irrigation Unlimited an hatte: {names}. Schalte ihre Zeitpläne selbst ein, oder geh zurück zu Irrigation Unlimited, übernimm noch einmal (dabei wird es festgehalten) und steig erneut um.",
-        "main-also-waters": "Das Hauptprogramm bewässert {zones} ebenfalls, jeden Tag zum Startauslöser: Neben Irrigation Unlimited und nach dem Umstieg neben den übernommenen Programmen bekommen diese Zonen ihr Wasser doppelt. Bewässern die übernommenen Programme alles, schalte das Hauptprogramm unter Programme aus oder stelle den Startauslöser auf „Keiner“."
+        "unrecorded": "Aus gelassen, weil die Übernahme nicht festgehalten hat, welche ihrer Zeitpläne Irrigation Unlimited an hatte: {names}. Schalte ihre Zeitpläne selbst ein, oder geh zurück zu Irrigation Unlimited, übernimm noch einmal (dabei wird es festgehalten) und steig erneut um."
       },
       "notes": {
         "blueprint_zone_gone": "eine Blueprint-Automatisierung versorgt sie aus Zone {zone}, die es nicht mehr gibt: Sie wird nicht als berechnet übernommen",
@@ -1299,19 +1301,16 @@
   "programs": {
     "title": "Programme",
     "description": "Ein Programm bewässert seine Schritte nacheinander. Ein Schritt ist eine Zone oder mehrere, die zusammen bewässert werden, und dauert standardmäßig so lange, wie Smart Irrigation es für ihn berechnet hat. Programme, deren Zonen sich eine Versorgung teilen oder keine haben, laufen nie gleichzeitig: Das nächste wartet, bis es an der Reihe ist. Programme an eigenen Versorgungen bewässern gleichzeitig.",
-    "main_description": "Bewässert alle Zonen, nacheinander oder zusammen, zu seinen Zeitplänen.",
+    "none_yet": "Noch kein Programm. Eine Zone wird bewässert, sobald ein Programm sie in einem Schritt hat: leg eins mit Neues Programm an.",
     "run_options": "Optionen für diesen Start",
     "adjust_empty": "Gib einen Prozentsatz oder Sekunden ein, um die Dauern anzupassen.",
     "more_options": "Weitere Optionen",
     "more_options_set": "mit weiteren Regeln",
-    "sequencing_title": "Reihenfolge der Zonen und Pausen",
-    "others_title": "Weitere Programme",
     "confirm_run": "{name} jetzt starten? Seine Ventile öffnen sich sofort.",
     "run_started": "{name} wurde gestartet.",
     "run_queued": "{name} steht in der Warteschlange: Es startet, wenn die laufende Bewässerung beendet ist.",
     "run_nothing": "{name} hat nichts zu bewässern gefunden.",
     "run_failed": "{name} konnte nicht starten: {error}",
-    "main_schedules_hint": "Ohne aktivierten Zeitplan startet der weiter unten auf dieser Seite eingestellte Startauslöser das Hauptprogramm. Sobald ein Zeitplan aktiviert ist, ersetzen die Zeitpläne diesen Auslöser. Seine Einstellungen bleiben erhalten, und er gilt wieder, wenn du die Zeitpläne deaktivierst oder entfernst.",
     "name": "Name",
     "step": "Schritt",
     "step_zones": "Zonen",
@@ -1328,21 +1327,20 @@
     "tours": "Runden",
     "tours_help": "Die ganze Liste der Schritte wird so oft bewässert, jede Runde mit ihrem Anteil am Wasser. Anders als Durchgänge, die einen Schritt wiederholen, bevor es weitergeht, lässt eine Runde jede Zone einsickern, während die anderen bewässern.",
     "enabled": "Aktiviert",
-    "program_enabled": "Programm aktiv",
-    "schedule_enabled": "Zeitplan aktiv",
-    "step_enabled": "Schritt aktiv",
     "add_step": "Schritt hinzufügen",
     "delete_step": "Schritt löschen",
     "add": "Neues Programm",
+    "all_zones_now_title": "Alle Zonen jetzt bewässern",
+    "all_zones_now_help": "Nur für die Schaltfläche Alle Zonen bewässern: jede Zone mit Ventil, in dieser Reihenfolge, mit diesen Durchgängen und dieser Pause. Die Programme behalten ihre eigenen Schritte.",
     "delete": "Programm löschen",
     "schedule": "Zeitplan",
     "add_schedule": "Zeitplan hinzufügen",
     "delete_schedule": "Zeitplan löschen",
-    "schedule_moment": "Um",
+    "schedule_moment": "Wann",
     "moment_time": "Eine Uhrzeit",
     "moment_sunrise": "Sonnenaufgang",
     "moment_sunset": "Sonnenuntergang",
-    "moment_azimuth": "Wenn die Sonne einen Azimut erreicht",
+    "moment_azimuth": "Die Sonne erreicht einen Azimut",
     "schedule_time": "Uhrzeit",
     "schedule_offset": "Vor (-) oder nach (+) der Sonne",
     "schedule_anchor": "Dieser Zeitpunkt ist, wann das Programm",
@@ -1396,7 +1394,6 @@
     "max_litres": "Mengenbegrenzung",
     "max_litres_help": "Eine Zone dieses Schritts stoppt, sobald ihr Wasserzähler diese Menge gezählt hat, in Litern oder Gallonen, so wie das Panel Mengen anzeigt. 0: keine Begrenzung. Der Zähler meldet nur ab und zu, die Menge ist also nicht exakt. Eine Zone ohne Zähler ignoriert sie.",
     "new_program": "Programm",
-    "main_name": "Hauptprogramm",
     "run_now": "Jetzt starten",
     "run_seconds": "Gesamtdauer",
     "run_seconds_help": "Optional. Leer: die geplanten Dauern. Sonst dauert das ganze Programm so lange, im Verhältnis zu den geplanten Dauern auf seine Schritte verteilt.",
@@ -1418,8 +1415,6 @@
     "adjust_apply": "Anwenden",
     "adjust_reset": "Zurücksetzen",
     "confirm_reset_adjustment": "Die Anpassung dieses Programms entfernen?",
-    "main_settings": "Hauptprogramm: Start und Reihenfolge",
-    "main_settings_description": "Wie das Hauptprogramm bewässert: die Zonen nacheinander oder zusammen, die Pause zwischen zwei Zonen und das Bewässern in Durchgängen mit Einsickern.",
     "mode_off": "Die volle Steuerung ist aus. Schalte sie unter Einstellungen, Allgemein ein.",
     "no_zone": "keine Zone",
     "mode_calculated_short": "berechnet",
@@ -1432,14 +1427,13 @@
     "schedules_none": "kein Zeitplan",
     "schedules_one": "1 Zeitplan",
     "schedules_many": "{n} Zeitpläne",
-    "off": "aus",
+    "no_schedule_on": "kein Zeitplan an",
     "steps_title": "Schritte",
     "schedules_title": "Zeitpläne",
     "passes_help": "In Durchgängen bewässern, für diesen Schritt: sein Wasser auf so viele Durchgänge verteilt, jede Zone sickert zwischen zwei Durchgängen ein. 1: in einem Zug.",
     "schedule_fallback_skip": "Diesen Tag auslassen",
     "schedule_fallback_previous": "Die Zeit des zuletzt gesehenen nehmen",
     "schedule_fallback_at": "Zu einer festen Zeit starten",
-    "main_steps_hint": "Das Hauptprogramm bewässert alle Zonen. Für nur einige davon oder eine eigene Reihenfolge füge unten unter „Weitere Programme“ eines hinzu.",
     "summary_start_sunrise": "startet bei Sonnenaufgang",
     "summary_start_sunset": "startet bei Sonnenuntergang",
     "summary_start_azimuth": "startet, wenn die Sonne bei {deg}° steht",
@@ -1465,7 +1459,7 @@
     "passes_short": "{n} Durchgänge",
     "overlap_short": "startet den nächsten {time} früher",
     "wait_short": "wartet {time} vor dem nächsten",
-    "soak_shared_help": "Eine Einsickerzeit für jeden Schritt in Durchgängen, in allen Programmen und im Hauptprogramm.",
+    "soak_shared_help": "Eine Einsickerzeit für jeden Schritt in Durchgängen, in allen Programmen.",
     "min_over_max": "Das Mindestwasser liegt über dem Höchstwasser: Es gilt das Höchstwasser, {max}.",
     "confirm_run_replace": "{name} jetzt starten? Was gerade bewässert, wird zuerst gestoppt, dann öffnen sich seine Ventile.",
     "run_replacing": "Was gerade bewässert hat, wird gestoppt; {name} startet direkt danach.",
@@ -1630,10 +1624,8 @@
         "running": "läuft",
         "waiting": "wartet",
         "paused": "pausiert",
-        "suspended": "ausgesetzt",
-        "disabled": "deaktiviert"
+        "suspended": "ausgesetzt"
       },
-      "main_name": "Hauptprogramm",
       "after": "startet nach {name}",
       "next_in_line": "startet als Nächstes"
     },

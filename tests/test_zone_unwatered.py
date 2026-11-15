@@ -49,7 +49,6 @@ def _covered(programs, suspended=()):
 
 def test_a_program_covers_its_zones_only_while_it_can_water():
     assert _covered([_program(zones=(0,))]) == {0}
-    assert _covered([_program(enabled=False)]) == set()
     assert _covered([_program()], suspended={"p"}) == set()
     assert _covered([_program(schedules=[])]) == set()
     assert _covered([_program(schedules=[{"enabled": False}])]) == set()
@@ -57,10 +56,10 @@ def test_a_program_covers_its_zones_only_while_it_can_water():
     assert _covered([off_step]) == set()
 
 
-def test_the_main_program_covers_every_zone_while_it_is_on():
-    main = {const.PROGRAM_ID: "main", const.PROGRAM_MAIN: True}
-    assert _covered([main]) == {0, 1}
-    assert _covered([{**main, const.PROGRAM_ENABLED: False}]) == set()
+def test_the_old_main_program_covers_only_the_zones_of_its_steps():
+    # Converted into an ordinary program: a zone it does not name is not its.
+    main = _program(pid="main", zones=(1,))
+    assert _covered([main]) == {1}
     assert _covered([main], suspended={"main"}) == set()
 
 
@@ -126,7 +125,7 @@ def _fired(c):
 
 
 def test_the_notice_comes_after_three_days_with_one_event():
-    c = _coordinator([_zone()], [_program(enabled=False)])
+    c = _coordinator([_zone()], [_program(schedules=[{"enabled": False}])])
 
     ir = _check(c)
     ir.async_create_issue.assert_not_called()
@@ -153,7 +152,7 @@ def test_the_notice_comes_after_three_days_with_one_event():
 
 
 def test_watering_or_a_program_covering_the_zone_clears_the_notice():
-    c = _coordinator([_zone()], [_program(enabled=False)])
+    c = _coordinator([_zone()], [_program(schedules=[{"enabled": False}])])
     _check(c)
     _check(c, NOW + timedelta(days=4))
 
@@ -165,13 +164,13 @@ def test_watering_or_a_program_covering_the_zone_clears_the_notice():
     ir.async_create_issue.assert_not_called()
 
     # Dry again later, uncovered again: the count starts from zero.
-    c.store.config.programs = [_program(enabled=False)]
+    c.store.config.programs = [_program(schedules=[{"enabled": False}])]
     ir = _check(c, NOW + timedelta(days=6))
     ir.async_create_issue.assert_not_called()
 
 
 def test_a_zone_that_was_watered_clears_the_notice():
-    c = _coordinator([_zone()], [_program(enabled=False)])
+    c = _coordinator([_zone()], [_program(schedules=[{"enabled": False}])])
     _check(c)
     _check(c, NOW + timedelta(days=4))
 
@@ -183,7 +182,7 @@ def test_a_zone_that_was_watered_clears_the_notice():
 def test_a_suspended_zone_is_left_alone():
     c = _coordinator(
         [_zone()],
-        [_program(enabled=False)],
+        [_program(schedules=[{"enabled": False}])],
         suspended={(const.SUSPEND_ZONE, 0)},
     )
     _check(c)
@@ -192,7 +191,7 @@ def test_a_suspended_zone_is_left_alone():
 
 
 def test_nothing_happens_when_the_full_controller_is_off():
-    c = _coordinator([_zone()], [_program(enabled=False)], full=False)
+    c = _coordinator([_zone()], [_program(schedules=[{"enabled": False}])], full=False)
     _check(c)
     ir = _check(c, NOW + timedelta(days=9))
     ir.async_create_issue.assert_not_called()
@@ -200,7 +199,7 @@ def test_nothing_happens_when_the_full_controller_is_off():
 
 
 def test_setup_starts_one_timer_and_teardown_cancels_it_and_clears_notices():
-    c = _coordinator([_zone()], [_program(enabled=False)])
+    c = _coordinator([_zone()], [_program(schedules=[{"enabled": False}])])
     unsub = MagicMock()
     with patch(
         "custom_components.smart_irrigation.alerts.async_track_time_interval",

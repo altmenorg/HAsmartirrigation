@@ -10,8 +10,8 @@ const run = (
   minutes: number,
   extra: Partial<WeekRun> = {},
 ): WeekRun => ({
-  program_id: "main",
-  program: "Main program",
+  program_id: "morning",
+  program: "Morning",
   start: start.toISOString(),
   end: new Date(start.getTime() + minutes * 60000).toISOString(),
   ...extra,

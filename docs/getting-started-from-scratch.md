@@ -80,7 +80,7 @@ You now have a zone that computes a duration every night at 23:00.
 
 This is the step people skip, and then nothing waters: Smart Irrigation decides *how long*, and something has to *do it*. Two ways.
 
-**Let Smart Irrigation do it.** In **Settings > General**, choose **Calculate and water** in the first card, then set the zone's **Linked valve/switch** to the entity from step 2. It opens the valve at the start time of its main program (done by sunrise unless you change its schedule), waits the calculated duration, closes it, and credits the zone itself. Nothing else to write. Give your valve a hardware failsafe if it has one: if Home Assistant goes down mid-run, nothing here can close it.
+**Let Smart Irrigation do it.** In **Settings > General**, choose **Calculate and water** in the first card, then set the zone's **Linked valve/switch** to the entity from step 2. It puts the zone in a program, which opens the valve at its schedule (done by sunrise unless you change it), waits the calculated duration, closes it, and credits the zone itself. Nothing else to write. Give your valve a hardware failsafe if it has one: if Home Assistant goes down mid-run, nothing here can close it.
 
 **Or keep your own automation.** An [import-ready blueprint](usage-automations.md#blueprints-we-provide) does it for a plain switch, for Irrigation Unlimited, or for a Rain Bird, Hydrawise, Rachio, OpenSprinkler or B-hyve controller. Turn the controller's own schedule off if it has one, or it will water twice.
 

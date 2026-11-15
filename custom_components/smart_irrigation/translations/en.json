@@ -38,19 +38,7 @@
           "waiting": "Waiting",
           "running": "Running",
           "paused": "Paused",
-          "suspended": "Suspended",
-          "disabled": "Disabled"
-        }
-      },
-      "program_main": {
-        "name": "Main program",
-        "state": {
-          "idle": "Idle",
-          "waiting": "Waiting",
-          "running": "Running",
-          "paused": "Paused",
-          "suspended": "Suspended",
-          "disabled": "Disabled"
+          "suspended": "Suspended"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Calculate and water"
-      },
-      "program_on": {
-        "name": "Program {name} on"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Enable or disable a program",
-      "description": "Switch a program of the full controller on or off, as the switch in its settings does.",
+      "name": "Switch all schedules of a program (deprecated)",
+      "description": "Deprecated: switches every schedule of a program on or off. A program has no on/off of its own any more; use set_schedule_enabled for one schedule. Removed in 2027.11.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -775,6 +760,10 @@
     "deprecated_action": {
       "title": "The action {action} is going away",
       "description": "An automation, a script or a dashboard called **{action}**. It still works, but it will be removed from version {version} on, in winter, outside the watering season.\n\nUse **{replacement}** instead: it does the same, and for all zones when no zone is picked. This notice comes back with each call to the old name, until none is left."
+    },
+    "deprecated_program_enabled": {
+      "title": "The action {action} is going away",
+      "description": "An automation, a script or a dashboard called **{action}**. A program has no on/off of its own any more, so it now switches every schedule of the program on or off. It will be removed from version {version} on, in winter, outside the watering season.\n\nUse **{replacement}** instead, once per schedule. This notice comes back with each call to the old name, until none is left."
     },
     "deprecated_recurring_schedule": {
       "title": "Recurring schedules are going away: {action}",

@@ -215,12 +215,15 @@ export type NextStartState =
  * The time in the info payload is worked out arithmetically: it is there
  * whether or not anything will act on it. The card printed it under the
  * "none" trigger, which starts nothing, and while no trigger was armed. Only
- * the start trigger is armed or not: the main program's own schedules are
- * not that trigger, and their start is shown as it is.
+ * the start trigger is armed or not: with "Calculate and water" the programs'
+ * schedules start the watering, not that trigger, and their start is shown as
+ * it is.
  */
 export const nextStartState = (info: any): NextStartState => {
   if (info?.irrigation_enabled === false) return "off";
-  const bySchedules = info?.start_source === "main_schedules";
+  // Anything but the trigger: the programs' schedules ("main_schedules" is
+  // what it was called while there was a main program).
+  const bySchedules = !!info?.start_source && info.start_source !== "trigger";
   if (!bySchedules && info?.active_start_trigger === "none") {
     return "no_trigger";
   }
@@ -239,24 +242,11 @@ export const zoneWithoutValve = (info: any, zoneId: number): boolean =>
     (zone) => Number(zone.id) === Number(zoneId),
   );
 
-/** The name the main program is stored under until somebody renames it. */
-export const MAIN_PROGRAM_STORED_NAME = "Main program";
-
-/**
- * A program's name as the card shows it.
- *
- * The main program is stored as "Main program", in English, whatever the
- * language: the panel shows it in the user's language and the card showed
- * the stored name. A name of the user's own is kept as it is.
- */
-export const programLabel = (
-  program: { program_id: string; name?: string },
-  mainName: string,
-): string =>
-  program.program_id === "main" &&
-  (!program.name || program.name === MAIN_PROGRAM_STORED_NAME)
-    ? mainName
-    : (program.name ?? program.program_id);
+/** A program's name as the card shows it: its own, or its id without one. */
+export const programLabel = (program: {
+  program_id: string;
+  name?: string;
+}): string => program.name || program.program_id;
 
 /**
  * A zone Smart Irrigation calculates that has not been calculated yet: right

@@ -155,6 +155,8 @@
         "review": {
           "question": "Pronto para criar",
           "zone": "Zona",
+          "program": "Irrigada por",
+          "new-program": "Um novo programa",
           "environment": "Ambiente",
           "engine": "Módulo",
           "sources": "Fontes",
@@ -166,7 +168,7 @@
         },
         "mode": {
           "question": "O que o Smart Irrigation deve fazer?",
-          "water-help": "Ele calcula o que cada zona precisa e abre as válvulas sozinho, com um programa principal que irriga todas as zonas, terminado ao nascer do sol. Você pode mudar o horário depois.",
+          "water-help": "Calcula o que cada zona precisa e abre as válvulas sozinho, com um programa que irriga suas zonas, terminado ao nascer do sol. Você pode mudar o agendamento depois.",
           "calculate-help": "Ele calcula o que cada zona precisa; sua automação, o Irrigation Unlimited ou seu controlador abre as válvulas."
         }
       },
@@ -181,7 +183,9 @@
       "calc-failed": "O cálculo não funcionou. A zona diz o motivo em Zonas.",
       "open-zone": "Abrir a zona",
       "another": "Configurar outra zona",
-      "done-next-water": "O programa principal a irriga com as outras zonas, terminado ao nascer do sol. Você o encontra em Irrigação.",
+      "done-next-added": "Agora ela é a última etapa de {program}, que a irriga nos seus agendamentos. Você o encontra em Irrigação.",
+      "done-next-new-program": "Um novo programa, {program}, a irriga todos os dias, terminado ao nascer do sol. Você o encontra em Irrigação.",
+      "new-program-name": "Irrigação",
       "done-next-no-valve": "Vincule uma válvula a ela em Zonas para que seja irrigada."
     },
     "weatherservice": {
@@ -316,7 +320,7 @@
           "calculate-note": "Só calcular: o Smart Irrigation calcula os balanços hídricos e as durações e envia seu evento de início, mas não abre nenhuma válvula. Sua automação, o Irrigation Unlimited ou seu controlador rega com essas durações.",
           "confirm-off": "Desligar o Smart Irrigation? O que estiver irrigando para agora, e nada é calculado nem irrigado até ele ser religado.",
           "confirm-calculate": "Só calcular? O Smart Irrigation para de abrir as válvulas: o que estiver regando para agora e, daqui em diante, sua automação rega com as durações dele.",
-          "water-note": "Calcular e regar: o Smart Irrigation calcula o que cada zona precisa e abre as válvulas sozinho, com seus programas. O programa principal irriga todas as zonas nos seus horários."
+          "water-note": "Calcular e irrigar: o Smart Irrigation calcula o que cada zona precisa e abre as válvulas sozinho, com seus programas. Cada programa irriga as zonas das suas etapas nos seus agendamentos."
         }
       },
       "description": "Esta página fornece configurações globais.",
@@ -371,7 +375,7 @@
           "calc-daily": "diariamente às {time}",
           "calc-before-start": "logo antes de cada início",
           "calc-manual": "só quando você pedir",
-          "main-schedules": "Iniciado pelos agendamentos do programa principal (o gatilho de início não é usado por enquanto)",
+          "program-schedules": "Iniciado pelos agendamentos dos programas (o gatilho de início não é usado por enquanto)",
           "accounts-for-duration": "contado para trás para que o ciclo termine nesse horário",
           "starts-at-trigger": "começa naquele momento",
           "sequencing-sequential": "uma zona por vez, então o total é a soma de todas as zonas",
@@ -439,7 +443,7 @@
           "detail-dry": "Não está chovendo",
           "detail-held": "fica de fora deste ciclo",
           "check-postponed": "Adiada por você",
-          "title-main": "O programa principal vai ser pulado?"
+          "title-next": "A próxima irrigação vai ser pulada?"
         },
         "estimate": {
           "title": "Como está cada zona agora",
@@ -964,7 +968,6 @@
         "no-schedules": "Sem agendamento.",
         "schedules-off": "Os agendamentos dele ficam desligados até você ativá-los.",
         "schedules-stay-on": "Você ativou os agendamentos dele: eles ficam como estão.",
-        "disabled": "Desligado no Irrigation Unlimited, e aqui também.",
         "removed": "Não estão mais no Irrigation Unlimited, removidos: {programs}."
       },
       "supplies": {
@@ -1080,8 +1083,7 @@
           "uses": "Usa {uses}."
         },
         "left-off": "Deixados desligados, porque o Irrigation Unlimited os tinha desligado: {names}.",
-        "unrecorded": "Deixados desligados, porque a importação não registrou quais dos agendamentos deles o Irrigation Unlimited tinha ligados: {names}. Ligue os agendamentos deles você mesmo, ou volte para o Irrigation Unlimited, importe de novo (isso os registra) e faça a troca outra vez.",
-        "main-also-waters": "O programa principal também irriga {zones}, todos os dias pelo acionador: ao lado do Irrigation Unlimited, e depois da troca ao lado dos programas importados, essas zonas recebem a água duas vezes. Se os programas importados irrigam tudo, desligue o programa principal em Programas ou defina o acionador como Nenhum."
+        "unrecorded": "Deixados desligados, porque a importação não registrou quais dos agendamentos deles o Irrigation Unlimited tinha ligados: {names}. Ligue os agendamentos deles você mesmo, ou volte para o Irrigation Unlimited, importe de novo (isso os registra) e faça a troca outra vez."
       },
       "notes": {
         "blueprint_zone_gone": "uma automação de blueprint a alimenta a partir da zona {zone}, que não existe mais: ela não vem como calculada",
@@ -1299,19 +1301,16 @@
   "programs": {
     "title": "Programas",
     "description": "Um programa irriga suas etapas uma após a outra. Uma etapa é uma zona, ou várias irrigadas juntas, e por padrão dura o tempo que o Smart Irrigation calculou para ela. Programas cujas zonas compartilham uma alimentação, ou não têm nenhuma, nunca rodam ao mesmo tempo: o próximo espera sua vez. Os que têm alimentação própria irrigam lado a lado.",
-    "main_description": "Irriga todas as zonas, uma após a outra ou juntas, nos seus horários.",
+    "none_yet": "Ainda não há programas. Uma zona é irrigada assim que um programa a tem em uma etapa: adicione um com Novo programa.",
     "run_options": "Opções desta execução",
     "adjust_empty": "Informe uma porcentagem ou segundos para ajustar as durações.",
     "more_options": "Mais opções",
     "more_options_set": "com mais regras",
-    "sequencing_title": "Ordem das zonas e pausas",
-    "others_title": "Outros programas",
     "confirm_run": "Executar {name} agora? As válvulas dele abrem na hora.",
     "run_started": "{name} foi iniciado.",
     "run_queued": "{name} está na fila: ele começa quando a irrigação em andamento terminar.",
     "run_nothing": "{name} não encontrou nada para irrigar.",
     "run_failed": "{name} não conseguiu iniciar: {error}",
-    "main_schedules_hint": "Sem nenhum agendamento ativado, é o gatilho de início definido mais abaixo nesta página que inicia o programa principal. Assim que um agendamento é ativado, os agendamentos substituem esse gatilho. As configurações dele são mantidas, e ele volta se você desativar ou remover os agendamentos.",
     "name": "Nome",
     "step": "Etapa",
     "step_zones": "Zonas",
@@ -1328,21 +1327,20 @@
     "tours": "Rodadas",
     "tours_help": "Toda a lista de etapas é irrigada tantas vezes, cada rodada com sua parte da água. Ao contrário das passagens, que repetem uma etapa antes de seguir, uma rodada deixa cada zona absorver enquanto as outras irrigam.",
     "enabled": "Ativado",
-    "program_enabled": "Programa ativo",
-    "schedule_enabled": "Horário ativo",
-    "step_enabled": "Etapa ativa",
     "add_step": "Adicionar uma etapa",
     "delete_step": "Excluir a etapa",
     "add": "Novo programa",
+    "all_zones_now_title": "Irrigar todas as zonas agora",
+    "all_zones_now_help": "Só para o botão Irrigar todas as zonas: cada zona com válvula, nesta ordem, com estas passagens e esta pausa. Os programas mantêm suas próprias etapas.",
     "delete": "Excluir o programa",
     "schedule": "Agendamento",
     "add_schedule": "Adicionar um agendamento",
     "delete_schedule": "Excluir o agendamento",
-    "schedule_moment": "Às",
+    "schedule_moment": "Quando",
     "moment_time": "Um horário do dia",
     "moment_sunrise": "Nascer do sol",
     "moment_sunset": "Pôr do sol",
-    "moment_azimuth": "Quando o sol atinge um azimute",
+    "moment_azimuth": "O sol atinge um azimute",
     "schedule_time": "Horário",
     "schedule_offset": "Antes (-) ou depois (+) do sol",
     "schedule_anchor": "Esse momento é quando o programa",
@@ -1396,7 +1394,6 @@
     "max_litres": "Limite de volume",
     "max_litres_help": "Uma zona desta etapa para quando seu medidor de água tiver contado esse volume, em litros ou galões conforme o painel mostra os volumes. 0: sem limite. O medidor informa de tempos em tempos, então o volume não é exato. Uma zona sem medidor o ignora.",
     "new_program": "Programa",
-    "main_name": "Programa principal",
     "run_now": "Executar agora",
     "run_seconds": "Duração total",
     "run_seconds_help": "Opcional. Vazio: as durações planejadas. Caso contrário, o programa inteiro dura esse tempo, dividido entre suas etapas em proporção às durações planejadas.",
@@ -1418,8 +1415,6 @@
     "adjust_apply": "Aplicar",
     "adjust_reset": "Redefinir",
     "confirm_reset_adjustment": "Remover o ajuste deste programa?",
-    "main_settings": "Programa principal: início e sequenciamento",
-    "main_settings_description": "Como o programa principal irriga: as zonas uma após a outra ou juntas, a pausa entre duas zonas e cycle and soak.",
     "mode_off": "O controlador completo está desligado. Ative em Configurações, Geral.",
     "no_zone": "nenhuma zona",
     "mode_calculated_short": "calculada",
@@ -1432,14 +1427,13 @@
     "schedules_none": "nenhum agendamento",
     "schedules_one": "1 agendamento",
     "schedules_many": "{n} agendamentos",
-    "off": "desligado",
+    "no_schedule_on": "nenhum agendamento ativo",
     "steps_title": "Etapas",
     "schedules_title": "Agendamentos",
     "passes_help": "Cycle and soak para esta etapa: sua água dividida em tantas passagens, e cada zona absorve entre duas delas. 1: de uma vez só.",
     "schedule_fallback_skip": "Pular esse dia",
     "schedule_fallback_previous": "Usar o horário do último visto",
     "schedule_fallback_at": "Começar em um horário fixo",
-    "main_steps_hint": "O programa principal irriga todas as zonas. Para irrigar só algumas, ou na ordem que você quiser, adicione um em Outros programas, abaixo.",
     "summary_start_sunrise": "começa ao nascer do sol",
     "summary_start_sunset": "começa ao pôr do sol",
     "summary_start_azimuth": "começa quando o sol está a {deg}°",
@@ -1465,7 +1459,7 @@
     "passes_short": "{n} passagens",
     "overlap_short": "inicia a próxima {time} antes",
     "wait_short": "aguarda {time} antes da próxima",
-    "soak_shared_help": "Um único tempo de absorção para todas as etapas em passagens, em todos os programas e no programa principal.",
+    "soak_shared_help": "Um único tempo de absorção para todas as etapas em passagens, em todos os programas.",
     "min_over_max": "O mínimo está acima do máximo: vale o máximo, {max}.",
     "confirm_run_replace": "Executar {name} agora? A irrigação em andamento é parada primeiro e depois as válvulas dele abrem.",
     "run_replacing": "A irrigação em andamento está sendo parada; {name} começa logo em seguida.",
@@ -1630,10 +1624,8 @@
         "running": "em execução",
         "waiting": "aguardando",
         "paused": "pausado",
-        "suspended": "suspenso",
-        "disabled": "desativado"
+        "suspended": "suspenso"
       },
-      "main_name": "Programa principal",
       "after": "começa depois de {name}",
       "next_in_line": "começa em seguida"
     },

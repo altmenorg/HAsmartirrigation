@@ -2,8 +2,7 @@
 
 Programs that share a supply never run at the same time: one that comes due
 while another waters waits its turn (turns.py). Zones without a supply share
-the mains, and the main program waits for, and holds back, every other. The planning listed every run at the moment
-its schedule fires, so two programs set for the same morning stood side by
+the mains. The planning listed every run at the moment its schedule fires, so two programs set for the same morning stood side by
 side at the same time, both "done by sunrise", while the second one in fact
 waited and finished well after sunrise. And when both water the same zones,
 those zones get their water twice that morning, which nothing said (UX walk of

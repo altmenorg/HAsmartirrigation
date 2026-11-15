@@ -155,6 +155,8 @@
         "review": {
           "question": "Klar til at oprette",
           "zone": "Zone",
+          "program": "Vandes af",
+          "new-program": "Et nyt program",
           "environment": "Miljø",
           "engine": "Modul",
           "sources": "Kilder",
@@ -166,7 +168,7 @@
         },
         "mode": {
           "question": "Hvad skal Smart Irrigation gøre?",
-          "water-help": "Det beregner, hvad hver zone har brug for, og åbner selv ventilerne, med et hovedprogram der vander alle zoner, færdig ved solopgang. Du kan ændre tidsplanen bagefter.",
+          "water-help": "Den beregner, hvad hver zone har brug for, og åbner selv ventilerne, med et program, der vander dine zoner, færdig ved solopgang. Du kan ændre dets tidsplan bagefter.",
           "calculate-help": "Det beregner, hvad hver zone har brug for; din automatisering, Irrigation Unlimited eller din styring åbner ventilerne."
         }
       },
@@ -181,7 +183,9 @@
       "calc-failed": "Beregningen lykkedes ikke. Zonen fortæller hvorfor under Zoner.",
       "open-zone": "Åbn zonen",
       "another": "Opsæt en zone mere",
-      "done-next-water": "Hovedprogrammet vander den med de andre zoner, færdig ved solopgang. Du finder det under Vanding.",
+      "done-next-added": "Den er nu det sidste trin i {program}, som vander den efter sine tidsplaner. Du finder det under Vanding.",
+      "done-next-new-program": "Et nyt program, {program}, vander den hver dag, færdig ved solopgang. Du finder det under Vanding.",
+      "new-program-name": "Vanding",
       "done-next-no-valve": "Tilknyt en ventil under Zoner, så den bliver vandet."
     },
     "weatherservice": {
@@ -316,7 +320,7 @@
           "calculate-note": "Kun beregn: Smart Irrigation beregner vandbalancer og varigheder og sender sin starthændelse, men åbner ingen ventil. Din egen automatisering, Irrigation Unlimited eller din controller vander med de varigheder.",
           "confirm-off": "Slå Smart Irrigation fra? Det, der vander, stopper nu, og intet beregnes eller vandes, før den slås til igen.",
           "confirm-calculate": "Kun beregne? Smart Irrigation holder op med at åbne ventilerne: det, den vander, stopper nu, og fremover vander din egen automatisering med dens varigheder.",
-          "water-note": "Beregn og vand: Smart Irrigation beregner, hvad hver zone har brug for, og åbner selv ventilerne med sine programmer. Hovedprogrammet vander alle zoner efter sine tidsplaner."
+          "water-note": "Beregn og vand: Smart Irrigation beregner, hvad hver zone har brug for, og åbner selv ventilerne, med sine programmer. Hvert program vander zonerne i sine trin efter sine tidsplaner."
         }
       },
       "description": "Denne side indeholder globale indstillinger.",
@@ -371,7 +375,7 @@
           "calc-daily": "dagligt kl. {time}",
           "calc-before-start": "lige før hver start",
           "calc-manual": "kun når du beder om det",
-          "main-schedules": "Startes af hovedprogrammets tidsplaner (startudløseren bruges ikke lige nu)",
+          "program-schedules": "Startes af programmernes tidsplaner (startudløseren bruges ikke lige nu)",
           "accounts-for-duration": "regnet tilbage, så vandingen slutter dér",
           "starts-at-trigger": "starter på det tidspunkt",
           "sequencing-sequential": "én zone ad gangen, så det samlede er alle zoner lagt sammen",
@@ -439,7 +443,7 @@
           "detail-dry": "Det regner ikke",
           "detail-held": "sidder denne vanding over",
           "check-postponed": "Udskudt af dig",
-          "title-main": "Bliver hovedprogrammet sprunget over?"
+          "title-next": "Bliver næste vanding sprunget over?"
         },
         "estimate": {
           "title": "Hvor hver zone står nu",
@@ -964,7 +968,6 @@
         "no-schedules": "Ingen tidsplan.",
         "schedules-off": "Dens tidsplaner er slået fra, indtil du slår dem til.",
         "schedules-stay-on": "Du har slået dens tidsplaner til: de forbliver som de er.",
-        "disabled": "Slået fra i Irrigation Unlimited, og også her.",
         "removed": "Ikke længere i Irrigation Unlimited, fjernet: {programs}."
       },
       "supplies": {
@@ -1080,8 +1083,7 @@
           "uses": "Bruger {uses}."
         },
         "left-off": "Ladt være slået fra, da Irrigation Unlimited havde dem slået fra: {names}.",
-        "unrecorded": "Ladt være slået fra, da importen ikke har registreret, hvilke af deres tidsplaner Irrigation Unlimited havde slået til: {names}. Slå selv deres tidsplaner til, eller gå tilbage til Irrigation Unlimited, importér igen (så registreres de) og skift over igen.",
-        "main-also-waters": "Hovedprogrammet vander også {zones}, hver dag fra udløseren: ved siden af Irrigation Unlimited, og efter skiftet ved siden af de importerede programmer, får disse zoner deres vand to gange. Hvis de importerede programmer vander det hele, så slå hovedprogrammet fra under Programmer, eller sæt udløseren til Ingen."
+        "unrecorded": "Ladt være slået fra, da importen ikke har registreret, hvilke af deres tidsplaner Irrigation Unlimited havde slået til: {names}. Slå selv deres tidsplaner til, eller gå tilbage til Irrigation Unlimited, importér igen (så registreres de) og skift over igen."
       },
       "notes": {
         "blueprint_zone_gone": "en blueprint-automatisering forsyner den fra zone {zone}, som ikke findes mere: den hentes ikke over som beregnet",
@@ -1299,19 +1301,16 @@
   "programs": {
     "title": "Programmer",
     "description": "Et program vander sine trin et efter et. Et trin er én zone, eller flere der vandes samtidig, og varer som standard den tid, Smart Irrigation har beregnet til det. Programmer, hvis zoner deler en forsyning eller ingen har, kører aldrig samtidig: den næste venter på sin tur. Programmer med hver sin forsyning vander side om side.",
-    "main_description": "Vander alle zoner, efter hinanden eller sammen, efter sine tidsplaner.",
+    "none_yet": "Endnu intet program. En zone vandes, så snart et program har den i et trin: tilføj et med Nyt program.",
     "run_options": "Indstillinger for denne start",
     "adjust_empty": "Angiv en procentdel eller sekunder for at justere varighederne.",
     "more_options": "Flere indstillinger",
     "more_options_set": "med flere regler",
-    "sequencing_title": "Zonernes rækkefølge og pauser",
-    "others_title": "Andre programmer",
     "confirm_run": "Køre {name} nu? Dets ventiler åbner med det samme.",
     "run_started": "{name} er startet.",
     "run_queued": "{name} er i kø: det starter, når den igangværende vanding er færdig.",
     "run_nothing": "{name} fandt intet at vande.",
     "run_failed": "{name} kunne ikke starte: {error}",
-    "main_schedules_hint": "Uden en aktiveret tidsplan starter den startudløser, der er angivet længere nede på siden, hovedprogrammet. Så snart én tidsplan er aktiveret, erstatter tidsplanerne den udløser. Dens indstillinger bevares, og den kommer tilbage, hvis du slår tidsplanerne fra eller fjerner dem.",
     "name": "Navn",
     "step": "Trin",
     "step_zones": "Zoner",
@@ -1328,21 +1327,20 @@
     "tours": "Runder",
     "tours_help": "Hele listen af trin vandes så mange gange, hver runde med sin del af vandet. I modsætning til omgange, som gentager et trin før det næste, lader en runde hver zone optage, mens de andre vander.",
     "enabled": "Aktiveret",
-    "program_enabled": "Program til",
-    "schedule_enabled": "Tidsplan til",
-    "step_enabled": "Trin til",
     "add_step": "Tilføj et trin",
     "delete_step": "Slet trinnet",
     "add": "Nyt program",
+    "all_zones_now_title": "Vand alle zoner nu",
+    "all_zones_now_help": "Kun til knappen Vand alle zoner: hver zone med en ventil, i denne rækkefølge, med disse omgange og denne pause. Programmerne beholder deres egne trin.",
     "delete": "Slet programmet",
     "schedule": "Tidsplan",
     "add_schedule": "Tilføj en tidsplan",
     "delete_schedule": "Slet tidsplanen",
-    "schedule_moment": "Kl.",
+    "schedule_moment": "Hvornår",
     "moment_time": "Et tidspunkt på dagen",
     "moment_sunrise": "Solopgang",
     "moment_sunset": "Solnedgang",
-    "moment_azimuth": "Når solen når et azimut",
+    "moment_azimuth": "Solen når et azimut",
     "schedule_time": "Tidspunkt",
     "schedule_offset": "Før (-) eller efter (+) solen",
     "schedule_anchor": "Dette tidspunkt er, når programmet",
@@ -1396,7 +1394,6 @@
     "max_litres": "Volumengrænse",
     "max_litres_help": "En zone i dette trin stopper, når dens vandmåler har talt dette volumen, i liter eller gallons, som panelet viser volumener. 0: ingen grænse. Måleren melder kun en gang imellem, så volumenet er ikke præcist. En zone uden måler ignorerer den.",
     "new_program": "Program",
-    "main_name": "Hovedprogram",
     "run_now": "Kør nu",
     "run_seconds": "Samlet varighed",
     "run_seconds_help": "Valgfri. Tom: de planlagte varigheder. Ellers varer hele programmet så længe, fordelt mellem dets trin i forhold til deres planlagte varigheder.",
@@ -1418,8 +1415,6 @@
     "adjust_apply": "Anvend",
     "adjust_reset": "Nulstil",
     "confirm_reset_adjustment": "Fjerne dette programs justering?",
-    "main_settings": "Hovedprogram: start og rækkefølge",
-    "main_settings_description": "Hvordan hovedprogrammet vander: zonerne efter hinanden eller sammen, pausen mellem to zoner og cycle and soak.",
     "mode_off": "Den fulde styring er slået fra. Slå den til under Indstillinger, Generelt.",
     "no_zone": "ingen zone",
     "mode_calculated_short": "beregnet",
@@ -1432,14 +1427,13 @@
     "schedules_none": "ingen tidsplan",
     "schedules_one": "1 tidsplan",
     "schedules_many": "{n} tidsplaner",
-    "off": "fra",
+    "no_schedule_on": "ingen tidsplan slået til",
     "steps_title": "Trin",
     "schedules_title": "Tidsplaner",
     "passes_help": "Cycle and soak for dette trin: vandet delt i så mange omgange, og hver zone optager mellem to af dem. 1: i én omgang.",
     "schedule_fallback_skip": "Spring den dag over",
     "schedule_fallback_previous": "Brug tidspunktet for den sidst sete",
     "schedule_fallback_at": "Start på et fast tidspunkt",
-    "main_steps_hint": "Hovedprogrammet vander alle zoner. For kun at vande nogle af dem, eller i din egen rækkefølge, skal du tilføje et under Andre programmer nedenfor.",
     "summary_start_sunrise": "starter ved solopgang",
     "summary_start_sunset": "starter ved solnedgang",
     "summary_start_azimuth": "starter, når solen står i {deg}°",
@@ -1465,7 +1459,7 @@
     "passes_short": "{n} omgange",
     "overlap_short": "starter den næste {time} før",
     "wait_short": "venter {time} før den næste",
-    "soak_shared_help": "Én optagelsestid for alle trin i omgange, i alle programmer og i hovedprogrammet.",
+    "soak_shared_help": "Én optagelsestid for alle trin i omgange, i alle programmer.",
     "min_over_max": "Minimum er over maksimum: maksimum gælder, {max}.",
     "confirm_run_replace": "Kør {name} nu? Det, der vander nu, stoppes først, og derefter åbnes ventilerne.",
     "run_replacing": "Det, der vandede, stoppes; {name} starter lige efter.",
@@ -1630,10 +1624,8 @@
         "running": "kører",
         "waiting": "venter",
         "paused": "på pause",
-        "suspended": "suspenderet",
-        "disabled": "deaktiveret"
+        "suspended": "suspenderet"
       },
-      "main_name": "Hovedprogram",
       "after": "starter efter {name}",
       "next_in_line": "starter som næste"
     },

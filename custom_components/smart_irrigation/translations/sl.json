@@ -38,19 +38,7 @@
           "waiting": "Čaka",
           "running": "Teče",
           "paused": "Začasno ustavljeno",
-          "suspended": "Zadržano",
-          "disabled": "Izklopljeno"
-        }
-      },
-      "program_main": {
-        "name": "Glavni program",
-        "state": {
-          "idle": "Nedejavno",
-          "waiting": "Čaka",
-          "running": "Teče",
-          "paused": "Začasno ustavljeno",
-          "suspended": "Zadržano",
-          "disabled": "Izklopljeno"
+          "suspended": "Zadržano"
         }
       }
     },
@@ -127,9 +115,6 @@
       },
       "irrigation_enabled": {
         "name": "Izračunaj in zalivaj"
-      },
-      "program_on": {
-        "name": "Program {name} vklopljen"
       }
     },
     "datetime": {
@@ -361,8 +346,8 @@
       }
     },
     "set_program_enabled": {
-      "name": "Vklopi ali izklopi program",
-      "description": "Vklopi ali izklopi program celotnega krmilnika, kot to stori stikalo v njegovih nastavitvah.",
+      "name": "Vklopi ali izklopi vse urnike programa (zastarelo)",
+      "description": "Zastarelo: vklopi ali izklopi vse urnike programa. Program nima več lastnega stikala; za en urnik uporabi set_schedule_enabled. Odstranjeno v 2027.11.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -769,6 +754,10 @@
     "deprecated_action": {
       "title": "Dejanje {action} bo odstranjeno",
       "description": "Avtomatizacija, skripta ali nadzorna plošča je poklicala **{action}**. Še vedno deluje, a bo odstranjeno od različice {version} naprej, pozimi, zunaj sezone zalivanja.\n\nNamesto tega uporabi **{replacement}**: naredi isto, in to za vse cone, ko nobena cona ni izbrana. To obvestilo se vrne ob vsakem klicu starega imena, dokler ne ostane noben."
+    },
+    "deprecated_program_enabled": {
+      "title": "Dejanje {action} bo odstranjeno",
+      "description": "Avtomatizacija, skript ali nadzorna plošča je poklicala **{action}**. Program nima več lastnega stikala, zato zdaj vklopi ali izklopi vse urnike programa. Odstranjeno bo od različice {version}, pozimi, zunaj sezone zalivanja.\n\nNamesto tega uporabi **{replacement}**, enkrat za vsak urnik. To obvestilo se vrne ob vsakem klicu starega imena, dokler ne ostane noben."
     },
     "deprecated_recurring_schedule": {
       "title": "Ponavljajoči se urniki bodo odstranjeni: {action}",

@@ -1491,6 +1491,13 @@ def _lead(controller: Controller) -> float:
     return max(0.0, min(controller.preamble, float(const.SUPPLY_MAX_DELAY_SECONDS)))
 
 
+def _switched(schedules: list, on: bool) -> list:
+    """The schedules as they are, or every one switched off when ``on`` is not."""
+    if on:
+        return schedules
+    return [{**s, const.SCHEDULE_ENABLED: False} for s in schedules]
+
+
 def _schedules_of(schedules: list, report: Report, lead: float = 0.0) -> list:
     made = []
     for schedule in schedules:
@@ -1652,12 +1659,14 @@ def _plan_sequence(
                 const.PROGRAM_NAME: (
                     sequence.name if suffix is None else f"{sequence.name} ({suffix})"
                 ),
-                const.PROGRAM_ENABLED: sequence.enabled and controller.enabled,
-                const.PROGRAM_MAIN: False,
                 const.PROGRAM_STEPS: steps,
                 const.PROGRAM_DELAY: program_delay,
                 const.PROGRAM_TOURS: tours,
-                const.PROGRAM_SCHEDULES: program_schedules,
+                # A sequence or a controller IU has off starts nothing on its
+                # own: its schedules come in switched off.
+                const.PROGRAM_SCHEDULES: _switched(
+                    program_schedules, sequence.enabled and controller.enabled
+                ),
                 "source": sequence.key,
             }
         )
@@ -1724,12 +1733,12 @@ def _plan_zone_schedules(controller, zone, fed_zone, report) -> list:
                 const.PROGRAM_NAME: (
                     zone.name if suffix is None else f"{zone.name} ({suffix})"
                 ),
-                const.PROGRAM_ENABLED: controller.enabled,
-                const.PROGRAM_MAIN: False,
                 const.PROGRAM_STEPS: [step],
                 const.PROGRAM_DELAY: 0.0,
                 const.PROGRAM_TOURS: 1,
-                const.PROGRAM_SCHEDULES: program_schedules,
+                const.PROGRAM_SCHEDULES: _switched(
+                    program_schedules, controller.enabled
+                ),
                 "source": zone.key,
             }
         )

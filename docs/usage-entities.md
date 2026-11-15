@@ -81,13 +81,12 @@ The **Smart Irrigation hub device** also carries global action buttons: *calcula
 
 ## Program sensors
 
-With the [full controller](usage-full-controller.md) on, each program, the main program included, has one sensor on the hub device: `sensor.smart_irrigation_program_<id>`, named "Program <name>". A program that is added gets its sensor, and one that is deleted loses it. The state is one of `idle`, `waiting`, `running`, `paused`, `suspended` or `disabled`. The attributes:
+With the [full controller](usage-full-controller.md) on, each program has one sensor on the hub device: `sensor.smart_irrigation_program_<id>`, named "Program <name>". A program that is added gets its sensor, and one that is deleted loses it. The state is one of `idle`, `waiting`, `running`, `paused` or `suspended`. The attributes:
 
 | Attribute | Description |
 | --- | --- |
 |`program_id`|the id of the program, which is also in the entity id.|
-|`main`|`true` for the main program.|
-|`next_start`|the next time a schedule starts it, or empty. Always empty for the main program, which follows the start trigger.|
+|`next_start`|the next time a schedule starts it, or empty.|
 |`last_run`|when it last started.|
 |`suspended_until`|the end of its suspension, or empty.|
 |`adjustment`|the [`adjust_program`](usage-services.md) adjustment in force (`percent`, `seconds` and `until`), or empty.|
@@ -99,7 +98,7 @@ With the [full controller](usage-full-controller.md) on, each program, the main 
 
 The attributes from `manual` down are only there while the program waits or runs.
 
-Each program other than the main program also has a switch, **Program <name> on** (`switch.smart_irrigation_program_<id>`), under Configuration: the program's "Program on" of the panel, and what the `set_program_enabled` action does. Off, its schedules do not start it and it cannot be run, and its sensor reads `disabled`. A switch from a dashboard or a `switch.turn_off` in an automation (say, for the holidays) is saved as a change in the panel is, and a change in the panel shows on the switch at once. The main program has none: whether it waters is said by its schedules and the hub's **Calculate and water** switch.
+A program has no on and off switch of its own: it starts on its own through its schedules that are on. To keep one from watering (say, for the holidays), switch its schedules off with `set_schedule_enabled`, or suspend it. The program switch entities of 2026.11.0 are gone; the [migration](usage-full-controller.md#no-main-program) switched off the schedules of a program that was off.
 
 These entities are **additive**: nothing was removed. The duration sensor keeps its `entity_id`, recorded history and attributes, so existing dashboards, automations and templates keep working. A one-time registry migration moves the duration sensor's internal `unique_id` to a stable per-zone scheme; the `entity_id` and history carry over.
 
