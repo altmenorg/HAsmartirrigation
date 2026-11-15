@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from typing import Any
 
-import voluptuous as vol
-from homeassistant import data_entry_flow
 from homeassistant.components.repairs import RepairsFlow
 from homeassistant.core import HomeAssistant
 
@@ -19,20 +17,18 @@ class PutBackZoneFlow(RepairsFlow):
     def __init__(self, zone_id: int) -> None:
         self._zone_id = zone_id
 
-    async def async_step_init(
-        self, user_input: dict[str, Any] | None = None
-    ) -> data_entry_flow.FlowResult:
+    # The result's type changed in Home Assistant 2026.10 (RepairsFlowResult).
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> Any:
         return await self.async_step_confirm()
 
-    async def async_step_confirm(
-        self, user_input: dict[str, Any] | None = None
-    ) -> data_entry_flow.FlowResult:
+    async def async_step_confirm(self, user_input: dict[str, Any] | None = None) -> Any:
         if user_input is not None:
             coordinator = (self.hass.data.get(const.DOMAIN) or {}).get("coordinator")
             if coordinator is not None:
                 await coordinator.async_put_back_zone(self._zone_id, "repair")
             return self.async_create_entry(data={})
-        return self.async_show_form(step_id="confirm", data_schema=vol.Schema({}))
+        # A confirmation only: no field to fill.
+        return self.async_show_form(step_id="confirm")
 
 
 async def async_create_fix_flow(
