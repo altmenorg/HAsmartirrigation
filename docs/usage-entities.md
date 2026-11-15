@@ -99,6 +99,8 @@ With the [full controller](usage-full-controller.md) on, each program, the main 
 
 The attributes from `manual` down are only there while the program waits or runs.
 
+Each program other than the main program also has a switch, **Program <name> on** (`switch.smart_irrigation_program_<id>`), under Configuration: the program's "Program on" of the panel, and what the `set_program_enabled` action does. Off, its schedules do not start it and it cannot be run, and its sensor reads `disabled`. A switch from a dashboard or a `switch.turn_off` in an automation (say, for the holidays) is saved as a change in the panel is, and a change in the panel shows on the switch at once. The main program has none: whether it waters is said by its schedules and the hub's **Calculate and water** switch.
+
 These entities are **additive**: nothing was removed. The duration sensor keeps its `entity_id`, recorded history and attributes, so existing dashboards, automations and templates keep working. A one-time registry migration moves the duration sensor's internal `unique_id` to a stable per-zone scheme; the `entity_id` and history carry over.
 
 The per-zone device/entity layout is inspired by [JustChr's Smart Irrigation fork](https://github.com/JustChr/HAsmartirrigation) (MIT).

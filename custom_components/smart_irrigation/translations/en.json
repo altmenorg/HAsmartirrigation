@@ -127,6 +127,9 @@
       },
       "irrigation_enabled": {
         "name": "Calculate and water"
+      },
+      "program_on": {
+        "name": "Program {name} on"
       }
     },
     "datetime": {

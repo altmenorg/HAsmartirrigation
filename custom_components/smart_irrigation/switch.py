@@ -1,4 +1,4 @@
-"""Switch platform for Smart Irrigation: the global weather-based skip toggle.
+"""Switch platform for Smart Irrigation: the hub's switches and one per program.
 
 Exposes the panel's "Weather-based Irrigation Skip" setting as a switch on
 the hub device, so it can be controlled from automations and dashboards, not
@@ -23,6 +23,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import const
 from .entity import hub_device_info
+from .program_switch import async_setup_program_switches
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,13 +41,15 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_devices: AddEntitiesCallback,
 ) -> None:
-    """Set up the hub's switches: the master switch and the weather-based skip."""
+    """Set up the hub's two switches, and one per program."""
     async_add_devices(
         [
             SmartIrrigationEnabledSwitch(hass),
             SmartIrrigationSkipOnPrecipitationSwitch(hass),
         ]
     )
+    # "Program on" of each program of the full controller, following them.
+    await async_setup_program_switches(hass, config_entry, async_add_devices)
 
 
 class SmartIrrigationSkipOnPrecipitationSwitch(SwitchEntity):
