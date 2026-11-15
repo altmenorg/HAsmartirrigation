@@ -28,7 +28,7 @@ Untick it there and the assistant no longer reaches Smart Irrigation.
 | `GetPrograms` | The programs of the [full controller](usage-full-controller.md), their steps (zones by id and by name) and schedules. |
 | `GetPlanning` | What the programs will water over the next days (1 to 14), each run's zones in order and whether the weather is expected to hold it back. |
 | `GetSensorGroups` | The sensor groups (where each weather input comes from) and the calculation modules. |
-| `GetSettings` | The general settings, in the unit system of Home Assistant. |
+| `GetSettings` | The general settings, in the unit system of Home Assistant, with `mode` first. |
 | `FindEntities` | The valves, switches, sensors and weather entities of Home Assistant, with their unit, device class and the make and model of their device: what the assistant needs to ask you the right questions. |
 | `PreviewProgram` | A program as the assistant wrote it, cleaned the way a save cleans it and dry-run on the zones as they are now: each zone's start, end and water, the total, and the zones it could not find. Nothing is saved. |
 
@@ -38,7 +38,7 @@ Untick it there and the assistant no longer reaches Smart Irrigation.
 | --- | --- |
 | `SaveZone`, `DeleteZone` | Create a zone, change its settings, or delete it. |
 | `SaveSensorGroup`, `DeleteSensorGroup` | Create a sensor group, change where its inputs come from, or delete it. |
-| `SaveSettings` | Change general settings (calculation, skip conditions, start triggers, the full controller, sequencing, passes and soak, pumps...). |
+| `SaveSettings` | Change general settings: `mode`, what Smart Irrigation does (`water`, `calculate` or `off`, the list at the top of Settings), then calculation, skip conditions, start triggers, sequencing, passes and soak, pumps... The switches `mode` replaced are refused one by one. |
 | `SaveProgram`, `DeleteProgram` | Add or replace a program, or delete one (never the main program). A program that names a zone that does not exist is refused. |
 
 Every change goes through the path the panel saves with, so the same checks apply: a zone cannot be linked to one of Smart Irrigation's own valves, an unknown setting is refused, a program is cleaned the same way. The assistant is told to say what it is about to change, and most clients ask you before a tool that writes; deleting is marked as such. Each change is written in Home Assistant's log (`An assistant saved zone 3`, at the info level).

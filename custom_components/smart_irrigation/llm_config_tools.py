@@ -114,18 +114,25 @@ class GetSettingsTool(_ReadOnlyTool):
 
     name = "GetSettings"
     description = (
-        "Smart Irrigation's general settings (calculation and update times, "
-        "skip conditions, start triggers, full controller, sequencing, passes "
-        "and soak, supplies...), in the unit system of Home Assistant: the "
-        "fields SaveSettings takes."
+        "Smart Irrigation's general settings, in the unit system of Home "
+        "Assistant: the fields SaveSettings takes. `mode` is what it does: "
+        "`water` (calculate and open the valves, with programs), `calculate` "
+        "(calculate only; an automation of the user's waters, started by the "
+        "start triggers) or `off`. Then calculation and update times, skip "
+        "conditions, sequencing, passes and soak, supplies..."
     )
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
     ) -> Any:
+        from .one_choice import MODE_KEYS, current_mode
         from .websockets import async_config_for_display
 
-        return _result(await async_config_for_display(hass))
+        config = dict(await async_config_for_display(hass))
+        mode = current_mode(config)
+        for key in MODE_KEYS:
+            config.pop(key, None)
+        return _result({"mode": mode, **config})
 
 
 def _make(device) -> str | None:
@@ -366,6 +373,7 @@ class SaveSettingsTool(_WriteTool):
     description = (
         "Change Smart Irrigation's general settings: only the fields that "
         "change, as GetSettings returns them (unit system of Home Assistant). "
+        "`mode` (`water`, `calculate` or `off`) is what Smart Irrigation does. "
         "Programs are better changed with SaveProgram."
     )
     parameters = _parameters({vol.Required("settings"): dict})
@@ -373,9 +381,24 @@ class SaveSettingsTool(_WriteTool):
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
     ) -> Any:
+        from .one_choice import MODE_KEYS, mode_changes
         from .websockets import CONFIG_SAVE_SCHEMA
 
         raw = dict(tool_input.tool_args["settings"])
+        # The switches the one choice replaced are not set one by one.
+        legacy = [key for key in MODE_KEYS if key in raw]
+        if legacy:
+            return _error(
+                f"Not saved: {', '.join(legacy)} is set with mode "
+                "(water, calculate or off)"
+            )
+        if "mode" in raw:
+            try:
+                raw.update(
+                    mode_changes(raw.pop("mode"), _coordinator(hass).store.config)
+                )
+            except ValueError as e:
+                return _error(f"Not saved: {e}")
         try:
             data = CONFIG_SAVE_SCHEMA(raw)
         except vol.Invalid as e:
@@ -413,6 +436,10 @@ class SaveProgramTool(_WriteTool):
         if unknown:
             return _error(f"Not saved: no such zone: {unknown}")
         program = preview.pop("program")
+        if program.get(const.PROGRAM_MAIN):
+            # The main program is always on: the mode switches the watering
+            # off, not a hidden "Program on" the panel no longer shows.
+            program[const.PROGRAM_ENABLED] = True
         given = written.get(const.PROGRAM_ID) if isinstance(written, dict) else None
         programs = _programs(coordinator)
         index = next(

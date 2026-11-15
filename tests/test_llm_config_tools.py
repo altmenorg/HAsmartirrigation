@@ -213,6 +213,30 @@ async def test_settings_are_saved_through_the_panel_schema():
     assert bad["success"] is False
 
 
+async def test_what_smart_irrigation_does_is_one_mode():
+    coordinator = _coordinator()
+    hass = _hass(coordinator)
+
+    result = _data(
+        await llm_config_tools.SaveSettingsTool().async_call(
+            hass, _call("SaveSettings", settings={"mode": "calculate"}), None
+        )
+    )
+    assert "full_controller" in result["result"]["saved"]
+    saved = coordinator.async_update_config.await_args.args[0]
+    assert saved["full_controller"] is False
+    assert saved["direct_valve_control_enabled"] is False
+
+    # The switches the mode replaced are not set one by one any more.
+    refused = _data(
+        await llm_config_tools.SaveSettingsTool().async_call(
+            hass, _call("SaveSettings", settings={"full_controller": True}), None
+        )
+    )
+    assert refused["success"] is False
+    assert "mode" in refused["error"]
+
+
 # --- programs
 
 

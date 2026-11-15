@@ -180,7 +180,7 @@ async def test_programs_name_their_zones():
         await llm_api.GetProgramsTool().async_call(hass, _call("GetPrograms"), None)
     )
 
-    assert result["result"]["full_controller"] is True
+    assert result["result"]["mode"] == "water"
     evening = result["result"]["programs"][1]
     assert evening["steps"][0]["zone_names"] == ["Lawn", "#7"]
     assert "steps" not in result["result"]["programs"][0]

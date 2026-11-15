@@ -36,10 +36,61 @@ def moved_the_valves(changes: dict) -> bool:
     return changes.get(const.CONF_FULL_CONTROLLER) is True
 
 
+# The one choice, as the panel's list and an assistant name it.
+MODE_WATER = "water"
+MODE_CALCULATE = "calculate"
+MODE_OFF = "off"
+MODES = (MODE_WATER, MODE_CALCULATE, MODE_OFF)
+
+# The settings the one choice stands for: read and written through ``mode``
+# only, so that nothing sets them apart again (an assistant, say).
+MODE_KEYS = (
+    const.CONF_IRRIGATION_ENABLED,
+    const.CONF_WATERING_ENABLED,
+    const.CONF_FULL_CONTROLLER,
+    const.CONF_DIRECT_VALVE_CONTROL_ENABLED,
+    const.CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER,
+    const.CONF_ONE_CHOICE_MIGRATED,
+)
+
+
 def _value(config: Any, key: str, default=None):
     if isinstance(config, dict):
         return config.get(key, default)
     return getattr(config, key, default)
+
+
+def current_mode(config: Any) -> str:
+    """What Smart Irrigation does: water, calculate only, or nothing."""
+    if _value(config, const.CONF_IRRIGATION_ENABLED, True) is False:
+        return MODE_OFF
+    if _value(config, const.CONF_FULL_CONTROLLER, False) is True:
+        return MODE_WATER
+    return MODE_CALCULATE
+
+
+def mode_changes(mode: str, config: Any) -> dict:
+    """The settings a choice of the list writes, as the panel writes them."""
+    if mode == MODE_OFF:
+        return {const.CONF_IRRIGATION_ENABLED: False}
+    if mode == MODE_WATER:
+        changes: dict = {
+            const.CONF_IRRIGATION_ENABLED: True,
+            const.CONF_WATERING_ENABLED: True,
+            const.CONF_FULL_CONTROLLER: True,
+        }
+        if current_mode(config) != MODE_WATER:
+            # What is watered outside the programs counts too.
+            changes[const.CONF_OBSERVED_WATERING_ENABLED] = True
+        return changes
+    if mode == MODE_CALCULATE:
+        return {
+            const.CONF_IRRIGATION_ENABLED: True,
+            const.CONF_WATERING_ENABLED: True,
+            const.CONF_FULL_CONTROLLER: False,
+            const.CONF_DIRECT_VALVE_CONTROL_ENABLED: False,
+        }
+    raise ValueError(f"mode must be one of {', '.join(MODES)}")
 
 
 def schedule_from_trigger(config: Any) -> dict | None:

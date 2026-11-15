@@ -30,6 +30,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import llm
 
 from . import const
+from .one_choice import current_mode
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,7 +40,9 @@ _UNREGISTER = const.DOMAIN + "_llm_api_unregister"
 
 API_PROMPT = """You can read the Smart Irrigation integration of this Home \
 Assistant: it works out how much water each irrigation zone needs from the \
-weather, and can run the valves itself (the "full controller").
+weather, and can run the valves itself. What it does is one setting, `mode`: \
+`water` (it calculates and opens the valves, with programs), `calculate` (it \
+calculates only, and an automation of the user's waters) or `off`.
 
 How it reasons: each zone has a water balance (its bucket, in mm). Evaporation \
 takes water out, rain and watering put it back. Below zero the zone has a \
@@ -47,11 +50,12 @@ deficit and is watered for the time that brings it back to zero (its \
 duration, in seconds). A zone can be held back by skip conditions (rain \
 forecast, frost, wind, a moist soil, days between waterings).
 
-Programs (full controller): a program is an ordered list of steps; a step is \
+Programs (mode `water`): a program is an ordered list of steps; a step is \
 one zone, or several watered together. A step takes the duration Smart \
 Irrigation calculated unless it is a percent of it or a fixed number of \
 seconds. Schedules say when a program starts (or must be done). The main \
-program waters every zone in the classic cycle.
+program waters every zone in the classic cycle and is started by its own \
+schedules; it is always on (the mode switches the watering off).
 
 Durations are in seconds and depths in mm unless a field says otherwise. \
 Weekdays are numbered from 0 (Monday) to 6 (Sunday). No tool here runs a \
@@ -199,14 +203,14 @@ def _program_for_reading(program: dict, names: dict) -> dict:
 
 
 class GetProgramsTool(_ReadOnlyTool):
-    """The programs of the full controller."""
+    """The watering programs."""
 
     name = "GetPrograms"
     description = (
-        "The watering programs of Smart Irrigation's full controller, with "
-        "their steps (zones by id, and their names in zone_names) and their "
-        "schedules, and whether the full controller is on. Also the shape to "
-        "write a program in for PreviewProgram."
+        "The watering programs of Smart Irrigation, with their steps (zones "
+        "by id, and their names in zone_names) and their schedules, and the "
+        "mode (they water only in mode `water`). Also the shape to write a "
+        "program in for PreviewProgram."
     )
 
     async def async_call(
@@ -220,8 +224,7 @@ class GetProgramsTool(_ReadOnlyTool):
         }
         return _result(
             {
-                "full_controller": getattr(config, const.CONF_FULL_CONTROLLER, False)
-                is True,
+                "mode": current_mode(config),
                 "programs": [
                     _program_for_reading(p, names)
                     for p in getattr(config, const.CONF_PROGRAMS, None) or []

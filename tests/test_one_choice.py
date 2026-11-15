@@ -126,3 +126,23 @@ async def test_the_notice_is_confirmed_away():
 
     flow = await repairs.async_create_fix_flow(None, ISSUE_MOVED, None)
     assert isinstance(flow, ConfirmRepairFlow)
+
+
+def test_the_mode_is_read_and_written_as_the_panel_does():
+    from custom_components.smart_irrigation.one_choice import (
+        current_mode,
+        mode_changes,
+    )
+
+    assert current_mode({const.CONF_FULL_CONTROLLER: True}) == "water"
+    assert current_mode({}) == "calculate"
+    assert current_mode({const.CONF_IRRIGATION_ENABLED: False}) == "off"
+    water = mode_changes("water", {})
+    assert water[const.CONF_FULL_CONTROLLER] is True
+    assert water[const.CONF_OBSERVED_WATERING_ENABLED] is True
+    assert mode_changes("calculate", {const.CONF_FULL_CONTROLLER: True}) == {
+        const.CONF_IRRIGATION_ENABLED: True,
+        const.CONF_WATERING_ENABLED: True,
+        const.CONF_FULL_CONTROLLER: False,
+        const.CONF_DIRECT_VALVE_CONTROL_ENABLED: False,
+    }
