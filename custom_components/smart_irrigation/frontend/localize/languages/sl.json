@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Izračun trajanja zalivanja",
-          "description": "Trajanje zalivanja vsake cone izhaja iz njene vodne bilance: kar je vreme odvzelo tlom, minus dež. Tu izbereš, kdaj se izračuna. Kaj sproži zalivanje, se odloči drugje, s sprožilcem zagona.",
+          "description": "Čas zalivanja vsakega območja izhaja iz njegove vodne bilance: kar je vreme vzelo tlom, minus dež. Tu izbereš, kdaj se izračuna.",
           "labels": {
             "calc-when": "Trajanje zalivanja se izračuna",
             "calc-when-time": "Ob določeni uri",
             "calc-when-start": "Tik pred vsakim zagonom",
             "calc-when-manual": "Samo ko zahtevam",
-            "calc-when-hint": "Tik pred vsakim zagonom: ob času sprožilca zagona, z najsvežejšim vremenom. Prava izbira, kadar zalivanje zaganja Smart Irrigation (neposredno upravljanje ventilov ali dogodek zagona). Ob določeni uri: vsak dan ob spodnji uri, kadar zalivanje zaganja nekaj drugega kot Smart Irrigation in trajanja prebere, kadar želi (Irrigation Unlimited, tvoj lasten urnik). Samo ko zahtevam: nič se ne izračuna samo od sebe, uporabi gumbe za izračun ali storitve.",
+            "calc-when-hint": "Tik pred vsakim zagonom: ko se začne program ali dogodek zagona, z najsvežejšim vremenom; prava izbira, ko zalivanje zažene Smart Irrigation. Ob fiksni uri: vsak dan ob spodnji uri, ko zalivanje zažene nekaj drugega in bere čase, kadar želi. Samo na zahtevo: nič se ne izračuna samo, uporabi gumbe za izračun ali dejanja.",
             "calc-time": "Izračunaj ob",
             "calc-time-hint": "Dnevni izračun: izgubljena voda se prišteje vodni bilanci vsake cone in nastavijo se trajanja zalivanja.",
             "hourly-calculation": "Izračunaj evapotranspiracijo uro za uro",

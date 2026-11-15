@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "計算澆水時間長度",
-          "description": "每個區域的澆水時間長度取決於其水量平衡：即天氣從土壤中帶走的水量，減去降雨量。你可以在此選擇計算的時機。何時開始澆水則由其他設定決定，也就是啟動觸發條件。",
+          "description": "每個區域的澆水時長來自其水分平衡：天氣從土壤帶走的水，減去降雨。在此選擇何時計算。",
           "labels": {
             "calc-when": "澆水時間長度的計算時機",
             "calc-when-time": "在固定時間",
             "calc-when-start": "每次啟動前",
             "calc-when-manual": "僅在我要求時",
-            "calc-when-hint": "每次啟動前：在啟動觸發時，使用最新的氣象資料，於 Smart Irrigation 開始澆水時計算。在固定時間：每天在下方指定的時間計算，適用於由其他項目啟動澆水並讀取時間長度的情況（Irrigation Unlimited、排程）。僅在我要求時：透過按鈕或服務觸發。",
+            "calc-when-hint": "每次啟動前：在程式或啟動事件開始時，使用最新的天氣；由 Smart Irrigation 啟動澆水時的正確選擇。固定時間：每天在下方時間計算，適用於由其他方式啟動澆水並隨時讀取時長的情況。僅在我要求時：不會自動計算，請使用計算按鈕或動作。",
             "calc-time": "計算時間",
             "calc-time-hint": "每日計算：流失的水量會加入各區域的水量平衡，並設定澆水時間長度。",
             "hourly-calculation": "逐小時計算蒸發散量",

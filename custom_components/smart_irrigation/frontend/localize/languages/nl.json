@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Berekening van de bewateringsduur",
-          "description": "De bewateringsduur van elke zone komt uit de waterbalans: wat het weer aan de bodem heeft onttrokken, min de regen. Hier kies je wanneer die wordt berekend. Wat het bewateren start, wordt elders bepaald, door de starttrigger.",
+          "description": "De beregeningstijd van elke zone komt uit haar waterbalans: wat het weer aan de bodem onttrok, min de regen. Hier kies je wanneer die wordt berekend.",
           "labels": {
             "calc-when": "Bewateringsduur berekend",
             "calc-when-time": "Op een vast tijdstip",
             "calc-when-start": "Vlak voor elke start",
             "calc-when-manual": "Alleen als ik erom vraag",
-            "calc-when-hint": "Vlak voor elke start: op het moment van de starttrigger, met het meest actuele weer. De juiste keuze wanneer Smart Irrigation het bewateren start (directe klepbesturing of de startgebeurtenis). Op een vast tijdstip: elke dag op het hieronder ingestelde tijdstip, voor wanneer iets anders dan Smart Irrigation het bewateren start en de duren leest wanneer het wil (Irrigation Unlimited, een eigen schema). Alleen als ik erom vraag: er wordt niets uit zichzelf berekend, gebruik de berekenknoppen of de services.",
+            "calc-when-hint": "Vlak voor elke start: wanneer een programma of de startgebeurtenis begint, met het meest recente weer; de juiste keuze als Smart Irrigation de beregening start. Op een vast tijdstip: elke dag op het tijdstip hieronder, als iets anders de beregening start en de tijden leest wanneer het wil. Alleen op verzoek: niets wordt vanzelf berekend, gebruik de rekenknoppen of de acties.",
             "calc-time": "Berekenen om",
             "calc-time-hint": "De dagelijkse berekening: het verloren water wordt bij de waterbalans van elke zone opgeteld en de bewateringsduren worden ingesteld.",
             "hourly-calculation": "Verdamping uur per uur berekenen",

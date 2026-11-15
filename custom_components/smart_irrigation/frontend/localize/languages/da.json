@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Beregning af vandingsvarigheden",
-          "description": "Vandingsvarigheden for hver zone kommer fra dens vandbalance: det, vejret tog ud af jorden, minus regnen. Her vælger du, hvornår den beregnes. Hvad der starter vandingen, afgøres andetsteds, af startudløseren.",
+          "description": "Hver zones vandingstid kommer fra dens vandbalance: hvad vejret tog fra jorden, minus regnen. Her vælger du, hvornår den beregnes.",
           "labels": {
             "calc-when": "Vandingsvarighed beregnes",
             "calc-when-time": "På et fast tidspunkt",
             "calc-when-start": "Lige før hver start",
             "calc-when-manual": "Kun når jeg beder om det",
-            "calc-when-hint": "Lige før hver start: på tidspunktet for startudløseren, med det friskeste vejr. Det rigtige valg, når Smart Irrigation starter vandingen (direkte ventilstyring eller start-hændelsen). På et fast tidspunkt: hver dag på tidspunktet nedenfor, hvis noget andet end Smart Irrigation starter vandingen og læser varighederne, når det passer det (Irrigation Unlimited, en egen tidsplan). Kun når jeg beder om det: intet beregnes af sig selv, brug beregn-knapperne eller services.",
+            "calc-when-hint": "Lige før hver start: når et program eller starthændelsen begynder, med det nyeste vejr; det rigtige valg, når Smart Irrigation starter vandingen. På et fast tidspunkt: hver dag på tidspunktet nedenfor, når noget andet starter vandingen og læser varighederne, når det vil. Kun når jeg beder om det: intet beregnes af sig selv, brug beregningsknapperne eller handlingerne.",
             "calc-time": "Beregn kl.",
             "calc-time-hint": "Den daglige beregning: det tabte vand lægges til vandbalancen for hver zone, og vandingsvarighederne sættes.",
             "hourly-calculation": "Beregn fordampning time for time",

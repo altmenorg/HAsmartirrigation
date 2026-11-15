@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Berechnung der Bewässerungsdauer",
-          "description": "Die Bewässerungsdauer jeder Zone ergibt sich aus ihrer Wasserbilanz: was das Wetter dem Boden entzogen hat, abzüglich des Regens. Hier legst du fest, wann sie berechnet wird. Was die Bewässerung startet, wird an anderer Stelle durch den Startauslöser bestimmt.",
+          "description": "Die Bewässerungsdauer jeder Zone ergibt sich aus ihrer Wasserbilanz: was das Wetter dem Boden entzogen hat, abzüglich des Regens. Hier wählst du, wann sie berechnet wird.",
           "labels": {
             "calc-when": "Bewässerungsdauer wird berechnet",
             "calc-when-time": "Zu einer festen Uhrzeit",
             "calc-when-start": "Kurz vor jedem Start",
             "calc-when-manual": "Nur auf Anfrage",
-            "calc-when-hint": "Kurz vor jedem Start: zum Startauslöser, mit dem neuesten Wetter, wenn Smart Irrigation die Bewässerung startet. Zu fester Uhrzeit: täglich zur Zeit unten, wenn anderes startet und die Dauern liest (Irrigation Unlimited, ein Zeitplan). Nur auf Anfrage: per Schaltfläche oder Dienst.",
+            "calc-when-hint": "Direkt vor jedem Start: wenn ein Programm oder das Startereignis beginnt, mit dem aktuellsten Wetter; die richtige Wahl, wenn Smart Irrigation die Bewässerung startet. Zu fester Uhrzeit: täglich zur unten angegebenen Zeit, wenn etwas anderes die Bewässerung startet und die Dauern liest, wann es will. Nur auf Anforderung: nichts wird von selbst berechnet, nutze die Berechnungsschaltflächen oder die Aktionen.",
             "calc-time": "Berechnen um",
             "calc-time-hint": "Die tägliche Berechnung: das verlorene Wasser wird der Wasserbilanz jeder Zone hinzugefügt und die Bewässerungsdauern werden festgelegt.",
             "hourly-calculation": "Evapotranspiration Stunde für Stunde berechnen",

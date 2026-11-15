@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Cálculo da duração da irrigação",
-          "description": "A duração da irrigação de cada zona vem do seu balanço hídrico: o que o clima tirou do solo, menos a chuva. Aqui você escolhe quando ela é calculada. O que inicia a irrigação é decidido em outro lugar, pelo gatilho de início.",
+          "description": "O tempo de irrigação de cada zona vem do seu balanço hídrico: o que o tempo tirou do solo, menos a chuva. Aqui você escolhe quando ele é calculado.",
           "labels": {
             "calc-when": "Duração da irrigação calculada",
             "calc-when-time": "Em um horário fixo",
             "calc-when-start": "Logo antes de cada início",
             "calc-when-manual": "Somente quando eu pedir",
-            "calc-when-hint": "Logo antes de cada início: no horário do gatilho de início, com o clima mais recente. É a escolha certa quando o Smart Irrigation inicia a irrigação (controle direto de válvulas ou evento de início). Em um horário fixo: todos os dias no horário indicado abaixo, para quando algo diferente do Smart Irrigation inicia a irrigação e lê as durações quando quiser (Irrigation Unlimited, uma programação própria). Somente quando eu pedir: nada é calculado sozinho, use os botões de cálculo ou os serviços.",
+            "calc-when-hint": "Logo antes de cada início: quando um programa ou o evento de início começa, com o tempo mais recente; a escolha certa quando é o Smart Irrigation que inicia a irrigação. Em horário fixo: todo dia no horário indicado abaixo, quando outra coisa inicia a irrigação e lê as durações quando quiser. Só quando eu pedir: nada é calculado sozinho, use os botões de cálculo ou as ações.",
             "calc-time": "Calcular às",
             "calc-time-hint": "O cálculo diário: a água perdida é somada ao balanço hídrico de cada zona e as durações da irrigação são definidas.",
             "hourly-calculation": "Calcular a evapotranspiração hora a hora",

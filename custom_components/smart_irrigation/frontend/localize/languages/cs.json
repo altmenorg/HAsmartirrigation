@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Výpočet doby zavlažování",
-          "description": "Doba zavlažování každé zóny vychází z její vodní bilance: co počasí odebralo z půdy, minus déšť. Zde určíte, kdy se počítá. Co zavlažování spouští, určuje jinde startovací spouštěč.",
+          "description": "Doba zavlažování každé zóny vychází z její vodní bilance: co počasí vzalo půdě, minus déšť. Zde volíš, kdy se počítá.",
           "labels": {
             "calc-when": "Doba zavlažování se počítá",
             "calc-when-time": "V pevný čas",
             "calc-when-start": "Těsně před každým startem",
             "calc-when-manual": "Jen na požádání",
-            "calc-when-hint": "Těsně před každým startem: v čase startovacího spouštěče, s nejčerstvějším počasím. Správná volba, když zavlažování spouští Smart Irrigation (přímé řízení ventilů nebo událost startu). V pevný čas: každý den v čase níže, pro případ, že zavlažování spouští něco jiného než Smart Irrigation a čte doby, kdy se mu zachce (Irrigation Unlimited, vlastní plán). Jen na požádání: nic se nepočítá samo, použijte tlačítka výpočtu nebo služby.",
+            "calc-when-hint": "Těsně před každým startem: když začne program nebo událost startu, s nejčerstvějším počasím; správná volba, když zavlažování spouští Smart Irrigation. V pevný čas: každý den v čase uvedeném níže, když zavlažování spouští něco jiného a čte doby, kdy chce. Jen na požádání: nic se nepočítá samo, použij tlačítka výpočtu nebo akce.",
             "calc-time": "Vypočítat v",
             "calc-time-hint": "Denní výpočet: ztracená voda se přičte k vodní bilanci každé zóny a nastaví se doby zavlažování.",
             "hourly-calculation": "Počítat evapotranspiraci hodinu po hodině",

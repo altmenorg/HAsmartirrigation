@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Calculating the watering duration",
-          "description": "The watering duration of each zone comes from its water balance: what the weather took out of the soil, minus the rain. Here you choose when it is calculated. What starts the watering is decided elsewhere, by the start trigger.",
+          "description": "Each zone's watering time comes from its water balance: what the weather took from the soil, minus the rain. Here you choose when it is worked out.",
           "labels": {
             "calc-when": "Watering duration calculated",
             "calc-when-time": "At a fixed time",
             "calc-when-start": "Just before each start",
             "calc-when-manual": "Only when I ask",
-            "calc-when-hint": "Just before each start: at the start trigger, with the freshest weather, when Smart Irrigation starts the watering. At a fixed time: daily at the time below, when something else starts it and reads the durations (Irrigation Unlimited, a schedule). Only when I ask: by button or service.",
+            "calc-when-hint": "Just before each start: when a program or the start event begins, with the freshest weather; the right choice when Smart Irrigation starts the watering. At a fixed time: every day at the time below, when something else starts the watering and reads the durations when it wants. Only when I ask: nothing is calculated on its own, use the calculation buttons or the actions.",
             "calc-time": "Calculate at",
             "calc-time-hint": "The daily calculation: the water lost is added to the water balance of each zone and the watering durations are set.",
             "hourly-calculation": "Calculate evapotranspiration hour by hour",

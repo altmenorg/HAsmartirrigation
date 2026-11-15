@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Calcul de la durée d'arrosage",
-          "description": "La durée d'arrosage de chaque zone vient de son bilan en eau : ce que la météo a pris au sol, moins la pluie. Tu choisis ici quand elle est calculée. Ce qui lance l'arrosage se décide ailleurs, par le déclencheur de départ.",
+          "description": "La durée d'arrosage de chaque zone vient de son bilan en eau : ce que la météo a pris au sol, moins la pluie. Tu choisis ici quand elle est calculée.",
           "labels": {
             "calc-when": "La durée d'arrosage est calculée",
             "calc-when-time": "À heure fixe",
             "calc-when-start": "Juste avant chaque départ",
             "calc-when-manual": "Seulement à ma demande",
-            "calc-when-hint": "Juste avant chaque départ : à l'heure du déclencheur, avec la météo la plus fraîche. Le bon choix quand Smart Irrigation lance l'arrosage (pilotage direct des vannes ou événement de départ). À heure fixe : chaque jour à l'heure indiquée plus bas, pour quand autre chose que Smart Irrigation lance l'arrosage et lit les durées quand cela veut (Irrigation Unlimited, une programmation à toi). Seulement à ma demande : rien n'est calculé tout seul, utilise les boutons de calcul ou les services.",
+            "calc-when-hint": "Juste avant chaque départ : au lancement d'un programme ou de l'événement de départ, avec la météo la plus fraîche ; le bon choix quand Smart Irrigation lance l'arrosage. À heure fixe : chaque jour à l'heure indiquée plus bas, quand autre chose lance l'arrosage et lit les durées quand il veut. Seulement à ma demande : rien n'est calculé tout seul, utilise les boutons de calcul ou les actions.",
             "calc-time": "Calculer à",
             "calc-time-hint": "Le calcul quotidien : l'eau perdue est ajoutée au bilan hydrique de chaque zone et les durées d'arrosage sont fixées.",
             "hourly-calculation": "Calculer l'évapotranspiration heure par heure",

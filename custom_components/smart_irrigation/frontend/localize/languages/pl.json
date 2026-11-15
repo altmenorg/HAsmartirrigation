@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Obliczanie czasu podlewania",
-          "description": "Czas podlewania każdej strefy wynika z jej bilansu wodnego: tego, co pogoda zabrała z gleby, minus deszcz. Tutaj wybierasz, kiedy jest on obliczany. To, co rozpoczyna podlewanie, jest ustalane gdzie indziej, przez wyzwalacz startu.",
+          "description": "Czas podlewania każdej strefy wynika z jej bilansu wodnego: tego, co pogoda zabrała z gleby, minus deszcz. Tu wybierasz, kiedy jest obliczany.",
           "labels": {
             "calc-when": "Czas podlewania obliczany",
             "calc-when-time": "O stałej porze",
             "calc-when-start": "Tuż przed każdym startem",
             "calc-when-manual": "Tylko na moje żądanie",
-            "calc-when-hint": "Tuż przed każdym startem: w chwili wyzwalacza startu, ze świeżymi danymi pogodowymi. To dobry wybór, gdy podlewanie rozpoczyna Smart Irrigation (bezpośrednie sterowanie zaworami lub zdarzenie startu). O stałej porze: codziennie o godzinie podanej poniżej, gdy podlewanie rozpoczyna coś innego niż Smart Irrigation i odczytuje czasy, kiedy chce (Irrigation Unlimited, własny harmonogram). Tylko na moje żądanie: nic nie jest obliczane samoczynnie, użyj przycisków obliczania lub usług.",
+            "calc-when-hint": "Tuż przed każdym startem: gdy rusza program lub zdarzenie startu, z najświeższą pogodą; właściwy wybór, gdy podlewanie uruchamia Smart Irrigation. O stałej godzinie: codziennie o godzinie podanej niżej, gdy podlewanie uruchamia coś innego i odczytuje czasy, kiedy chce. Tylko na żądanie: nic nie liczy się samo, użyj przycisków obliczania lub akcji.",
             "calc-time": "Oblicz o",
             "calc-time-hint": "Obliczenie dzienne: utracona woda jest dodawana do bilansu wodnego każdej strefy i ustawiane są czasy podlewania.",
             "hourly-calculation": "Obliczaj evapotranspirację godzina po godzinie",

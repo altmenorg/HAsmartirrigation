@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "浇水时长的计算",
-          "description": "每个区域的浇水时长来自它的水量平衡：天气从土壤中带走的水量，减去降雨。在这里你可以选择何时计算。是什么启动浇水，则由别处的启动触发器决定。",
+          "description": "每个区域的浇水时长来自其水分平衡：天气从土壤带走的水，减去降雨。在此选择何时计算。",
           "labels": {
             "calc-when": "浇水时长的计算时机",
             "calc-when-time": "在固定时间",
             "calc-when-start": "每次启动之前",
             "calc-when-manual": "仅在我要求时",
-            "calc-when-hint": "每次启动之前：在启动触发器的时间，使用最新的天气数据。当由 Smart Irrigation 启动浇水时（直接控制阀门或启动事件），这是正确的选择。在固定时间：每天在下方设定的时间，适用于由 Smart Irrigation 以外的程序启动浇水、并在自己方便时读取时长的情况（Irrigation Unlimited、你自己的计划）。仅在我要求时：不会自动计算任何内容，请使用计算按钮或服务。",
+            "calc-when-hint": "每次启动前：在程序或启动事件开始时，使用最新的天气；由 Smart Irrigation 启动浇水时的正确选择。固定时间：每天在下方时间计算，适用于由其他方式启动浇水并随时读取时长的情况。仅在我要求时：不会自动计算，请使用计算按钮或动作。",
             "calc-time": "计算时间",
             "calc-time-hint": "每日计算：流失的水量会加入每个区域的水量平衡，并设定浇水时长。",
             "hourly-calculation": "逐小时计算蒸散量",

@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Calcolo della durata dell'irrigazione",
-          "description": "La durata dell'irrigazione di ogni zona deriva dal suo bilancio idrico: ciò che il meteo ha sottratto al suolo, meno la pioggia. Qui scegli quando viene calcolata. Ciò che avvia l'irrigazione si decide altrove, con il trigger di avvio.",
+          "description": "Il tempo di irrigazione di ogni zona viene dal suo bilancio idrico: ciò che il meteo ha tolto al suolo, meno la pioggia. Qui scegli quando viene calcolato.",
           "labels": {
             "calc-when": "Durata dell'irrigazione calcolata",
             "calc-when-time": "A un'ora fissa",
             "calc-when-start": "Subito prima di ogni avvio",
             "calc-when-manual": "Solo su mia richiesta",
-            "calc-when-hint": "Subito prima di ogni avvio: all'ora del trigger di avvio, con il meteo più recente. È la scelta giusta quando è Smart Irrigation ad avviare l'irrigazione (controllo diretto delle valvole o evento di avvio). A un'ora fissa: ogni giorno all'ora indicata qui sotto, per quando l'irrigazione è avviata da qualcosa di diverso da Smart Irrigation, che legge le durate quando vuole (Irrigation Unlimited, una programmazione tua). Solo su mia richiesta: non viene calcolato nulla da solo, usa i pulsanti di calcolo o i servizi.",
+            "calc-when-hint": "Subito prima di ogni avvio: quando parte un programma o l'evento di avvio, con il meteo più recente; la scelta giusta quando è Smart Irrigation ad avviare l'irrigazione. A un'ora fissa: ogni giorno all'ora indicata sotto, quando è altro ad avviare l'irrigazione e a leggere le durate quando vuole. Solo su richiesta: niente viene calcolato da solo, usa i pulsanti di calcolo o le azioni.",
             "calc-time": "Calcola alle",
             "calc-time-hint": "Il calcolo giornaliero: l'acqua persa viene aggiunta al bilancio idrico di ogni zona e vengono impostate le durate dell'irrigazione.",
             "hourly-calculation": "Calcolare l'evapotraspirazione ora per ora",

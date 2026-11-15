@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Beregning av vanningsvarigheten",
-          "description": "Vanningsvarigheten for hver sone kommer fra vannbalansen: det været har tatt ut av jorden, minus regnet. Her velger du når den beregnes. Hva som starter vanningen, avgjøres andre steder, av starttriggeren.",
+          "description": "Vanningstiden til hver sone kommer fra vannbalansen: det været tok fra jorda, minus regnet. Her velger du når den beregnes.",
           "labels": {
             "calc-when": "Vanningsvarighet beregnes",
             "calc-when-time": "På et fast tidspunkt",
             "calc-when-start": "Rett før hver start",
             "calc-when-manual": "Bare når jeg ber om det",
-            "calc-when-hint": "Rett før hver start: på tidspunktet for starttriggeren, med det ferskeste været. Det riktige valget når Smart Irrigation starter vanningen (direkte ventilstyring eller start-hendelsen). På et fast tidspunkt: hver dag til tidspunktet nedenfor, for når noe annet enn Smart Irrigation starter vanningen og leser varighetene når det vil (Irrigation Unlimited, en egen tidsplan). Bare når jeg ber om det: ingenting beregnes av seg selv, bruk beregningsknappene eller tjenestene.",
+            "calc-when-hint": "Rett før hver start: når et program eller starthendelsen begynner, med det ferskeste været; riktig valg når Smart Irrigation starter vanningen. På fast tidspunkt: hver dag på tidspunktet nedenfor, når noe annet starter vanningen og leser varighetene når det vil. Bare når jeg ber om det: ingenting beregnes av seg selv, bruk beregningsknappene eller handlingene.",
             "calc-time": "Beregn kl.",
             "calc-time-hint": "Den daglige beregningen: vanntapet legges til vannbalansen for hver sone, og vanningsvarighetene settes.",
             "hourly-calculation": "Beregn fordamping time for time",

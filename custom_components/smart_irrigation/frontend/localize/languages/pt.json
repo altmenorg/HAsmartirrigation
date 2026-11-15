@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Cálculo da duração da rega",
-          "description": "A duração da rega de cada zona resulta do seu balanço hídrico: o que o tempo retirou ao solo, menos a chuva. Aqui escolhe quando é calculada. O que inicia a rega é decidido noutro sítio, pelo acionador de início.",
+          "description": "O tempo de rega de cada zona vem do seu balanço hídrico: o que o tempo tirou ao solo, menos a chuva. Aqui escolhe quando é calculado.",
           "labels": {
             "calc-when": "Duração da rega calculada",
             "calc-when-time": "A uma hora fixa",
             "calc-when-start": "Imediatamente antes de cada início",
             "calc-when-manual": "Só quando eu pedir",
-            "calc-when-hint": "Imediatamente antes de cada início: à hora do acionador de início, com os dados meteorológicos mais recentes. É a escolha certa quando o Smart Irrigation inicia a rega (controlo direto das válvulas ou evento de início). A uma hora fixa: todos os dias à hora indicada abaixo, para quando algo que não o Smart Irrigation inicia a rega e lê as durações quando quer (Irrigation Unlimited, um horário próprio). Só quando eu pedir: nada é calculado automaticamente, use os botões de cálculo ou os serviços.",
+            "calc-when-hint": "Mesmo antes de cada início: quando começa um programa ou o evento de início, com o tempo mais recente; a escolha certa quando é o Smart Irrigation a iniciar a rega. A uma hora fixa: todos os dias à hora indicada abaixo, quando outra coisa inicia a rega e lê as durações quando quer. Só a pedido: nada é calculado sozinho, use os botões de cálculo ou as ações.",
             "calc-time": "Calcular às",
             "calc-time-hint": "O cálculo diário: a água perdida é somada ao balanço hídrico de cada zona e as durações da rega são definidas.",
             "hourly-calculation": "Calcular a evapotranspiração hora a hora",

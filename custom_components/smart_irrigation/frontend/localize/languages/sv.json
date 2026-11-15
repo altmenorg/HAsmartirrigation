@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Beräkning av bevattningstiden",
-          "description": "Bevattningstiden för varje zon beror på markens vattenbalans. Beräkningen väger vattenförlusten genom evapotranspiration mot tillskottet från regn. Här väljer du när bevattningstiden ska beräknas. När bevattningen startar styrs separat av startutlösaren.",
+          "description": "Varje zons bevattningstid kommer från dess vattenbalans: det vädret tog från marken, minus regnet. Här väljer du när den beräknas.",
           "labels": {
             "calc-when": "Bevattningstiden beräknas",
             "calc-when-time": "Vid en fast tid",
             "calc-when-start": "Strax före varje start",
             "calc-when-manual": "På begäran",
-            "calc-when-hint": "Välj ”Strax före varje start” om Smart Irrigation startar bevattningen genom direkt ventilstyrning eller en starthändelse. Beräkningen görs då med de senaste väderuppgifterna när startutlösaren aktiveras. Välj ”Vid en fast tid” om till exempel Irrigation Unlimited eller ett eget schema startar bevattningen och läser de beräknade tiderna. De beräknas då varje dag vid klockslaget nedan. Med ”På begäran” startar du själv beräkningen med en knapp eller ett tjänsteanrop.",
+            "calc-when-hint": "Precis före varje start: när ett program eller starthändelsen börjar, med det färskaste vädret; rätt val när Smart Irrigation startar bevattningen. Vid en fast tid: varje dag vid tiden nedan, när något annat startar bevattningen och läser tiderna när det vill. Bara när jag ber om det: inget beräknas av sig självt, använd beräkningsknapparna eller åtgärderna.",
             "calc-time": "Beräkna kl.",
             "calc-time-hint": "Vid den dagliga beräkningen justeras varje zons vattenbalans för vattenförlusten och bevattningstiden beräknas.",
             "hourly-calculation": "Beräkna evapotranspirationen timme för timme",

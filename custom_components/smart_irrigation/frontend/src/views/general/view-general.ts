@@ -402,47 +402,40 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         ${localize("common.loading-messages.general", this.hass.language)}
       </div>`;
     } else {
-      // When the watering duration is calculated is one question. What starts
-      // the watering is decided elsewhere, by the start trigger: neither answer
-      // is a switch for "we will water".
+      // When the watering duration is calculated is one question; what starts
+      // the watering (a schedule, or the start event) is another.
       const base = "panels.general.cards.automatic-duration-calculation.labels";
       const calcWhen = this.config.recalculate_before_start
         ? "start"
         : this.config.autocalcenabled
           ? "time"
           : "manual";
-      let r1 = html` <div class="card-content">
-          ${localize(
-            "panels.general.cards.automatic-duration-calculation.description",
-            this.hass.language,
-          )}
-        </div>
-        <div class="card-content">
-          ${this._selectRow(
-            html`${localize(`${base}.calc-when`, this.hass.language)}
-              <si-info>
-                ${localize(`${base}.calc-when-hint`, this.hass.language)}
-              </si-info>`,
-            html`
-              <option value="time" ?selected=${calcWhen === "time"}>
-                ${localize(`${base}.calc-when-time`, this.hass.language)}
-              </option>
-              <option value="start" ?selected=${calcWhen === "start"}>
-                ${localize(`${base}.calc-when-start`, this.hass.language)}
-              </option>
-              <option value="manual" ?selected=${calcWhen === "manual"}>
-                ${localize(`${base}.calc-when-manual`, this.hass.language)}
-              </option>
-            `,
-            (e: Event) => {
-              const value = (e.target as HTMLSelectElement).value;
-              this.handleConfigChange({
-                autocalcenabled: value === "time",
-                recalculate_before_start: value === "start",
-              });
-            },
-          )}
-        </div>`;
+      let r1 = html`<div class="card-content">
+        ${this._selectRow(
+          html`${localize(`${base}.calc-when`, this.hass.language)}
+            <si-info>
+              ${localize(`${base}.calc-when-hint`, this.hass.language)}
+            </si-info>`,
+          html`
+            <option value="time" ?selected=${calcWhen === "time"}>
+              ${localize(`${base}.calc-when-time`, this.hass.language)}
+            </option>
+            <option value="start" ?selected=${calcWhen === "start"}>
+              ${localize(`${base}.calc-when-start`, this.hass.language)}
+            </option>
+            <option value="manual" ?selected=${calcWhen === "manual"}>
+              ${localize(`${base}.calc-when-manual`, this.hass.language)}
+            </option>
+          `,
+          (e: Event) => {
+            const value = (e.target as HTMLSelectElement).value;
+            this.handleConfigChange({
+              autocalcenabled: value === "time",
+              recalculate_before_start: value === "start",
+            });
+          },
+        )}
+      </div>`;
       if (calcWhen === "time") {
         r1 = html`${r1}
           <div class="card-content">
@@ -508,36 +501,38 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           }
         </div>`;
       r1 = html`<ha-card
-        header="${localize(
-          "panels.general.cards.automatic-duration-calculation.header",
-          this.hass.language,
-        )}"
-      >
+        ><h1 class="card-header">
+          <span
+            >${localize(
+              "panels.general.cards.automatic-duration-calculation.header",
+              this.hass.language,
+            )}<si-info
+              >${localize(
+                "panels.general.cards.automatic-duration-calculation.description",
+                this.hass.language,
+              )}</si-info
+            ></span
+          >
+        </h1>
         ${r1}</ha-card
       >`;
-      let r2 = html` <div class="card-content">
-          ${localize(
-            "panels.general.cards.automatic-update.description",
-            this.hass.language,
-          )}
-        </div>
-        <div class="card-content">
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize(
-                "panels.general.cards.automatic-update.labels.auto-update-enabled",
-                this.hass.language,
-              )}
-            </div>
-            <ha-switch
-              .checked=${this.config.autoupdateenabled}
-              @change=${(e: Event) =>
-                this.saveData({
-                  autoupdateenabled: (e.target as any).checked,
-                })}
-            ></ha-switch>
+      let r2 = html`<div class="card-content">
+        <div class="setting-row">
+          <div class="setting-label">
+            ${localize(
+              "panels.general.cards.automatic-update.labels.auto-update-enabled",
+              this.hass.language,
+            )}
           </div>
-        </div>`;
+          <ha-switch
+            .checked=${this.config.autoupdateenabled}
+            @change=${(e: Event) =>
+              this.saveData({
+                autoupdateenabled: (e.target as any).checked,
+              })}
+          ></ha-switch>
+        </div>
+      </div>`;
       if (this.data.autoupdateenabled) {
         r2 = html`${r2}
           <div class="card-content">
@@ -627,11 +622,20 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       }
 
       r2 = html`<ha-card
-        header="${localize(
-          "panels.general.cards.automatic-update.header",
-          this.hass.language,
-        )}"
-        >${r2}</ha-card
+        ><h1 class="card-header">
+          <span
+            >${localize(
+              "panels.general.cards.automatic-update.header",
+              this.hass.language,
+            )}<si-info
+              >${localize(
+                "panels.general.cards.automatic-update.description",
+                this.hass.language,
+              )}</si-info
+            ></span
+          >
+        </h1>
+        ${r2}</ha-card
       >`;
 
       // Recording every change of a sensor is for those who have a rain gauge
@@ -640,28 +644,22 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       const showContinuous =
         this.config.ui_mode === "advanced" || !!this.config.continuousupdates;
       let r4 = html`<div class="card-content">
-          ${localize(
-            "panels.general.cards.continuousupdates.description",
-            this.hass.language,
-          )}
-        </div>
-        <div class="card-content">
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize(
-                "panels.general.cards.continuousupdates.labels.continuousupdates",
-                this.hass.language,
-              )}
-            </div>
-            <ha-switch
-              .checked=${this.config.continuousupdates}
-              @change=${(e: Event) =>
-                this.handleConfigChange({
-                  continuousupdates: (e.target as any).checked,
-                })}
-            ></ha-switch>
+        <div class="setting-row">
+          <div class="setting-label">
+            ${localize(
+              "panels.general.cards.continuousupdates.labels.continuousupdates",
+              this.hass.language,
+            )}
           </div>
-        </div>`;
+          <ha-switch
+            .checked=${this.config.continuousupdates}
+            @change=${(e: Event) =>
+              this.handleConfigChange({
+                continuousupdates: (e.target as any).checked,
+              })}
+          ></ha-switch>
+        </div>
+      </div>`;
       if (this.data.continuousupdates) {
         r4 = html`${r4}
           <div class="card-content">
@@ -678,11 +676,20 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </div>`;
       }
       r4 = html`<ha-card
-        header="${localize(
-          "panels.general.cards.continuousupdates.header",
-          this.hass.language,
-        )}"
-        >${r4}</ha-card
+        ><h1 class="card-header">
+          <span
+            >${localize(
+              "panels.general.cards.continuousupdates.header",
+              this.hass.language,
+            )}<si-info
+              >${localize(
+                "panels.general.cards.continuousupdates.description",
+                this.hass.language,
+              )}</si-info
+            ></span
+          >
+        </h1>
+        ${r4}</ha-card
       > `;
 
       // Irrigation Start Triggers Card
@@ -757,10 +764,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         html`<div class="settings-section" id="section-${key}">
           <ha-icon icon=${icons[key]}></ha-icon>
           <div>
-            <h2>${localize(`panels.general.sections.${key}`, lang)}</h2>
-            <div class="settings-section-sub">
-              ${localize(`panels.general.sections.${key}-sub`, lang)}
-            </div>
+            <h2>
+              ${localize(`panels.general.sections.${key}`, lang)}<si-info
+                >${localize(
+                  `panels.general.sections.${key}-sub`,
+                  lang,
+                )}</si-info
+              >
+            </h2>
           </div>
         </div>`;
 

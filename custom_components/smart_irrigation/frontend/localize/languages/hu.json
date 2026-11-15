@@ -239,13 +239,13 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Az öntözési időtartam kiszámítása",
-          "description": "Minden zóna öntözési időtartama a vízmérlegéből adódik: amennyit az időjárás elvett a talajból, mínusz az eső. Itt azt választod ki, mikor számolja ki. Azt, hogy mi indítja az öntözést, máshol dönti el az indítási kiváltó.",
+          "description": "Minden zóna öntözési ideje a vízmérlegéből adódik: amit az időjárás elvett a talajtól, mínusz az eső. Itt választod ki, mikor számolja.",
           "labels": {
             "calc-when": "Az öntözési időtartam kiszámítása",
             "calc-when-time": "Rögzített időpontban",
             "calc-when-start": "Közvetlenül minden indítás előtt",
             "calc-when-manual": "Csak kérésre",
-            "calc-when-hint": "Közvetlenül minden indítás előtt: az indítási kiváltó idején, a legfrissebb időjárással. A helyes választás, ha a Smart Irrigation indítja az öntözést (közvetlen szelepvezérlés vagy az indítási esemény). Rögzített időpontban: minden nap az alább megadott időben, ha az öntözést nem a Smart Irrigation indítja, hanem valami más, amely akkor olvassa ki az időtartamokat, amikor akarja (Irrigation Unlimited, saját ütemezés). Csak kérésre: semmi sem számítódik magától, használd a számítás gombokat vagy a szolgáltatásokat.",
+            "calc-when-hint": "Közvetlenül minden indítás előtt: amikor egy program vagy az indítási esemény elindul, a legfrissebb időjárással; a jó választás, ha a Smart Irrigation indítja az öntözést. Fix időpontban: minden nap a lent megadott időben, ha más indítja az öntözést, és akkor olvassa ki az időket, amikor akarja. Csak kérésre: semmi nem számolódik magától, használd a számítás gombjait vagy a műveleteket.",
             "calc-time": "Számítás ekkor",
             "calc-time-hint": "A napi számítás: az elvesztett víz hozzáadódik minden zóna vízmérlegéhez, és beállítódnak az öntözési időtartamok.",
             "hourly-calculation": "Az evapotranszpiráció számítása óránként",
