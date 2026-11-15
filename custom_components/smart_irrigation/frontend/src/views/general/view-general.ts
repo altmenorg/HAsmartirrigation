@@ -803,7 +803,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             >
           </div> </ha-card
         >${r18} ${heading("calculation")}${r1}${r8}${r13}${r10}
-        ${heading("control")}${r9}${full ? "" : r5}
+        ${
+          // Observed watering is on the advanced panel, the start triggers are
+          // for "Calculate only": with neither, the heading stood alone.
+          !full || this.config.ui_mode === "advanced"
+            ? html`${heading("control")}${r9}${full ? "" : r5}`
+            : ""
+        }
         ${heading("system")}${r11}${r16}${r12}${r17}`;
 
       return r;

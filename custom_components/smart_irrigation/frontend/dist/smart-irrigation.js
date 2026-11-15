@@ -1840,7 +1840,7 @@ function _e(e,t){return(t,i,s)=>((e,t,i)=>(i.configurable=!0,i.enumerable=!0,Ref
             >
           </div> </ha-card
         >${_} ${$("calculation")}${s}${h}${m}${u}
-        ${$("control")}${c}${w?"":o}
+        ${w&&"advanced"!==this.config.ui_mode?"":V`${$("control")}${c}${w?"":o}`}
         ${$("system")}${g}${p}${f}${v}`;return x}}renderWateringSection(e){return this.config&&this.hass?!0!==this.config.full_controller?V`<ha-card>
         <div class="card-content">
           ${oi("programs.mode_off",this.hass.language)}
