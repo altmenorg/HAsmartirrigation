@@ -179,3 +179,23 @@ describe("the main program in YAML", () => {
     });
   });
 });
+
+describe("the main program's settings in YAML", () => {
+  it("come after its name", () => {
+    const main = { id: "main", name: "Main", enabled: true, main: true };
+    const yaml = programToYaml(main as any, zones, {
+      sequencing: "sequential",
+      passes: 2,
+      soak_minutes: 15,
+      pause_between_zones: 0,
+    });
+    expect(Object.keys(yaml).slice(0, 6)).toEqual([
+      "id",
+      "name",
+      "sequencing",
+      "passes",
+      "soak_minutes",
+      "pause_between_zones",
+    ]);
+  });
+});

@@ -142,6 +142,8 @@ interface ProgramPreview {
   unknown_zones: number[];
   unknown_zone_names: string[];
   zones_not_watered: { zone_id: number; zone: string | null }[];
+  /** The main program's settings written beside it, as config keys. */
+  settings?: Record<string, unknown>;
 }
 
 /**
@@ -1707,6 +1709,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         if (!found) return;
         // The main program stays the main one; any other never becomes it.
         const cleaned = { ...found.program, main: replacing?.main === true };
+        // The main program's settings live with the general ones.
+        if (
+          replacing?.main &&
+          found.settings &&
+          Object.keys(found.settings).length
+        )
+          this.handleConfigChange(found.settings);
         if (index === null) {
           // A new program is unfolded on its form, its timeline at the top.
           this._setOpen(`program:${cleaned.id}`, true);
@@ -1774,7 +1783,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const yamlButton = (program: SmartIrrigationProgram) =>
       html`<div class="si-actions plain">
         ${this._actionBtn(mdiCodeBraces, t("yaml_edit"), () =>
-          openYaml(program.id ?? "", programToYaml(program, this.zones)),
+          openYaml(
+            program.id ?? "",
+            programToYaml(
+              program,
+              this.zones,
+              program.main
+                ? {
+                    sequencing: this.config?.zone_sequencing ?? "sequential",
+                    passes: this.config?.watering_passes ?? 1,
+                    soak_minutes: this.config?.soak_minutes ?? 15,
+                    pause_between_zones: this.config?.pause_between_zones ?? 0,
+                  }
+                : undefined,
+            ),
+          ),
         )}
       </div>`;
 

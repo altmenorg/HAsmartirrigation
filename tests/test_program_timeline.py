@@ -230,3 +230,26 @@ async def test_a_preview_of_nothing_is_an_empty_program():
     preview = await _Status([]).async_program_preview(None)
 
     assert preview["timeline"]["segments"] == []
+
+
+# --- the main program's settings written in its YAML
+
+
+def test_main_settings_are_read_and_bounded():
+    from custom_components.smart_irrigation.program_status import main_settings
+
+    assert main_settings(
+        {
+            "sequencing": "parallel",
+            "passes": 9,
+            "soak_minutes": "20",
+            "pause_between_zones": -5,
+            "name": "kept apart",
+        }
+    ) == {
+        const.CONF_ZONE_SEQUENCING: "parallel",
+        const.CONF_WATERING_PASSES: 6,
+        const.CONF_SOAK_MINUTES: 20.0,
+        const.CONF_PAUSE_BETWEEN_ZONES: 0.0,
+    }
+    assert main_settings({"sequencing": "sideways", "passes": "two"}) == {}

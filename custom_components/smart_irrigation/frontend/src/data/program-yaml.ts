@@ -61,6 +61,9 @@ const compact = (source: Plain, defaults: Plain, skip: string[] = []) => {
 export const programToYaml = (
   program: SmartIrrigationProgram,
   zones: SmartIrrigationZone[],
+  // The main program's settings, stored with the general ones: the order of
+  // the zones, the passes, the soak and the pause between zones.
+  mainSettings?: Plain,
 ): Plain => {
   const counts = new Map<string, number>();
   for (const zone of zones) {
@@ -80,6 +83,7 @@ export const programToYaml = (
     return String(zone.name).trim();
   };
   const out: Plain = { id: program.id, name: program.name };
+  if (program.main && mainSettings) Object.assign(out, mainSettings);
   if (program.enabled === false) out.enabled = false;
   if (program.delay) out.delay = program.delay;
   if ((program.tours ?? 1) > 1) out.tours = program.tours;

@@ -47,6 +47,45 @@ STATE_DISABLED = "disabled"
 PLANNING_FORECAST_HOURS = 48
 
 
+# The main program's settings the YAML editor shows beside it: stored with the
+# general settings, so they are kept apart from the program on a save.
+MAIN_SETTINGS = {
+    "sequencing": const.CONF_ZONE_SEQUENCING,
+    "passes": const.CONF_WATERING_PASSES,
+    "soak_minutes": const.CONF_SOAK_MINUTES,
+    "pause_between_zones": const.CONF_PAUSE_BETWEEN_ZONES,
+}
+
+
+def main_settings(program: dict) -> dict:
+    """The main program's settings written in ``program``, as config keys.
+
+    Out of range or of the wrong kind, a value is left out, and the stored one
+    stands: the save checks them again.
+    """
+    out: dict = {}
+    for key, config_key in MAIN_SETTINGS.items():
+        if key not in program:
+            continue
+        value = program[key]
+        try:
+            if key == "sequencing":
+                if value in (
+                    const.CONF_ZONE_SEQUENCING_SEQUENTIAL,
+                    const.CONF_ZONE_SEQUENCING_PARALLEL,
+                ):
+                    out[config_key] = value
+            elif key == "passes":
+                out[config_key] = max(1, min(6, int(value)))
+            elif key == "soak_minutes":
+                out[config_key] = max(0.0, min(240.0, float(value)))
+            else:
+                out[config_key] = max(0.0, min(3600.0, float(value)))
+        except (TypeError, ValueError):
+            continue
+    return out
+
+
 class ProgramStatusMixin:
     """The live state, overview and planning of the programs."""
 
@@ -357,16 +396,25 @@ class ProgramStatusMixin:
             planned.append(zone)
         return planned
 
-    async def _main_program_plan(self, zones) -> tuple:
+    async def _main_program_plan(self, zones, settings: dict | None = None) -> tuple:
         """``(plan, total)`` of the classic cycle the main program runs.
 
         The main program has no steps: it waters every eligible zone for its
         duration, one after the other or all at once as the sequencing setting
         says. The plan has the shape of any program's, so the planning shows it
         the same way. ``zones`` carry the durations of ``zones_as_planned``, and
-        the total is the one the schedules are placed with.
+        the total is the one the schedules are placed with. ``settings``, as
+        the YAML editor writes them (MAIN_SETTINGS), stand in for the stored
+        ones, for a preview.
         """
         config = self.store.config
+        settings = settings or {}
+
+        def setting(key: str, default):
+            if key in settings:
+                return settings[key]
+            return getattr(config, key, default)
+
         members = []
         for zone in zones:
             seconds = zone.get(const.ZONE_DURATION)
@@ -383,7 +431,7 @@ class ProgramStatusMixin:
                     "seconds": float(seconds),
                     # In the passes of its own settings, the lead time paid
                     # again on each: what the timeline draws.
-                    "passes": int(getattr(config, const.CONF_WATERING_PASSES, 1) or 1),
+                    "passes": int(setting(const.CONF_WATERING_PASSES, 1) or 1),
                     "max_litres": 0.0,
                     "lead": min(
                         max(0.0, float(zone.get(const.ZONE_LEAD_TIME) or 0.0)),
@@ -395,16 +443,15 @@ class ProgramStatusMixin:
             # Nothing to water still has a start, placed for the length the
             # scheduler arms it with.
             return [], float(await self._planned_run_seconds() or 0)
-        sequencing = getattr(
-            config, const.CONF_ZONE_SEQUENCING, const.CONF_DEFAULT_ZONE_SEQUENCING
+        sequencing = setting(
+            const.CONF_ZONE_SEQUENCING, const.CONF_DEFAULT_ZONE_SEQUENCING
         )
         if sequencing == const.CONF_ZONE_SEQUENCING_PARALLEL:
             steps = [{"id": "main", "zones": members, "delay": 0.0}]
         else:
             # The pause between zones is waited after each, as in the classic run.
             pause = float(
-                getattr(
-                    config,
+                setting(
                     const.CONF_PAUSE_BETWEEN_ZONES,
                     const.CONF_DEFAULT_PAUSE_BETWEEN_ZONES,
                 )
@@ -833,13 +880,21 @@ class ProgramStatusMixin:
                     zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED
                 ):
                     not_watered.append(int(zone_id))
+        settings: dict = {}
         if main:
-            plan, _total = await self._main_program_plan(zones)
+            settings = main_settings(program)
+            plan, _total = await self._main_program_plan(zones, settings)
         else:
             plan, _total = self._program_totals(normalized, zones)
-        soak = float(getattr(self.store.config, const.CONF_SOAK_MINUTES, 0) or 0) * 60.0
+        soak_minutes = settings.get(
+            const.CONF_SOAK_MINUTES,
+            getattr(self.store.config, const.CONF_SOAK_MINUTES, 0),
+        )
+        soak = float(soak_minutes or 0) * 60.0
         return {
             "program": normalized,
+            # The main program's own settings as understood, saved beside it.
+            "settings": settings,
             "timeline": self._timeline(plan, soak, names),
             "unknown_zones": sorted(set(unknown)),
             "unknown_zone_names": unknown_names,
