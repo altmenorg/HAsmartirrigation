@@ -1111,7 +1111,6 @@
         "off_in_iu_matched": "vypnuté v IU a priradené k „{zone}“, ktorá zostáva tak, ako je: programy ju vynechávajú",
         "offset_limit": "posun o {offset, number} min: Smart Irrigation dovoľuje {max, number}",
         "offset_rounded": "posun o {seconds, number} s sa zaokrúhli na {minutes, number} min: Smart Irrigation tam počíta v minútach",
-        "one_queue": "ovládače: {count}; ich programy bežia jeden po druhom, pretože plný ovládač má jeden rad",
         "overlap": "zóny a sekvencie s rozvrhmi: {count}; kde sa ich behy prekrývajú, IU ich zalieva súčasne, plný ovládač jednu po druhej",
         "passes_held": "{repeats, number} opakovaní sa obmedzí na počet dávok {max, number}",
         "period_needs_both": "obdobie {from} až {until} potrebuje oba dni: rozvrh platí celý rok",

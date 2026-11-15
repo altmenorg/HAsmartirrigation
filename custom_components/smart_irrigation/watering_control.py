@@ -23,6 +23,7 @@ import copy
 import logging
 import math
 from datetime import datetime, timedelta
+from typing import Any, cast
 
 import homeassistant.util.dt as dt_util
 import voluptuous as vol
@@ -109,6 +110,9 @@ RUN_PROGRAM_SCHEMA = vol.Schema(
 )
 STOP_PROGRAM_SCHEMA = vol.Schema(
     {vol.Required(const.ATTR_PROGRAM_ID): cv.string}, extra=vol.ALLOW_EXTRA
+)
+NEXT_STEP_SCHEMA = vol.Schema(
+    {vol.Optional(const.ATTR_PROGRAM_ID): cv.string}, extra=vol.ALLOW_EXTRA
 )
 SET_PROGRAM_ENABLED_SCHEMA = vol.Schema(
     {
@@ -334,13 +338,17 @@ class WateringControlMixin:
 
     # --- next step -----------------------------------------------------------------
 
-    async def async_skip_step(self) -> list:
+    async def async_skip_step(self, program_id=None) -> list:
         """End the zones of the step a program is on, and let it go on.
 
+        Programs on supplies of their own water side by side: ``program_id``
+        keeps it to one of them, and without it every program running moves on.
         Returns the ids of the zones that were ended.
         """
         skipped = []
         for run in self._program_registry().values():
+            if program_id is not None and run.program_id != str(program_id):
+                continue
             for zone_id in list(getattr(run, "current_zones", ()) or ()):
                 control = self._run_controls().get(int(zone_id))
                 if control is not None:
@@ -516,7 +524,9 @@ class WateringControlMixin:
         while cycle is not None:
             await cycle["done"].wait()
             cycle = self._sequential_cycle
-        async with self._executor_lock():
+        # The turn on the zone's own supply (program_runner, turns.py).
+        runner = cast(Any, self)
+        async with runner._turns().turn(lambda: runner._zone_turn_keys([zone_id])):
             if getattr(self, "_stop_generation", 0) != generation:
                 return False
             zone = self.store.get_zone(zone_id)

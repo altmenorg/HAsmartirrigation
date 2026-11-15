@@ -1111,7 +1111,6 @@
         "off_in_iu_matched": "zonen är inaktiverad i IU och kopplad till ”{zone}”, som lämnas oförändrad. Programmen hoppar över zonen",
         "offset_limit": "en förskjutning på {offset, number} min: Smart Irrigation tillåter {max, number}",
         "offset_rounded": "förskjutningen på {seconds, number} s avrundas till {minutes, number} min: Smart Irrigation räknar i minuter där",
-        "one_queue": "{count} styrenheter: deras program körs efter varandra, eftersom den fullständiga bevattningsstyrningen har en kö",
         "overlap": "{count} zoner och sekvenser har scheman. Vid överlappande bevattningstider kör IU dem samtidigt, medan den fullständiga bevattningsstyrningen kör dem efter varandra",
         "passes_held": "{repeats, number} upprepningar begränsas till {max, number} pass",
         "period_needs_both": "perioden {from} till {until} kräver både start- och slutdatum. Schemat gäller därför hela året",

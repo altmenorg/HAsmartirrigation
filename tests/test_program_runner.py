@@ -253,7 +253,9 @@ async def test_the_run_is_recorded_at_each_step_and_cleared_at_the_end(monkeypat
 
     async def _look():
         for call in coord.store.async_update_config.await_args_list:
-            record = call.args[0].get(const.CONF_ACTIVE_PROGRAM_RUN)
+            record = (call.args[0].get(const.CONF_ACTIVE_PROGRAM_RUN) or {}).get(
+                "evening"
+            )
             if record:
                 seen.append((record["tour"], record["step"]))
 
@@ -296,7 +298,7 @@ async def test_a_cancelled_program_keeps_its_record(monkeypatch):
         if const.CONF_ACTIVE_PROGRAM_RUN in call.args[0]
     ]
     assert records[-1] is not None
-    assert records[-1]["step"] == 0
+    assert records[-1]["evening"]["step"] == 0
 
 
 async def test_a_restart_goes_on_with_the_steps_still_to_do(monkeypatch):

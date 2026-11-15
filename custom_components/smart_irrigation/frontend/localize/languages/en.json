@@ -1111,7 +1111,7 @@
         "off_in_iu_matched": "switched off in IU and matched to \"{zone}\", which stays as it is: the programs leave it out",
         "offset_limit": "an offset of {offset, number} min: Smart Irrigation allows {max, number}",
         "offset_rounded": "the offset of {seconds, number} s is rounded to {minutes, number} min: Smart Irrigation works in minutes there",
-        "one_queue": "{count} controllers: their programs run one after the other, as the full controller has one queue",
+        "shared_queue": "{count} controllers without a master: their programs run one after the other, as zones without a supply share one queue",
         "overlap": "{count} zones and sequences have schedules: where their runs overlap, IU waters them at the same time, the full controller one after the other",
         "passes_held": "{repeats, number} repeats are held to {max, number} passes",
         "period_needs_both": "the period {from} to {until} needs both days: the schedule runs all year",
@@ -1298,7 +1298,7 @@
   },
   "programs": {
     "title": "Programs",
-    "description": "A program waters its steps one after the other. A step is one zone, or several watered together, and by default takes the duration Smart Irrigation calculated for it. Several programs never run at the same time: the next one waits its turn.",
+    "description": "A program waters its steps one after the other. A step is one zone, or several watered together, and by default takes the duration Smart Irrigation calculated for it. Programs whose zones share a supply, or have none, never run at the same time: the next one waits its turn. Programs on supplies of their own water side by side.",
     "main_description": "Waters every zone, one after the other or together, at its schedules.",
     "run_options": "Options for this run",
     "adjust_empty": "Enter a percentage or seconds to adjust the durations.",

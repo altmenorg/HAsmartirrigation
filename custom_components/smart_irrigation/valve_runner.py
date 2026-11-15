@@ -43,7 +43,7 @@ from . import const
 from .delivery import own_entities
 from .master_switch import watering_off
 from .observed_watering import NO_FLOW_GRACE
-from .program_runner import ProgramRunnerMixin
+from .program_runner import ProgramRunnerMixin, program_run_records
 from .program_status import ProgramStatusMixin
 from .supply_runner import (
     PROBLEM_SUPPLY_DID_NOT_TURN_ON,
@@ -1513,8 +1513,8 @@ class ValveRunnerMixin(
     async def async_run_direct_valves(self, zone_ids=None) -> None:
         """Open/run/close every eligible zone, sequentially or in parallel.
 
-        In full controller mode a cycle takes its turn behind a program that is
-        running (and the other way round): one at a time, whatever starts them.
+        In full controller mode a cycle takes its turn on every supply: behind
+        what is watering, and what asks after it waits for it (turns.py).
         """
         cfg = self.store.config
         if getattr(cfg, const.CONF_DIRECT_VALVE_CONTROL_ENABLED, False) is not True:
@@ -1524,7 +1524,7 @@ class ValveRunnerMixin(
             return
         if getattr(cfg, const.CONF_FULL_CONTROLLER, False) is True:
             generation = getattr(self, "_stop_generation", 0)
-            async with self._executor_lock():
+            async with self._turns().turn(lambda: None):
                 if getattr(self, "_stop_generation", 0) != generation:
                     _LOGGER.info(
                         "Direct valve control: a stop came while this run waited "
@@ -2542,8 +2542,10 @@ class ValveRunnerMixin(
         resumed += [self._spawn_valve_run(self._resume_owed(rec)) for rec in owed]
         if cycle:
             self._spawn_valve_run(self._resume_cycle(cycle, resumed))
-        if program_run:
-            self._spawn_valve_run(self._resume_program(program_run, resumed))
+        # Programs on supplies of their own were watering side by side: each goes
+        # on with its own steps.
+        for record in program_run_records(program_run).values():
+            self._spawn_valve_run(self._resume_program(record, resumed))
 
     async def _drop_interrupted_runs(self, runs) -> None:
         """Close what a restart interrupted, rather than resume it (switched off).

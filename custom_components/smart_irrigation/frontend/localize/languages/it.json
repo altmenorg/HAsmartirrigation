@@ -1111,7 +1111,6 @@
         "off_in_iu_matched": "disattivata in IU e associata a \"{zone}\", che resta com'è: i programmi la lasciano fuori",
         "offset_limit": "uno scostamento di {offset, number} min: Smart Irrigation consente {max, number}",
         "offset_rounded": "lo scostamento di {seconds, number} s viene arrotondato a {minutes, number} min: lì Smart Irrigation lavora in minuti",
-        "one_queue": "{count} controller: i loro programmi vengono eseguiti uno dopo l'altro, perché il controller completo ha una sola coda",
         "overlap": "{count} zone e sequenze hanno orari: dove le loro irrigazioni si sovrappongono, IU le irriga insieme, il controller completo una dopo l'altra",
         "passes_held": "{repeats, number} ripetizioni vengono limitate a {max, number} passaggi",
         "period_needs_both": "il periodo da {from} a {until} richiede entrambe le date: l'orario vale tutto l'anno",

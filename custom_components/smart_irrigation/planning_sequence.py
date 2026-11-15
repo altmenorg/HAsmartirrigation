@@ -1,7 +1,8 @@
 """Where each planned run will really water: behind the one before it.
 
-Programs never run at the same time: one that comes due while another waters
-waits its turn (program_runner). The planning listed every run at the moment
+Programs that share a supply never run at the same time: one that comes due
+while another waters waits its turn (turns.py). Zones without a supply share
+the mains, and the main program waits for, and holds back, every other. The planning listed every run at the moment
 its schedule fires, so two programs set for the same morning stood side by
 side at the same time, both "done by sunrise", while the second one in fact
 waited and finished well after sunrise. And when both water the same zones,
@@ -13,9 +14,12 @@ names the zones it waters again right after them. It only reads the planning:
 what the runner does is unchanged.
 """
 
+from collections.abc import Callable
 from datetime import datetime, timedelta
 
 import homeassistant.util.dt as dt_util
+
+from .turns import Keys, clash
 
 
 def _moment(value) -> datetime | None:
@@ -38,7 +42,9 @@ def _zones(item: dict) -> dict:
     }
 
 
-def sequence_planning(planned: list) -> list:
+def sequence_planning(
+    planned: list, keys: Callable[[dict], Keys] | None = None
+) -> list:
     """The planning in the order the runs will water, each where it will.
 
     Every item gains:
@@ -50,7 +56,9 @@ def sequence_planning(planned: list) -> list:
       waters too, as ``{"zone_id", "zone", "by"}`` (``by`` as ``waits_for``).
 
     A run that waters nothing, or that the forecast is expected to hold back,
-    neither waits nor holds another back.
+    neither waits nor holds another back. ``keys`` gives the supplies of a
+    planned run, as the runner takes its turn on them: a run only waits behind
+    one that shares one. Without it, every run waits behind every other.
     """
 
     def soonest(item: dict) -> float:
@@ -58,7 +66,7 @@ def sequence_planning(planned: list) -> list:
         return moment.timestamp() if moment is not None else float("inf")
 
     items = sorted(planned, key=soonest)
-    # The runs placed so far: (program, its zones, when it ends).
+    # The runs placed so far: (program, its zones, when it ends, its supplies).
     ahead: list = []
     for item in items:
         start = _moment(item.get("start"))
@@ -71,9 +79,10 @@ def sequence_planning(planned: list) -> list:
             continue
         if item.get("nothing_to_water") or item.get("skipped_reason"):
             continue
-        busy = [run for run in ahead if run[2] > start]
+        supplies = keys(item) if keys is not None else None
+        busy = [run for run in ahead if run[2] > start and clash(supplies, run[3])]
         if busy:
-            program, _zones_before, until = max(busy, key=lambda run: run[2])
+            program, _zones_before, until, _supplies = max(busy, key=lambda run: run[2])
             length = max(timedelta(0), end - start)
             start, end = until, until + length
             item["waits_for"] = program
@@ -81,7 +90,7 @@ def sequence_planning(planned: list) -> list:
             item["expected_end"] = end.isoformat()
             zones = _zones(item)
             twice: list[dict] = []
-            for by, before, _until in busy:
+            for by, before, _until, _supplies in busy:
                 for zone_id in sorted(set(zones) & set(before)):
                     if all(entry["zone_id"] != zone_id for entry in twice):
                         twice.append(
@@ -89,5 +98,5 @@ def sequence_planning(planned: list) -> list:
                         )
             item["watered_twice"] = twice
         program = {"program_id": item.get("program_id"), "program": item.get("program")}
-        ahead.append((program, _zones(item), end))
+        ahead.append((program, _zones(item), end, supplies))
     return items

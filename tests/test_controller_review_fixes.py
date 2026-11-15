@@ -120,16 +120,35 @@ async def test_a_stop_while_a_finished_pass_closes_still_reports_the_water(sleep
     assert finished["zones"][0]["seconds"] == 300
 
 
+async def _hold_every_turn(coord):
+    """Take the turn on every supply, as a run watering everything would."""
+    held = asyncio.Event()
+    done = asyncio.Event()
+
+    async def _hold():
+        async with coord._turns().turn(lambda: None):
+            held.set()
+            await done.wait()
+
+    task = asyncio.ensure_future(_hold())
+    await held.wait()
+
+    async def _release():
+        done.set()
+        await task
+
+    return _release
+
+
 async def test_a_stop_reaches_a_cycle_waiting_for_its_turn(sleeps):
     hass, coord = _setup(zone_ids=(0, 1))
-    lock = coord._executor_lock()
-    await lock.acquire()
+    release = await _hold_every_turn(coord)
 
     waiting = asyncio.ensure_future(coord.async_run_direct_valves([1]))
     for _ in range(10):
         await REAL_SLEEP(0)
     await coord.async_stop_watering()
-    lock.release()
+    await release()
     await asyncio.wait_for(waiting, 5)
 
     assert opens(hass) == []
@@ -137,14 +156,13 @@ async def test_a_stop_reaches_a_cycle_waiting_for_its_turn(sleeps):
 
 async def test_a_stop_reaches_a_manual_run_waiting_for_its_turn(sleeps):
     hass, coord = _setup(zone_ids=(0, 1))
-    lock = coord._executor_lock()
-    await lock.acquire()
+    release = await _hold_every_turn(coord)
 
     waiting = asyncio.ensure_future(coord.async_water_zone_now(1, seconds=60))
     for _ in range(10):
         await REAL_SLEEP(0)
     await coord.async_stop_watering()
-    lock.release()
+    await release()
 
     assert await asyncio.wait_for(waiting, 5) is False
     assert opens(hass) == []

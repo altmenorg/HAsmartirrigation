@@ -1111,7 +1111,6 @@
         "off_in_iu_matched": "wyłączona w IU i przypisana do „{zone}”, która zostaje bez zmian: programy ją pomijają",
         "offset_limit": "przesunięcie o {offset, number} min: Smart Irrigation pozwala na {max, number}",
         "offset_rounded": "przesunięcie o {seconds, number} s zostaje zaokrąglone do {minutes, number} min: Smart Irrigation liczy tam w minutach",
-        "one_queue": "kontrolery: {count}; ich programy działają jeden po drugim, bo pełny kontroler ma jedną kolejkę",
         "overlap": "strefy i sekwencje z harmonogramami: {count}; gdy ich podlewania się nakładają, IU podlewa je jednocześnie, pełny kontroler jedno po drugim",
         "passes_held": "powtórzenia: {repeats, number}, ograniczone do przejść: {max, number}",
         "period_needs_both": "okres od {from} do {until} wymaga obu dni: harmonogram obowiązuje cały rok",

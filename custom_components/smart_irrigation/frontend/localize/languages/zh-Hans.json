@@ -1111,7 +1111,6 @@
         "off_in_iu_matched": "在 IU 中已关闭，并匹配到“{zone}”，该区域保持原样：程序会跳过它",
         "offset_limit": "偏移 {offset, number} 分钟：Smart Irrigation 允许 {max, number}",
         "offset_rounded": "{seconds, number} 秒的偏移被取整为 {minutes, number} 分钟：Smart Irrigation 在此处以分钟计",
-        "one_queue": "{count} 个控制器：它们的程序依次运行，因为完整控制器只有一个队列",
         "overlap": "{count} 个区域和序列有时间表：运行重叠时，IU 会同时浇水，完整控制器则依次浇水",
         "passes_held": "{repeats, number} 次重复被限制为 {max, number} 段",
         "period_needs_both": "{from} 至 {until} 的时段需要两个日期：该时间表全年运行",

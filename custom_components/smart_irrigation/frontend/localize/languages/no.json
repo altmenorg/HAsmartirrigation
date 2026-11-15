@@ -1111,7 +1111,6 @@
         "off_in_iu_matched": "slått av i IU og koblet til «{zone}», som blir som den er: programmene utelater den",
         "offset_limit": "en forskyvning på {offset, number} min: Smart Irrigation tillater {max, number}",
         "offset_rounded": "forskyvningen på {seconds, number} s rundes av til {minutes, number} min: Smart Irrigation regner i minutter der",
-        "one_queue": "{count} kontrollere: programmene deres kjører etter hverandre, siden den fulle kontrolleren har én kø",
         "overlap": "{count} soner og sekvenser har tidsplaner: der kjøringene deres overlapper, vanner IU dem samtidig, den fulle kontrolleren etter hverandre",
         "passes_held": "{repeats, number} gjentakelser begrenses til {max, number} omganger",
         "period_needs_both": "perioden {from} til {until} trenger begge dagene: tidsplanen gjelder hele året",

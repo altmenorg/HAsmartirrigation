@@ -1111,7 +1111,6 @@
         "off_in_iu_matched": "desligada no IU e associada a \"{zone}\", que fica como está: os programas deixam-na de fora",
         "offset_limit": "um desvio de {offset, number} min: o Smart Irrigation permite {max, number}",
         "offset_rounded": "o desvio de {seconds, number} s é arredondado para {minutes, number} min: o Smart Irrigation trabalha aí em minutos",
-        "one_queue": "{count} controladores: os seus programas correm um após o outro, porque o controlador completo tem uma só fila",
         "overlap": "{count} zonas e sequências têm agendamentos: onde as suas regas se sobrepõem, o IU rega-as ao mesmo tempo, o controlador completo uma após a outra",
         "passes_held": "{repeats, number} repetições são limitadas a {max, number} passagens",
         "period_needs_both": "o período de {from} a {until} precisa das duas datas: o agendamento aplica-se o ano todo",

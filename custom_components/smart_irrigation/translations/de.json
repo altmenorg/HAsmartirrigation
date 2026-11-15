@@ -430,7 +430,13 @@
     },
     "next_step": {
       "name": "Nächster Schritt",
-      "description": "Beendet die Zonen des Schritts, in dem ein Programm gerade ist, und geht zum nächsten Schritt."
+      "description": "Beendet die Zonen des Schritts, in dem ein Programm gerade ist, und geht zum nächsten Schritt. Programme an eigenen Versorgungen können gleichzeitig bewässern: ohne Programm gehen alle laufenden Programme weiter.",
+      "fields": {
+        "program_id": {
+          "name": "Programm",
+          "description": "Die ID des Programms, das weitergehen soll; leer für alle Programme."
+        }
+      }
     },
     "suspend": {
       "name": "Aussetzen",

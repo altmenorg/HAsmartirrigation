@@ -1111,7 +1111,6 @@
         "off_in_iu_matched": "pois päältä IU:ssa ja yhdistetty alueeseen ”{zone}”, joka pysyy ennallaan: ohjelmat jättävät sen pois",
         "offset_limit": "{offset, number} min siirtymä: Smart Irrigation sallii {max, number}",
         "offset_rounded": "{seconds, number} s siirtymä pyöristetään {minutes, number} minuuttiin: Smart Irrigation laskee siinä minuutteina",
-        "one_queue": "{count} ohjainta: niiden ohjelmat ajetaan peräkkäin, koska täydellä ohjaimella on yksi jono",
         "overlap": "{count} alueella ja sekvenssillä on aikatauluja: missä niiden ajot menevät päällekkäin, IU kastelee ne samaan aikaan, täysi ohjain peräkkäin",
         "passes_held": "{repeats, number} toistoa rajataan {max, number} erään",
         "period_needs_both": "jakso {from}–{until} tarvitsee molemmat päivät: aikataulu on voimassa koko vuoden",
