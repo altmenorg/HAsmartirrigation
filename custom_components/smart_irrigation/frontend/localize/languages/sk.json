@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "Odstrániť úpravu tohto programu?",
     "main_settings": "Hlavný program: štart a poradie",
     "main_settings_description": "Ako hlavný program zalieva: zóny jednu za druhou alebo spolu, pauza medzi dvoma zónami a cycle and soak.",
-    "main_schedules_active": "Zavlažovanie teraz spúšťajú rozvrhy hlavného programu: spúšťač štartu nižšie sa nepoužíva. Môžete ho ďalej upravovať a vráti sa, ak tieto rozvrhy vypnete alebo odstránite.",
     "mode_off": "Plný ovládač je vypnutý. Zapnite ho v Nastaveniach, Všeobecné.",
     "no_zone": "žiadna zóna",
     "mode_calculated_short": "vypočítané",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Len keď sa niečo pokazí",
     "notify_none": "Home Assistant zatiaľ nemá cieľ upozornení: pridajte mobilnú aplikáciu alebo integráciu notify.",
     "schedule_azimuth": "Azimut slnka",
-    "schedule_azimuth_help": "Stupne v smere hodín od severu: 90 východ, 180 juh, 270 západ. Pre záhon, z ktorého v tej chvíli odchádza tieň múru alebo stromu."
+    "schedule_azimuth_help": "Stupne v smere hodín od severu: 90 východ, 180 juh, 270 západ. Pre záhon, z ktorého v tej chvíli odchádza tieň múru alebo stromu.",
+    "view_flow": "Schéma",
+    "view_timeline": "Časová os"
   },
   "supplies": {
     "title": "Čerpadlá a hlavné ventily",
@@ -1679,5 +1680,26 @@
     "held": "Počasie mu môže zabrániť",
     "nothing": "Nič na zaliatie",
     "empty": "Nie je naplánovaný žiadny program."
+  },
+  "flow": {
+    "start": "Štart",
+    "by_hand": "Spustené ručne",
+    "weather": "Dovolí to počasie?",
+    "weather_sub": "Dážď, mráz, vietor…",
+    "otherwise": "Inak: v ten deň nič",
+    "supply_on": "{name} zapnuté",
+    "supply_before": "{time} pred ventilmi",
+    "supply_after_valves": "{time} po ventiloch",
+    "supply_off": "{name} vypnuté",
+    "supply_after": "{time} potom",
+    "step": "Krok {n}",
+    "together": "spolu",
+    "passes": "{n} prechody",
+    "soak": "{time} vsakovania medzi prechodmi",
+    "wait": "čakať {time}",
+    "overlap": "prekrýva o {time}",
+    "tours": "Všetko znova, {n} kolá",
+    "notify": "Oznámenie",
+    "empty": "Teraz nie je čo zalievať."
   }
 }

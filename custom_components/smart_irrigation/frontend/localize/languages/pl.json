@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "Usunąć korektę tego programu?",
     "main_settings": "Program główny: start i kolejność",
     "main_settings_description": "Jak podlewa program główny: strefy jedna po drugiej lub razem, przerwa między dwiema strefami oraz cycle and soak.",
-    "main_schedules_active": "Na razie podlewanie uruchamiają harmonogramy programu głównego: wyzwalacz startu poniżej nie jest używany. Nadal możesz go edytować i wraca on, jeśli wyłączysz lub usuniesz te harmonogramy.",
     "mode_off": "Pełny kontroler jest wyłączony. Włącz go w Ustawienia, Ogólne.",
     "no_zone": "brak strefy",
     "mode_calculated_short": "obliczony",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Tylko gdy coś pójdzie nie tak",
     "notify_none": "Home Assistant nie ma jeszcze celu powiadomień: dodaj aplikację mobilną lub integrację notify.",
     "schedule_azimuth": "Azymut słońca",
-    "schedule_azimuth_help": "Stopnie zgodnie z ruchem wskazówek zegara od północy: 90 wschód, 180 południe, 270 zachód. Dla grządki, z której cień muru lub drzewa schodzi w tej chwili."
+    "schedule_azimuth_help": "Stopnie zgodnie z ruchem wskazówek zegara od północy: 90 wschód, 180 południe, 270 zachód. Dla grządki, z której cień muru lub drzewa schodzi w tej chwili.",
+    "view_flow": "Schemat",
+    "view_timeline": "Oś czasu"
   },
   "supplies": {
     "title": "Pompy i zawory główne",
@@ -1679,5 +1680,26 @@
     "held": "Pogoda może je wstrzymać",
     "nothing": "Nic do podlania",
     "empty": "Brak zaplanowanych programów."
+  },
+  "flow": {
+    "start": "Start",
+    "by_hand": "Uruchomiony ręcznie",
+    "weather": "Pogoda pozwala?",
+    "weather_sub": "Deszcz, mróz, wiatr…",
+    "otherwise": "W przeciwnym razie: nic tego dnia",
+    "supply_on": "{name} włączona",
+    "supply_before": "{time} przed zaworami",
+    "supply_after_valves": "{time} po zaworach",
+    "supply_off": "{name} wyłączona",
+    "supply_after": "{time} później",
+    "step": "Krok {n}",
+    "together": "razem",
+    "passes": "{n} przejścia",
+    "soak": "{time} wsiąkania między przejściami",
+    "wait": "czekaj {time}",
+    "overlap": "nakłada się o {time}",
+    "tours": "Wszystko od nowa, {n} rundy",
+    "notify": "Powiadomienie",
+    "empty": "Teraz nic do podlania."
   }
 }

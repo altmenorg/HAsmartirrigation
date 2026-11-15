@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "Odebrat úpravu tohoto programu?",
     "main_settings": "Hlavní program: start a řazení",
     "main_settings_description": "Jak hlavní program zavlažuje: zóny jednu po druhé nebo společně, pauza mezi dvěma zónami a cycle and soak.",
-    "main_schedules_active": "Zavlažování teď spouštějí rozvrhy hlavního programu: spouštěč startu níže se nepoužívá. Můžete ho dál upravovat a vrátí se, pokud tyto rozvrhy vypnete nebo odstraníte.",
     "mode_off": "Plný řadič je vypnutý. Zapněte jej v Nastavení, Obecné.",
     "no_zone": "žádná zóna",
     "mode_calculated_short": "vypočítáno",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Jen když se něco pokazí",
     "notify_none": "Home Assistant zatím nemá cíl oznámení: přidejte mobilní aplikaci nebo integraci notify.",
     "schedule_azimuth": "Azimut slunce",
-    "schedule_azimuth_help": "Stupně po směru hodin od severu: 90 východ, 180 jih, 270 západ. Pro záhon, který stín zdi nebo stromu v tu chvíli opouští."
+    "schedule_azimuth_help": "Stupně po směru hodin od severu: 90 východ, 180 jih, 270 západ. Pro záhon, který stín zdi nebo stromu v tu chvíli opouští.",
+    "view_flow": "Schéma",
+    "view_timeline": "Časová osa"
   },
   "supplies": {
     "title": "Čerpadla a hlavní ventily",
@@ -1679,5 +1680,26 @@
     "held": "Počasí mu může zabránit",
     "nothing": "Nic k zalití",
     "empty": "Není naplánován žádný program."
+  },
+  "flow": {
+    "start": "Start",
+    "by_hand": "Spuštěno ručně",
+    "weather": "Dovolí to počasí?",
+    "weather_sub": "Déšť, mráz, vítr…",
+    "otherwise": "Jinak: ten den nic",
+    "supply_on": "{name} zapnuto",
+    "supply_before": "{time} před ventily",
+    "supply_after_valves": "{time} po ventilech",
+    "supply_off": "{name} vypnuto",
+    "supply_after": "{time} potom",
+    "step": "Krok {n}",
+    "together": "společně",
+    "passes": "{n} průchody",
+    "soak": "{time} vsakování mezi průchody",
+    "wait": "čekat {time}",
+    "overlap": "překrývá o {time}",
+    "tours": "Vše znovu, {n} kola",
+    "notify": "Oznámení",
+    "empty": "Teď není co zalévat."
   }
 }

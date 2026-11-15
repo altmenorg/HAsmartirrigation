@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "Die Anpassung dieses Programms entfernen?",
     "main_settings": "Hauptprogramm: Start und Reihenfolge",
     "main_settings_description": "Wie das Hauptprogramm bewässert: die Zonen nacheinander oder zusammen, die Pause zwischen zwei Zonen und das Bewässern in Durchgängen mit Einsickern.",
-    "main_schedules_active": "Im Moment starten die Zeitpläne des Hauptprogramms die Bewässerung: der Startauslöser unten wird nicht verwendet. Du kannst ihn weiter bearbeiten, und er gilt wieder, wenn du diese Zeitpläne deaktivierst oder entfernst.",
     "mode_off": "Die volle Steuerung ist aus. Schalte sie unter Einstellungen, Allgemein ein.",
     "no_zone": "keine Zone",
     "mode_calculated_short": "berechnet",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Nur wenn etwas schiefgeht",
     "notify_none": "Home Assistant hat noch kein Benachrichtigungsziel: füge die Mobile App oder eine Notify-Integration hinzu.",
     "schedule_azimuth": "Azimut der Sonne",
-    "schedule_azimuth_help": "Grad im Uhrzeigersinn ab Norden: 90 Ost, 180 Süd, 270 West. Für ein Beet, das der Schatten einer Mauer oder eines Baums in diesem Moment verlässt."
+    "schedule_azimuth_help": "Grad im Uhrzeigersinn ab Norden: 90 Ost, 180 Süd, 270 West. Für ein Beet, das der Schatten einer Mauer oder eines Baums in diesem Moment verlässt.",
+    "view_flow": "Schema",
+    "view_timeline": "Zeitleiste"
   },
   "supplies": {
     "title": "Pumpen und Hauptventile",
@@ -1679,5 +1680,26 @@
     "held": "Das Wetter könnte sie verhindern",
     "nothing": "Nichts zu bewässern",
     "empty": "Kein Programm geplant."
+  },
+  "flow": {
+    "start": "Start",
+    "by_hand": "Von Hand gestartet",
+    "weather": "Wetter passt?",
+    "weather_sub": "Regen, Frost, Wind…",
+    "otherwise": "Sonst: an diesem Tag nichts",
+    "supply_on": "{name} an",
+    "supply_before": "{time} vor den Ventilen",
+    "supply_after_valves": "{time} nach den Ventilen",
+    "supply_off": "{name} aus",
+    "supply_after": "{time} danach",
+    "step": "Schritt {n}",
+    "together": "zusammen",
+    "passes": "{n} Durchgänge",
+    "soak": "{time} Einsickern zwischen den Durchgängen",
+    "wait": "Pause {time}",
+    "overlap": "überlappt um {time}",
+    "tours": "Alles noch einmal, {n} Runden",
+    "notify": "Benachrichtigung",
+    "empty": "Gerade nichts zu bewässern."
   }
 }

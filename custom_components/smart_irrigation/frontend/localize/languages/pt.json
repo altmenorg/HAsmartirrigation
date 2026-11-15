@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "Remover o ajuste deste programa?",
     "main_settings": "Programa principal: início e sequenciamento",
     "main_settings_description": "Como o programa principal rega: as zonas uma a seguir à outra ou em conjunto, a pausa entre duas zonas e cycle and soak.",
-    "main_schedules_active": "Por agora são os agendamentos do programa principal que iniciam a rega: o acionador de início abaixo não é usado. Pode continuar a editá-lo, e volta a ser usado se desativar ou remover esses agendamentos.",
     "mode_off": "O controlador completo está desligado. Ative-o em Definições, Geral.",
     "no_zone": "nenhuma zona",
     "mode_calculated_short": "calculada",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Só se algo correr mal",
     "notify_none": "O Home Assistant ainda não tem destino de notificação: adicione a app móvel ou uma integração de notificações.",
     "schedule_azimuth": "Azimute do sol",
-    "schedule_azimuth_help": "Graus no sentido horário a partir do norte: 90 este, 180 sul, 270 oeste. Para um canteiro que a sombra de um muro ou de uma árvore deixa nesse momento."
+    "schedule_azimuth_help": "Graus no sentido horário a partir do norte: 90 este, 180 sul, 270 oeste. Para um canteiro que a sombra de um muro ou de uma árvore deixa nesse momento.",
+    "view_flow": "Esquema",
+    "view_timeline": "Cronologia"
   },
   "supplies": {
     "title": "Bombas e válvulas principais",
@@ -1679,5 +1680,26 @@
     "held": "O tempo pode impedi-la",
     "nothing": "Nada a regar",
     "empty": "Nenhum programa previsto."
+  },
+  "flow": {
+    "start": "Início",
+    "by_hand": "Iniciado à mão",
+    "weather": "O tempo permite?",
+    "weather_sub": "Chuva, geada, vento…",
+    "otherwise": "Senão: nada nesse dia",
+    "supply_on": "{name} ligada",
+    "supply_before": "{time} antes das válvulas",
+    "supply_after_valves": "{time} depois das válvulas",
+    "supply_off": "{name} desligada",
+    "supply_after": "{time} depois",
+    "step": "Etapa {n}",
+    "together": "em conjunto",
+    "passes": "{n} passagens",
+    "soak": "{time} de infiltração entre passagens",
+    "wait": "espera {time}",
+    "overlap": "sobrepõe-se {time}",
+    "tours": "Tudo de novo, {n} voltas",
+    "notify": "Notificação",
+    "empty": "Nada a regar por agora."
   }
 }

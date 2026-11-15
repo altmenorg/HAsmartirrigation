@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "Fjerne justeringen av dette programmet?",
     "main_settings": "Hovedprogram: start og sekvensering",
     "main_settings_description": "Hvordan hovedprogrammet vanner: sonene etter hverandre eller samtidig, pausen mellom to soner og cycle and soak.",
-    "main_schedules_active": "Akkurat nå er det hovedprogrammets tidsplaner som starter vanningen: starttriggeren nedenfor brukes ikke. Du kan fortsatt redigere den, og den kommer tilbake hvis du slår av eller fjerner disse tidsplanene.",
     "mode_off": "Den fulle kontrolleren er av. Slå den på i Innstillinger, Generelt.",
     "no_zone": "ingen sone",
     "mode_calculated_short": "beregnet",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Bare når noe går galt",
     "notify_none": "Home Assistant har ingen varslingsmottaker ennå: legg til mobilappen eller en notify-integrasjon.",
     "schedule_azimuth": "Solens asimut",
-    "schedule_azimuth_help": "Grader med klokken fra nord: 90 øst, 180 sør, 270 vest. For et bed som skyggen av en mur eller et tre forlater i det øyeblikket."
+    "schedule_azimuth_help": "Grader med klokken fra nord: 90 øst, 180 sør, 270 vest. For et bed som skyggen av en mur eller et tre forlater i det øyeblikket.",
+    "view_flow": "Diagram",
+    "view_timeline": "Tidslinje"
   },
   "supplies": {
     "title": "Pumper og hovedventiler",
@@ -1679,5 +1680,26 @@
     "held": "Været kan hindre den",
     "nothing": "Ingenting å vanne",
     "empty": "Ingen program planlagt."
+  },
+  "flow": {
+    "start": "Start",
+    "by_hand": "Startet manuelt",
+    "weather": "Tillater været det?",
+    "weather_sub": "Regn, frost, vind…",
+    "otherwise": "Ellers: ingenting den dagen",
+    "supply_on": "{name} på",
+    "supply_before": "{time} før ventilene",
+    "supply_after_valves": "{time} etter ventilene",
+    "supply_off": "{name} av",
+    "supply_after": "{time} etter",
+    "step": "Trinn {n}",
+    "together": "samtidig",
+    "passes": "{n} omganger",
+    "soak": "{time} infiltrasjon mellom omgangene",
+    "wait": "vent {time}",
+    "overlap": "overlapper {time}",
+    "tours": "Alt på nytt, {n} runder",
+    "notify": "Varsel",
+    "empty": "Ingenting å vanne nå."
   }
 }

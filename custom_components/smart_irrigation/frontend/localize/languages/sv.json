@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "Ta bort justeringen av det här programmet?",
     "main_settings": "Huvudprogram: start och bevattningsordning",
     "main_settings_description": "Välj om zonerna ska bevattnas efter varandra eller samtidigt. Här ställer du även in pausen mellan zonerna och hur bevattningen delas upp i pass med tid för infiltration.",
-    "main_schedules_active": "Huvudprogrammet startas för närvarande av sina scheman. Du kan fortfarande redigera startutlösaren nedan. Den används igen om du inaktiverar eller tar bort alla scheman.",
     "mode_off": "Fullständig bevattningsstyrning är avstängd. Aktivera den under Inställningar → Allmänt.",
     "no_zone": "ingen zon",
     "mode_calculated_short": "beräknad",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Bara när något går fel",
     "notify_none": "Home Assistant har inget aviseringsmål än: lägg till mobilappen eller en notify-integration.",
     "schedule_azimuth": "Solens azimut",
-    "schedule_azimuth_help": "Grader medurs från norr: 90 öst, 180 syd, 270 väst. För en rabatt som skuggan från en mur eller ett träd lämnar i det ögonblicket."
+    "schedule_azimuth_help": "Grader medurs från norr: 90 öst, 180 syd, 270 väst. För en rabatt som skuggan från en mur eller ett träd lämnar i det ögonblicket.",
+    "view_flow": "Schema",
+    "view_timeline": "Tidslinje"
   },
   "supplies": {
     "title": "Pumpar och huvudventiler",
@@ -1679,5 +1680,26 @@
     "held": "Vädret kan hindra den",
     "nothing": "Inget att vattna",
     "empty": "Inget program planerat."
+  },
+  "flow": {
+    "start": "Start",
+    "by_hand": "Startad för hand",
+    "weather": "Tillåter vädret det?",
+    "weather_sub": "Regn, frost, vind…",
+    "otherwise": "Annars: inget den dagen",
+    "supply_on": "{name} på",
+    "supply_before": "{time} före ventilerna",
+    "supply_after_valves": "{time} efter ventilerna",
+    "supply_off": "{name} av",
+    "supply_after": "{time} efter",
+    "step": "Steg {n}",
+    "together": "samtidigt",
+    "passes": "{n} omgångar",
+    "soak": "{time} infiltration mellan omgångarna",
+    "wait": "vänta {time}",
+    "overlap": "överlappar {time}",
+    "tours": "Allt igen, {n} varv",
+    "notify": "Avisering",
+    "empty": "Inget att vattna just nu."
   }
 }

@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "Odstranim prilagoditev tega programa?",
     "main_settings": "Glavni program: zagon in zaporedje",
     "main_settings_description": "Kako zaliva glavni program: cone drugo za drugo ali skupaj, premor med dvema conama ter cikel in vpijanje.",
-    "main_schedules_active": "Za zdaj zalivanje zaganjajo urniki glavnega programa: spodnji sprožilec zagona se ne uporablja. Ostane urejljiv in se vrne, če so ti urniki izklopljeni ali odstranjeni.",
     "mode_off": "Celoten krmilnik je izklopljen. Vklopi ga v Nastavitve, Splošno.",
     "no_zone": "brez cone",
     "mode_calculated_short": "izračunano",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Samo ko gre kaj narobe",
     "notify_none": "Home Assistant še nima cilja obvestil: dodajte mobilno aplikacijo ali integracijo notify.",
     "schedule_azimuth": "Azimut sonca",
-    "schedule_azimuth_help": "Stopinje v smeri urinega kazalca od severa: 90 vzhod, 180 jug, 270 zahod. Za gredo, ki jo senca zidu ali drevesa v tistem trenutku zapusti."
+    "schedule_azimuth_help": "Stopinje v smeri urinega kazalca od severa: 90 vzhod, 180 jug, 270 zahod. Za gredo, ki jo senca zidu ali drevesa v tistem trenutku zapusti.",
+    "view_flow": "Shema",
+    "view_timeline": "Časovnica"
   },
   "supplies": {
     "title": "Črpalke in glavni ventili",
@@ -1679,5 +1680,26 @@
     "held": "Vreme ga lahko prepreči",
     "nothing": "Nič za zaliti",
     "empty": "Noben program ni načrtovan."
+  },
+  "flow": {
+    "start": "Začetek",
+    "by_hand": "Zagnano ročno",
+    "weather": "Vreme dopušča?",
+    "weather_sub": "Dež, zmrzal, veter…",
+    "otherwise": "Sicer: ta dan nič",
+    "supply_on": "{name} vklopljena",
+    "supply_before": "{time} pred ventili",
+    "supply_after_valves": "{time} po ventilih",
+    "supply_off": "{name} izklopljena",
+    "supply_after": "{time} pozneje",
+    "step": "Korak {n}",
+    "together": "skupaj",
+    "passes": "{n} prehodi",
+    "soak": "{time} vpijanja med prehodi",
+    "wait": "počakaj {time}",
+    "overlap": "prekriva za {time}",
+    "tours": "Vse znova, {n} krogi",
+    "notify": "Obvestilo",
+    "empty": "Trenutno ni kaj zaliti."
   }
 }

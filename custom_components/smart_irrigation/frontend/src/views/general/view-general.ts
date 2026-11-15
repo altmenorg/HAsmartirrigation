@@ -42,6 +42,8 @@ import {
 import { loadHaForm, loadHaYamlEditor } from "../../load-ha-elements";
 import "./program-timeline";
 import "./week-view";
+import "./program-flow";
+import { programFlow } from "../../data/program-flow";
 import { Timeline } from "../../data/timeline";
 import { programFromYaml, programToYaml } from "../../data/program-yaml";
 import { notifyTargets } from "../../data/notify-targets";
@@ -154,6 +156,9 @@ interface ProgramPreview {
  * The timeline of each program as last asked, by program id, with what it was
  * asked for: asked again when the program changes or it is a minute old.
  */
+// How each program's run is drawn: the flow (default) or the timeline.
+const RUN_VIEW: Record<string, "flow" | "timeline"> = {};
+
 const PREVIEWS: Record<
   string,
   { key: string; at: number; data?: ProgramPreview; pending?: boolean }
@@ -1656,8 +1661,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           : schedule.type === "sun"
             ? `${t(`summary_${anchor}_${schedule.event === "sunset" ? "sunset" : "sunrise"}`)}${offset}`
             : `${t(anchor === "end" ? "anchor_end_short" : "anchor_start_short")} ${schedule.time}`;
+      // All seven days are every day.
       const days =
-        (schedule.weekdays || []).length > 0
+        (schedule.weekdays || []).length > 0 &&
+        (schedule.weekdays || []).length < 7
           ? schedule.weekdays.map((d) => weekdayName(d)).join(", ")
           : (schedule.every_n_days ?? 1) > 1
             ? `${t("schedule_every")} ${schedule.every_n_days} ${t("schedule_days")}`
@@ -1712,6 +1719,48 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       </details>
     `;
 
+    // A run drawn as a flow (objects and arrows, in order) or on a time axis.
+    const drawRun = (program: SmartIrrigationProgram, timeline: any) => {
+      const key = program.id ?? "";
+      const view = RUN_VIEW[key] ?? "flow";
+      const schedules = (program.schedules || []).filter(
+        (s) => s.enabled !== false,
+      );
+      return html`
+        <div class="run-views" role="group">
+          ${(["flow", "timeline"] as const).map(
+            (v) =>
+              html`<button
+                class=${v === view ? "on" : ""}
+                @click=${() => {
+                  RUN_VIEW[key] = v;
+                  this._scheduleUpdate();
+                }}
+              >
+                ${t(`view_${v}`)}
+              </button>`,
+          )}
+        </div>
+        ${view === "flow"
+          ? html`<si-program-flow
+              .flow=${programFlow(
+                timeline,
+                this.zones as any,
+                (this.config?.supplies || []) as any,
+              )}
+              .schedules=${schedules.map((s) => scheduleText(s))}
+              .weather=${schedules.some((s) => s.weather !== false)}
+              .notify=${!!program.notify?.targets?.length}
+              .lang=${lang}
+              @open-zone=${(e: CustomEvent) =>
+                navigate(this, `/${DOMAIN}/zones/zone/${e.detail.zone_id}`)}
+            ></si-program-flow>`
+          : html`<si-program-timeline
+              .timeline=${timeline}
+              .lang=${lang}
+            ></si-program-timeline>`}
+      `;
+    };
     // What a run of the program would do, drawn: asked of the backend for
     // the program as it is now, saved or not, and only for one unfolded
     // (``foldKey`` null: always, the main program's card has no fold).
@@ -1727,10 +1776,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ${t("preview_title")}<si-info>${t("preview_help")}</si-info>
         </div>
         ${data
-          ? html`<si-program-timeline
-              .timeline=${data.timeline}
-              .lang=${lang}
-            ></si-program-timeline>`
+          ? drawRun(program, data.timeline)
           : html`<div class="setting-note">…</div>`}
       `;
     };
@@ -1819,10 +1865,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             </div>`
           : ""}
         ${found && edit.valid && !edit.error
-          ? html`<si-program-timeline
-              .timeline=${found.timeline}
-              .lang=${lang}
-            ></si-program-timeline>`
+          ? drawRun(found.program as SmartIrrigationProgram, found.timeline)
           : ""}
         <div class="si-actions">
           ${this._actionBtn(
@@ -2736,11 +2779,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       >${t("main_schedules_hint")}</si-info
                     >
                   </div>
-                  ${this.startSource === "main_schedules"
-                    ? html`<div class="setting-note">
-                        <strong>${t("main_schedules_active")}</strong>
-                      </div>`
-                    : ""}
                   ${renderSchedules(program, index)}
                   ${renderNotify(program, index)}
                   <div class="fold-section">
@@ -4942,6 +4980,26 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         margin-top: 16px;
       }
 
+      .run-views {
+        display: inline-flex;
+        border: 1px solid var(--divider-color);
+        border-radius: 16px;
+        overflow: hidden;
+        margin: 4px 0 8px;
+      }
+      .run-views button {
+        border: 0;
+        background: none;
+        color: var(--primary-text-color);
+        font: inherit;
+        font-size: 0.85em;
+        padding: 4px 12px;
+        cursor: pointer;
+      }
+      .run-views button.on {
+        background: var(--primary-color);
+        color: var(--text-primary-color, #fff);
+      }
       .settings-section {
         display: flex;
         align-items: flex-start;

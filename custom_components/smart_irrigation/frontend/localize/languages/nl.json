@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "De aanpassing van dit programma verwijderen?",
     "main_settings": "Hoofdprogramma: start en volgorde",
     "main_settings_description": "Hoe het hoofdprogramma bewatert: de zones na elkaar of samen, de pauze tussen twee zones en cycle and soak.",
-    "main_schedules_active": "Op dit moment starten de schema's van het hoofdprogramma het bewateren: de starttrigger hieronder wordt niet gebruikt. Je kunt hem nog steeds aanpassen, en hij komt terug als je die schema's uitschakelt of verwijdert.",
     "mode_off": "De volledige controller is uit. Zet hem aan in Instellingen, Algemeen.",
     "no_zone": "geen zone",
     "mode_calculated_short": "berekend",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Alleen als er iets misgaat",
     "notify_none": "Home Assistant heeft nog geen meldingsdoel: voeg de mobiele app of een notify-integratie toe.",
     "schedule_azimuth": "Azimut van de zon",
-    "schedule_azimuth_help": "Graden met de klok mee vanaf het noorden: 90 oost, 180 zuid, 270 west. Voor een perk dat de schaduw van een muur of boom op dat moment verlaat."
+    "schedule_azimuth_help": "Graden met de klok mee vanaf het noorden: 90 oost, 180 zuid, 270 west. Voor een perk dat de schaduw van een muur of boom op dat moment verlaat.",
+    "view_flow": "Schema",
+    "view_timeline": "Tijdlijn"
   },
   "supplies": {
     "title": "Pompen en hoofdventielen",
@@ -1679,5 +1680,26 @@
     "held": "Het weer kan dit tegenhouden",
     "nothing": "Niets te beregenen",
     "empty": "Geen programma gepland."
+  },
+  "flow": {
+    "start": "Start",
+    "by_hand": "Met de hand gestart",
+    "weather": "Laat het weer het toe?",
+    "weather_sub": "Regen, vorst, wind…",
+    "otherwise": "Anders: niets die dag",
+    "supply_on": "{name} aan",
+    "supply_before": "{time} voor de kleppen",
+    "supply_after_valves": "{time} na de kleppen",
+    "supply_off": "{name} uit",
+    "supply_after": "{time} erna",
+    "step": "Stap {n}",
+    "together": "samen",
+    "passes": "{n} beurten",
+    "soak": "{time} inzakken tussen de beurten",
+    "wait": "wacht {time}",
+    "overlap": "overlapt {time}",
+    "tours": "Alles opnieuw, {n} rondes",
+    "notify": "Melding",
+    "empty": "Nu niets te beregenen."
   }
 }

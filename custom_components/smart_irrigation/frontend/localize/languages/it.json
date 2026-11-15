@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "Rimuovere la regolazione di questo programma?",
     "main_settings": "Programma principale: avvio e sequenza",
     "main_settings_description": "Come irriga il programma principale: le zone una dopo l'altra o insieme, la pausa tra due zone e cycle and soak.",
-    "main_schedules_active": "Per ora sono gli orari del programma principale ad avviare l'irrigazione: il trigger di avvio qui sotto non viene usato. Puoi sempre modificarlo, e torna in uso se disattivi o elimini quegli orari.",
     "mode_off": "Il controller completo è disattivato. Attivalo in Impostazioni, Generale.",
     "no_zone": "nessuna zona",
     "mode_calculated_short": "calcolata",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Solo se qualcosa va storto",
     "notify_none": "Home Assistant non ha ancora una destinazione di notifica: aggiungi l'app mobile o un'integrazione di notifica.",
     "schedule_azimuth": "Azimut del sole",
-    "schedule_azimuth_help": "Gradi in senso orario dal nord: 90 est, 180 sud, 270 ovest. Per un'aiuola che l'ombra di un muro o di un albero lascia in quel momento."
+    "schedule_azimuth_help": "Gradi in senso orario dal nord: 90 est, 180 sud, 270 ovest. Per un'aiuola che l'ombra di un muro o di un albero lascia in quel momento.",
+    "view_flow": "Schema",
+    "view_timeline": "Cronologia"
   },
   "supplies": {
     "title": "Pompe e valvole principali",
@@ -1679,5 +1680,26 @@
     "held": "Il meteo potrebbe impedirla",
     "nothing": "Niente da irrigare",
     "empty": "Nessun programma previsto."
+  },
+  "flow": {
+    "start": "Avvio",
+    "by_hand": "Avviato a mano",
+    "weather": "Il meteo lo permette?",
+    "weather_sub": "Pioggia, gelo, vento…",
+    "otherwise": "Altrimenti: niente quel giorno",
+    "supply_on": "{name} accesa",
+    "supply_before": "{time} prima delle valvole",
+    "supply_after_valves": "{time} dopo le valvole",
+    "supply_off": "{name} spenta",
+    "supply_after": "{time} dopo",
+    "step": "Passo {n}",
+    "together": "insieme",
+    "passes": "{n} passate",
+    "soak": "{time} di assorbimento tra le passate",
+    "wait": "attesa {time}",
+    "overlap": "si sovrappone di {time}",
+    "tours": "Tutto da capo, {n} giri",
+    "notify": "Notifica",
+    "empty": "Niente da irrigare per ora."
   }
 }

@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "Fjerne dette programs justering?",
     "main_settings": "Hovedprogram: start og rækkefølge",
     "main_settings_description": "Hvordan hovedprogrammet vander: zonerne efter hinanden eller sammen, pausen mellem to zoner og cycle and soak.",
-    "main_schedules_active": "Lige nu er det hovedprogrammets tidsplaner, der starter vandingen: startudløseren nedenfor bruges ikke. Du kan stadig redigere den, og den kommer tilbage, hvis du slår de tidsplaner fra eller fjerner dem.",
     "mode_off": "Den fulde styring er slået fra. Slå den til under Indstillinger, Generelt.",
     "no_zone": "ingen zone",
     "mode_calculated_short": "beregnet",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Kun når noget går galt",
     "notify_none": "Home Assistant har endnu intet notifikationsmål: tilføj mobilappen eller en notify-integration.",
     "schedule_azimuth": "Solens azimut",
-    "schedule_azimuth_help": "Grader med uret fra nord: 90 øst, 180 syd, 270 vest. Til et bed, som skyggen fra en mur eller et træ forlader i det øjeblik."
+    "schedule_azimuth_help": "Grader med uret fra nord: 90 øst, 180 syd, 270 vest. Til et bed, som skyggen fra en mur eller et træ forlader i det øjeblik.",
+    "view_flow": "Diagram",
+    "view_timeline": "Tidslinje"
   },
   "supplies": {
     "title": "Pumper og hovedventiler",
@@ -1679,5 +1680,26 @@
     "held": "Vejret kan forhindre den",
     "nothing": "Intet at vande",
     "empty": "Intet program planlagt."
+  },
+  "flow": {
+    "start": "Start",
+    "by_hand": "Startet manuelt",
+    "weather": "Tillader vejret det?",
+    "weather_sub": "Regn, frost, vind…",
+    "otherwise": "Ellers: intet den dag",
+    "supply_on": "{name} tændt",
+    "supply_before": "{time} før ventilerne",
+    "supply_after_valves": "{time} efter ventilerne",
+    "supply_off": "{name} slukket",
+    "supply_after": "{time} efter",
+    "step": "Trin {n}",
+    "together": "sammen",
+    "passes": "{n} omgange",
+    "soak": "{time} nedsivning mellem omgangene",
+    "wait": "vent {time}",
+    "overlap": "overlapper {time}",
+    "tours": "Det hele igen, {n} runder",
+    "notify": "Notifikation",
+    "empty": "Intet at vande lige nu."
   }
 }

@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "¿Quitar el ajuste de este programa?",
     "main_settings": "Programa principal: inicio y secuencia",
     "main_settings_description": "Cómo riega el programa principal: las zonas una tras otra o juntas, la pausa entre dos zonas y cycle and soak.",
-    "main_schedules_active": "Por ahora son los horarios del programa principal los que inician el riego: el disparador de inicio de abajo no se usa. Puedes seguir editándolo, y vuelve si desactivas o eliminas esos horarios.",
     "mode_off": "El controlador completo está desactivado. Actívalo en Ajustes, General.",
     "no_zone": "ninguna zona",
     "mode_calculated_short": "calculada",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Solo si algo sale mal",
     "notify_none": "Home Assistant aún no tiene destino de notificación: añade la app móvil o una integración de notificaciones.",
     "schedule_azimuth": "Azimut del sol",
-    "schedule_azimuth_help": "Grados en sentido horario desde el norte: 90 este, 180 sur, 270 oeste. Para un macizo que la sombra de un muro o un árbol deja en ese momento."
+    "schedule_azimuth_help": "Grados en sentido horario desde el norte: 90 este, 180 sur, 270 oeste. Para un macizo que la sombra de un muro o un árbol deja en ese momento.",
+    "view_flow": "Esquema",
+    "view_timeline": "Cronología"
   },
   "supplies": {
     "title": "Bombas y válvulas principales",
@@ -1679,5 +1680,26 @@
     "held": "El tiempo puede impedirlo",
     "nothing": "Nada que regar",
     "empty": "No hay ningún programa previsto."
+  },
+  "flow": {
+    "start": "Inicio",
+    "by_hand": "Iniciado a mano",
+    "weather": "¿El tiempo lo permite?",
+    "weather_sub": "Lluvia, helada, viento…",
+    "otherwise": "Si no: nada ese día",
+    "supply_on": "{name} en marcha",
+    "supply_before": "{time} antes de las válvulas",
+    "supply_after_valves": "{time} después de las válvulas",
+    "supply_off": "{name} parada",
+    "supply_after": "{time} después",
+    "step": "Paso {n}",
+    "together": "juntas",
+    "passes": "{n} pasadas",
+    "soak": "{time} de infiltración entre pasadas",
+    "wait": "espera {time}",
+    "overlap": "se solapa {time}",
+    "tours": "Todo de nuevo, {n} vueltas",
+    "notify": "Notificación",
+    "empty": "Nada que regar por ahora."
   }
 }

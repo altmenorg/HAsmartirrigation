@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "Eltávolítod ennek a programnak a módosítását?",
     "main_settings": "Főprogram: indítás és sorrend",
     "main_settings_description": "Hogyan öntöz a főprogram: a zónákat egymás után vagy együtt, a két zóna közti szünetet és a cycle and soak-ot.",
-    "main_schedules_active": "Jelenleg a főprogram ütemezései indítják az öntözést: a lenti indítási kiváltó nincs használatban. Továbbra is szerkesztheted, és visszatér, ha kikapcsolod vagy törlöd ezeket az ütemezéseket.",
     "mode_off": "A teljes vezérlő ki van kapcsolva. Kapcsold be a Beállítások, Általános részben.",
     "no_zone": "nincs zóna",
     "mode_calculated_short": "számolt",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Csak ha valami elromlik",
     "notify_none": "A Home Assistantban még nincs értesítési cél: add hozzá a mobilalkalmazást vagy egy notify integrációt.",
     "schedule_azimuth": "A nap azimutja",
-    "schedule_azimuth_help": "Fok az óramutató járásával északtól: 90 kelet, 180 dél, 270 nyugat. Olyan ágyáshoz, amelyről egy fal vagy fa árnyéka abban a pillanatban lehúzódik."
+    "schedule_azimuth_help": "Fok az óramutató járásával északtól: 90 kelet, 180 dél, 270 nyugat. Olyan ágyáshoz, amelyről egy fal vagy fa árnyéka abban a pillanatban lehúzódik.",
+    "view_flow": "Ábra",
+    "view_timeline": "Idővonal"
   },
   "supplies": {
     "title": "Szivattyúk és főszelepek",
@@ -1679,5 +1680,26 @@
     "held": "Az időjárás megakadályozhatja",
     "nothing": "Nincs mit öntözni",
     "empty": "Nincs tervezett program."
+  },
+  "flow": {
+    "start": "Indítás",
+    "by_hand": "Kézzel indítva",
+    "weather": "Engedi az időjárás?",
+    "weather_sub": "Eső, fagy, szél…",
+    "otherwise": "Különben: aznap semmi",
+    "supply_on": "{name} be",
+    "supply_before": "{time} a szelepek előtt",
+    "supply_after_valves": "{time} a szelepek után",
+    "supply_off": "{name} ki",
+    "supply_after": "{time} utána",
+    "step": "{n}. lépés",
+    "together": "együtt",
+    "passes": "{n} kör",
+    "soak": "{time} beszivárgás a körök között",
+    "wait": "várakozás {time}",
+    "overlap": "átfedés {time}",
+    "tours": "Minden újra, {n} forduló",
+    "notify": "Értesítés",
+    "empty": "Most nincs mit öntözni."
   }
 }

@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "Supprimer l'ajustement de ce programme ?",
     "main_settings": "Programme principal : départ et enchaînement",
     "main_settings_description": "Comment le programme principal arrose : les zones l'une après l'autre ou ensemble, la pause entre deux zones et le cycle-and-soak.",
-    "main_schedules_active": "Pour l'instant, ce sont les horaires du programme principal qui lancent l'arrosage : le déclencheur ci-dessous n'est pas utilisé. Tu peux toujours le modifier, et il revient si tu désactives ou supprimes ces horaires.",
     "mode_off": "Le contrôleur complet est désactivé. Active-le dans Réglages, Général.",
     "no_zone": "aucune zone",
     "mode_calculated_short": "calculée",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Uniquement en cas de souci",
     "notify_none": "Home Assistant n'a pas encore de cible de notification : ajoutez l'application mobile ou une intégration de notification.",
     "schedule_azimuth": "Azimut du soleil",
-    "schedule_azimuth_help": "Degrés depuis le nord dans le sens horaire : 90 est, 180 sud, 270 ouest. Pour un massif que l'ombre d'un mur ou d'un arbre quitte à ce moment-là."
+    "schedule_azimuth_help": "Degrés depuis le nord dans le sens horaire : 90 est, 180 sud, 270 ouest. Pour un massif que l'ombre d'un mur ou d'un arbre quitte à ce moment-là.",
+    "view_flow": "Schéma",
+    "view_timeline": "Frise"
   },
   "supplies": {
     "title": "Pompes et vannes générales",
@@ -1679,5 +1680,26 @@
     "held": "La météo risque de l'empêcher",
     "nothing": "Rien à arroser",
     "empty": "Aucun programme n'est prévu."
+  },
+  "flow": {
+    "start": "Départ",
+    "by_hand": "Lancé à la main",
+    "weather": "Météo favorable ?",
+    "weather_sub": "Pluie, gel, vent…",
+    "otherwise": "Sinon : rien ce jour-là",
+    "supply_on": "{name} en marche",
+    "supply_before": "{time} avant les vannes",
+    "supply_after_valves": "{time} après les vannes",
+    "supply_off": "{name} arrêtée",
+    "supply_after": "{time} après",
+    "step": "Étape {n}",
+    "together": "ensemble",
+    "passes": "{n} passes",
+    "soak": "{time} d'infiltration entre les passes",
+    "wait": "attente {time}",
+    "overlap": "chevauche de {time}",
+    "tours": "Tout recommence, {n} tours",
+    "notify": "Notification",
+    "empty": "Rien à arroser pour l'instant."
   }
 }

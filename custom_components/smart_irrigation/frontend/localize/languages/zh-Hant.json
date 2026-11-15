@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "要移除此程式的調整嗎？",
     "main_settings": "主程式：啟動與排序",
     "main_settings_description": "主程式的澆水方式：區域依序或同時進行、兩個區域之間的暫停，以及循環浸潤。",
-    "main_schedules_active": "目前由主程式的排程啟動澆水：下方的啟動觸發條件並未使用。它仍可編輯，若這些排程被停用或移除，它就會恢復作用。",
     "mode_off": "完整控制器已關閉。請在「設定」、「一般」中開啟。",
     "no_zone": "沒有區域",
     "mode_calculated_short": "已計算",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "僅在發生問題時",
     "notify_none": "Home Assistant 還沒有通知目標：請新增行動應用程式或通知整合。",
     "schedule_azimuth": "太陽方位角",
-    "schedule_azimuth_help": "從正北順時針計的度數：90 為東，180 為南，270 為西。適用於牆或樹的陰影在那一刻離開的花圃。"
+    "schedule_azimuth_help": "從正北順時針計的度數：90 為東，180 為南，270 為西。適用於牆或樹的陰影在那一刻離開的花圃。",
+    "view_flow": "示意圖",
+    "view_timeline": "時間軸"
   },
   "supplies": {
     "title": "水泵與主閥",
@@ -1679,5 +1680,26 @@
     "held": "天氣可能使其取消",
     "nothing": "無需澆水",
     "empty": "沒有計劃的程式。"
+  },
+  "flow": {
+    "start": "開始",
+    "by_hand": "手動啟動",
+    "weather": "天氣允許？",
+    "weather_sub": "雨、霜、風…",
+    "otherwise": "否則：當天不澆",
+    "supply_on": "{name} 開啟",
+    "supply_before": "閥門前 {time}",
+    "supply_after_valves": "閥門後 {time}",
+    "supply_off": "{name} 關閉",
+    "supply_after": "之後 {time}",
+    "step": "步驟 {n}",
+    "together": "同時",
+    "passes": "{n} 輪",
+    "soak": "每輪之間滲透 {time}",
+    "wait": "等待 {time}",
+    "overlap": "重疊 {time}",
+    "tours": "全部重來，{n} 遍",
+    "notify": "通知",
+    "empty": "目前無需澆水。"
   }
 }

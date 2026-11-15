@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "Remove the adjustment of this program?",
     "main_settings": "Main program: start and sequencing",
     "main_settings_description": "How the main program waters: the zones one after the other or together, the pause between two zones and cycle and soak.",
-    "main_schedules_active": "For now the main program's schedules start the watering: the start trigger below is not used. It stays editable, and it comes back if those schedules are disabled or removed.",
     "mode_off": "The full controller is off. Turn it on in Settings, General.",
     "no_zone": "no zone",
     "mode_calculated_short": "calculated",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Only when something goes wrong",
     "notify_none": "Home Assistant has no notification target yet: add the mobile app or a notify integration.",
     "schedule_azimuth": "Sun's bearing",
-    "schedule_azimuth_help": "Degrees clockwise from north: 90 east, 180 south, 270 west. For a bed that the shade of a wall or a tree leaves at that moment."
+    "schedule_azimuth_help": "Degrees clockwise from north: 90 east, 180 south, 270 west. For a bed that the shade of a wall or a tree leaves at that moment.",
+    "view_flow": "Diagram",
+    "view_timeline": "Timeline"
   },
   "supplies": {
     "title": "Pumps and main valves",
@@ -1679,5 +1680,26 @@
     "held": "The weather may hold it back",
     "nothing": "Nothing to water",
     "empty": "No program is planned."
+  },
+  "flow": {
+    "start": "Start",
+    "by_hand": "Started by hand",
+    "weather": "Weather allows it?",
+    "weather_sub": "Rain, frost, wind…",
+    "otherwise": "Otherwise: nothing that day",
+    "supply_on": "{name} on",
+    "supply_before": "{time} before the valves",
+    "supply_after_valves": "{time} after the valves",
+    "supply_off": "{name} off",
+    "supply_after": "{time} after",
+    "step": "Step {n}",
+    "together": "together",
+    "passes": "{n} passes",
+    "soak": "{time} to soak in between passes",
+    "wait": "wait {time}",
+    "overlap": "overlaps by {time}",
+    "tours": "Everything again, {n} rounds",
+    "notify": "Notification",
+    "empty": "Nothing to water right now."
   }
 }

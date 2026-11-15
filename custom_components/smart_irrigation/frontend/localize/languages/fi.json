@@ -1408,7 +1408,6 @@
     "confirm_reset_adjustment": "Poistetaanko tämän ohjelman säätö?",
     "main_settings": "Pääohjelma: aloitus ja järjestys",
     "main_settings_description": "Miten pääohjelma kastelee: vyöhykkeet peräkkäin tai yhdessä, kahden vyöhykkeen välinen tauko ja cycle and soak.",
-    "main_schedules_active": "Tällä hetkellä pääohjelman aikataulut käynnistävät kastelun: alla olevaa aloitusliipaisinta ei käytetä. Voit edelleen muokata sitä, ja se palaa, jos poistat nämä aikataulut käytöstä tai poistat ne.",
     "mode_off": "Täysi ohjain on pois päältä. Ota se käyttöön kohdassa Asetukset, Yleiset.",
     "no_zone": "ei vyöhykettä",
     "mode_calculated_short": "laskettu",
@@ -1481,7 +1480,9 @@
     "notify_when_problems": "Vain kun jokin menee vikaan",
     "notify_none": "Home Assistantissa ei ole vielä ilmoituskohdetta: lisää mobiilisovellus tai notify-integraatio.",
     "schedule_azimuth": "Auringon atsimuutti",
-    "schedule_azimuth_help": "Asteet myötäpäivään pohjoisesta: 90 itä, 180 etelä, 270 länsi. Penkille, jolta muurin tai puun varjo väistyy sillä hetkellä."
+    "schedule_azimuth_help": "Asteet myötäpäivään pohjoisesta: 90 itä, 180 etelä, 270 länsi. Penkille, jolta muurin tai puun varjo väistyy sillä hetkellä.",
+    "view_flow": "Kaavio",
+    "view_timeline": "Aikajana"
   },
   "supplies": {
     "title": "Pumput ja pääventtiilit",
@@ -1679,5 +1680,26 @@
     "held": "Sää voi estää sen",
     "nothing": "Ei kasteltavaa",
     "empty": "Ei suunniteltuja ohjelmia."
+  },
+  "flow": {
+    "start": "Aloitus",
+    "by_hand": "Käynnistetty käsin",
+    "weather": "Salliiko sää?",
+    "weather_sub": "Sade, pakkanen, tuuli…",
+    "otherwise": "Muuten: ei mitään sinä päivänä",
+    "supply_on": "{name} päälle",
+    "supply_before": "{time} ennen venttiileitä",
+    "supply_after_valves": "{time} venttiilien jälkeen",
+    "supply_off": "{name} pois",
+    "supply_after": "{time} jälkeen",
+    "step": "Vaihe {n}",
+    "together": "yhdessä",
+    "passes": "{n} kierrosta",
+    "soak": "{time} imeytymistä kierrosten välillä",
+    "wait": "odota {time}",
+    "overlap": "limittyy {time}",
+    "tours": "Kaikki uudelleen, {n} kierrosta",
+    "notify": "Ilmoitus",
+    "empty": "Ei kasteltavaa nyt."
   }
 }
