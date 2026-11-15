@@ -6,7 +6,7 @@ title: "Introduction"
   <img src="assets/images/logo.svg" alt="Smart Irrigation" width="720">
 </p>
 
-**Waters your garden from Home Assistant, with what the weather actually took out of it.**
+**Waters your garden from Home Assistant, putting back the water that sun, heat and wind took from the soil.**
 
 Smart Irrigation works out, zone by zone, how much water your plants lost to evaporation and got back from the rain, and waters the difference. No fixed fifteen minutes, no watering the day after a storm, no guessing in a heatwave. Then it runs the watering itself, as much of it as you want it to: from a duration for your own automation, to programs, schedules and pumps.
 

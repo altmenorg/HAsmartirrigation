@@ -11,7 +11,7 @@
   <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/smart_irrigation_horizontal.svg?sanitize=true" alt="Smart Irrigation" width="720">
 </p>
 
-**Smart Irrigation waters your garden from Home Assistant, with the water the weather actually took out of it.**
+**Smart Irrigation waters your garden from Home Assistant, putting back the water that sun, heat and wind took from the soil.**
 
 It works out, zone by zone, how much water the plants lost to [evapotranspiration](https://en.wikipedia.org/wiki/Evapotranspiration) and got back from the rain, and it waters the difference: not a fixed fifteen minutes, not the day after a storm, and more in a heatwave. Then it runs the watering itself, as much of it as you want it to.
 
