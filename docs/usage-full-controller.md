@@ -79,7 +79,7 @@ An unfolded program shows **what a run would do**: one line per zone on a time a
 
 ### A program in YAML
 
-**Edit in YAML** shows the program as text, in place of the form; **New program in YAML** starts one from a short example. Nothing is saved until **Apply**: as you type, the program is cleaned the way a save cleans it and drawn on the timeline, and a zone that does not exist, or one the run leaves out (no valve, or disabled), is named. Only a valid program can be applied.
+**Edit in YAML** shows the program as text, in place of the form, and back: a program written in YAML is an ordinary program once applied, and the form edits it as any other. To paste a program written elsewhere, add a **New program** and open it in YAML. Nothing is saved until **Apply**: as you type, the program is cleaned the way a save cleans it and drawn on the timeline, and a zone that does not exist, or one the run leaves out (no valve, or disabled), is named. Only a valid program can be applied.
 
 The text is short on purpose, so it can be read, copied between installations or written by an assistant:
 

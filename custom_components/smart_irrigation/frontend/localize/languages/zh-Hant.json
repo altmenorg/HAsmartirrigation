@@ -1461,8 +1461,6 @@
     "yaml_unknown_zones": "找不到區域，或有兩個區域共用的名稱，已略過：{zones}",
     "yaml_not_watered": "未納入此次執行（沒有閥門，或已停用）：{zones}",
     "yaml_applied": "程式已儲存",
-    "yaml_new": "以 YAML 新增程式",
-    "yaml_new_title": "新增程式",
     "notify_title": "通知",
     "notify_help": "在此程式澆水後通知某人：手機、通知實體或 Home Assistant 中的通知。未勾選任何目標時不會傳送。閥門未關閉或水泵無回應時會立即通知。",
     "notify_persistent": "Home Assistant 中的通知",

@@ -47,7 +47,7 @@ Every change goes through the path the panel saves with, so the same checks appl
 
 ## Without the second switch: writing a program together
 
-Ask for the program you want ("water the vegetable garden and the greenhouse together every other evening, then the hedges"). The assistant writes it in the [YAML shape of the program editor](usage-full-controller.md#a-program-in-yaml), checks it with `PreviewProgram` and gives it to you. Paste it in **Watering**, **Programs**, **New program in YAML** (or **Edit in YAML** on an existing program): the timeline shows what it would do before you apply it.
+Ask for the program you want ("water the vegetable garden and the greenhouse together every other evening, then the hedges"). The assistant writes it in the [YAML shape of the program editor](usage-full-controller.md#a-program-in-yaml), checks it with `PreviewProgram` and gives it to you. Paste it in **Watering**, **Programs**, with **Edit in YAML** on a **New program** or on an existing one: the timeline shows what it would do before you apply it.
 
 ## Privacy
 

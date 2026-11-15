@@ -168,12 +168,6 @@ const YAML_EDITS: Record<
     error?: string;
   }
 > = {};
-// The YAML a new program opens on: what a step and a schedule look like.
-const NEW_PROGRAM_YAML = {
-  name: "Evening",
-  steps: [{ zones: [], mode: "calculated" }],
-  schedules: [{ time: "21:00", weekdays: [0, 2, 4] }],
-};
 
 @customElement("smart-irrigation-view-general")
 export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
@@ -2741,19 +2735,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 </div>
               `,
         )}
-        ${yamlOpen("")
-          ? html`<div class="card-content">
-              <div class="fold-section">${t("yaml_new_title")}</div>
-              ${yamlBlock("", null)}
-            </div>`
-          : ""}
         <div class="card-content">
           <div class="si-actions">
-            ${yamlOpen("")
-              ? ""
-              : this._actionBtn(mdiCodeBraces, t("yaml_new"), () =>
-                  openYaml("", NEW_PROGRAM_YAML),
-                )}
             ${this._actionBtn(mdiPlus, t("add"), () =>
               save([
                 ...programs,
