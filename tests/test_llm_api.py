@@ -9,7 +9,6 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-import voluptuous_openapi
 from homeassistant.helpers import llm
 
 from custom_components.smart_irrigation import const, llm_api
@@ -144,6 +143,8 @@ async def test_the_tools_are_read_only_and_described():
         "PreviewProgram",
     ]
     assert "nothing you call changes" in instance.api_prompt
+    # Installed with Home Assistant's conversation, not always in the tests.
+    voluptuous_openapi = pytest.importorskip("voluptuous_openapi")
     for tool in instance.tools:
         assert tool.description
         # What an assistant is sent: the parameters as JSON schema.
