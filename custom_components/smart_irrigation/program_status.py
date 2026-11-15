@@ -28,6 +28,7 @@ from .programs import (
     drop_below_deficit,
     needs_run_length,
     plan_program,
+    plan_timeline,
     plan_wall_seconds,
 )
 from .schedules import ANCHOR_END, next_fire, schedule_skip_conditions, upcoming
@@ -375,9 +376,14 @@ class ProgramStatusMixin:
                 {
                     "zone_id": int(zone.get(const.ZONE_ID)),
                     "seconds": float(seconds),
-                    "passes": 1,
+                    # In the passes of its own settings, the lead time paid
+                    # again on each: what the timeline draws.
+                    "passes": int(getattr(config, const.CONF_WATERING_PASSES, 1) or 1),
                     "max_litres": 0.0,
-                    "lead": 0.0,
+                    "lead": min(
+                        max(0.0, float(zone.get(const.ZONE_LEAD_TIME) or 0.0)),
+                        float(seconds),
+                    ),
                 }
             )
         if not members:
@@ -390,8 +396,17 @@ class ProgramStatusMixin:
         if sequencing == const.CONF_ZONE_SEQUENCING_PARALLEL:
             steps = [{"id": "main", "zones": members, "delay": 0.0}]
         else:
+            # The pause between zones is waited after each, as in the classic run.
+            pause = float(
+                getattr(
+                    config,
+                    const.CONF_PAUSE_BETWEEN_ZONES,
+                    const.CONF_DEFAULT_PAUSE_BETWEEN_ZONES,
+                )
+                or 0.0
+            )
             steps = [
-                {"id": f"zone_{m['zone_id']}", "zones": [m], "delay": 0.0}
+                {"id": f"zone_{m['zone_id']}", "zones": [m], "delay": max(0.0, pause)}
                 for m in members
             ]
         total = await self._planned_run_seconds()
@@ -638,6 +653,10 @@ class ProgramStatusMixin:
                 ]
 
             steps = steps_of(plan)
+
+            def timeline_of(plan):
+                return self._timeline(plan, soak_minutes * 60.0, names)
+
             # A run before the end of a suspension does not take place: the
             # scheduler lets it pass. The planning listed it as any other.
             suspended = self.suspended_until(const.SUSPEND_PROGRAM, program_id)
@@ -657,6 +676,7 @@ class ProgramStatusMixin:
                         "soak_seconds": int(soak_minutes * 60),
                         "expected_seconds": int(total),
                         "steps": steps,
+                        "timeline": timeline_of(plan),
                         "nothing_to_water": nothing,
                         "zones_without_valve": no_valve,
                         # The Info page says whether the trigger's run will be
@@ -737,6 +757,7 @@ class ProgramStatusMixin:
                             "soak_seconds": int(soak_minutes * 60),
                             "expected_seconds": int(run_total),
                             "steps": steps if run_plan is plan else steps_of(run_plan),
+                            "timeline": timeline_of(run_plan),
                             "nothing_to_water": not run_plan,
                             "zones_without_valve": no_valve,
                             "suspended_until": (
@@ -750,6 +771,77 @@ class ProgramStatusMixin:
         # 05:00+00:00 (06:00 here).
         planned.sort(key=lambda item: _moment(item["start"]))
         return planned
+
+    @staticmethod
+    def _timeline(plan: list, soak_seconds: float, names: dict) -> dict:
+        """A plan's timeline, its segments rounded and its zones named."""
+        timeline = plan_timeline(plan, soak_seconds)
+        return {
+            "total": round(timeline["total"], 1),
+            "zones": [
+                {"zone_id": zone_id, "zone": names.get(zone_id)}
+                for zone_id in dict.fromkeys(s["zone_id"] for s in timeline["segments"])
+            ],
+            "segments": [
+                {**s, "start": round(s["start"], 1), "end": round(s["end"], 1)}
+                for s in timeline["segments"]
+            ],
+        }
+
+    async def async_program_preview(self, program: dict) -> dict:
+        """What a program as written would water now, for the editor to draw.
+
+        ``program`` is the one being edited, saved or not: it goes through the
+        same cleaning as a save (normalize_programs), and is planned on the
+        zones as they are now. Returns the program as it would be stored, its
+        timeline and what in it does not hold: zones that do not exist, and
+        zones without a valve or disabled, which the run leaves out.
+
+        A step may name its zones rather than number them (the YAML editor
+        writes names, and so may an assistant): a name is matched to a zone,
+        case aside, and one that matches none is listed in
+        ``unknown_zone_names`` and left out.
+        """
+        from .programs import normalize_programs
+
+        if not isinstance(program, dict):
+            program = {}
+
+        main = program.get(const.PROGRAM_MAIN) is True or (
+            program.get(const.PROGRAM_ID) == "main"
+        )
+        zones = await self.zones_as_planned(await self.store.async_get_zones())
+        program, unknown_names = _zones_by_name(program, zones)
+        cleaned = normalize_programs([program])
+        normalized = next(
+            (p for p in cleaned if bool(p.get(const.PROGRAM_MAIN)) == main), None
+        ) or (cleaned[0] if cleaned else {})
+        by_id = {int(z[const.ZONE_ID]): z for z in zones}
+        names = {zone_id: z.get(const.ZONE_NAME) for zone_id, z in by_id.items()}
+        unknown, not_watered = [], []
+        for step in normalized.get(const.PROGRAM_STEPS) or []:
+            for zone_id in step.get(const.STEP_ZONES) or []:
+                zone = by_id.get(int(zone_id))
+                if zone is None:
+                    unknown.append(int(zone_id))
+                elif not zone.get(const.ZONE_LINKED_ENTITY) or (
+                    zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED
+                ):
+                    not_watered.append(int(zone_id))
+        if main:
+            plan, _total = await self._main_program_plan(zones)
+        else:
+            plan, _total = self._program_totals(normalized, zones)
+        soak = float(getattr(self.store.config, const.CONF_SOAK_MINUTES, 0) or 0) * 60.0
+        return {
+            "program": normalized,
+            "timeline": self._timeline(plan, soak, names),
+            "unknown_zones": sorted(set(unknown)),
+            "unknown_zone_names": unknown_names,
+            "zones_not_watered": [
+                {"zone_id": z, "zone": names.get(z)} for z in dict.fromkeys(not_watered)
+            ],
+        }
 
     async def _planning_sheltered_zones(self) -> set:
         """Zones the rain forecast cannot reach (under glass), or none."""
@@ -814,6 +906,46 @@ class ProgramStatusMixin:
             # The zones the rain does not reach water anyway.
             "sheltered_zone_ids": sorted(zone_ids & sheltered) if held else [],
         }
+
+
+def _zones_by_name(program: dict, zones) -> tuple:
+    """``program`` with the zones its steps name turned into their ids.
+
+    Returns ``(program, unknown)``: a number (or a string of one) is kept as
+    it is; a name is matched to a zone, case and spaces aside; one that matches
+    no zone, or more than one, is dropped and listed in ``unknown``.
+    """
+    by_name: dict = {}
+    for zone in zones:
+        key = str(zone.get(const.ZONE_NAME) or "").strip().casefold()
+        if key:
+            by_name.setdefault(key, []).append(int(zone[const.ZONE_ID]))
+    unknown: list = []
+    steps = []
+    for step in program.get(const.PROGRAM_STEPS) or []:
+        if not isinstance(step, dict):
+            steps.append(step)
+            continue
+        ids = []
+        for entry in step.get(const.STEP_ZONES) or []:
+            if isinstance(entry, bool):
+                continue
+            if isinstance(entry, int | float):
+                ids.append(int(entry))
+                continue
+            text = str(entry).strip()
+            if text.lstrip("-").isdigit():
+                ids.append(int(text))
+                continue
+            match = by_name.get(text.casefold(), [])
+            if len(match) == 1:
+                ids.append(match[0])
+            elif text not in unknown:
+                unknown.append(text)
+        steps.append({**step, const.STEP_ZONES: ids})
+    if const.PROGRAM_STEPS in program:
+        program = {**program, const.PROGRAM_STEPS: steps}
+    return program, unknown
 
 
 def _moment(value) -> float:

@@ -1268,6 +1268,15 @@
     "watered_twice": "{zones} får vand to gange i træk: {program} vander dem lige før.",
     "expected_skipped_suspended": "Kører ikke: programmet er suspenderet til {when}"
   },
+  "timeline": {
+    "title": "Vandingens forløb",
+    "water": "Vanding",
+    "fill": "Røret fyldes",
+    "soak": "Nedsivning",
+    "pass": "omgang {n}",
+    "total": "I alt {time}",
+    "nothing": "Intet at vande lige nu: ingen zone i dette program har brug for vand, eller ingen har en ventil."
+  },
   "programs": {
     "title": "Programmer",
     "description": "Et program vander sine trin et efter et. Et trin er én zone, eller flere der vandes samtidig, og varer som standard den tid, Smart Irrigation har beregnet til det. Flere programmer kører aldrig samtidig: det næste venter på sin tur.",
@@ -1438,7 +1447,20 @@
     "run_replacing": "Det, der vandede, stoppes; {name} starter lige efter.",
     "suspended_until": "Suspenderet til {when}: tidsplanerne starter det ikke.",
     "suspended": "suspenderet",
-    "lift_suspension": "Ophæv"
+    "lift_suspension": "Ophæv",
+    "preview_title": "Hvad en vanding ville gøre",
+    "preview_help": "Hver zone på sin egen linje, med de varigheder Smart Irrigation ville vande nu. De følger vejret, så en vanding kan afvige, når den starter.",
+    "yaml_edit": "Rediger i YAML",
+    "yaml_help": "Programmet som tekst. Et trin angiver sine zoner med navn eller nummer, og det udeladte får sin standardværdi. Intet gemmes, før du anvender: tidslinjen nedenfor viser, hvad programmet ville gøre.",
+    "yaml_apply": "Anvend",
+    "yaml_cancel": "Annuller",
+    "yaml_invalid": "Dette er ikke gyldig YAML.",
+    "yaml_not_a_program": "Dette er ikke et program: et program er et sæt nøgler (name, steps, schedules).",
+    "yaml_unknown_zones": "Zone ikke fundet, eller navn som to zoner deler, udeladt: {zones}",
+    "yaml_not_watered": "Holdt uden for vandingen (ingen ventil eller deaktiveret): {zones}",
+    "yaml_applied": "Program gemt",
+    "yaml_new": "Nyt program i YAML",
+    "yaml_new_title": "Nyt program"
   },
   "supplies": {
     "title": "Pumper og hovedventiler",

@@ -1268,6 +1268,15 @@
     "watered_twice": "{zones} recebem a sua água duas vezes seguidas: {program} rega-as imediatamente antes.",
     "expected_skipped_suspended": "Não é executado: o programa está suspenso até {when}"
   },
+  "timeline": {
+    "title": "Desenrolar da rega",
+    "water": "Rega",
+    "fill": "Enchimento do tubo",
+    "soak": "Infiltração",
+    "pass": "passagem {n}",
+    "total": "Total {time}",
+    "nothing": "Nada a regar por agora: nenhuma zona deste programa precisa de água, ou nenhuma tem válvula."
+  },
   "programs": {
     "title": "Programas",
     "description": "Um programa rega as suas etapas uma a seguir à outra. Uma etapa é uma zona, ou várias regadas em conjunto, e por predefinição dura o tempo que o Smart Irrigation calculou para ela. Vários programas nunca funcionam ao mesmo tempo: o seguinte aguarda a sua vez.",
@@ -1438,7 +1447,20 @@
     "run_replacing": "A rega em curso está a ser parada; {name} começa logo a seguir.",
     "suspended_until": "Suspenso até {when}: os seus horários não o iniciam.",
     "suspended": "suspenso",
-    "lift_suspension": "Levantar"
+    "lift_suspension": "Levantar",
+    "preview_title": "O que uma rega faria",
+    "preview_help": "Cada zona na sua linha, com as durações que o Smart Irrigation regaria agora. Seguem o tempo, por isso uma rega pode diferir quando começar.",
+    "yaml_edit": "Editar em YAML",
+    "yaml_help": "O programa como texto. Um passo indica as suas zonas pelo nome ou pelo número, e o que é omitido toma o valor predefinido. Nada é guardado antes de aplicar: a linha temporal abaixo mostra o que o programa faria.",
+    "yaml_apply": "Aplicar",
+    "yaml_cancel": "Cancelar",
+    "yaml_invalid": "Isto não é YAML válido.",
+    "yaml_not_a_program": "Isto não é um programa: um programa é um conjunto de chaves (name, steps, schedules).",
+    "yaml_unknown_zones": "Zona não encontrada, ou nome partilhado por duas zonas, ignorada: {zones}",
+    "yaml_not_watered": "Fora da rega (sem válvula ou desativadas): {zones}",
+    "yaml_applied": "Programa guardado",
+    "yaml_new": "Novo programa em YAML",
+    "yaml_new_title": "Novo programa"
   },
   "supplies": {
     "title": "Bombas e válvulas principais",

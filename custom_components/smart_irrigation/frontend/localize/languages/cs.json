@@ -1268,6 +1268,15 @@
     "watered_twice": "{zones} dostanou vodu dvakrát po sobě: {program} je zavlažuje těsně předtím.",
     "expected_skipped_suspended": "Nespustí se: program je přerušen do {when}"
   },
+  "timeline": {
+    "title": "Průběh zalévání",
+    "water": "Zalévání",
+    "fill": "Plnění potrubí",
+    "soak": "Vsakování",
+    "pass": "cyklus {n}",
+    "total": "Celkem {time}",
+    "nothing": "Teď není co zalévat: žádná zóna tohoto programu nepotřebuje vodu, nebo žádná nemá ventil."
+  },
   "programs": {
     "title": "Programy",
     "description": "Program zavlažuje své kroky jeden po druhém. Krok je jedna zóna nebo několik zón zavlažovaných společně a ve výchozím stavu trvá tak dlouho, jak pro něj Smart Irrigation vypočítala. Více programů nikdy neběží současně: další čeká, až na něj přijde řada.",
@@ -1438,7 +1447,20 @@
     "run_replacing": "Probíhající zalévání se zastavuje; {name} začne hned potom.",
     "suspended_until": "Přerušen do {when}: jeho rozvrhy ho nespouštějí.",
     "suspended": "přerušen",
-    "lift_suspension": "Zrušit"
+    "lift_suspension": "Zrušit",
+    "preview_title": "Co by zalévání udělalo",
+    "preview_help": "Každá zóna na vlastním řádku, s dobami, které by Smart Irrigation zaléval teď. Řídí se počasím, takže zalévání se při startu může lišit.",
+    "yaml_edit": "Upravit v YAML",
+    "yaml_help": "Program jako text. Krok uvádí své zóny jménem nebo číslem a co chybí, má výchozí hodnotu. Nic se neuloží, dokud nepoužijete: časová osa níže ukazuje, co by program udělal.",
+    "yaml_apply": "Použít",
+    "yaml_cancel": "Zrušit",
+    "yaml_invalid": "Toto není platný YAML.",
+    "yaml_not_a_program": "Toto není program: program je sada klíčů (name, steps, schedules).",
+    "yaml_unknown_zones": "Zóna nenalezena nebo jméno sdílené dvěma zónami, vynecháno: {zones}",
+    "yaml_not_watered": "Vynecháno ze zalévání (bez ventilu nebo vypnuto): {zones}",
+    "yaml_applied": "Program uložen",
+    "yaml_new": "Nový program v YAML",
+    "yaml_new_title": "Nový program"
   },
   "supplies": {
     "title": "Čerpadla a hlavní ventily",

@@ -39,7 +39,10 @@ import {
   formatNumber,
   programCanRun,
 } from "../../helpers";
-import { loadHaForm } from "../../load-ha-elements";
+import { loadHaForm, loadHaYamlEditor } from "../../load-ha-elements";
+import "./program-timeline";
+import { Timeline } from "../../data/timeline";
+import { programFromYaml, programToYaml } from "../../data/program-yaml";
 import "../../dialogs/trigger-dialog";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import {
@@ -97,6 +100,8 @@ import {
   mdiStop,
   mdiSkipNext,
   mdiCheck,
+  mdiCodeBraces,
+  mdiClose,
 } from "@mdi/js";
 
 /**
@@ -127,6 +132,47 @@ const ADJUST_OPTIONS: Record<
   string,
   { percent?: string; seconds?: string; hours?: string }
 > = {};
+
+/** What the backend makes of a program as written (program_preview). */
+interface ProgramPreview {
+  program: SmartIrrigationProgram;
+  timeline: Timeline;
+  unknown_zones: number[];
+  unknown_zone_names: string[];
+  zones_not_watered: { zone_id: number; zone: string | null }[];
+}
+
+/**
+ * The timeline of each program as last asked, by program id, with what it was
+ * asked for: asked again when the program changes or it is a minute old.
+ */
+const PREVIEWS: Record<
+  string,
+  { key: string; at: number; data?: ProgramPreview; pending?: boolean }
+> = {};
+
+/**
+ * A program edited as YAML, by program id ("" for a new one): what the editor
+ * opened on (kept, so a render does not put it back over what is typed), what
+ * is typed, whether it reads as YAML, and what the backend makes of it.
+ */
+const YAML_EDITS: Record<
+  string,
+  {
+    initial: unknown;
+    value?: unknown;
+    valid: boolean;
+    preview?: ProgramPreview;
+    key?: string;
+    error?: string;
+  }
+> = {};
+// The YAML a new program opens on: what a step and a schedule look like.
+const NEW_PROGRAM_YAML = {
+  name: "Evening",
+  steps: [{ zones: [], mode: "calculated" }],
+  schedules: [{ time: "21:00", weekdays: [0, 2, 4] }],
+};
 
 @customElement("smart-irrigation-view-general")
 export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
@@ -983,6 +1029,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       </div>`
                     : ""}
                   ${this._wateredTwice(item.watered_twice, t("watered_twice"))}
+                  ${item.timeline?.segments?.length
+                    ? html`<si-program-timeline
+                        .timeline=${item.timeline}
+                        .lang=${lang}
+                        .start=${item.expected_start || item.start}
+                      ></si-program-timeline>`
+                    : ""}
                   ${item.steps.map(
                     (step: any, n: number) => html`
                       <div class="setting-note">
@@ -1103,6 +1156,74 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     } catch (error) {
       console.error("Error fetching the programs' state:", error);
     }
+  }
+
+  /**
+   * What a run of ``program`` would do, from the cache; asked of the backend
+   * when the program changed or the answer is a minute old (the zones'
+   * durations move with the weather).
+   */
+  private _preview(
+    id: string,
+    program: SmartIrrigationProgram,
+  ): ProgramPreview | undefined {
+    const key = JSON.stringify(program);
+    const cached = PREVIEWS[id];
+    const fresh =
+      cached && cached.key === key && Date.now() - cached.at < 60000;
+    if (!fresh && !cached?.pending && this.hass) {
+      PREVIEWS[id] = { ...(cached || {}), key, at: Date.now(), pending: true };
+      // Typing in a field changes the program at each key: a moment's wait.
+      window.setTimeout(async () => {
+        try {
+          const data = await this.hass!.callWS<ProgramPreview>({
+            type: DOMAIN + "/program_preview",
+            program,
+          });
+          PREVIEWS[id] = { key, at: Date.now(), data };
+        } catch (error) {
+          console.error("Error drawing the program:", error);
+          PREVIEWS[id] = { key, at: Date.now(), data: cached?.data };
+        }
+        this._scheduleUpdate();
+      }, 400);
+    }
+    return PREVIEWS[id]?.data;
+  }
+
+  /** What the backend makes of the YAML typed for a program. */
+  private _yamlPreview(
+    id: string,
+    value: unknown,
+    replacing?: SmartIrrigationProgram,
+  ): void {
+    const edit = YAML_EDITS[id];
+    if (!edit || !this.hass) return;
+    const program = programFromYaml(value, replacing);
+    if (!program) {
+      edit.preview = undefined;
+      edit.error = localize("programs.yaml_not_a_program", this.hass.language);
+      this._scheduleUpdate();
+      return;
+    }
+    const key = JSON.stringify(program);
+    edit.key = key;
+    window.setTimeout(async () => {
+      if (YAML_EDITS[id] !== edit || edit.key !== key) return;
+      try {
+        const data = await this.hass!.callWS<ProgramPreview>({
+          type: DOMAIN + "/program_preview",
+          program,
+        });
+        if (edit.key !== key) return;
+        edit.preview = data;
+        edit.error = undefined;
+      } catch (error: any) {
+        edit.preview = undefined;
+        edit.error = error?.message ?? String(error);
+      }
+      this._scheduleUpdate();
+    }, 400);
   }
 
   /** Whether the start trigger or the main program's schedules start it. */
@@ -1520,6 +1641,129 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         <div class="more-body">${body}</div>
       </details>
     `;
+
+    // What a run of the program would do, drawn: asked of the backend for
+    // the program as it is now, saved or not, and only for one unfolded
+    // (``foldKey`` null: always, the main program's card has no fold).
+    const preview = (
+      program: SmartIrrigationProgram,
+      foldKey: string | null,
+    ) => {
+      const id = program.id ?? "";
+      if (foldKey !== null && !this._isOpen(foldKey)) return html``;
+      const data = this._preview(id, program);
+      return html`
+        <div class="fold-section">${t("preview_title")}</div>
+        <div class="setting-hint row-hint">${t("preview_help")}</div>
+        ${data
+          ? html`<si-program-timeline
+              .timeline=${data.timeline}
+              .lang=${lang}
+            ></si-program-timeline>`
+          : html`<div class="setting-note">…</div>`}
+      `;
+    };
+    // The program as YAML, in place of the form: what the backend makes of
+    // it is shown before anything is saved (the same cleaning as a save).
+    const yamlOpen = (id: string) => YAML_EDITS[id] !== undefined;
+    const openYaml = async (id: string, initial: unknown) => {
+      await loadHaYamlEditor().catch(() => undefined);
+      YAML_EDITS[id] = { initial, value: initial, valid: true };
+      this._yamlPreview(
+        id,
+        initial,
+        id ? programs.find((p) => p.id === id) : undefined,
+      );
+      this._scheduleUpdate();
+    };
+    const closeYaml = (id: string) => {
+      delete YAML_EDITS[id];
+      this._scheduleUpdate();
+    };
+    const yamlBlock = (id: string, index: number | null) => {
+      const edit = YAML_EDITS[id];
+      const replacing = index === null ? undefined : programs[index];
+      const found = edit.preview;
+      const problems = found
+        ? [
+            ...found.unknown_zone_names.map((name) => `"${name}"`),
+            ...found.unknown_zones.map((zone) => `#${zone}`),
+          ]
+        : [];
+      const notWatered = found?.zones_not_watered || [];
+      const apply = () => {
+        if (!found) return;
+        const cleaned = { ...found.program, main: false };
+        if (index === null) {
+          // A new program is unfolded on its form, its timeline at the top.
+          this._setOpen(`program:${cleaned.id}`, true);
+          save([...programs, cleaned]);
+        } else {
+          save(programs.map((p, n) => (n === index ? cleaned : p)));
+        }
+        closeYaml(id);
+        toast(t("yaml_applied"));
+      };
+      return html`
+        <div class="setting-hint row-hint">${t("yaml_help")}</div>
+        <ha-yaml-editor
+          .hass=${this.hass}
+          .defaultValue=${edit.initial}
+          @value-changed=${(e: CustomEvent) => {
+            e.stopPropagation();
+            const { value, isValid } = e.detail || {};
+            edit.value = value;
+            edit.valid = isValid !== false;
+            if (edit.valid) this._yamlPreview(id, value, replacing);
+            this._scheduleUpdate();
+          }}
+        ></ha-yaml-editor>
+        ${!edit.valid
+          ? html`<div class="setting-hint row-hint warning-hint">
+              ${t("yaml_invalid")}
+            </div>`
+          : edit.error
+            ? html`<div class="setting-hint row-hint warning-hint">
+                ${edit.error}
+              </div>`
+            : ""}
+        ${problems.length
+          ? html`<div class="setting-hint row-hint warning-hint">
+              ${t("yaml_unknown_zones").replace("{zones}", problems.join(", "))}
+            </div>`
+          : ""}
+        ${notWatered.length
+          ? html`<div class="setting-hint row-hint warning-hint">
+              ${t("yaml_not_watered").replace(
+                "{zones}",
+                notWatered.map((z) => z.zone ?? `#${z.zone_id}`).join(", "),
+              )}
+            </div>`
+          : ""}
+        ${found && edit.valid && !edit.error
+          ? html`<si-program-timeline
+              .timeline=${found.timeline}
+              .lang=${lang}
+            ></si-program-timeline>`
+          : ""}
+        <div class="si-actions">
+          ${this._actionBtn(
+            mdiCheck,
+            t("yaml_apply"),
+            apply,
+            false,
+            !edit.valid || !found || !!edit.error,
+          )}
+          ${this._actionBtn(mdiClose, t("yaml_cancel"), () => closeYaml(id))}
+        </div>
+      `;
+    };
+    const yamlButton = (program: SmartIrrigationProgram) =>
+      html`<div class="si-actions plain">
+        ${this._actionBtn(mdiCodeBraces, t("yaml_edit"), () =>
+          openYaml(program.id ?? "", programToYaml(program, this.zones)),
+        )}
+      </div>`;
 
     const renderStep = (
       program: SmartIrrigationProgram,
@@ -2247,7 +2491,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             <div class="setting-note">
               ${t("main_description")} ${t("main_steps_hint")}
             </div>
-            ${runHead(program)}
+            ${runHead(program)} ${preview(program, null)}
             <div class="setting-row">
               <div class="setting-label">${t("enabled")}</div>
               <ha-switch
@@ -2302,102 +2546,122 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         : ""}${adjustmentOf(program)
                         ? html` · <em>${adjustText(program)}</em>`
                         : ""}`,
-                    html`
-                      ${runHead(program)}
-                      ${this._textRow(t("name"), "", program.name, (v) =>
-                        patch(index, { name: v }),
-                      )}
-                      <div class="fold-section">${t("steps_title")}</div>
-                      ${(program.steps || []).map((step, stepIndex) =>
-                        renderStep(program, index, step, stepIndex),
-                      )}
-                      <div class="si-actions">
-                        ${this._actionBtn(mdiPlus, t("add_step"), () =>
-                          patch(index, {
-                            steps: [
-                              ...(program.steps || []),
-                              {
-                                id: this._openNew("step", "step_" + random()),
-                                zones: [],
-                                mode: "calculated",
-                                percent: 100,
-                                seconds: 0,
-                                passes: 1,
-                                max_litres: 0,
-                                min_seconds: 0,
-                                max_seconds: 0,
-                                adjust_seconds: 0,
-                                delay: null,
-                                enabled: true,
+                    yamlOpen(program.id ?? "")
+                      ? html`${runHead(program)}
+                        ${yamlBlock(program.id ?? "", index)}`
+                      : html`
+                          ${runHead(program)} ${yamlButton(program)}
+                          ${this._textRow(t("name"), "", program.name, (v) =>
+                            patch(index, { name: v }),
+                          )}
+                          ${preview(program, `program:${program.id}`)}
+                          <div class="fold-section">${t("steps_title")}</div>
+                          ${(program.steps || []).map((step, stepIndex) =>
+                            renderStep(program, index, step, stepIndex),
+                          )}
+                          <div class="si-actions">
+                            ${this._actionBtn(mdiPlus, t("add_step"), () =>
+                              patch(index, {
+                                steps: [
+                                  ...(program.steps || []),
+                                  {
+                                    id: this._openNew(
+                                      "step",
+                                      "step_" + random(),
+                                    ),
+                                    zones: [],
+                                    mode: "calculated",
+                                    percent: 100,
+                                    seconds: 0,
+                                    passes: 1,
+                                    max_litres: 0,
+                                    min_seconds: 0,
+                                    max_seconds: 0,
+                                    adjust_seconds: 0,
+                                    delay: null,
+                                    enabled: true,
+                                  },
+                                ],
+                              }),
+                            )}
+                          </div>
+                          <div class="fold-section">
+                            ${t("schedules_title")}
+                          </div>
+                          ${renderSchedules(program, index)}
+                          ${this._numRow(
+                            t("delay"),
+                            localize("common.units.seconds", lang),
+                            program.delay ?? 0,
+                            (v) => patch(index, { delay: num(v) }),
+                          )}
+                          <div class="setting-hint row-hint">
+                            ${t("delay_help")}
+                          </div>
+                          ${this._numRow(
+                            t("tours"),
+                            "",
+                            program.tours ?? 1,
+                            (v) =>
+                              patch(index, {
+                                tours: Math.max(1, Math.round(num(v, 1))),
+                              }),
+                            1,
+                            false,
+                            1,
+                          )}
+                          <div class="setting-hint row-hint">
+                            ${t("tours_help")}
+                          </div>
+                          <div class="setting-row">
+                            <div class="setting-label">${t("enabled")}</div>
+                            <ha-switch
+                              .checked=${program.enabled !== false}
+                              @change=${(e: Event) =>
+                                patch(index, {
+                                  enabled: (e.target as any).checked,
+                                })}
+                            ></ha-switch>
+                          </div>
+                          ${adjustBlock(program)}
+                          <div class="si-actions">
+                            ${this._actionBtn(
+                              mdiDelete,
+                              t("delete"),
+                              async () => {
+                                if (
+                                  !(await this._ask(
+                                    t("confirm_delete_program").replace(
+                                      "{name}",
+                                      program.name,
+                                    ),
+                                    true,
+                                  ))
+                                )
+                                  return;
+                                save(programs.filter((_, n) => n !== index));
                               },
-                            ],
-                          }),
-                        )}
-                      </div>
-                      <div class="fold-section">${t("schedules_title")}</div>
-                      ${renderSchedules(program, index)}
-                      ${this._numRow(
-                        t("delay"),
-                        localize("common.units.seconds", lang),
-                        program.delay ?? 0,
-                        (v) => patch(index, { delay: num(v) }),
-                      )}
-                      <div class="setting-hint row-hint">
-                        ${t("delay_help")}
-                      </div>
-                      ${this._numRow(
-                        t("tours"),
-                        "",
-                        program.tours ?? 1,
-                        (v) =>
-                          patch(index, {
-                            tours: Math.max(1, Math.round(num(v, 1))),
-                          }),
-                        1,
-                        false,
-                        1,
-                      )}
-                      <div class="setting-hint row-hint">
-                        ${t("tours_help")}
-                      </div>
-                      <div class="setting-row">
-                        <div class="setting-label">${t("enabled")}</div>
-                        <ha-switch
-                          .checked=${program.enabled !== false}
-                          @change=${(e: Event) =>
-                            patch(index, {
-                              enabled: (e.target as any).checked,
-                            })}
-                        ></ha-switch>
-                      </div>
-                      ${adjustBlock(program)}
-                      <div class="si-actions">
-                        ${this._actionBtn(
-                          mdiDelete,
-                          t("delete"),
-                          async () => {
-                            if (
-                              !(await this._ask(
-                                t("confirm_delete_program").replace(
-                                  "{name}",
-                                  program.name,
-                                ),
-                                true,
-                              ))
-                            )
-                              return;
-                            save(programs.filter((_, n) => n !== index));
-                          },
-                          true,
-                        )}
-                      </div>
-                    `,
+                              true,
+                            )}
+                          </div>
+                        `,
                   )}
                 </div>
               `,
         )}
+        ${yamlOpen("")
+          ? html`<div class="card-content">
+              <div class="fold-section">${t("yaml_new_title")}</div>
+              ${yamlBlock("", null)}
+            </div>`
+          : ""}
         <div class="card-content">
           <div class="si-actions">
+            ${yamlOpen("")
+              ? ""
+              : this._actionBtn(mdiCodeBraces, t("yaml_new"), () =>
+                  openYaml("", NEW_PROGRAM_YAML),
+                )}
             ${this._actionBtn(mdiPlus, t("add"), () =>
               save([
                 ...programs,

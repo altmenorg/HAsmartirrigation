@@ -1268,6 +1268,15 @@
     "watered_twice": "{zones} saavat vetensä kahdesti peräkkäin: {program} kastelee ne juuri ennen.",
     "expected_skipped_suspended": "Ei käynnisty: ohjelma on keskeytetty {when} asti"
   },
+  "timeline": {
+    "title": "Kastelun kulku",
+    "water": "Kastelu",
+    "fill": "Putki täyttyy",
+    "soak": "Imeytyminen",
+    "pass": "kierros {n}",
+    "total": "Yhteensä {time}",
+    "nothing": "Ei kasteltavaa juuri nyt: mikään tämän ohjelman vyöhyke ei tarvitse vettä, tai millään ei ole venttiiliä."
+  },
   "programs": {
     "title": "Ohjelmat",
     "description": "Ohjelma kastelee vaiheensa yksi kerrallaan. Vaihe on yksi vyöhyke tai useampi yhtä aikaa kasteltava, ja se kestää oletuksena sen ajan, jonka Smart Irrigation on sille laskenut. Useita ohjelmia ei koskaan ajeta yhtä aikaa: seuraava odottaa vuoroaan.",
@@ -1438,7 +1447,20 @@
     "run_replacing": "Käynnissä ollut kastelu pysäytetään; {name} alkaa heti sen jälkeen.",
     "suspended_until": "Keskeytetty {when} asti: sen aikataulut eivät käynnistä sitä.",
     "suspended": "keskeytetty",
-    "lift_suspension": "Poista"
+    "lift_suspension": "Poista",
+    "preview_title": "Mitä kastelu tekisi",
+    "preview_help": "Jokainen vyöhyke omalla rivillään, kestoilla, jotka Smart Irrigation kastelisi nyt. Ne seuraavat säätä, joten kastelu voi poiketa alkaessaan.",
+    "yaml_edit": "Muokkaa YAML-muodossa",
+    "yaml_help": "Ohjelma tekstinä. Vaihe nimeää vyöhykkeensä nimellä tai numerolla, ja pois jätetty saa oletusarvonsa. Mitään ei tallenneta ennen käyttöönottoa: alla oleva aikajana näyttää, mitä ohjelma tekisi.",
+    "yaml_apply": "Ota käyttöön",
+    "yaml_cancel": "Peruuta",
+    "yaml_invalid": "Tämä ei ole kelvollista YAMLia.",
+    "yaml_not_a_program": "Tämä ei ole ohjelma: ohjelma on joukko avaimia (name, steps, schedules).",
+    "yaml_unknown_zones": "Vyöhykettä ei löydy, tai kahden vyöhykkeen yhteinen nimi, jätetty pois: {zones}",
+    "yaml_not_watered": "Jätetty kastelun ulkopuolelle (ei venttiiliä tai poistettu käytöstä): {zones}",
+    "yaml_applied": "Ohjelma tallennettu",
+    "yaml_new": "Uusi ohjelma YAML-muodossa",
+    "yaml_new_title": "Uusi ohjelma"
   },
   "supplies": {
     "title": "Pumput ja pääventtiilit",

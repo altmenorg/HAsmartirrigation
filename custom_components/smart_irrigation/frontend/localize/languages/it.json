@@ -1268,6 +1268,15 @@
     "watered_twice": "{zones} ricevono l'acqua due volte di fila: {program} le irriga subito prima.",
     "expected_skipped_suspended": "Non viene eseguito: il programma è sospeso fino al {when}"
   },
+  "timeline": {
+    "title": "Svolgimento dell'irrigazione",
+    "water": "Irrigazione",
+    "fill": "Riempimento del tubo",
+    "soak": "Assorbimento",
+    "pass": "passata {n}",
+    "total": "Totale {time}",
+    "nothing": "Niente da irrigare per ora: nessuna zona di questo programma ha bisogno d'acqua, o nessuna ha una valvola."
+  },
   "programs": {
     "title": "Programmi",
     "description": "Un programma irriga i suoi passi uno dopo l'altro. Un passo è una zona, o più zone irrigate insieme, e per impostazione predefinita dura quanto calcolato da Smart Irrigation per esso. Più programmi non girano mai contemporaneamente: il successivo aspetta il suo turno.",
@@ -1438,7 +1447,20 @@
     "run_replacing": "L'irrigazione in corso si sta fermando; {name} parte subito dopo.",
     "suspended_until": "Sospeso fino al {when}: le sue programmazioni non lo avviano.",
     "suspended": "sospeso",
-    "lift_suspension": "Revoca"
+    "lift_suspension": "Revoca",
+    "preview_title": "Cosa farebbe un'irrigazione",
+    "preview_help": "Ogni zona sulla sua riga, con le durate che Smart Irrigation irrigherebbe ora. Seguono il meteo, quindi un'irrigazione può cambiare quando parte.",
+    "yaml_edit": "Modifica in YAML",
+    "yaml_help": "Il programma come testo. Un passo indica le sue zone per nome o per numero, e ciò che manca prende il valore predefinito. Nulla viene salvato prima di applicare: la linea temporale qui sotto mostra cosa farebbe il programma.",
+    "yaml_apply": "Applica",
+    "yaml_cancel": "Annulla",
+    "yaml_invalid": "Questo non è YAML valido.",
+    "yaml_not_a_program": "Questo non è un programma: un programma è un insieme di chiavi (name, steps, schedules).",
+    "yaml_unknown_zones": "Zona non trovata, o nome condiviso da due zone, esclusa: {zones}",
+    "yaml_not_watered": "Escluse dall'irrigazione (senza valvola o disattivate): {zones}",
+    "yaml_applied": "Programma salvato",
+    "yaml_new": "Nuovo programma in YAML",
+    "yaml_new_title": "Nuovo programma"
   },
   "supplies": {
     "title": "Pompe e valvole principali",

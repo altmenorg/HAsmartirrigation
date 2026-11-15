@@ -1268,6 +1268,15 @@
     "watered_twice": "{zones} reçoivent leur eau deux fois de suite : {program} les arrose juste avant.",
     "expected_skipped_suspended": "Ne s'exécute pas : le programme est suspendu jusqu'au {when}"
   },
+  "timeline": {
+    "title": "Déroulé de l'arrosage",
+    "water": "Arrosage",
+    "fill": "Remplissage du tuyau",
+    "soak": "Infiltration",
+    "pass": "passage {n}",
+    "total": "Total {time}",
+    "nothing": "Rien à arroser pour l'instant : aucune zone de ce programme n'a besoin d'eau, ou aucune n'a de vanne."
+  },
   "programs": {
     "title": "Programmes",
     "description": "Un programme arrose ses étapes l'une après l'autre. Une étape est une zone, ou plusieurs arrosées en même temps, et prend par défaut la durée calculée par Smart Irrigation. Deux programmes ne tournent jamais en même temps : le suivant attend son tour.",
@@ -1438,7 +1447,20 @@
     "run_replacing": "L'arrosage en cours s'arrête ; {name} démarre juste après.",
     "suspended_until": "Suspendu jusqu'au {when} : ses horaires ne le lancent pas.",
     "suspended": "suspendu",
-    "lift_suspension": "Lever"
+    "lift_suspension": "Lever",
+    "preview_title": "Ce que ferait un arrosage",
+    "preview_help": "Une ligne par zone, avec les durées que Smart Irrigation arroserait maintenant. Elles suivent la météo : l'arrosage peut différer au moment où il démarre.",
+    "yaml_edit": "Modifier en YAML",
+    "yaml_help": "Le programme sous forme de texte. Une étape désigne ses zones par leur nom ou leur numéro, et ce qui est omis prend sa valeur par défaut. Rien n'est enregistré avant d'appliquer : la frise ci-dessous montre ce que ferait le programme.",
+    "yaml_apply": "Appliquer",
+    "yaml_cancel": "Annuler",
+    "yaml_invalid": "Ce n'est pas du YAML valide.",
+    "yaml_not_a_program": "Ce n'est pas un programme : un programme est un ensemble de clés (name, steps, schedules).",
+    "yaml_unknown_zones": "Zone introuvable, ou nom partagé par deux zones, ignorée : {zones}",
+    "yaml_not_watered": "Laissées hors de l'arrosage (sans vanne, ou désactivées) : {zones}",
+    "yaml_applied": "Programme enregistré",
+    "yaml_new": "Nouveau programme en YAML",
+    "yaml_new_title": "Nouveau programme"
   },
   "supplies": {
     "title": "Pompes et vannes générales",

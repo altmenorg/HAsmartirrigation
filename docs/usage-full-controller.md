@@ -73,6 +73,32 @@ For the program:
 
 **One program, or one cycle of the main program, runs at a time.** A different program asked for while one runs waits its turn, and a manual run asked for during a program is added behind it. A program that is already running or waiting is not queued a second time: `run_program` on it is ignored (with a line in the log), and so is a schedule that comes due meanwhile. The plan is worked out when the turn comes, from the zones as they are then: a zone watered meanwhile is not watered again.
 
+### Seeing a program before it runs
+
+An unfolded program shows **what a run would do**: one line per zone on a time axis, its passes as bars, the time its pipe fills in a lighter shade and the soak between two passes hatched. Two zones of one step run side by side, a negative wait shows the next step starting before the last one ends, and the total is at the end of the axis. The durations are the ones Smart Irrigation would water now; they follow the weather, so a run may differ when it starts. The main program shows its own, from the zones and its settings, and the Planning page draws each run it lists, on the clock.
+
+### A program in YAML
+
+**Edit in YAML** shows the program as text, in place of the form; **New program in YAML** starts one from a short example. Nothing is saved until **Apply**: as you type, the program is cleaned the way a save cleans it and drawn on the timeline, and a zone that does not exist, or one the run leaves out (no valve, or disabled), is named. Only a valid program can be applied.
+
+The text is short on purpose, so it can be read, copied between installations or written by an assistant:
+
+```yaml
+name: Evening
+steps:
+  - zones: [Vegetable garden, Greenhouse]   # watered together
+    mode: percent
+    percent: 80
+    passes: 2
+  - zones: [Hedges]
+    delay: -60                              # the next step starts a minute early
+schedules:
+  - time: "21:00"
+    weekdays: [0, 2, 4]                     # 0 is Monday
+```
+
+A step names its zones by name (case aside) or by number; a name two zones share is not guessed, use the number. What is left out takes its default, the same as the form: a calculated duration, one pass, the program's wait, a schedule that starts at its moment every day with the weather taken into account. The keys are the ones described above: for a step `zones`, `mode` (`calculated`, `percent` or `fixed`), `percent`, `seconds`, `passes`, `delay`, `max_litres`, `min_seconds`, `max_seconds`, `adjust_seconds`, `min_deficit_mm` and `enabled`; for the program `name`, `enabled`, `delay`, `tours`, `steps` and `schedules`; for a schedule `type` (`time` or `sun`), `time`, `event` (`sunrise` or `sunset`), `offset_minutes`, `anchor` (`start` or `end`), `weekdays`, `every_n_days`, `every_offset`, `parity`, `days_of_month`, `months`, `from_date`, `until_date`, `weather`, `skip_conditions`, `hard_deadline` and `fallback_time`. The `id` lines keep a program, a step or a schedule the same one across an edit (a schedule remembers its last run under its id): keep them when you edit, leave them out of a new program.
+
 ## Schedules
 
 A program has any number of schedules, each a **moment** and the **days** it applies to.

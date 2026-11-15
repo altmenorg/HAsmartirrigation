@@ -505,15 +505,39 @@ def plan_program(program: dict, zones, adjustment: dict | None = None) -> list:
     return plan
 
 
+def pass_count(passes, water: float) -> int:
+    """How many passes ``water`` seconds are actually watered in.
+
+    The runner (valve_runner.split_into_passes) brings the number down until
+    each pass is worth opening a valve for: six passes asked of a four-minute
+    run water in four.
+    """
+    try:
+        passes = int(passes or 1)
+    except (TypeError, ValueError):
+        passes = 1
+    passes = max(1, min(passes, const.CONF_MAX_WATERING_PASSES))
+    while passes > 1 and water / passes < const.MIN_PASS_SECONDS:
+        passes -= 1
+    return passes
+
+
+def _member_passes(member: dict) -> tuple:
+    """``(passes, lead, water)`` of a zone of a step, as the runner waters it."""
+    seconds = max(0.0, float(member.get("seconds") or 0.0))
+    lead = min(max(0.0, float(member.get("lead") or 0.0)), seconds)
+    water = seconds - lead
+    return pass_count(member.get("passes"), water), lead, water
+
+
 def step_wall_seconds(step: dict, soak_seconds: float = 0.0) -> float:
     """How long a step lasts: its slowest zone, extra passes and soaks included."""
     longest = 0.0
     for member in step["zones"]:
-        extra = max(0, int(member.get("passes") or 1) - 1)
+        passes, lead, _water = _member_passes(member)
         longest = max(
             longest,
-            float(member["seconds"])
-            + extra * (float(member.get("lead") or 0.0) + soak_seconds),
+            float(member["seconds"]) + (passes - 1) * (lead + soak_seconds),
         )
     return longest
 
@@ -550,6 +574,80 @@ def plan_wall_seconds(plan: list, soak_seconds: float = 0.0) -> float:
                 delay = float(step.get("delay") or 0.0)
                 total += delay if delay >= 0 else -overlap_seconds(delay, longest)
     return total
+
+
+# What a segment of the timeline is.
+SEGMENT_FILL = "fill"  # the lead time: the valve open, the pipe filling
+SEGMENT_WATER = "water"  # water reaching the zone
+SEGMENT_SOAK = "soak"  # the valve shut between two passes, the soil taking it in
+
+
+def plan_timeline(plan: list, soak_seconds: float = 0.0) -> dict:
+    """What a plan does second by second, for the panel to draw it.
+
+    Walks the plan as the runner does (``_walk_plan``): the steps one after the
+    other, a zone in its passes with the lead time paid again on every pass and
+    a soak between them, the delay after a step waited (or, negative, the next
+    step started before it ends), and every tour after the last. The supply's
+    own lead is left out, as in ``plan_wall_seconds``, whose total this ends on.
+
+    Returns ``{"total", "segments"}``: each segment is a dict with the zone id,
+    the tour, the step and the pass it belongs to (counted from 0), its kind
+    (``SEGMENT_*``) and its start and end in seconds from the run's start.
+    """
+    segments: list[dict] = []
+    clock = 0.0
+    end = 0.0
+    for tour_index, steps in enumerate(plan):
+        for step_index, step in enumerate(steps):
+            start = clock
+            for member in step["zones"]:
+                passes, lead, water = _member_passes(member)
+                at = start
+                for number in range(passes):
+                    base = {
+                        "zone_id": int(member["zone_id"]),
+                        "tour": tour_index,
+                        "step": step_index,
+                        "pass": number,
+                    }
+                    if lead > 0:
+                        segments.append(
+                            {
+                                **base,
+                                "kind": SEGMENT_FILL,
+                                "start": at,
+                                "end": at + lead,
+                            }
+                        )
+                        at += lead
+                    segments.append(
+                        {
+                            **base,
+                            "kind": SEGMENT_WATER,
+                            "start": at,
+                            "end": at + water / passes,
+                        }
+                    )
+                    at += water / passes
+                    if number < passes - 1 and soak_seconds > 0:
+                        segments.append(
+                            {
+                                **base,
+                                "kind": SEGMENT_SOAK,
+                                "start": at,
+                                "end": at + soak_seconds,
+                            }
+                        )
+                        at += soak_seconds
+            longest = step_wall_seconds(step, soak_seconds)
+            end = max(end, start + longest)
+            clock = start + longest
+            last = tour_index == len(plan) - 1 and step_index == len(steps) - 1
+            if not last:
+                delay = float(step.get("delay") or 0.0)
+                clock += delay if delay >= 0 else -overlap_seconds(delay, longest)
+    return {"total": end, "segments": segments}
 
 
 def drop_below_deficit(plan: list, zones) -> list:

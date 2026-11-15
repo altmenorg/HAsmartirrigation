@@ -1268,6 +1268,15 @@
     "watered_twice": "{zones} 会连续浇两次水：{program} 刚在之前浇过它们。",
     "expected_skipped_suspended": "不运行：该程序已挂起至 {when}"
   },
+  "timeline": {
+    "title": "浇水过程",
+    "water": "浇水",
+    "fill": "管道充水",
+    "soak": "渗透",
+    "pass": "第 {n} 轮",
+    "total": "共 {time}",
+    "nothing": "目前无需浇水：此程序的区域都不需要水，或都没有阀门。"
+  },
   "programs": {
     "title": "程序",
     "description": "程序会依次浇它的各个步骤。一个步骤是一个区域，或同时浇水的多个区域，默认使用 Smart Irrigation 为它计算出的时长。多个程序绝不会同时运行：下一个会等待轮到它。",
@@ -1438,7 +1447,20 @@
     "run_replacing": "正在停止当前浇水；{name} 随后立即开始。",
     "suspended_until": "已挂起至 {when}：其计划不会启动它。",
     "suspended": "已挂起",
-    "lift_suspension": "解除"
+    "lift_suspension": "解除",
+    "preview_title": "一次浇水会做什么",
+    "preview_help": "每个区域一行，显示 Smart Irrigation 现在会浇的时长。时长随天气变化，因此实际开始时可能不同。",
+    "yaml_edit": "以 YAML 编辑",
+    "yaml_help": "以文本表示的程序。步骤可用名称或编号指定区域，省略的项使用默认值。应用之前不会保存任何内容：下方的时间线显示程序会做什么。",
+    "yaml_apply": "应用",
+    "yaml_cancel": "取消",
+    "yaml_invalid": "这不是有效的 YAML。",
+    "yaml_not_a_program": "这不是程序：程序是一组键（name、steps、schedules）。",
+    "yaml_unknown_zones": "未找到区域，或两个区域同名，已忽略：{zones}",
+    "yaml_not_watered": "未纳入浇水（无阀门或已停用）：{zones}",
+    "yaml_applied": "程序已保存",
+    "yaml_new": "以 YAML 新建程序",
+    "yaml_new_title": "新程序"
   },
   "supplies": {
     "title": "水泵和总阀",

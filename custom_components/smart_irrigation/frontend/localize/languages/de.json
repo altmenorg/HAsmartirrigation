@@ -1268,6 +1268,15 @@
     "watered_twice": "{zones} bekommen zweimal hintereinander Wasser: {program} bewässert sie direkt davor.",
     "expected_skipped_suspended": "Findet nicht statt: Das Programm ist bis {when} ausgesetzt"
   },
+  "timeline": {
+    "title": "Ablauf der Bewässerung",
+    "water": "Bewässerung",
+    "fill": "Leitung füllt sich",
+    "soak": "Einsickern",
+    "pass": "Durchgang {n}",
+    "total": "Gesamt {time}",
+    "nothing": "Im Moment nichts zu bewässern: Keine Zone dieses Programms braucht Wasser, oder keine hat ein Ventil."
+  },
   "programs": {
     "title": "Programme",
     "description": "Ein Programm bewässert seine Schritte nacheinander. Ein Schritt ist eine Zone oder mehrere, die zusammen bewässert werden, und dauert standardmäßig so lange, wie Smart Irrigation es für ihn berechnet hat. Mehrere Programme laufen nie gleichzeitig: Das nächste wartet, bis es an der Reihe ist.",
@@ -1438,7 +1447,20 @@
     "run_replacing": "Was gerade bewässert hat, wird gestoppt; {name} startet direkt danach.",
     "suspended_until": "Ausgesetzt bis {when}: Seine Zeitpläne starten es nicht.",
     "suspended": "ausgesetzt",
-    "lift_suspension": "Aufheben"
+    "lift_suspension": "Aufheben",
+    "preview_title": "Was eine Bewässerung tun würde",
+    "preview_help": "Jede Zone in einer eigenen Zeile, mit den Dauern, die Smart Irrigation jetzt bewässern würde. Sie folgen dem Wetter, daher kann ein Lauf beim Start abweichen.",
+    "yaml_edit": "In YAML bearbeiten",
+    "yaml_help": "Das Programm als Text. Ein Schritt nennt seine Zonen mit Namen oder Nummer, und was fehlt, nimmt seinen Standardwert. Gespeichert wird erst beim Übernehmen: Die Zeitleiste darunter zeigt, was das Programm tun würde.",
+    "yaml_apply": "Übernehmen",
+    "yaml_cancel": "Abbrechen",
+    "yaml_invalid": "Das ist kein gültiges YAML.",
+    "yaml_not_a_program": "Das ist kein Programm: Ein Programm ist eine Menge von Schlüsseln (name, steps, schedules).",
+    "yaml_unknown_zones": "Zone nicht gefunden oder Name von zwei Zonen geteilt, ausgelassen: {zones}",
+    "yaml_not_watered": "Vom Lauf ausgenommen (kein Ventil oder deaktiviert): {zones}",
+    "yaml_applied": "Programm gespeichert",
+    "yaml_new": "Neues Programm in YAML",
+    "yaml_new_title": "Neues Programm"
   },
   "supplies": {
     "title": "Pumpen und Hauptventile",

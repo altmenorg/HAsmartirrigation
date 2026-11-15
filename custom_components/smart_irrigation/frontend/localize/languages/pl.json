@@ -1268,6 +1268,15 @@
     "watered_twice": "{zones} dostają wodę dwa razy z rzędu: {program} podlewa je tuż przedtem.",
     "expected_skipped_suspended": "Nie uruchamia się: program jest zawieszony do {when}"
   },
+  "timeline": {
+    "title": "Przebieg podlewania",
+    "water": "Podlewanie",
+    "fill": "Napełnianie rury",
+    "soak": "Wsiąkanie",
+    "pass": "cykl {n}",
+    "total": "Łącznie {time}",
+    "nothing": "Na razie nic do podlania: żadna strefa tego programu nie potrzebuje wody albo żadna nie ma zaworu."
+  },
   "programs": {
     "title": "Programy",
     "description": "Program podlewa swoje kroki jeden po drugim. Krok to jedna strefa lub kilka podlewanych razem i domyślnie trwa tyle, ile Smart Irrigation dla niego obliczył. Kilka programów nigdy nie działa jednocześnie: następny czeka na swoją kolej.",
@@ -1438,7 +1447,20 @@
     "run_replacing": "Trwające podlewanie jest zatrzymywane; {name} rusza zaraz potem.",
     "suspended_until": "Zawieszony do {when}: harmonogramy go nie uruchamiają.",
     "suspended": "zawieszony",
-    "lift_suspension": "Znieś"
+    "lift_suspension": "Znieś",
+    "preview_title": "Co zrobiłoby podlewanie",
+    "preview_help": "Każda strefa w osobnym wierszu, z czasami, które Smart Irrigation podlałby teraz. Zależą od pogody, więc podlewanie może się różnić w chwili startu.",
+    "yaml_edit": "Edytuj w YAML",
+    "yaml_help": "Program jako tekst. Krok wskazuje swoje strefy nazwą lub numerem, a to, co pominięte, przyjmuje wartość domyślną. Nic nie jest zapisywane przed zastosowaniem: oś czasu poniżej pokazuje, co zrobiłby program.",
+    "yaml_apply": "Zastosuj",
+    "yaml_cancel": "Anuluj",
+    "yaml_invalid": "To nie jest poprawny YAML.",
+    "yaml_not_a_program": "To nie jest program: program to zestaw kluczy (name, steps, schedules).",
+    "yaml_unknown_zones": "Nie znaleziono strefy lub nazwa należy do dwóch stref, pominięto: {zones}",
+    "yaml_not_watered": "Pominięte w podlewaniu (brak zaworu lub wyłączone): {zones}",
+    "yaml_applied": "Program zapisany",
+    "yaml_new": "Nowy program w YAML",
+    "yaml_new_title": "Nowy program"
   },
   "supplies": {
     "title": "Pompy i zawory główne",

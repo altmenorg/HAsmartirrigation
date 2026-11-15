@@ -1268,6 +1268,15 @@
     "watered_twice": "{zones} får vatten två gånger i rad: {program} vattnar dem precis innan.",
     "expected_skipped_suspended": "Körs inte: programmet är uppskjutet till {when}"
   },
+  "timeline": {
+    "title": "Bevattningens förlopp",
+    "water": "Bevattning",
+    "fill": "Röret fylls",
+    "soak": "Infiltration",
+    "pass": "omgång {n}",
+    "total": "Totalt {time}",
+    "nothing": "Inget att vattna just nu: ingen zon i det här programmet behöver vatten, eller ingen har en ventil."
+  },
   "programs": {
     "title": "Program",
     "description": "Programmet kör ett steg i taget. I varje steg bevattnas en zon eller flera zoner samtidigt, normalt under den tid som Smart Irrigation har beräknat. Bara ett program körs åt gången. Övriga väntar på sin tur.",
@@ -1438,7 +1447,20 @@
     "run_replacing": "Det som vattnade stoppas; {name} startar direkt efter.",
     "suspended_until": "Uppskjutet till {when}: dess scheman startar det inte.",
     "suspended": "uppskjutet",
-    "lift_suspension": "Häv"
+    "lift_suspension": "Häv",
+    "preview_title": "Vad en bevattning skulle göra",
+    "preview_help": "Varje zon på en egen rad, med de tider Smart Irrigation skulle vattna nu. De följer vädret, så en bevattning kan bli annorlunda när den startar.",
+    "yaml_edit": "Redigera i YAML",
+    "yaml_help": "Programmet som text. Ett steg anger sina zoner med namn eller nummer, och det som utelämnas får sitt standardvärde. Inget sparas förrän du tillämpar: tidslinjen nedan visar vad programmet skulle göra.",
+    "yaml_apply": "Tillämpa",
+    "yaml_cancel": "Avbryt",
+    "yaml_invalid": "Det här är inte giltig YAML.",
+    "yaml_not_a_program": "Det här är inte ett program: ett program är en uppsättning nycklar (name, steps, schedules).",
+    "yaml_unknown_zones": "Zon hittades inte, eller namn som två zoner delar, utelämnad: {zones}",
+    "yaml_not_watered": "Utanför bevattningen (ingen ventil eller inaktiverad): {zones}",
+    "yaml_applied": "Program sparat",
+    "yaml_new": "Nytt program i YAML",
+    "yaml_new_title": "Nytt program"
   },
   "supplies": {
     "title": "Pumpar och huvudventiler",

@@ -889,6 +889,21 @@ async def websocket_get_planning(hass: HomeAssistant, connection, msg):
     )
 
 
+@async_response
+async def websocket_program_preview(hass: HomeAssistant, connection, msg):
+    """A program as written, cleaned as a save would, and its timeline.
+
+    For the program editor, the form and the YAML alike: nothing is stored.
+    """
+    coordinator = _coordinator_or_none(hass)
+    if coordinator is None:
+        connection.send_error(msg["id"], "not_ready", "Smart Irrigation is loading")
+        return
+    connection.send_result(
+        msg["id"], await coordinator.async_program_preview(msg["program"])
+    )
+
+
 async def _trigger_starts(hass: HomeAssistant, coordinator, days) -> list:
     """Every start of the start trigger over the next days, the next one first.
 
@@ -2082,6 +2097,17 @@ async def async_register_websockets(hass: HomeAssistant):
             {
                 vol.Required("type"): const.DOMAIN + "/planning",
                 vol.Optional("days", default=3): vol.Coerce(int),
+            }
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/program_preview",
+        websocket_program_preview,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {
+                vol.Required("type"): const.DOMAIN + "/program_preview",
+                vol.Required("program"): dict,
             }
         ),
     )

@@ -1268,6 +1268,15 @@
     "watered_twice": "{zones} krijgen twee keer achter elkaar water: {program} bewatert ze vlak ervoor.",
     "expected_skipped_suspended": "Draait niet: het programma is opgeschort tot {when}"
   },
+  "timeline": {
+    "title": "Verloop van de beregening",
+    "water": "Beregenen",
+    "fill": "Leiding vult zich",
+    "soak": "Intrekken",
+    "pass": "ronde {n}",
+    "total": "Totaal {time}",
+    "nothing": "Op dit moment niets te beregenen: geen zone van dit programma heeft water nodig, of geen enkele heeft een klep."
+  },
   "programs": {
     "title": "Programma's",
     "description": "Een programma bewatert zijn stappen na elkaar. Een stap is één zone, of meerdere zones die samen worden bewaterd, en duurt standaard zo lang als Smart Irrigation ervoor berekende. Meerdere programma's draaien nooit tegelijk: het volgende wacht op zijn beurt.",
@@ -1438,7 +1447,20 @@
     "run_replacing": "Wat aan het sproeien was wordt gestopt; {name} begint direct daarna.",
     "suspended_until": "Opgeschort tot {when}: de schema's starten het niet.",
     "suspended": "opgeschort",
-    "lift_suspension": "Opheffen"
+    "lift_suspension": "Opheffen",
+    "preview_title": "Wat een beregening zou doen",
+    "preview_help": "Elke zone op een eigen regel, met de duur die Smart Irrigation nu zou beregenen. Die volgt het weer, dus een beregening kan bij de start anders uitvallen.",
+    "yaml_edit": "Bewerken in YAML",
+    "yaml_help": "Het programma als tekst. Een stap noemt zijn zones bij naam of nummer, en wat wordt weggelaten krijgt de standaardwaarde. Er wordt niets opgeslagen tot je toepast: de tijdlijn hieronder toont wat het programma zou doen.",
+    "yaml_apply": "Toepassen",
+    "yaml_cancel": "Annuleren",
+    "yaml_invalid": "Dit is geen geldige YAML.",
+    "yaml_not_a_program": "Dit is geen programma: een programma is een verzameling sleutels (name, steps, schedules).",
+    "yaml_unknown_zones": "Zone niet gevonden, of naam die twee zones delen, weggelaten: {zones}",
+    "yaml_not_watered": "Buiten de beregening gelaten (geen klep of uitgeschakeld): {zones}",
+    "yaml_applied": "Programma opgeslagen",
+    "yaml_new": "Nieuw programma in YAML",
+    "yaml_new_title": "Nieuw programma"
   },
   "supplies": {
     "title": "Pompen en hoofdventielen",
