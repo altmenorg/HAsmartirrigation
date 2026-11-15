@@ -127,6 +127,9 @@
       },
       "irrigation_enabled": {
         "name": "计算并浇水"
+      },
+      "program_on": {
+        "name": "程序 {name} 开启"
       }
     },
     "datetime": {

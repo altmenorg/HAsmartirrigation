@@ -127,6 +127,9 @@
       },
       "irrigation_enabled": {
         "name": "Розрахунок і полив"
+      },
+      "program_on": {
+        "name": "Програма {name} увімк."
       }
     },
     "datetime": {

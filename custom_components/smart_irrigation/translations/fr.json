@@ -127,6 +127,9 @@
       },
       "irrigation_enabled": {
         "name": "Calculer et arroser"
+      },
+      "program_on": {
+        "name": "Programme {name} actif"
       }
     },
     "datetime": {

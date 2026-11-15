@@ -127,6 +127,9 @@
       },
       "irrigation_enabled": {
         "name": "Obliczaj i podlewaj"
+      },
+      "program_on": {
+        "name": "Program {name} włączony"
       }
     },
     "datetime": {

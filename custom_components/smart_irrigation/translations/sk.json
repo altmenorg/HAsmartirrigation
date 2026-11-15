@@ -127,6 +127,9 @@
       },
       "irrigation_enabled": {
         "name": "Počítať a zalievať"
+      },
+      "program_on": {
+        "name": "Program {name} zapnutý"
       }
     },
     "datetime": {

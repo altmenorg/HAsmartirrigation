@@ -127,6 +127,9 @@
       },
       "irrigation_enabled": {
         "name": "Számolás és öntözés"
+      },
+      "program_on": {
+        "name": "{name} program bekapcsolva"
       }
     },
     "datetime": {

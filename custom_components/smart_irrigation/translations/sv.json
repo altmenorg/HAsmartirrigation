@@ -127,6 +127,9 @@
       },
       "irrigation_enabled": {
         "name": "Beräkna och vattna"
+      },
+      "program_on": {
+        "name": "Program {name} på"
       }
     },
     "datetime": {

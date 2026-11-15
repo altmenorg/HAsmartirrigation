@@ -127,6 +127,9 @@
       },
       "irrigation_enabled": {
         "name": "Calcular y regar"
+      },
+      "program_on": {
+        "name": "Programa {name} activo"
       }
     },
     "datetime": {

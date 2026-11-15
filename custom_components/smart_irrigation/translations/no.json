@@ -127,6 +127,9 @@
       },
       "irrigation_enabled": {
         "name": "Beregn og vann"
+      },
+      "program_on": {
+        "name": "Program {name} på"
       }
     },
     "datetime": {

@@ -127,6 +127,9 @@
       },
       "irrigation_enabled": {
         "name": "Laske ja kastele"
+      },
+      "program_on": {
+        "name": "Ohjelma {name} päällä"
       }
     },
     "datetime": {

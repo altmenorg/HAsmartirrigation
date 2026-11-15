@@ -127,6 +127,9 @@
       },
       "irrigation_enabled": {
         "name": "Izračunaj in zalivaj"
+      },
+      "program_on": {
+        "name": "Program {name} vklopljen"
       }
     },
     "datetime": {

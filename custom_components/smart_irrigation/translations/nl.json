@@ -127,6 +127,9 @@
       },
       "irrigation_enabled": {
         "name": "Berekenen en bewateren"
+      },
+      "program_on": {
+        "name": "Programma {name} aan"
       }
     },
     "datetime": {
