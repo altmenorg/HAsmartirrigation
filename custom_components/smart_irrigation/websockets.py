@@ -383,6 +383,13 @@ ZONE_SAVE_SCHEMA = vol.Schema(
         vol.Optional(const.ZONE_ALLOWED_DEPLETION): vol.Or(float, int, None),
         vol.Optional(const.ZONE_DISTRIBUTION_EFFICIENCY): vol.Or(float, int, None),
         vol.Optional(const.ZONE_FLOW_SENSOR): vol.Any(None, cv.string),
+        vol.Optional(const.ZONE_OBSERVED_IGNORE_SECONDS): vol.Any(
+            None,
+            vol.All(
+                vol.Coerce(float),
+                vol.Range(min=0, max=const.OBSERVED_IGNORE_SECONDS_MAX),
+            ),
+        ),
         vol.Optional(const.ZONE_SOIL_MOISTURE_SENSOR): vol.Any(None, cv.string),
         vol.Optional(const.ZONE_SOIL_MOISTURE_THRESHOLD): vol.Any(
             None, vol.Coerce(float)

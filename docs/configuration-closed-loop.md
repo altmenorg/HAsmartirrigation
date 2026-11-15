@@ -20,6 +20,10 @@ To set it up:
 
 > Important: when observed watering is on it becomes the only thing crediting the water balance. Remove any `set_bucket` or `reset_bucket` call from your irrigation automation, otherwise the water balance is accounted twice.
 
+### Optional: leave short runs out
+
+A short run that only cools the plants on a hot afternoon (a few minutes to keep the leaves from wilting) mostly stays on the leaves and evaporates. Set the zone's **Ignore runs up to** (seconds, advanced mode) and a run of the valve that lasts that long or less is not credited, nor counted as the zone's watering of the cycle. A longer run counts in full, its first seconds included. Empty credits every run. It applies to runs Smart Irrigation observes; the runs it drives itself with direct valve control are credited as they always were.
+
 ### Optional: a cumulative volume meter (more precise)
 
 For exact accounting you can also set a zone's **Cumulative volume meter**. The applied depth is then taken from the measured volume delivered during the run (`meter_at_close - meter_at_open`) instead of throughput x time.

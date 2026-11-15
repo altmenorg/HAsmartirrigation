@@ -706,6 +706,8 @@
         "extra-valves-hint": "otvárajú a zatvárajú sa spolu s ňou",
         "flow-sensor": "Kumulatívny merač objemu",
         "flow-sensor-hint": "Pre presné pripisovanie namiesto priepustnosť x čas: kumulatívny celkový stav vodomeru (trieda stavu total_increasing), nie okamžitý prietok. Jednotka sa načíta automaticky (L, mL, m³, gal, ft³).",
+        "observed-ignore-seconds": "Ignorovať zavlažovania do",
+        "observed-ignore-seconds-help": "Takto krátky alebo kratší chod ventilu sa nepripočíta: pár minút na ochladenie listov v horúcom popoludní sa väčšinou odparí. Dlhší chod sa počíta celý. Prázdne: pripočíta sa každý chod.",
         "confirm-timeout": "Čakať na potvrdenie ventilu",
         "open-resends": "Znova odoslať otvorenie",
         "confirm-timeout-help": "Koľko času má ventil na ohlásenie, že sa otvoril alebo zatvoril, a koľkokrát sa za ten čas znova odošle otvorenie. Prázdne ponechá predvolené hodnoty: 8 sekúnd bez opakovania, alebo 30 sekúnd a dve opakovania s úplným ovládačom, a 5 sekúnd na zatvorenie. Cloudový ventil, napríklad Gardena, potvrdzuje pomaly a každý príkaz započítava do kvóty: dajte mu dlhšie čakanie a 0 opakovaní. Zatvorenie sa vždy skúsi druhýkrát.",

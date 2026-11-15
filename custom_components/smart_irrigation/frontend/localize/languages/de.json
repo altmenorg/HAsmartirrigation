@@ -706,6 +706,8 @@
         "extra-valves-hint": "werden zusammen mit ihr geöffnet und geschlossen",
         "flow-sensor": "Kumulativer Volumenzähler",
         "flow-sensor-hint": "Für eine exakte Gutschrift anstelle von Durchsatz x Zeit: ein kumulativer Wasserzählerstand (Statusklasse total_increasing), keine momentane Durchflussrate. Die Einheit wird automatisch ausgelesen (L, mL, m³, gal, ft³).",
+        "observed-ignore-seconds": "Läufe ignorieren bis",
+        "observed-ignore-seconds-help": "Ein so kurzer oder kürzerer Lauf des Ventils wird nicht gutgeschrieben: ein paar Minuten zum Kühlen der Blätter an einem heißen Nachmittag verdunsten größtenteils. Ein längerer Lauf zählt vollständig. Leer: jeder Lauf wird gutgeschrieben.",
         "confirm-timeout": "Warten auf Bestätigung des Ventils",
         "open-resends": "Öffnen erneut senden",
         "confirm-timeout-help": "Wie lange das Ventil Zeit hat, Öffnen oder Schließen zu melden, und wie oft das Öffnen neu gesendet wird. Leer: 8 s, keine Wiederholung (volle Steuerung: 30 s, zwei); Schließen 5 s, immer zweimal. Cloud-Ventile wie Gardena: länger warten, 0 Wiederholungen, jeder Befehl zählt gegen ein Kontingent.",

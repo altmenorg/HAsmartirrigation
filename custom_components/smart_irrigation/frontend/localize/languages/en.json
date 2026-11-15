@@ -706,6 +706,8 @@
         "extra-valves-hint": "opened and closed together with it",
         "flow-sensor": "Cumulative volume meter",
         "flow-sensor-hint": "For exact crediting instead of throughput x time: a cumulative water-meter total (state class total_increasing), not an instant flow rate. The unit is read automatically (L, mL, m³, gal, ft³).",
+        "observed-ignore-seconds": "Ignore runs up to",
+        "observed-ignore-seconds-help": "A run of the valve this long or shorter is not credited: a few minutes to cool the leaves on a hot afternoon mostly evaporates. A longer run counts in full. Empty credits every run.",
         "confirm-timeout": "Wait for the valve to confirm",
         "open-resends": "Send the open again",
         "confirm-timeout-help": "How long the valve has to report that it opened or closed, and how often the open is resent meanwhile. Empty: 8 s, no resend (full controller: 30 s, two); closing 5 s, always tried twice. Cloud valves such as Gardena: wait longer, 0 resends, each command counts against a quota.",

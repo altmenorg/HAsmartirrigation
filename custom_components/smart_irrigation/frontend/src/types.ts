@@ -276,6 +276,7 @@ export class SmartIrrigationZone {
   measured_throughput?: number | null;
   measured_throughput_samples?: number;
   flow_sensor?: string;
+  observed_ignore_seconds?: number | null;
   soil_moisture_sensor?: string;
   soil_moisture_threshold?: number;
   input_method?: string;

@@ -738,6 +738,11 @@ ZHA_SECONDS_VALVES = (("SONOFF", "SWV"),)
 ZHA_MAX_ON_TIME = 0xFFFF
 # Optional cumulative volume/flow meter; credits the bucket by measured volume.
 ZONE_FLOW_SENSOR = "flow_sensor"
+# Observed watering: a run of the valve that lasts this many seconds or less is
+# not credited (a short cooling mist mostly stays on the leaves and
+# evaporates); a longer one counts in full. None credits every run.
+ZONE_OBSERVED_IGNORE_SECONDS = "observed_ignore_seconds"
+OBSERVED_IGNORE_SECONDS_MAX = 3600
 # A soil moisture sensor, in %, and the moisture at or above which the zone
 # sits out a run: the soil already holds what the bucket says it lacks.
 ZONE_SOIL_MOISTURE_SENSOR = "soil_moisture_sensor"

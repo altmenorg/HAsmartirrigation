@@ -706,6 +706,8 @@
         "extra-valves-hint": "åpnes og lukkes sammen med den",
         "flow-sensor": "Kumulativ volummåler",
         "flow-sensor-hint": "For nøyaktig kreditering i stedet for kapasitet x tid: en kumulativ vannmålertotal (tilstandsklasse total_increasing), ikke en momentan strømningshastighet. Enheten leses automatisk (L, mL, m³, gal, ft³).",
+        "observed-ignore-seconds": "Ignorer vanninger opptil",
+        "observed-ignore-seconds-help": "En så kort eller kortere åpning av ventilen krediteres ikke: noen minutter for å kjøle bladene en varm ettermiddag fordamper for det meste. En lengre vanning teller fullt ut. Tom: hver vanning krediteres.",
         "confirm-timeout": "Vent på at ventilen bekrefter",
         "open-resends": "Send åpning på nytt",
         "confirm-timeout-help": "Hvor lenge ventilen har på å melde at den åpnet eller lukket, og hvor mange ganger åpningen sendes på nytt i den tiden. Tomt beholder standardverdiene: 8 sekunder uten gjentakelse, eller 30 sekunder og to gjentakelser med full kontroller, og 5 sekunder for en lukking. En skyventil som Gardena bekrefter sakte og teller hver kommando mot en kvote: gi den lengre ventetid og 0 gjentakelser. En lukking forsøkes alltid en gang til.",

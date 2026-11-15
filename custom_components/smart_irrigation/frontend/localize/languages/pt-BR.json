@@ -706,6 +706,8 @@
         "extra-valves-hint": "abertas e fechadas junto com ela",
         "flow-sensor": "Medidor de volume acumulado",
         "flow-sensor-hint": "Para crédito exato em vez de vazão x tempo: um total acumulado de hidrômetro (classe de estado total_increasing), não uma taxa de vazão instantânea. A unidade é lida automaticamente (L, mL, m³, gal, ft³).",
+        "observed-ignore-seconds": "Ignorar regas de até",
+        "observed-ignore-seconds-help": "Uma abertura da válvula tão curta ou mais curta não é creditada: alguns minutos para refrescar as folhas em uma tarde quente evaporam quase todos. Uma rega mais longa conta inteira. Vazio: todas as regas são creditadas.",
         "confirm-timeout": "Aguardar a confirmação da válvula",
         "open-resends": "Reenviar a abertura",
         "confirm-timeout-help": "Quanto tempo a válvula tem para informar que abriu ou fechou, e quantas vezes a abertura é reenviada nesse tempo. Vazio mantém os padrões: 8 segundos sem reenvio, ou 30 segundos e dois reenvios com o controlador completo, e 5 segundos para um fechamento. Uma válvula na nuvem como a Gardena confirma devagar e conta cada comando em uma cota: dê a ela uma espera maior e 0 reenvios. Um fechamento é sempre tentado uma segunda vez.",

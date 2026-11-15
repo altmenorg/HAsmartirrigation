@@ -706,6 +706,8 @@
         "extra-valves-hint": "öppnas och stängs tillsammans med den",
         "flow-sensor": "Summerande vattenmätare",
         "flow-sensor-hint": "För att räkna med den uppmätta vattenmängden i stället för flöde × tid behövs en vattenmätare som visar den sammanlagda volymen (tillståndsklass total_increasing). En sensor som visar momentant flöde fungerar inte här. Enheten läses av automatiskt (L, mL, m³, gal, ft³).",
+        "observed-ignore-seconds": "Ignorera bevattningar upp till",
+        "observed-ignore-seconds-help": "En så kort eller kortare öppning av ventilen krediteras inte: några minuter för att svalka bladen en varm eftermiddag avdunstar mestadels. En längre bevattning räknas fullt ut. Tomt: varje bevattning krediteras.",
         "confirm-timeout": "Väntetid för ventilens bekräftelse",
         "open-resends": "Antal nya öppningsförsök",
         "confirm-timeout-help": "Ange hur länge systemet ska vänta på att ventilen bekräftar öppning eller stängning och hur många gånger öppningskommandot får skickas igen under tiden. Lämna fälten tomma för att använda standardvärdena. Vid öppning är väntetiden 8 sekunder utan omsändning, eller 30 sekunder med två omsändningar om den fullständiga bevattningsstyrningen används. Vid stängning är väntetiden 5 sekunder. En molnansluten ventil, till exempel från Gardena, kan svara långsamt och varje kommando räknas mot en kvot. Välj då längre väntetid och 0 omsändningar. Vid utebliven bekräftelse görs alltid ett andra stängningsförsök.",

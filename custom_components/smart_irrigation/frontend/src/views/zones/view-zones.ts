@@ -92,6 +92,7 @@ import {
   DEFAULT_CROP_FACTOR,
   ZONE_DURATION,
   ZONE_FLOW_SENSOR,
+  ZONE_OBSERVED_IGNORE_SECONDS,
   ZONE_SOIL_MOISTURE_SENSOR,
   ZONE_SOIL_MOISTURE_THRESHOLD,
   ZONE_INPUT_METHOD,
@@ -2009,6 +2010,38 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           }),
                         localize("panels.zones.labels.flow-sensor-hint", lang),
                       )
+                    : "",
+                )}
+                ${this._adv(
+                  this.config?.observed_watering_enabled && zone.linked_entity
+                    ? html`
+                        ${this._numRow(
+                          localize(
+                            "panels.zones.labels.observed-ignore-seconds",
+                            lang,
+                          ),
+                          "s",
+                          zone.observed_ignore_seconds,
+                          (v) => {
+                            // Empty credits every run.
+                            const seconds = parseFloat(v);
+                            this.handleEditZone(index, {
+                              ...zone,
+                              [ZONE_OBSERVED_IGNORE_SECONDS]:
+                                isNaN(seconds) || seconds <= 0
+                                  ? null
+                                  : Math.min(3600, seconds),
+                            });
+                          },
+                          1,
+                        )}
+                        <div class="setting-help">
+                          ${localize(
+                            "panels.zones.labels.observed-ignore-seconds-help",
+                            lang,
+                          )}
+                        </div>
+                      `
                     : "",
                 )}
                 ${this._adv(

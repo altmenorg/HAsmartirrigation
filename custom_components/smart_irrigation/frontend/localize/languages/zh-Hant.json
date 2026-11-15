@@ -706,6 +706,8 @@
         "extra-valves-hint": "與它一起開啟與關閉",
         "flow-sensor": "累計水量計",
         "flow-sensor-hint": "用於精確計入水量，而不是出水率 x 時間：請使用累計的水表總量（狀態類別 total_increasing），而不是瞬時流量。單位會自動讀取（L、mL、m³、gal、ft³）。",
+        "observed-ignore-seconds": "忽略不超過此時長的運轉",
+        "observed-ignore-seconds-help": "閥門運轉不超過此時長時不計入水量平衡：炎熱午後為葉片降溫的幾分鐘水大多會蒸發。更長的運轉全部計入。留空：每次運轉都計入。",
         "confirm-timeout": "等待閥門確認",
         "open-resends": "重新送出開啟指令",
         "confirm-timeout-help": "閥門回報已開啟或已關閉的等待時間，以及這段期間重新送出開啟指令的頻率。留空：8 秒、不重送（完整控制器：30 秒、兩次）；關閉則為 5 秒，一律嘗試兩次。對於 Gardena 等雲端閥門：請等待更久、重送 0 次，因為每個指令都會計入配額。",

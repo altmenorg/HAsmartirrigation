@@ -706,6 +706,8 @@
         "extra-valves-hint": "samen ermee geopend en gesloten",
         "flow-sensor": "Cumulatieve volumemeter",
         "flow-sensor-hint": "Voor exacte verrekening in plaats van doorvoer x tijd: een cumulatief watermetertotaal (state class total_increasing), geen momentaan debiet. De eenheid wordt automatisch uitgelezen (L, mL, m³, gal, ft³).",
+        "observed-ignore-seconds": "Beurten negeren tot",
+        "observed-ignore-seconds-help": "Een zo korte of kortere beurt van de klep wordt niet bijgeschreven: een paar minuten om de bladeren te koelen op een hete middag verdampt grotendeels. Een langere beurt telt volledig. Leeg: elke beurt wordt bijgeschreven.",
         "confirm-timeout": "Wachten op bevestiging van de klep",
         "open-resends": "Openen opnieuw sturen",
         "confirm-timeout-help": "Hoe lang de klep heeft om te melden dat hij open of dicht is, en hoe vaak het openen in die tijd opnieuw wordt gestuurd. Leeg houdt de standaardwaarden: 8 seconden zonder herhaling, of 30 seconden en twee herhalingen met de volledige controller, en 5 seconden voor een sluiting. Een cloudklep zoals Gardena bevestigt traag en telt elk commando mee in een quotum: geef hem een langere wachttijd en 0 herhalingen. Een sluiting wordt altijd een tweede keer geprobeerd.",

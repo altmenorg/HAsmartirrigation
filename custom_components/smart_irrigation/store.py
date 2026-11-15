@@ -228,6 +228,7 @@ from .const import (
     ZONE_MULTIPLIER,
     ZONE_NAME,
     ZONE_NUMBER_OF_DATA_POINTS,
+    ZONE_OBSERVED_IGNORE_SECONDS,
     ZONE_OPEN_RESENDS,
     ZONE_PLANT_TYPE,
     ZONE_PRECIPITATION_RATE,
@@ -373,6 +374,8 @@ class ZoneEntry:
     precipitation_superseded = attr.ib(type=float, default=0.0)
     # Optional cumulative volume meter; credits the bucket by measured volume.
     flow_sensor = attr.ib(type=str, default=None)
+    # Observed runs this short or shorter are not credited (see const).
+    observed_ignore_seconds = attr.ib(type=float, default=None)
     # Optional soil moisture sensor (%): the zone sits out a run while the
     # reading is at or above the threshold.
     soil_moisture_sensor = attr.ib(type=str, default=None)
@@ -1381,6 +1384,9 @@ class SmartIrrigationStorage:
                         supply_id=zone.get(ZONE_SUPPLY_ID, None),
                         extra_entities=zone.get(ZONE_EXTRA_ENTITIES, None),
                         flow_sensor=zone.get(ZONE_FLOW_SENSOR, None),
+                        observed_ignore_seconds=zone.get(
+                            ZONE_OBSERVED_IGNORE_SECONDS, None
+                        ),
                         soil_moisture_sensor=zone.get(ZONE_SOIL_MOISTURE_SENSOR, None),
                         soil_moisture_threshold=zone.get(
                             ZONE_SOIL_MOISTURE_THRESHOLD,
