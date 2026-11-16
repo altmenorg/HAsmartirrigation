@@ -98,7 +98,7 @@ from .program_adjust import ADJUST_PROGRAM_SCHEMA
 from .program_migration import conversion_changes
 from .program_notify import async_setup_program_notify
 from .program_scheduler import ProgramSchedulerMixin
-from .programs import LastProgramError, normalize_programs
+from .programs import LastProgramError, check_program_chains, normalize_programs
 from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
 from .service_handlers import ServiceHandlersMixin
 from .set_aside import SetAsideMixin
@@ -996,6 +996,9 @@ class SmartIrrigationCoordinator(
         if not programs and any(isinstance(p, dict) for p in old_programs or []):
             # The last program stays (programs.LastProgramError).
             raise LastProgramError
+        # A loop of programs starting each other, or a program deleted while
+        # another starts after it (programs.ProgramChainError).
+        check_program_chains(programs, old_programs)
         data = {**data, const.CONF_PROGRAMS: programs}
         alive = {
             f"{p.get(const.PROGRAM_ID)}:{s.get(const.SCHEDULE_ID)}"
@@ -2888,6 +2891,9 @@ class SmartIrrigationCoordinator(
 
         # and the timers of the programs' schedules
         self.async_teardown_program_schedules()
+        # and the starts waiting for their offset after another program (they
+        # stay recorded, and the next start arms them again)
+        self.async_teardown_chained_starts()
 
         # Wait for the cancelled runs to have shut their valves and put their
         # pumps off, so the setup that follows a reload cannot resume a run

@@ -9,6 +9,13 @@ Three views of the same things, each cheap to build:
 * the **planning**: every start of every schedule over the next days, with the
   zones each would water and for how long. The weather is not known days ahead,
   so a planned run is a run that would go ahead if nothing held it back.
+
+A schedule that starts its program after another program has no moment of its
+own: it is planned after each planned run of that program that is expected to
+water (not one with nothing to water, held back by the forecast or suspended),
+at its end plus the offset, and not at all when that program is not planned in
+the window. planning_sequence.py then moves it behind where that run really
+ends.
 """
 
 import asyncio
@@ -25,13 +32,21 @@ from .master_switch import watering_off
 from .programs import (
     DURATION_IGNORING_THRESHOLD,
     active_adjustment,
+    chain_loop,
     drop_below_deficit,
     needs_run_length,
     plan_program,
     plan_timeline,
     plan_wall_seconds,
 )
-from .schedules import next_fire, schedule_skip_conditions, upcoming
+from .schedules import (
+    after_program_of,
+    chained_start,
+    is_after_program,
+    next_fire,
+    schedule_skip_conditions,
+    upcoming,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -380,6 +395,42 @@ class ProgramStatusMixin:
                     next_start = fire
         return next_start
 
+    def _chained_next_starts(self, programs, zones, ends: dict, tz) -> dict:
+        """``ends`` with the programs that start after another one added.
+
+        ``ends`` maps a program id to ``(next start, run seconds)``. A program
+        whose "after" schedule waits for one in it starts at that one's end
+        plus the offset, the soonest of its schedules, and before its own
+        timed schedules only if sooner. Passes repeat for a chain of chains.
+        """
+        found = dict(ends)
+        for _ in range(len(programs)):
+            changed = False
+            for program in programs:
+                program_id = program.get(const.PROGRAM_ID)
+                for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
+                    after = after_program_of(schedule)
+                    if (
+                        after is None
+                        or after not in found
+                        or schedule.get(const.SCHEDULE_ENABLED) is False
+                    ):
+                        continue
+                    start, total = found[after]
+                    if total <= 0:
+                        # A run with nothing to water starts nothing after it.
+                        continue
+                    due = chained_start(schedule, start + timedelta(seconds=total), tz)
+                    if due is None:
+                        continue
+                    if program_id not in found or due < found[program_id][0]:
+                        _plan, own = self._program_totals(program, zones)
+                        found[program_id] = (due, own)
+                        changed = True
+            if not changed:
+                break
+        return found
+
     async def async_next_program_start(self):
         """When a program's schedules start one next, the soonest of all, or None.
 
@@ -414,6 +465,15 @@ class ProgramStatusMixin:
         now = dt_util.utcnow()
         tz = dt_util.get_default_time_zone()
         overview = []
+        # When each program's run ends next, for the ones that start after it.
+        ends: dict = {}
+        if not watering_off(self.store):
+            for program in programs:
+                _plan, total = self._program_totals(program, zones)
+                start = self._schedules_next_start(program, total, last_runs, now, tz)
+                if start is not None:
+                    ends[program.get(const.PROGRAM_ID)] = (start, total)
+            ends = self._chained_next_starts(programs, zones, ends, tz)
         for program in programs:
             program_id = program.get(const.PROGRAM_ID)
             suspended = self.suspended_until(const.SUSPEND_PROGRAM, program_id)
@@ -431,11 +491,8 @@ class ProgramStatusMixin:
             # It does not depend on there being anything to water: a run with
             # nothing to water still starts (and finds nothing), the planning
             # lists nothing.
-            if not watering_off(self.store):
-                _plan, total = self._program_totals(program, zones)
-                next_start = self._schedules_next_start(
-                    program, total, last_runs, now, tz
-                )
+            if program_id in ends:
+                next_start = ends[program_id][0]
             stamps = [
                 dt_util.parse_datetime(v or "")
                 for k, v in last_runs.items()
@@ -495,7 +552,11 @@ class ProgramStatusMixin:
             entry["id"]: {"zone_id": entry["id"], "zone": entry["name"]}
             for entry in zones_without_valve(zones)
         }
-        for program in getattr(config, const.CONF_PROGRAMS, None) or []:
+        programs = getattr(config, const.CONF_PROGRAMS, None) or []
+        # What each program needs to be planned, by id, for the runs started
+        # after another program (planned once the others are).
+        contexts: dict = {}
+        for program in programs:
             program_id = program.get(const.PROGRAM_ID)
             plan, total = self._program_totals(program, zones)
             # A start with nothing to water is still a start: the schedule fires
@@ -548,8 +609,72 @@ class ProgramStatusMixin:
             # scheduler lets it pass. The planning listed it as any other.
             suspended = self.suspended_until(const.SUSPEND_PROGRAM, program_id)
             adjustment_now = self.program_adjustment(program_id, now)
+
+            async def item_for(
+                schedule,
+                start,
+                target,
+                *,
+                program=program,
+                program_id=program_id,
+                plan=plan,
+                total=total,
+                steps=steps,
+                timeline_of=timeline_of,
+                suspended=suspended,
+                adjustment_now=adjustment_now,
+                no_valve=no_valve,
+            ):
+                # The adjustment of the run's start, not of now: one that
+                # ends before the run no longer lengthens or shortens it.
+                run_plan, run_total = plan, total
+                if self.program_adjustment(program_id, start) != adjustment_now:
+                    run_plan, run_total = self._program_totals(program, zones, at=start)
+                if suspended is not None and start < suspended:
+                    prediction = {
+                        "skipped_reason": "suspended",
+                        "forecast": None,
+                        "forecast_known": False,
+                        "sheltered_zone_ids": [],
+                    }
+                elif run_plan:
+                    prediction = await self._planning_prediction(
+                        schedule, start, now, run_plan, sheltered, forecasts
+                    )
+                else:
+                    prediction = {
+                        "skipped_reason": None,
+                        "forecast": None,
+                        "forecast_known": False,
+                        "sheltered_zone_ids": [],
+                    }
+                return {
+                    "program_id": program_id,
+                    "program": program.get(const.PROGRAM_NAME) or program_id,
+                    "schedule_id": schedule.get(const.SCHEDULE_ID),
+                    "start": start.isoformat(),
+                    "end": (start + timedelta(seconds=run_total)).isoformat(),
+                    "target": target.isoformat(),
+                    "anchor": schedule.get(const.SCHEDULE_ANCHOR),
+                    "weather": schedule.get(const.SCHEDULE_WEATHER) is not False,
+                    "tours": len(run_plan),
+                    "soak_seconds": int(soak_minutes * 60),
+                    "expected_seconds": int(run_total),
+                    "steps": steps if run_plan is plan else steps_of(run_plan),
+                    "timeline": timeline_of(run_plan),
+                    "nothing_to_water": not run_plan,
+                    "zones_without_valve": no_valve,
+                    "suspended_until": (
+                        suspended.isoformat() if suspended is not None else None
+                    ),
+                    **prediction,
+                }
+
+            contexts[program_id] = (program, item_for)
             for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
                 if schedule.get(const.SCHEDULE_ENABLED) is False:
+                    continue
+                if is_after_program(schedule):
                     continue
                 schedule_id = schedule.get(const.SCHEDULE_ID)
                 last = dt_util.parse_datetime(
@@ -567,59 +692,61 @@ class ProgramStatusMixin:
                     until,
                 ):
                     start = result["target"] if placed_at_moment else result["fire"]
-                    # The adjustment of the run's start, not of now: one that
-                    # ends before the run no longer lengthens or shortens it.
-                    run_plan, run_total = plan, total
-                    if self.program_adjustment(program_id, start) != adjustment_now:
-                        run_plan, run_total = self._program_totals(
-                            program, zones, at=start
-                        )
-                    if suspended is not None and start < suspended:
-                        prediction = {
-                            "skipped_reason": "suspended",
-                            "forecast": None,
-                            "forecast_known": False,
-                            "sheltered_zone_ids": [],
-                        }
-                    elif run_plan:
-                        prediction = await self._planning_prediction(
-                            schedule, start, now, run_plan, sheltered, forecasts
-                        )
-                    else:
-                        prediction = {
-                            "skipped_reason": None,
-                            "forecast": None,
-                            "forecast_known": False,
-                            "sheltered_zone_ids": [],
-                        }
-                    planned.append(
-                        {
-                            "program_id": program_id,
-                            "program": program.get(const.PROGRAM_NAME) or program_id,
-                            "schedule_id": schedule_id,
-                            "start": start.isoformat(),
-                            "end": (start + timedelta(seconds=run_total)).isoformat(),
-                            "target": result["target"].isoformat(),
-                            "anchor": schedule.get(const.SCHEDULE_ANCHOR),
-                            "weather": schedule.get(const.SCHEDULE_WEATHER)
-                            is not False,
-                            "tours": len(run_plan),
-                            "soak_seconds": int(soak_minutes * 60),
-                            "expected_seconds": int(run_total),
-                            "steps": steps if run_plan is plan else steps_of(run_plan),
-                            "timeline": timeline_of(run_plan),
-                            "nothing_to_water": not run_plan,
-                            "zones_without_valve": no_valve,
-                            "suspended_until": (
-                                suspended.isoformat() if suspended is not None else None
-                            ),
-                            **prediction,
-                        }
-                    )
+                    planned.append(await item_for(schedule, start, result["target"]))
+        await self._plan_chained_runs(planned, contexts, until, tz)
         # By the moment, not the text, whatever the time zone each is written
         # in: 05:54+01:00 comes after 05:00+00:00 (06:00 here).
         planned.sort(key=lambda item: _moment(item["start"]))
         return planned
+
+    async def _plan_chained_runs(self, planned: list, contexts: dict, until, tz):
+        """Add to ``planned`` the runs started after another planned run.
+
+        Each planned run expected to water (not with nothing to water, held
+        back by the forecast or suspended: then it does not really run, and
+        nothing starts after it) starts the programs waiting for it, at its
+        end plus their offset, on the days their schedules allow, up to
+        ``until``. Those runs start the next ones in turn. Every item gets a
+        ``run_key``; a chained one says which run it follows in ``after_run``
+        and names that program in ``after``, so planning_sequence.py can move
+        it behind where that run really ends.
+        """
+        loop = set(chain_loop([c[0] for c in contexts.values()]) or ())
+        for item in planned:
+            item.setdefault("run_key", _run_key(item))
+        queue = list(planned)
+        while queue:
+            before = queue.pop(0)
+            if (
+                before.get("nothing_to_water")
+                or before.get("skipped_reason")
+                or before.get("program_id") in loop
+            ):
+                continue
+            end = dt_util.parse_datetime(str(before.get("end") or ""))
+            if end is None:
+                continue
+            for program, item_for in contexts.values():
+                for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
+                    if after_program_of(schedule) != before.get("program_id"):
+                        continue
+                    start = chained_start(schedule, end, tz)
+                    if start is None or start > until:
+                        continue
+                    item = await item_for(schedule, start, start)
+                    item["after"] = {
+                        "program_id": before.get("program_id"),
+                        "program": before.get("program"),
+                        "offset_minutes": max(
+                            0, int(schedule.get(const.SCHEDULE_OFFSET_MINUTES) or 0)
+                        ),
+                    }
+                    item["after_run"] = before["run_key"]
+                    item["run_key"] = _run_key(item)
+                    planned.append(item)
+                    queue.append(item)
+                    if len(planned) > 2000:  # a guard, loops are refused at save
+                        return
 
     @staticmethod
     def _timeline(plan: list, soak_seconds: float, names: dict) -> dict:
@@ -650,6 +777,12 @@ class ProgramStatusMixin:
         writes names, and so may an assistant): a name is matched to a zone,
         case aside, and one that matches none is listed in
         ``unknown_zone_names`` and left out.
+
+        An "after" schedule may name the program it follows by name too. What
+        a save would refuse about it is said here, against the stored
+        programs with this one in its place: ``chain_loop``, the names of
+        programs that would start each other in a loop (or None), and
+        ``unknown_after_programs``, what names no program.
         """
         from .programs import normalize_programs
 
@@ -658,10 +791,32 @@ class ProgramStatusMixin:
 
         zones = await self.zones_as_planned(await self.store.async_get_zones())
         program, unknown_names = _zones_by_name(program, zones)
+        stored = [
+            p
+            for p in getattr(self.store.config, const.CONF_PROGRAMS, None) or []
+            if isinstance(p, dict)
+        ]
+        program = _after_programs_by_name(program, stored)
         cleaned = normalize_programs([program])
         normalized = cleaned[0] if cleaned else {}
+        others = [
+            p
+            for p in stored
+            if p.get(const.PROGRAM_ID) != normalized.get(const.PROGRAM_ID)
+        ]
+        together = [*others, normalized] if normalized else others
+        names = {p.get(const.PROGRAM_ID): p.get(const.PROGRAM_NAME) for p in together}
+        loop = chain_loop(together)
+        unknown_after = sorted(
+            {
+                after
+                for s in normalized.get(const.PROGRAM_SCHEDULES) or []
+                for after in [after_program_of(s)]
+                if after and after not in names
+            }
+        )
         by_id = {int(z[const.ZONE_ID]): z for z in zones}
-        names = {zone_id: z.get(const.ZONE_NAME) for zone_id, z in by_id.items()}
+        zone_names = {zone_id: z.get(const.ZONE_NAME) for zone_id, z in by_id.items()}
         unknown, not_watered = [], []
         for step in normalized.get(const.PROGRAM_STEPS) or []:
             for zone_id in step.get(const.STEP_ZONES) or []:
@@ -676,12 +831,15 @@ class ProgramStatusMixin:
         soak = float(getattr(self.store.config, const.CONF_SOAK_MINUTES, 0) or 0) * 60.0
         return {
             "program": normalized,
-            "timeline": self._timeline(plan, soak, names),
+            "timeline": self._timeline(plan, soak, zone_names),
             "unknown_zones": sorted(set(unknown)),
             "unknown_zone_names": unknown_names,
             "zones_not_watered": [
-                {"zone_id": z, "zone": names.get(z)} for z in dict.fromkeys(not_watered)
+                {"zone_id": z, "zone": zone_names.get(z)}
+                for z in dict.fromkeys(not_watered)
             ],
+            "chain_loop": [names.get(i) or i for i in loop] if loop else None,
+            "unknown_after_programs": unknown_after,
         }
 
     async def _planning_sheltered_zones(self) -> set:
@@ -747,6 +905,35 @@ class ProgramStatusMixin:
             # The zones the rain does not reach water anyway.
             "sheltered_zone_ids": sorted(zone_ids & sheltered) if held else [],
         }
+
+
+def _after_programs_by_name(program: dict, programs) -> dict:
+    """``program`` with the programs its "after" schedules name turned into ids.
+
+    An id is kept as it is; otherwise a name is matched to a program, case and
+    spaces aside. What matches nothing stays, and the preview says so.
+    """
+    ids = {p.get(const.PROGRAM_ID) for p in programs}
+    by_name: dict = {}
+    for p in programs:
+        key = str(p.get(const.PROGRAM_NAME) or "").strip().lower()
+        by_name.setdefault(key, []).append(p.get(const.PROGRAM_ID))
+    schedules = []
+    for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
+        if isinstance(schedule, dict) and is_after_program(schedule):
+            wanted = schedule.get(const.SCHEDULE_AFTER_PROGRAM)
+            found = by_name.get(str(wanted or "").strip().lower()) or []
+            if wanted not in ids and len(found) == 1:
+                schedule = {**schedule, const.SCHEDULE_AFTER_PROGRAM: found[0]}
+        schedules.append(schedule)
+    if const.PROGRAM_SCHEDULES not in program:
+        return program
+    return {**program, const.PROGRAM_SCHEDULES: schedules}
+
+
+def _run_key(item: dict) -> str:
+    """What names a planned run: its program, schedule and start."""
+    return f"{item.get('program_id')}:{item.get('schedule_id')}:{item.get('start')}"
 
 
 def _zones_by_name(program: dict, zones) -> tuple:

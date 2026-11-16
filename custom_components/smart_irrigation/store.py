@@ -109,6 +109,7 @@ from .const import (
     CONF_PAUSE_BETWEEN_ZONES,
     CONF_PAUSE_UNTIL,
     CONF_PAUSED_OWED,
+    CONF_PENDING_CHAINED_STARTS,
     CONF_POSTPONE_UNTIL,
     CONF_PRECIPITATION_THRESHOLD_MM,
     CONF_PROGRAM_ADJUSTMENTS,
@@ -778,6 +779,7 @@ class Config:
     pause_until = attr.ib(type=str, default=None)
     paused_owed = attr.ib(type=list, default=None)
     queued_manual_runs = attr.ib(type=list, default=None)
+    pending_chained_starts = attr.ib(type=list, default=None)
     program_adjustments = attr.ib(type=dict, default=None)
     suspensions = attr.ib(type=dict, default=None)
     set_aside_after = attr.ib(type=int, default=CONF_DEFAULT_SET_ASIDE_AFTER)
@@ -1310,6 +1312,7 @@ class SmartIrrigationStorage:
                 pause_until=data["config"].get(CONF_PAUSE_UNTIL),
                 paused_owed=data["config"].get(CONF_PAUSED_OWED),
                 queued_manual_runs=data["config"].get(CONF_QUEUED_MANUAL_RUNS),
+                pending_chained_starts=data["config"].get(CONF_PENDING_CHAINED_STARTS),
                 program_adjustments=data["config"].get(CONF_PROGRAM_ADJUSTMENTS),
                 suspensions=data["config"].get(CONF_SUSPENSIONS),
                 set_aside_after=data["config"].get(

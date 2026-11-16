@@ -27,7 +27,7 @@ import homeassistant.util.dt as dt_util
 from homeassistant.util import slugify
 
 from . import const
-from .schedules import ANCHOR_END, normalize_schedules
+from .schedules import ANCHOR_END, after_program_of, normalize_schedules
 
 # The id and default name the old main program kept when it was converted into
 # an ordinary program: its sensor, its last runs and its notifications are
@@ -102,7 +102,11 @@ MAX_OVERLAP_SECONDS = 3600
 _ID_SAFE = re.compile(r"[a-z0-9_]+")
 
 
-class LastProgramError(ValueError):
+class ProgramsRefused(ValueError):
+    """A save of the programs that is refused, with the reason the panel shows."""
+
+
+class LastProgramError(ProgramsRefused):
     """A save that would delete the last program, which is refused.
 
     With no program at all nothing waters, silently: one is always kept.
@@ -116,6 +120,114 @@ LAST_PROGRAM_MESSAGE = (
     "The last program cannot be deleted: without a program nothing is watered. "
     "Switch its schedules off instead"
 )
+
+
+class ProgramChainError(ProgramsRefused):
+    """A save that would break what starts after what, which is refused.
+
+    Either the programs would start each other in a loop (A after B after A,
+    or A after itself), or a program that another one starts after is deleted,
+    or a schedule waits for a program that does not exist.
+    """
+
+
+def _program_names(programs) -> dict:
+    return {
+        p.get(const.PROGRAM_ID): p.get(const.PROGRAM_NAME) or p.get(const.PROGRAM_ID)
+        for p in programs or []
+        if isinstance(p, dict)
+    }
+
+
+def program_predecessors(programs) -> dict:
+    """{program id: the ids of the programs its "after" schedules wait for}.
+
+    Every schedule counts, switched on or not: one switched on later must not
+    close a loop that nothing checked.
+    """
+    found: dict = {}
+    for program in programs or []:
+        if not isinstance(program, dict):
+            continue
+        for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
+            after = after_program_of(schedule)
+            if after:
+                found.setdefault(program.get(const.PROGRAM_ID), set()).add(after)
+    return found
+
+
+def chain_loop(programs) -> list | None:
+    """A loop of programs that start each other, as ids, or None.
+
+    ``[a, b, a]``: a starts after b, which starts after a. ``[a, a]``: a
+    starts after itself. Only the first loop found is given.
+    """
+    edges = program_predecessors(programs)
+    done: set = set()
+
+    def visit(node, path):
+        if node in path:
+            return path[path.index(node) :] + [node]
+        if node in done:
+            return None
+        for nxt in sorted(edges.get(node) or ()):
+            loop = visit(nxt, path + [node])
+            if loop:
+                return loop
+        done.add(node)
+        return None
+
+    for start in sorted(edges, key=str):
+        loop = visit(start, [])
+        if loop:
+            return loop
+    return None
+
+
+def dependents_of(programs, program_id) -> list:
+    """The programs one of whose schedules starts after ``program_id``, by name."""
+    return [
+        p.get(const.PROGRAM_NAME) or p.get(const.PROGRAM_ID)
+        for p in programs or []
+        if isinstance(p, dict)
+        and program_id in (program_predecessors([p]).get(p.get(const.PROGRAM_ID)) or ())
+    ]
+
+
+def check_program_chains(programs, old_programs=None) -> None:
+    """Refuse (ProgramChainError) a save that breaks what starts after what.
+
+    ``programs`` is the list as it would be stored, ``old_programs`` as it is.
+    What was already wrong in the store (a loop, or a schedule waiting for a
+    program long gone, both from before the check existed) does not stop the
+    save of something else: only what this save makes wrong is refused.
+    """
+    old_programs = [p for p in old_programs or [] if isinstance(p, dict)]
+    names = _program_names(programs)
+    old_names = _program_names(old_programs)
+    loop = chain_loop(programs)
+    if loop and chain_loop(old_programs) != loop:
+        said = " -> ".join(f'"{names.get(i, i)}"' for i in loop)
+        raise ProgramChainError(
+            "Programs cannot start after each other in a loop: "
+            f"{said}. Change one of these schedules"
+        )
+    old_waits = program_predecessors(old_programs)
+    for program_id, waits in program_predecessors(programs).items():
+        for after in sorted(waits):
+            if after in names:
+                continue
+            if after in old_names:
+                raise ProgramChainError(
+                    f'"{old_names[after]}" cannot be deleted: '
+                    f'"{names.get(program_id, program_id)}" starts after it. '
+                    "Change that schedule first"
+                )
+            if after not in (old_waits.get(program_id) or ()):
+                raise ProgramChainError(
+                    f'"{names.get(program_id, program_id)}" starts after a '
+                    f'program that does not exist ("{after}")'
+                )
 
 
 def find_program(programs, program_id) -> dict | None:

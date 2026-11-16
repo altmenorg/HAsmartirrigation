@@ -25,7 +25,7 @@ from .llm_api import (
     _result,
     _timeline_summary,
 )
-from .programs import LAST_PROGRAM_MESSAGE
+from .programs import LAST_PROGRAM_MESSAGE, ProgramsRefused, dependents_of
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -422,8 +422,10 @@ class SaveProgramTool(_WriteTool):
     description = (
         "Save a watering program, in the shape PreviewProgram takes: with the "
         "id of an existing program it replaces it, without one it is added. "
-        "Refused when a zone it names matches none. Returns the program as "
-        "saved and its run, as PreviewProgram does."
+        "Refused when a zone it names matches none, when its `after` "
+        "schedules would make programs start each other in a loop, or name a "
+        "program that does not exist. Returns the program as saved and its "
+        "run, as PreviewProgram does."
     )
     parameters = _parameters({vol.Required("program"): dict})
 
@@ -452,7 +454,10 @@ class SaveProgramTool(_WriteTool):
         else:
             # The program it replaces keeps its id, renamed or not.
             programs[index] = {**program, const.PROGRAM_ID: given}
-        await coordinator.async_update_config({const.CONF_PROGRAMS: programs})
+        try:
+            await coordinator.async_update_config({const.CONF_PROGRAMS: programs})
+        except ProgramsRefused as e:
+            return _error(f"Not saved: {e}")
         _LOGGER.info("An assistant saved program %s", program.get(const.PROGRAM_NAME))
         timeline = preview.pop("timeline")
         preview["total_seconds"] = timeline.get("total")
@@ -470,7 +475,8 @@ class DeleteProgramTool(_DeleteTool):
     name = "DeleteProgram"
     description = (
         "Delete a watering program and its schedules (not the last one left: "
-        "switch its schedules off instead): confirm with the user first."
+        "switch its schedules off instead; nor one that another program starts "
+        "after: change that schedule first): confirm with the user first."
     )
     parameters = _parameters({vol.Required("program_id"): str})
 
@@ -485,7 +491,15 @@ class DeleteProgramTool(_DeleteTool):
             return _error("No such program")
         if not kept:
             return _error(LAST_PROGRAM_MESSAGE)
-        await coordinator.async_update_config({const.CONF_PROGRAMS: kept})
+        if dependents_of(kept, program_id):
+            names = ", ".join(f'"{n}"' for n in dependents_of(kept, program_id))
+            return _error(
+                f"Not deleted: {names} starts after it. Change that schedule first"
+            )
+        try:
+            await coordinator.async_update_config({const.CONF_PROGRAMS: kept})
+        except ProgramsRefused as e:
+            return _error(f"Not deleted: {e}")
         _LOGGER.info("An assistant deleted program %s", program_id)
         return _result({"deleted": program_id})
 

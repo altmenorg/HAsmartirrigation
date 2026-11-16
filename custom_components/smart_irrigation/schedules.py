@@ -29,6 +29,15 @@ time (a day is a local date, not 24 hours: the clock changes twice a year).
 * **Weather**: whether the skip conditions (rain, frost, wind, a moist soil)
   apply to the run. They do by default, since that is what Smart Irrigation is
   for; a greenhouse drip line can turn them off.
+* **After a program**: a schedule of the type ``after`` has no moment of its
+  own. It starts its program ``offset_minutes`` (0 or more) after another
+  program (``after_program``, its id) has really watered and finished, the way
+  backup jobs are chained. It always starts then (the anchor is "start"), its
+  day filters are judged on the day the chained start falls on, and its weather
+  is judged when it starts, as for any schedule. Nothing arms it ahead:
+  ``next_fire`` has nothing for it, the runner's finish starts it
+  (program_scheduler.py), and a loop of programs starting each other is
+  refused at save (programs.py).
 
 What fired last is not kept here: ``next_fire`` is handed the target of the
 last occurrence that ran and moves on to the next one. A schedule that is
@@ -47,7 +56,8 @@ from . import const
 
 SCHEDULE_TYPE_TIME = "time"
 SCHEDULE_TYPE_SUN = "sun"
-SCHEDULE_TYPES = (SCHEDULE_TYPE_TIME, SCHEDULE_TYPE_SUN)
+SCHEDULE_TYPE_AFTER = "after"
+SCHEDULE_TYPES = (SCHEDULE_TYPE_TIME, SCHEDULE_TYPE_SUN, SCHEDULE_TYPE_AFTER)
 ANCHOR_START = "start"
 ANCHOR_END = "end"
 ANCHORS = (ANCHOR_START, ANCHOR_END)
@@ -218,6 +228,16 @@ def normalize_schedule(
         const.SCHEDULE_UNTIL: _month_day(schedule.get(const.SCHEDULE_UNTIL)),
         const.SCHEDULE_WEATHER: schedule.get(const.SCHEDULE_WEATHER) is not False,
     }
+    if schedule_type == SCHEDULE_TYPE_AFTER:
+        # Right after the other program, or later: never before it has ended,
+        # which is not known ahead. The anchor is the start, so nothing is
+        # placed from an end that depends on another program.
+        after = str(schedule.get(const.SCHEDULE_AFTER_PROGRAM) or "").strip()
+        stored[const.SCHEDULE_AFTER_PROGRAM] = after or None
+        stored[const.SCHEDULE_OFFSET_MINUTES] = max(
+            0, stored[const.SCHEDULE_OFFSET_MINUTES]
+        )
+        stored[const.SCHEDULE_ANCHOR] = ANCHOR_START
     if stored[const.SCHEDULE_EVENT] == "azimuth":
         try:
             bearing = float(schedule.get(const.SCHEDULE_AZIMUTH, DEFAULT_AZIMUTH))
@@ -241,7 +261,7 @@ def normalize_schedule(
     if conditions is not None:
         stored[const.SCHEDULE_SKIP_CONDITIONS] = conditions
     fallback = _fallback_time(schedule.get(const.SCHEDULE_FALLBACK_TIME))
-    if fallback:
+    if fallback and schedule_type != SCHEDULE_TYPE_AFTER:
         stored[const.SCHEDULE_FALLBACK_TIME] = fallback
     return stored
 
@@ -391,6 +411,9 @@ def next_fire(
     now = now.astimezone(UTC)
     if schedule.get(const.SCHEDULE_ENABLED) is False:
         return None
+    if schedule.get(const.SCHEDULE_TYPE) == SCHEDULE_TYPE_AFTER:
+        # Started by the other program's finish, not by the clock.
+        return None
     end_anchored = schedule.get(const.SCHEDULE_ANCHOR) == ANCHOR_END
     if end_anchored and total_seconds <= 0:
         # Nothing to water means nothing to place from the end.
@@ -442,3 +465,38 @@ def upcoming(
         last = result["target"]
         if len(found) > 200:  # a schedule that fires every day for months
             return found
+
+
+# --- after another program ------------------------------------------------------
+
+
+def is_after_program(schedule) -> bool:
+    """Whether a schedule starts its program after another program."""
+    return (
+        isinstance(schedule, dict)
+        and schedule.get(const.SCHEDULE_TYPE) == SCHEDULE_TYPE_AFTER
+    )
+
+
+def after_program_of(schedule) -> str | None:
+    """The id of the program an "after" schedule waits for, or None."""
+    if not is_after_program(schedule):
+        return None
+    return schedule.get(const.SCHEDULE_AFTER_PROGRAM) or None
+
+
+def chained_start(schedule: dict, finished: datetime, tz) -> datetime | None:
+    """When an "after" schedule starts once its program's predecessor finished.
+
+    ``finished`` is the predecessor's end; the start is its offset later, and
+    None when the schedule's days do not hold on the local day that start
+    falls on (a run that ends at 23:50 with a 20 minute offset is judged on
+    the next day), or when it is switched off.
+    """
+    if not is_after_program(schedule) or schedule.get(const.SCHEDULE_ENABLED) is False:
+        return None
+    offset = max(0, int(schedule.get(const.SCHEDULE_OFFSET_MINUTES) or 0))
+    start = finished.astimezone(UTC) + timedelta(minutes=offset)
+    if not occurs_on(schedule, start.astimezone(tz).date()):
+        return None
+    return start

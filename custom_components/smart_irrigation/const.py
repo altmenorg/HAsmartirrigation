@@ -171,6 +171,10 @@ OWED_RESUME_MAX_AGE_SECONDS = 30 * 3600
 CONF_QUEUED_MANUAL_RUNS = "queued_manual_runs"
 # A queued run older than this is dropped at startup (it is not wanted any more).
 QUEUED_RUN_MAX_AGE_SECONDS = 6 * 3600
+# The starts of "after a program" schedules waiting for their offset, kept so a
+# restart does not lose them: [{"program_id": "b", "schedule_id": "schedule_1",
+# "after_program": "a", "due": iso}].
+CONF_PENDING_CHAINED_STARTS = "pending_chained_starts"
 # A runtime adjustment of the duration of a program, set by the adjust_program
 # service: {"evening": {"percent": 120.0, "seconds": None, "until": iso}}. Kept
 # apart from the programs, which the panel sends back whole.
@@ -306,6 +310,9 @@ SKIP_CONDITION_IDS = (
 SKIP_CONDITION_ALWAYS = "postponed"
 # An end-anchored schedule whose finish is a hard limit: the run is cut there.
 SCHEDULE_HARD_DEADLINE = "hard_deadline"
+# A schedule of the type "after" starts its program when another program has
+# really watered and finished: the id of that program (see schedules.py).
+SCHEDULE_AFTER_PROGRAM = "after_program"
 # Why a run was cut short, in the program_finished event and the log.
 CUT_REASON_DEADLINE = "deadline"
 # Keys inside a supply of the full controller (see supplies.py).

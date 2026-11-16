@@ -94,6 +94,20 @@ class ProgramRun:
         self.requested: str | None = None
         self.queued = False
 
+    def really_ran(self) -> bool:
+        """Whether the run counts as having watered, for what starts after it.
+
+        At least one zone watered, and the run went to its end or was cut by
+        its hard deadline (the time it had was used). Stopped any other way (by
+        hand, by stop_watering, replaced by another run, or its program deleted,
+        suspended or switched off while it ran), it does not: whoever stopped
+        the watering did not want the next program either. A run skipped by the
+        weather, suspended or with nothing to water never got here.
+        """
+        if self.stop.is_set() and not self.cut:
+            return False
+        return any(result.get("ran") for result in self.results)
+
 
 def program_run_records(value) -> dict:
     """The record of the programs a restart interrupted: {program id: record}.
@@ -388,6 +402,7 @@ class ProgramRunnerMixin:
         registry[run.program_id] = run
         cancelled = False
         watcher = None
+        finished_plan = False
         try:
             if run.queued:
                 await self._persist_manual_queue()
@@ -434,6 +449,7 @@ class ProgramRunnerMixin:
                     watcher = asyncio.ensure_future(self._watch_deadline(run))
                 await self._execute_plan(run, plan, tour, step)
                 self._report_program_finished(run)
+                finished_plan = True
         except asyncio.CancelledError:
             # A restart or a reload: the record stays, for the next start.
             cancelled = True
@@ -454,6 +470,20 @@ class ProgramRunnerMixin:
                 if run.queued:
                     # Stopped or dequeued while it waited: out of the record too.
                     await self._persist_manual_queue()
+                # The programs that start after this one (schedules of the type
+                # "after"), once its turn is given back: a chained run on the
+                # same supply takes it next. Manual runs count as much as
+                # scheduled ones.
+                start_after = getattr(self, "async_start_programs_after", None)
+                if finished_plan and start_after is not None and run.really_ran():
+                    try:
+                        await start_after(run.program_id, dt_util.utcnow())
+                    except Exception as e:  # noqa: BLE001 - the run is over
+                        _LOGGER.error(
+                            "Program %s: could not start what comes after it: %s",
+                            run.program_id,
+                            e,
+                        )
 
     # --- the hard deadline ---------------------------------------------------
 

@@ -45,6 +45,11 @@ import "./program-flow";
 import { programFlow } from "../../data/program-flow";
 import { Timeline } from "../../data/timeline";
 import { programFromYaml, programToYaml } from "../../data/program-yaml";
+import {
+  afterIsMissing,
+  dependentsOf,
+  wouldLoop,
+} from "../../data/program-chain";
 import { notifyTargets } from "../../data/notify-targets";
 import "../../dialogs/trigger-dialog";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
@@ -147,6 +152,10 @@ interface ProgramPreview {
   unknown_zones: number[];
   unknown_zone_names: string[];
   zones_not_watered: { zone_id: number; zone: string | null }[];
+  /** Names of the programs that would start each other in a loop, or null. */
+  chain_loop?: string[] | null;
+  /** What an "after" schedule names that is no program. */
+  unknown_after_programs?: string[];
 }
 
 /**
@@ -1073,6 +1082,23 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     ${this._programLabel(item.program_id, item.program)}
                     (${clock(item.start)} - ${clock(item.end)})
                   </div>
+                  ${item.after
+                    ? html`<div class="setting-note">
+                        ${(item.after.offset_minutes
+                          ? t("after_program_offset").replace(
+                              "{minutes}",
+                              String(item.after.offset_minutes),
+                            )
+                          : t("after_program")
+                        ).replace(
+                          "{program}",
+                          this._programLabel(
+                            item.after.program_id,
+                            item.after.program,
+                          ),
+                        )}
+                      </div>`
+                    : ""}
                   ${item.waits_for
                     ? html`<div class="setting-note">
                         ${t("waits_for")
@@ -1620,7 +1646,35 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         : step.mode === "percent"
           ? `${t("mode_calculated_short")} × ${step.percent} %`
           : t("mode_calculated_short");
+    // The program an "after" schedule follows, by its name.
+    const afterName = (schedule: SmartIrrigationSchedule) => {
+      const found = programs.find(
+        (p) => p.id !== undefined && p.id === schedule.after_program,
+      );
+      return found ? programName(found) : t("after_missing_short");
+    };
     const scheduleText = (schedule: SmartIrrigationSchedule) => {
+      if (schedule.type === "after") {
+        const after = t("summary_after").replace(
+          "{program}",
+          afterName(schedule),
+        );
+        const late = schedule.offset_minutes
+          ? ` +${schedule.offset_minutes} min`
+          : "";
+        // Every day is when the other program runs: only narrowed days say so.
+        const limited =
+          ((schedule.weekdays || []).length > 0 &&
+            (schedule.weekdays || []).length < 7) ||
+          (schedule.every_n_days ?? 1) > 1 ||
+          schedule.parity === "even" ||
+          schedule.parity === "odd" ||
+          (schedule.days_of_month || []).length > 0 ||
+          (schedule.months || []).length > 0 ||
+          !!schedule.from_date ||
+          !!schedule.until_date;
+        return `${after}${late}${limited ? ` · ${t("more_options_set")}` : ""}`;
+      }
       const anchor = schedule.anchor === "end" ? "end" : "start";
       const offset = schedule.offset_minutes
         ? ` ${schedule.offset_minutes > 0 ? "+" : ""}${schedule.offset_minutes} min`
@@ -1811,8 +1865,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ]
         : [];
       const notWatered = found?.zones_not_watered || [];
+      // What a save would refuse: programs starting each other in a loop,
+      // or one that waits for a program that is not there.
+      const loop = found?.chain_loop || null;
+      const unknownAfter = found?.unknown_after_programs || [];
       const apply = () => {
-        if (!found) return;
+        if (!found || loop || unknownAfter.length) return;
         const cleaned = { ...found.program };
         if (index === null) {
           // A new program is unfolded on its form, its timeline at the top.
@@ -1852,6 +1910,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               ${t("yaml_unknown_zones").replace("{zones}", problems.join(", "))}
             </div>`
           : ""}
+        ${loop
+          ? html`<div class="setting-hint row-hint warning-hint">
+              ${t("yaml_chain_loop").replace("{programs}", loop.join(" → "))}
+            </div>`
+          : ""}
+        ${unknownAfter.length
+          ? html`<div class="setting-hint row-hint warning-hint">
+              ${t("yaml_unknown_after").replace(
+                "{programs}",
+                unknownAfter.map((p) => `"${p}"`).join(", "),
+              )}
+            </div>`
+          : ""}
         ${notWatered.length
           ? html`<div class="setting-hint row-hint warning-hint">
               ${t("yaml_not_watered").replace(
@@ -1869,14 +1940,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             t("yaml_apply"),
             apply,
             false,
-            !edit.valid || !found || !!edit.error,
+            !edit.valid ||
+              !found ||
+              !!edit.error ||
+              !!loop ||
+              unknownAfter.length > 0,
           )}
         </div>
       `;
     };
     const yamlButton = (program: SmartIrrigationProgram) =>
       html`${this._actionBtn(mdiCodeBraces, t("yaml_edit"), () =>
-        openYaml(program.id ?? "", programToYaml(program, this.zones)),
+        openYaml(
+          program.id ?? "",
+          programToYaml(program, this.zones, programs),
+        ),
       )} `;
 
     // In YAML, the button that was "Edit in YAML" goes back to the form.
@@ -2164,6 +2242,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             n === scheduleIndex ? { ...s, ...changes } : s,
           ),
         });
+      // The programs this one may start after: not itself, and none that
+      // already waits for it (they would start each other in a loop).
+      const followable = programs.filter(
+        (p) =>
+          p.id !== undefined &&
+          p.id !== program.id &&
+          !wouldLoop(programs, program.id ?? "", p.id),
+      );
       // All the conditions, some of them (the list), or no weather at all.
       const weatherMode =
         schedule.weather === false
@@ -2216,9 +2302,29 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               >
                 ${t("moment_azimuth")}
               </option>
+              <option
+                value="after"
+                ?selected=${schedule.type === "after"}
+                ?disabled=${!followable.length && schedule.type !== "after"}
+              >
+                ${t("moment_after")}
+              </option>
             `,
             (e: Event) => {
               const value = (e.target as HTMLSelectElement).value;
+              if (value === "after") {
+                // It starts after the other program: never before its end,
+                // and the moment is its start.
+                patchSchedule({
+                  type: "after",
+                  after_program:
+                    schedule.after_program ?? followable[0]?.id ?? null,
+                  anchor: "start",
+                  hard_deadline: false,
+                  offset_minutes: Math.max(0, schedule.offset_minutes || 0),
+                });
+                return;
+              }
               patchSchedule(
                 value === "time"
                   ? { type: "time" }
@@ -2232,6 +2338,64 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               );
             },
           )}
+          ${schedule.type === "after"
+            ? html`${this._selectRow(
+                html`${t("schedule_after_program")}<si-info
+                    >${t("schedule_after_program_help")}</si-info
+                  >`,
+                html`${afterIsMissing(programs, schedule)
+                  ? html`<option value="" selected disabled>
+                      ${t("after_missing_short")}
+                    </option>`
+                  : ""}
+                ${programs
+                  .filter((p) => p.id !== undefined && p.id !== program.id)
+                  .map(
+                    (p) =>
+                      html`<option
+                        value=${p.id!}
+                        ?selected=${p.id === schedule.after_program}
+                        ?disabled=${wouldLoop(
+                          programs,
+                          program.id ?? "",
+                          p.id!,
+                        )}
+                      >
+                        ${programName(p)}${wouldLoop(
+                          programs,
+                          program.id ?? "",
+                          p.id!,
+                        )
+                          ? ` (${t("after_would_loop")})`
+                          : ""}
+                      </option>`,
+                  )}`,
+                (e: Event) =>
+                  patchSchedule({
+                    after_program:
+                      (e.target as HTMLSelectElement).value || null,
+                  }),
+              )}
+              ${afterIsMissing(programs, schedule)
+                ? html`<div class="setting-hint row-hint warning-hint">
+                    ${t("after_missing")}
+                  </div>`
+                : ""}
+              ${this._numRow(
+                html`${t("schedule_after_offset")}<si-info
+                    >${t("schedule_after_offset_help")}</si-info
+                  >`,
+                localize("common.units.minutes", lang),
+                schedule.offset_minutes,
+                (v) =>
+                  patchSchedule({
+                    offset_minutes: Math.max(0, Math.round(num(v))),
+                  }),
+                1,
+                false,
+                0,
+              )}`
+            : ""}
           ${schedule.type === "sun" && schedule.event === "azimuth"
             ? html`${this._numRow(
                 html`${t("schedule_azimuth")}<si-info
@@ -2249,31 +2413,51 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ? this._timeRow(t("schedule_time"), schedule.time, (v) =>
                 patchSchedule({ time: v }),
               )
-            : this._numRow(
-                t("schedule_offset"),
-                localize("common.units.minutes", lang),
-                schedule.offset_minutes,
-                (v) => patchSchedule({ offset_minutes: Math.round(num(v)) }),
+            : schedule.type === "sun"
+              ? this._numRow(
+                  t("schedule_offset"),
+                  localize("common.units.minutes", lang),
+                  schedule.offset_minutes,
+                  (v) => patchSchedule({ offset_minutes: Math.round(num(v)) }),
+                )
+              : ""}
+          ${schedule.type === "after"
+            ? // Locked: the program starts after the other one, the end of a
+              // run that has not happened yet cannot be aimed at.
+              html`<div class="setting-row">
+                <div class="setting-label">
+                  ${t("schedule_anchor")}<si-info
+                    >${t("schedule_anchor_after_help")}</si-info
+                  >
+                </div>
+                <div class="select-wrap">
+                  <select class="field" disabled>
+                    <option selected>${t("anchor_start")}</option>
+                  </select>
+                  <svg class="chev" viewBox="0 0 24 24">
+                    <path d=${mdiMenuDown}></path>
+                  </svg>
+                </div>
+              </div>`
+            : this._selectRow(
+                html`${t("schedule_anchor")}<si-info
+                    >${t("schedule_anchor_help")}</si-info
+                  >`,
+                html`
+                  <option value="start" ?selected=${schedule.anchor !== "end"}>
+                    ${t("anchor_start")}
+                  </option>
+                  <option value="end" ?selected=${schedule.anchor === "end"}>
+                    ${t("anchor_end")}
+                  </option>
+                `,
+                (e: Event) =>
+                  patchSchedule({
+                    anchor: (e.target as HTMLSelectElement).value as
+                      | "start"
+                      | "end",
+                  }),
               )}
-          ${this._selectRow(
-            html`${t("schedule_anchor")}<si-info
-                >${t("schedule_anchor_help")}</si-info
-              >`,
-            html`
-              <option value="start" ?selected=${schedule.anchor !== "end"}>
-                ${t("anchor_start")}
-              </option>
-              <option value="end" ?selected=${schedule.anchor === "end"}>
-                ${t("anchor_end")}
-              </option>
-            `,
-            (e: Event) =>
-              patchSchedule({
-                anchor: (e.target as HTMLSelectElement).value as
-                  | "start"
-                  | "end",
-              }),
-          )}
           <div class="setting-row">
             <div class="setting-label">
               ${t("schedule_weekdays")}<si-info
@@ -2817,28 +3001,50 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       ${
                         // The last program cannot be deleted (the backend
                         // refuses it too): switch its schedules off instead.
-                        programs.length > 1
+                        // Nor one another program starts after: that
+                        // schedule would wait for nothing.
+                        programs.length > 1 &&
+                        dependentsOf(programs, program.id).length
                           ? html`<div class="si-actions">
                               ${this._actionBtn(
                                 mdiDelete,
                                 t("delete"),
-                                async () => {
-                                  if (
-                                    !(await this._ask(
-                                      t("confirm_delete_program").replace(
-                                        "{name}",
-                                        program.name,
-                                      ),
-                                      true,
-                                    ))
-                                  )
-                                    return;
-                                  save(programs.filter((_, n) => n !== index));
-                                },
+                                () => undefined,
                                 true,
-                              )}
+                                true,
+                              )}<si-info
+                                >${t("delete_blocked_after").replace(
+                                  "{programs}",
+                                  dependentsOf(programs, program.id)
+                                    .map((p) => programName(p))
+                                    .join(", "),
+                                )}</si-info
+                              >
                             </div>`
-                          : ""
+                          : programs.length > 1
+                            ? html`<div class="si-actions">
+                                ${this._actionBtn(
+                                  mdiDelete,
+                                  t("delete"),
+                                  async () => {
+                                    if (
+                                      !(await this._ask(
+                                        t("confirm_delete_program").replace(
+                                          "{name}",
+                                          program.name,
+                                        ),
+                                        true,
+                                      ))
+                                    )
+                                      return;
+                                    save(
+                                      programs.filter((_, n) => n !== index),
+                                    );
+                                  },
+                                  true,
+                                )}
+                              </div>`
+                            : ""
                       }
                     `,
               )}

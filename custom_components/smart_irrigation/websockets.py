@@ -37,7 +37,7 @@ from .engine_binding import (
 from .master_switch import irrigation_off, watering_off
 from .planning_sequence import sequence_planning
 from .presets import apply_preset, describe_zone
-from .programs import LastProgramError
+from .programs import ProgramsRefused
 from .skip_conditions import SkipConditionsMixin, thresholds_for_display
 from .units import zone_from_display, zone_to_display
 
@@ -176,7 +176,7 @@ class SmartIrrigationConfigView(HomeAssistantView):
         coordinator = hass.data[const.DOMAIN]["coordinator"]
         try:
             await coordinator.async_update_config(data)
-        except LastProgramError as err:
+        except ProgramsRefused as err:
             # Refused with its reason, which the panel shows.
             return self.json_message(str(err), HTTPStatus.BAD_REQUEST)
         async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")

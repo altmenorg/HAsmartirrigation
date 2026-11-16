@@ -186,7 +186,10 @@ export interface SmartIrrigationStep {
 export interface SmartIrrigationSchedule {
   id?: string;
   enabled: boolean;
-  type: "time" | "sun";
+  /** "after": started when another program has really watered and finished. */
+  type: "time" | "sun" | "after";
+  /** With the type "after": the id of the program it starts after. */
+  after_program?: string | null;
   time: string;
   event: "sunrise" | "sunset" | "azimuth";
   /** With the event azimuth: the sun's bearing, degrees from north. */

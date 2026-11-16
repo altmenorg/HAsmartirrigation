@@ -177,3 +177,67 @@ describe("the program that was the main one, in YAML", () => {
     });
   });
 });
+
+describe("a schedule that starts after another program, in YAML", () => {
+  const chained: any = {
+    ...program,
+    id: "pots",
+    name: "Pots",
+    schedules: [
+      {
+        ...program.schedules[0],
+        id: "schedule_1",
+        type: "after",
+        after_program: "evening",
+        offset_minutes: 15,
+        anchor: "start",
+        hard_deadline: false,
+        weekdays: [],
+      },
+    ],
+  };
+
+  it("names the program it follows, after its type, without a moment", () => {
+    const yaml: any = programToYaml(chained, zones, [program, chained]);
+    expect(yaml.schedules).toEqual([
+      {
+        id: "schedule_1",
+        type: "after",
+        after_program: "Evening",
+        offset_minutes: 15,
+      },
+    ]);
+    expect(Object.keys(yaml.schedules[0])).toEqual([
+      "id",
+      "type",
+      "after_program",
+      "offset_minutes",
+    ]);
+  });
+
+  it("writes the id when the name is shared, or the program is gone", () => {
+    const twin = { ...program, id: "evening_2" };
+    expect(
+      (programToYaml(chained, zones, [program, twin, chained]) as any)
+        .schedules[0].after_program,
+    ).toBe("evening");
+    const gone = {
+      ...chained,
+      schedules: [{ ...chained.schedules[0], after_program: "gone" }],
+    };
+    expect(
+      (programToYaml(gone, zones, [gone]) as any).schedules[0].after_program,
+    ).toBe("gone");
+  });
+
+  it("is not written on a schedule of another type", () => {
+    const timed = {
+      ...program,
+      schedules: [{ ...program.schedules[0], after_program: "evening" }],
+    };
+    expect(
+      "after_program" in
+        (programToYaml(timed, zones, [program]) as any).schedules[0],
+    ).toBe(false);
+  });
+});

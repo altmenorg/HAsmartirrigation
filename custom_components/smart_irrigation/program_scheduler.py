@@ -28,6 +28,14 @@ What the learning from the fork this was modelled on says is done here:
 
 The weather gate is the one the start trigger uses: the same decision, made once
 a day, and the same holds on the zones the run is about to water.
+
+A schedule of the type "after" has no timer: the runner calls
+``async_start_programs_after`` when a program has really watered and finished
+(ProgramRun.really_ran), and the programs whose schedules wait for it start
+then, or their offset later. A start waiting for its offset is recorded
+(``CONF_PENDING_CHAINED_STARTS``) so that a restart arms it again; one that
+came due while Home Assistant was down is started late within the catch-up
+window (CATCH_UP_GRACE_SECONDS), and dropped beyond it.
 """
 
 import asyncio
@@ -46,13 +54,22 @@ from .helpers import find_next_solar_azimuth_time
 from .master_switch import watering_off
 from .programs import (
     MAIN_PROGRAM_ID,
+    chain_loop,
     drop_below_deficit,
     find_program,
     needs_run_length,
     plan_program,
     plan_wall_seconds,
 )
-from .schedules import ANCHOR_END, next_fire, schedule_skip_conditions
+from .schedules import (
+    ANCHOR_END,
+    CATCH_UP_GRACE_SECONDS,
+    after_program_of,
+    chained_start,
+    is_after_program,
+    next_fire,
+    schedule_skip_conditions,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -119,6 +136,9 @@ class ProgramSchedulerMixin:
         programs = getattr(config, const.CONF_PROGRAMS, None) or []
         if not programs:
             return
+        if first:
+            # The starts after another program that a restart interrupted.
+            await self._restore_chained_starts()
         # The durations the runs will water, as the planning shows them (#912);
         # only a "done by" start depends on them, and the estimate is slow.
         zones = await self.store.async_get_zones()
@@ -146,6 +166,9 @@ class ProgramSchedulerMixin:
             )
             for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
                 if schedule.get(const.SCHEDULE_ENABLED) is False:
+                    continue
+                if is_after_program(schedule):
+                    # Started by the other program's finish, not by a timer.
                     continue
                 schedule_id = schedule.get(const.SCHEDULE_ID)
                 key = f"{program_id}:{schedule_id}"
@@ -347,6 +370,19 @@ class ProgramSchedulerMixin:
         await self.store.async_update_config({const.CONF_PROGRAM_LAST_RUNS: last_runs})
         await self.register_program_schedules()
 
+        await self._start_scheduled_run(
+            program_id, program, schedule, schedule_id, target, suspended
+        )
+
+    async def _start_scheduled_run(
+        self, program_id, program, schedule, schedule_id, target, suspended
+    ) -> None:
+        """Run a program a schedule started, its weather judged first.
+
+        The same for a schedule whose moment came and for one that starts after
+        another program: suspended, already running, held back by the weather
+        or not, and the day counted when a step really waters.
+        """
         name = program.get(const.PROGRAM_NAME) or program_id
         if suspended:
             _LOGGER.info("Program %s is suspended, its schedule passes", program_id)
@@ -416,6 +452,208 @@ class ProgramSchedulerMixin:
             **extra,
         )
 
+    # --- after another program -------------------------------------------------
+
+    def _chain_timers(self) -> dict:
+        """The timers of the starts waiting for their offset, by "program:schedule".
+
+        Apart from the schedules' timers, which every arming pass cancels: a
+        program edited during the wait must not lose the start that is owed.
+        """
+        timers = getattr(self, "_chained_start_timers", None)
+        if timers is None:
+            timers = self._chained_start_timers = {}
+        return timers
+
+    def async_teardown_chained_starts(self) -> None:
+        """Cancel the waiting starts, without firing any (called on unload).
+
+        They stay recorded: the next start of the integration arms them again.
+        """
+        for unsub in self._chain_timers().values():
+            unsub()
+        self._chain_timers().clear()
+
+    def _pending_chained(self) -> list:
+        stored = getattr(self.store.config, const.CONF_PENDING_CHAINED_STARTS, None)
+        return [e for e in stored or [] if isinstance(e, dict)]
+
+    async def _write_pending_chained(self, entries: list) -> None:
+        if entries == self._pending_chained():
+            return
+        await self.store.async_update_config(
+            {const.CONF_PENDING_CHAINED_STARTS: entries or None}
+        )
+
+    async def async_start_programs_after(self, program_id, finished) -> None:
+        """A program has really watered and finished: start what comes after it.
+
+        Every enabled "after" schedule waiting for ``program_id`` starts its own
+        program at ``finished`` plus its offset, if its days hold on the day of
+        that start. Called by the runner (program_runner.py), for a manual run
+        as for a scheduled one.
+        """
+        config = self.store.config
+        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
+            return
+        programs = getattr(config, const.CONF_PROGRAMS, None) or []
+        loop = set(chain_loop(programs) or ())
+        tz = dt_util.get_default_time_zone()
+        pending = self._pending_chained()
+        changed = False
+        for program in programs:
+            chained_id = program.get(const.PROGRAM_ID)
+            for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
+                if after_program_of(schedule) != program_id:
+                    continue
+                if schedule.get(const.SCHEDULE_ENABLED) is False:
+                    continue
+                schedule_id = schedule.get(const.SCHEDULE_ID)
+                if chained_id in loop:
+                    # Refused at save; a store from before that check could
+                    # still hold one, and it would water round and round.
+                    _LOGGER.warning(
+                        "Program %s: schedule %s is part of a loop of programs "
+                        "starting each other, not started",
+                        chained_id,
+                        schedule_id,
+                    )
+                    continue
+                due = chained_start(schedule, finished, tz)
+                if due is None:
+                    _LOGGER.info(
+                        "Program %s: schedule %s does not run on that day, not "
+                        "started after %s",
+                        chained_id,
+                        schedule_id,
+                        program_id,
+                    )
+                    continue
+                entry = {
+                    "program_id": chained_id,
+                    "schedule_id": schedule_id,
+                    "after_program": program_id,
+                    "due": due.isoformat(),
+                }
+                key = f"{chained_id}:{schedule_id}"
+                # A newer finish replaces a start still waiting (the first
+                # program was run again by hand meanwhile).
+                pending = [e for e in pending if _pending_key(e) != key]
+                pending.append(entry)
+                changed = True
+                old = self._chain_timers().pop(key, None)
+                if old is not None:
+                    old()
+                _LOGGER.info(
+                    "Program %s starts after %s (schedule %s) at %s",
+                    chained_id,
+                    program_id,
+                    schedule_id,
+                    dt_util.as_local(due).strftime("%H:%M"),
+                )
+                self._arm_chained_start(entry, due)
+        if changed:
+            await self._write_pending_chained(pending)
+
+    def _arm_chained_start(self, entry: dict, due) -> None:
+        if due <= dt_util.utcnow():
+            # Tracked, so a reload cancels the run with the others.
+            self._spawn_valve_run(self._fire_chained_start(entry))
+            return
+        self._chain_timers()[_pending_key(entry)] = async_track_point_in_utc_time(
+            self.hass, partial(self._chained_start_due, entry), due
+        )
+
+    @callback
+    def _chained_start_due(self, entry, _now) -> None:
+        self._chain_timers().pop(_pending_key(entry), None)
+        self._spawn_valve_run(self._fire_chained_start(entry))
+
+    async def _restore_chained_starts(self) -> None:
+        """Arm again the starts after a program that a restart interrupted.
+
+        One whose moment came during the downtime is started now if it is at
+        most CATCH_UP_GRACE_SECONDS late, as a schedule's start would be, and
+        dropped beyond that.
+        """
+        now = dt_util.utcnow()
+        keep = []
+        for entry in self._pending_chained():
+            due = dt_util.parse_datetime(str(entry.get("due") or ""))
+            if due is None or not entry.get("program_id"):
+                continue
+            if due <= now - datetime.timedelta(seconds=CATCH_UP_GRACE_SECONDS):
+                _LOGGER.info(
+                    "Program %s: its start after %s (%s) is too far behind, " "dropped",
+                    entry.get("program_id"),
+                    entry.get("after_program"),
+                    dt_util.as_local(due).strftime("%H:%M"),
+                )
+                continue
+            keep.append((entry, due))
+        await self._write_pending_chained([entry for entry, _ in keep])
+        for entry, due in keep:
+            if _pending_key(entry) not in self._chain_timers():
+                self._arm_chained_start(entry, due)
+
+    async def _fire_chained_start(self, entry: dict) -> None:
+        """A start after another program is due: check it still holds, then run."""
+        config = self.store.config
+        program_id = entry.get("program_id")
+        schedule_id = entry.get("schedule_id")
+        key = _pending_key(entry)
+        due = dt_util.parse_datetime(str(entry.get("due") or ""))
+        # Out of the record first: whatever happens next, it has come.
+        await self._write_pending_chained(
+            [
+                e
+                for e in self._pending_chained()
+                if not (_pending_key(e) == key and e.get("due") == entry.get("due"))
+            ]
+        )
+        if due is None:
+            return
+        recorded = dt_util.parse_datetime(
+            (getattr(config, const.CONF_PROGRAM_LAST_RUNS, None) or {}).get(key) or ""
+        )
+        if recorded is not None and due <= recorded:
+            _LOGGER.debug("Schedule %s already ran for %s", key, due.isoformat())
+            return
+        program = find_program(getattr(config, const.CONF_PROGRAMS, None), program_id)
+        schedule = next(
+            (
+                s
+                for s in (program or {}).get(const.PROGRAM_SCHEDULES) or []
+                if s.get(const.SCHEDULE_ID) == schedule_id
+            ),
+            None,
+        )
+        # Edited meanwhile: switched off, or waiting for another program now.
+        if (
+            program is None
+            or schedule is None
+            or schedule.get(const.SCHEDULE_ENABLED) is False
+            or after_program_of(schedule) != entry.get("after_program")
+            or getattr(config, const.CONF_FULL_CONTROLLER, False) is not True
+        ):
+            _LOGGER.info("Schedule %s changed while it waited, not started", key)
+            return
+        if watering_off(config):
+            _LOGGER.info(
+                "Program %s: schedule %s reached but Smart Irrigation is switched "
+                "off; not run",
+                program_id,
+                schedule_id,
+            )
+            return
+        suspended = self.is_suspended(const.SUSPEND_PROGRAM, program_id)
+        last_runs = dict(getattr(config, const.CONF_PROGRAM_LAST_RUNS, None) or {})
+        last_runs[key] = due.isoformat()
+        await self.store.async_update_config({const.CONF_PROGRAM_LAST_RUNS: last_runs})
+        await self._start_scheduled_run(
+            program_id, program, schedule, schedule_id, due, suspended
+        )
+
     def _fire_legacy_start_event(self, program_id, name, schedule_id) -> None:
         """The start event the old main program's schedules fired, for its own.
 
@@ -436,3 +674,8 @@ class ProgramSchedulerMixin:
                 "schedule_id": schedule_id,
             },
         )
+
+
+def _pending_key(entry: dict) -> str:
+    """The "program:schedule" a recorded start after a program is for."""
+    return f"{entry.get('program_id')}:{entry.get('schedule_id')}"

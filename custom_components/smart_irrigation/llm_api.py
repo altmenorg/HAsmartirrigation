@@ -54,8 +54,15 @@ Programs (mode `water`): a program is an ordered list of steps; a step is \
 one zone, or several watered together. A step takes the duration Smart \
 Irrigation calculated unless it is a percent of it or a fixed number of \
 seconds. Schedules say when a program starts (or must be done); a program \
-whose schedules are all off starts only when run by hand. All programs are \
-equal: a zone is watered only by the programs whose steps name it.
+whose schedules are all off starts only when run by hand. A schedule of the \
+type `after` (with `after_program`, the id of another program, and \
+`offset_minutes`, 0 or more) starts its program that many minutes after the \
+other program has really watered and finished, by hand or scheduled; not when \
+that one was held back by the weather, suspended, had nothing to water or was \
+stopped. Its days and weather still apply. Programs cannot start after each \
+other in a loop, and a program another one starts after cannot be deleted. \
+All programs are equal: a zone is watered only by the programs whose steps \
+name it.
 
 Durations are in seconds and depths in mm unless a field says otherwise. \
 Weekdays are numbered from 0 (Monday) to 6 (Sunday). No tool here runs a \
@@ -302,7 +309,9 @@ class PreviewProgramTool(_ReadOnlyTool):
         "Returns the program as it would be stored, each zone's start, end and "
         "seconds of water in a run, the total, zone names that matched no "
         "zone, and zones the run leaves out (no valve, or disabled). Nothing is "
-        "saved and no valve opens. A step names its zones by name or id."
+        "saved and no valve opens. A step names its zones by name or id; an "
+        "`after` schedule names the program it follows in after_program, by id "
+        "or name."
     )
     parameters = _parameters({vol.Required("program"): dict})
 

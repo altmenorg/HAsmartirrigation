@@ -11,8 +11,14 @@ those zones get their water twice that morning, which nothing said (UX walk of
 This places each run after the ones still watering when it comes due, and
 names the zones it waters again right after them. It only reads the planning:
 what the runner does is unchanged.
+
+A run that starts after another program (``after_run`` names the planned run it
+follows, ``after`` the program and the offset) is placed once that run is: at
+the moment it really ends plus the offset, its ``start`` and ``end`` moved with
+it, since that is the only moment it has.
 """
 
+import heapq
 from collections.abc import Callable
 from datetime import datetime, timedelta
 
@@ -64,38 +70,86 @@ def sequence_planning(
         moment = _moment(item.get("start"))
         return moment.timestamp() if moment is not None else float("inf")
 
-    items = sorted(planned, key=soonest)
+    keys_known = {item.get("run_key") for item in planned if item.get("run_key")}
+    # The runs that follow another one wait for it to be placed.
+    following: dict = {}
+    first = []
+    for item in planned:
+        if item.get("after_run") and item["after_run"] in keys_known:
+            following.setdefault(item["after_run"], []).append(item)
+        else:
+            first.append(item)
+    order = 0
+    heap: list = []
+    for item in first:
+        heap.append((soonest(item), order, item))
+        order += 1
+    heapq.heapify(heap)
+    items: list = []
     # The runs placed so far: (program, its zones, when it ends, its supplies).
     ahead: list = []
-    for item in items:
-        start = _moment(item.get("start"))
-        end = _moment(item.get("end"))
-        item["waits_for"] = None
-        item["expected_start"] = item.get("start")
-        item["expected_end"] = item.get("end")
-        item["watered_twice"] = []
-        if start is None or end is None:
-            continue
-        if item.get("nothing_to_water") or item.get("skipped_reason"):
-            continue
-        supplies = keys(item) if keys is not None else None
-        busy = [run for run in ahead if run[2] > start and clash(supplies, run[3])]
-        if busy:
-            program, _zones_before, until, _supplies = max(busy, key=lambda run: run[2])
-            length = max(timedelta(0), end - start)
-            start, end = until, until + length
-            item["waits_for"] = program
-            item["expected_start"] = start.isoformat()
-            item["expected_end"] = end.isoformat()
-            zones = _zones(item)
-            twice: list[dict] = []
-            for by, before, _until, _supplies in busy:
-                for zone_id in sorted(set(zones) & set(before)):
-                    if all(entry["zone_id"] != zone_id for entry in twice):
-                        twice.append(
-                            {"zone_id": zone_id, "zone": zones[zone_id], "by": by}
-                        )
-            item["watered_twice"] = twice
-        program = {"program_id": item.get("program_id"), "program": item.get("program")}
-        ahead.append((program, _zones(item), end, supplies))
+    while heap:
+        _soonest, _order, item = heapq.heappop(heap)
+        items.append(item)
+        _place(item, ahead, keys)
+        end = _moment(item.get("expected_end"))
+        for child in following.pop(item.get("run_key"), []):
+            if end is not None:
+                _follow(child, end)
+            heapq.heappush(heap, (soonest(child), order, child))
+            order += 1
+    # A run whose predecessor was never placed (it cannot be, but a list
+    # handed in by hand may say so) keeps its own moment.
+    for children in following.values():
+        for child in children:
+            items.append(child)
+            _place(child, ahead, keys)
     return items
+
+
+def _follow(item: dict, end: datetime) -> None:
+    """Move a run that starts after another to that one's end plus its offset."""
+    start = _moment(item.get("start"))
+    finish = _moment(item.get("end"))
+    length = (
+        max(timedelta(0), finish - start)
+        if start is not None and finish is not None
+        else timedelta(0)
+    )
+    offset = int((item.get("after") or {}).get("offset_minutes") or 0)
+    moved = end + timedelta(minutes=max(0, offset))
+    item["start"] = moved.isoformat()
+    item["target"] = moved.isoformat()
+    item["end"] = (moved + length).isoformat()
+
+
+def _place(item: dict, ahead: list, keys) -> None:
+    """Where one run waters, behind the runs placed before it on its supplies."""
+    start = _moment(item.get("start"))
+    end = _moment(item.get("end"))
+    item["waits_for"] = None
+    item["expected_start"] = item.get("start")
+    item["expected_end"] = item.get("end")
+    item["watered_twice"] = []
+    if start is None or end is None:
+        return
+    if item.get("nothing_to_water") or item.get("skipped_reason"):
+        return
+    supplies = keys(item) if keys is not None else None
+    busy = [run for run in ahead if run[2] > start and clash(supplies, run[3])]
+    if busy:
+        program, _zones_before, until, _supplies = max(busy, key=lambda run: run[2])
+        length = max(timedelta(0), end - start)
+        start, end = until, until + length
+        item["waits_for"] = program
+        item["expected_start"] = start.isoformat()
+        item["expected_end"] = end.isoformat()
+        zones = _zones(item)
+        twice: list[dict] = []
+        for by, before, _until, _supplies in busy:
+            for zone_id in sorted(set(zones) & set(before)):
+                if all(entry["zone_id"] != zone_id for entry in twice):
+                    twice.append({"zone_id": zone_id, "zone": zones[zone_id], "by": by})
+        item["watered_twice"] = twice
+    program = {"program_id": item.get("program_id"), "program": item.get("program")}
+    ahead.append((program, _zones(item), end, supplies))

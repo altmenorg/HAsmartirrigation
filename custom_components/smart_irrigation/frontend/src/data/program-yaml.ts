@@ -6,6 +6,9 @@
  * what comes back the way it cleans a save (program_preview), so a field left
  * out takes its default again. This is also the shape an assistant reads and
  * writes, so it has to say what the program does, not how it is stored.
+ *
+ * A schedule that starts after another program names it by name too (by id
+ * when two programs share the name); the backend turns it back into the id.
  */
 
 import { SmartIrrigationProgram, SmartIrrigationZone } from "../types";
@@ -61,7 +64,28 @@ const compact = (source: Plain, defaults: Plain, skip: string[] = []) => {
 export const programToYaml = (
   program: SmartIrrigationProgram,
   zones: SmartIrrigationZone[],
+  programs: SmartIrrigationProgram[] = [],
 ): Plain => {
+  const programRef = (id: string | null | undefined): string | null => {
+    if (!id) return null;
+    const found = programs.find((p) => p.id === id);
+    const name = String(found?.name ?? "").trim();
+    const same = programs.filter(
+      (p) =>
+        String(p.name ?? "")
+          .trim()
+          .toLowerCase() === name.toLowerCase(),
+    );
+    // A name another program has as its id would be read back as that one.
+    if (
+      !found ||
+      !name ||
+      same.length !== 1 ||
+      programs.some((p) => p.id === name)
+    )
+      return id;
+    return name;
+  };
   const counts = new Map<string, number>();
   for (const zone of zones) {
     const key = String(zone.name ?? "")
@@ -101,8 +125,30 @@ export const programToYaml = (
     return { ...ordered, ...plain };
   });
   out.schedules = (program.schedules || []).map((schedule) => {
+    if (schedule.type === "after") {
+      // No moment of its own: it starts (anchor) after the other program.
+      const plain = compact(schedule as unknown as Plain, SCHEDULE_DEFAULTS, [
+        "time",
+        "event",
+        "azimuth",
+        "anchor",
+        "fallback_time",
+        "hard_deadline",
+      ]);
+      // The program it follows reads right after the type.
+      const ordered: Plain = {};
+      for (const [key, value] of Object.entries(plain)) {
+        if (key === "after_program") continue;
+        ordered[key] = value;
+        if (key === "type")
+          ordered.after_program = programRef(schedule.after_program);
+      }
+      return ordered;
+    }
     const skip =
-      schedule.type === "sun" ? ["time"] : ["event", "offset_minutes"];
+      schedule.type === "sun"
+        ? ["time", "after_program"]
+        : ["event", "offset_minutes", "after_program"];
     return compact(schedule as unknown as Plain, SCHEDULE_DEFAULTS, skip);
   });
   if (program.notify?.targets?.length) out.notify = { ...program.notify };
