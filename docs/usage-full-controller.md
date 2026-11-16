@@ -183,7 +183,7 @@ The **Irrigate all zones** button of the hub device runs every zone that has a v
 
 ## Driving the watering
 
-The Programs card: each program's header row has its actions as icons, beside its name and its state (running, paused or waiting for its turn, with the step and the time left): **Run now**, **Stop this program** while it is under way, **Edit in YAML**, and the **Options for this run** (a total duration, and whether to replace what is running) for the next press of Run now. **Run every program now**, at the bottom of the card when there are several programs, starts them all as Run now would, each taking its turn: programs that share a supply wait for one another, the others water side by side. Pause, Next step and Stop for everything that is watering are on the [Home page](usage-info.md), while something waters. And these [services](usage-services.md):
+The Programs card: each program's header row has its actions as icons, beside its name and its state (running, paused or waiting for its turn, with the step and the time left): **Run now**, **Stop this program** while it is under way, **Edit in YAML**, and the **Options for this run** (a total duration, and whether to replace what is running) for the next press of Run now. Pause, Next step and Stop for everything that is watering are on the [Home page](usage-info.md), while something waters. And these [services](usage-services.md):
 
 | Service | What it does |
 | --- | --- |

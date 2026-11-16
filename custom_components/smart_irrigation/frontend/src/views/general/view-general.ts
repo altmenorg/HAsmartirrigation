@@ -110,7 +110,6 @@ import {
   mdiCodeBraces,
   mdiClose,
   mdiTune,
-  mdiPlaylistPlay,
 } from "@mdi/js";
 
 /**
@@ -1385,30 +1384,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       this.hass!.callService(DOMAIN, "stop_program", {
         program_id: program.id,
       }).then(() => this._fetchLive(false));
-    };
-    // Every program now, one after the other as "Run now" would start them:
-    // those that share a supply queue for their turn, the others water side
-    // by side. One under way already is left as it is.
-    const runnable = programs.filter((p) => programCanRun(p));
-    const runAll = async () => {
-      if (!(await this._ask(t("confirm_run_all")))) return;
-      const failed: string[] = [];
-      for (const program of runnable) {
-        if (isUnderWay(program)) continue;
-        try {
-          await this.hass!.callService(DOMAIN, "run_program", {
-            program_id: program.id,
-          });
-        } catch (err: any) {
-          failed.push(
-            t("run_failed")
-              .replace("{name}", programName(program))
-              .replace("{error}", err?.message ?? String(err)),
-          );
-        }
-      }
-      await this._fetchLive(false);
-      toast(failed.length ? failed.join(" ") : t("run_all_done"));
     };
     // Starting a program is what the page is opened for most: its button is in
     // the program's header row, with Stop beside it while it runs, Edit in YAML
@@ -3113,9 +3088,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         )}
         <div class="card-content">
           <div class="si-actions">
-            ${runnable.length > 1
-              ? this._actionBtn(mdiPlaylistPlay, t("run_all"), runAll)
-              : ""}
             ${this._actionBtn(mdiPlus, t("add"), () =>
               save([
                 ...programs,
