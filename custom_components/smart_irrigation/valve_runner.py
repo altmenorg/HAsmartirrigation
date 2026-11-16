@@ -25,6 +25,7 @@ The methods live on a mixin the SmartIrrigationCoordinator inherits.
 """
 
 import asyncio
+import contextlib
 import json
 import logging
 import math
@@ -35,9 +36,11 @@ from typing import Any, cast
 
 import homeassistant.util.dt as dt_util
 import voluptuous as vol
+from homeassistant.core import callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.start import async_at_started
 
 from . import const
 from .delivery import own_entities
@@ -1261,11 +1264,42 @@ class ValveRunnerMixin(
                 markers.pop(zone_id, None)
 
     def _spawn_valve_run(self, coro):
-        """Run a valve coroutine as a tracked background task (cancelled on unload)."""
-        task = self.hass.async_create_task(coro)
+        """Run a valve coroutine as a tracked background task (cancelled on unload).
+
+        A background task: Home Assistant's start does not wait for it. As a
+        plain task, a run begun while it started (a schedule catching up, a run
+        resumed after a restart) held the start up until the whole run was
+        over: no automation ran meanwhile, and a valve whose state only follows
+        once Home Assistant has started (a template switch) never reported
+        open, so each zone ended as a valve problem. Such a run now opens
+        nothing before Home Assistant has started.
+        """
+        task = self.hass.async_create_background_task(
+            self._once_started(coro), f"{const.DOMAIN} valve run"
+        )
         self._valve_run_tasks.add(task)
         task.add_done_callback(self._valve_run_tasks.discard)
         return task
+
+    async def _once_started(self, coro):
+        """Run ``coro`` once Home Assistant has started (at once if it has)."""
+        if not self.hass.is_running:
+            started = asyncio.get_running_loop().create_future()
+
+            @callback
+            def _started(_hass) -> None:
+                if not started.done():
+                    started.set_result(None)
+
+            unsub = async_at_started(self.hass, _started)
+            try:
+                await started
+            except BaseException:
+                with contextlib.suppress(Exception):
+                    unsub()
+                coro.close()
+                raise
+        return await coro
 
     def async_teardown_valve_runs(self) -> list:
         """Cancel any in-flight run tasks (called on unload).

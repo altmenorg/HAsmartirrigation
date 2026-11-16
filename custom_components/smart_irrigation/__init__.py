@@ -381,42 +381,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # keeping its entity_id and recorded history. Idempotent on later setups.
     await _migrate_duration_unique_ids(hass, entry, store)
 
-    _LOGGER.info("Calling async_forward_entry_setups")
-    await hass.config_entries.async_forward_entry_setups(
-        entry,
-        [PLATFORM, "number", "button", "binary_sensor", "switch", "datetime", "valve"],
-    )
-    _LOGGER.info("Finished calling async_forward_entry_setups")
-
-    # Every entity platform is now subscribed to "_register_entity"; replay the
-    # existing zones to all of them at once. Fired here (not from a single
-    # platform) so a second platform cannot miss the replay due to setup order.
-    async_dispatcher_send(hass, const.DOMAIN + "_platform_loaded")
-    # update listener for options flow
-    entry.async_on_unload(entry.add_update_listener(options_update_listener))
-
-    # Register the panel (frontend)
-    await async_register_panel(hass)
-    # The card is a convenience, never a reason for setup to fail.
-    await async_register_card(hass)
-
-    # Websocket support
-    await async_register_websockets(hass)
-
-    # Register custom services
-    register_services(hass)
-
-    # Finish up by setting factory defaults if needed for zones, mappings and modules
-    await store.set_up_factory_defaults()
-
-    # Initialize enhanced scheduling managers
-    await coordinator.recurring_schedule_manager.async_load_schedules()
-    await coordinator.seasonal_adjustment_manager.async_load_adjustments()
-
-    await coordinator.update_subscriptions()
-
     # Moved once to the one choice of 2026.11, before anything is armed: it
-    # keeps watering as it did (one_choice.py).
+    # keeps watering as it did (one_choice.py). Before the platforms are set
+    # up, since setting them up arms the start: after it, the first start after
+    # the update armed the 10.10 start trigger and could start its run, and the
+    # programs' schedules were only armed at the next calculation.
     try:
         changes = migration_changes(coordinator.store.config)
         if changes:
@@ -460,6 +429,40 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 )
     except Exception as err:  # noqa: BLE001 - never hold the setup up
         _LOGGER.warning("Could not convert the main program yet: %s", err)
+
+    _LOGGER.info("Calling async_forward_entry_setups")
+    await hass.config_entries.async_forward_entry_setups(
+        entry,
+        [PLATFORM, "number", "button", "binary_sensor", "switch", "datetime", "valve"],
+    )
+    _LOGGER.info("Finished calling async_forward_entry_setups")
+
+    # Every entity platform is now subscribed to "_register_entity"; replay the
+    # existing zones to all of them at once. Fired here (not from a single
+    # platform) so a second platform cannot miss the replay due to setup order.
+    async_dispatcher_send(hass, const.DOMAIN + "_platform_loaded")
+    # update listener for options flow
+    entry.async_on_unload(entry.add_update_listener(options_update_listener))
+
+    # Register the panel (frontend)
+    await async_register_panel(hass)
+    # The card is a convenience, never a reason for setup to fail.
+    await async_register_card(hass)
+
+    # Websocket support
+    await async_register_websockets(hass)
+
+    # Register custom services
+    register_services(hass)
+
+    # Finish up by setting factory defaults if needed for zones, mappings and modules
+    await store.set_up_factory_defaults()
+
+    # Initialize enhanced scheduling managers
+    await coordinator.recurring_schedule_manager.async_load_schedules()
+    await coordinator.seasonal_adjustment_manager.async_load_adjustments()
+
+    await coordinator.update_subscriptions()
 
     # Closed-loop bucket: start watching linked valves if the feature is enabled.
     await coordinator.async_setup_observed_watering()
@@ -767,20 +770,22 @@ class SmartIrrigationCoordinator(
                 const.START_EVENT_FIRED_TODAY: False,
                 const.START_EVENT_FIRED_ON: None,
             }
-            # The timers below are handed this copy and write it back whole:
-            # it has to say the same, or it puts the old flag back.
             the_config.update(cleared)
             hass.async_create_task(self.store.async_update_config(dict(cleared)))
 
+        # Fire-and-forget: the timers are set up in the background, from this
+        # copy of the configuration. They only set timers up and store nothing:
+        # the copy is older than what the setup stores meanwhile, and written
+        # back whole it undid it. With "clear weather data" on (the 10.10
+        # default) the first start after the update to 2026.11 lost the move to
+        # the one choice that way: the 10.10 start trigger was armed, and the
+        # move was made again at every start.
         if the_config[const.CONF_AUTO_UPDATE_ENABLED]:
-            # Fire-and-forget: schedule auto update timer setup in background
-            hass.loop.create_task(self.set_up_auto_update_time(the_config))
+            hass.loop.create_task(self.set_up_auto_update_time(the_config, save=False))
         if the_config[const.CONF_AUTO_CALC_ENABLED]:
-            # Fire-and-forget: schedule auto calc timer setup in background
-            hass.loop.create_task(self.set_up_auto_calc_time(the_config))
+            hass.loop.create_task(self.set_up_auto_calc_time(the_config, save=False))
         if the_config[const.CONF_AUTO_CLEAR_ENABLED]:
-            # Fire-and-forget: schedule auto clear timer setup in background
-            hass.loop.create_task(self.set_up_auto_clear_time(the_config))
+            hass.loop.create_task(self.set_up_auto_clear_time(the_config, save=False))
 
         # Names of triggers that have already fired today, so each trigger fires
         # independently (replaces the old single global "fired today" block).
@@ -1305,7 +1310,7 @@ class SmartIrrigationCoordinator(
                 schedule,
             )
 
-    async def set_up_auto_update_time(self, data):  # noqa: D102
+    async def set_up_auto_update_time(self, data, save=True):  # noqa: D102
         # WIP v2024.6.X:
         # experiment to use subscriptions to catch all updates instead of just on a time schedule
         # Read from the whole configuration: with only the changed field,
@@ -1385,7 +1390,8 @@ class SmartIrrigationCoordinator(
             # left, an update asked for by hand got a reading up to that old.
             if self._WeatherServiceClient:
                 self._WeatherServiceClient.cache_seconds = 0
-            await self.store.async_update_config(data)
+            if save:
+                await self.store.async_update_config(data)
 
     async def update_subscriptions(self, config=None):
         """Update sensor subscriptions for Smart Irrigation coordinator."""
@@ -1811,8 +1817,12 @@ class SmartIrrigationCoordinator(
         """
         return {**self.store.get_config(), **(changes or {})}
 
-    async def set_up_auto_calc_time(self, data):
-        """Set up the automatic calculation time for Smart Irrigation based on configuration data."""
+    async def set_up_auto_calc_time(self, data, save=True):
+        """Set up the automatic calculation time for Smart Irrigation based on configuration data.
+
+        ``save``: store ``data`` too, as a settings change does; not at setup,
+        where ``data`` is a copy of the whole configuration.
+        """
         # Read the settings before touching the tracker. It used to be cancelled
         # first and the fields indexed after, so a caller sending only what it
         # changed raised a KeyError with the nightly calculation already gone,
@@ -1851,9 +1861,10 @@ class SmartIrrigationCoordinator(
             if self._track_auto_calc_time_unsub:
                 self._track_auto_calc_time_unsub()
                 self._track_auto_calc_time_unsub = None
-            await self.store.async_update_config(data)
+            if save:
+                await self.store.async_update_config(data)
 
-    async def set_up_auto_clear_time(self, data):
+    async def set_up_auto_clear_time(self, data, save=True):
         """No longer schedules anything, and deliberately so.
 
         Clearing the weather data on a timer existed to stop the buffer growing
@@ -1881,7 +1892,8 @@ class SmartIrrigationCoordinator(
                 "calculation consumes what it uses and the buffer is pruned to "
                 "the zone that has read least. Nothing is lost by it being off"
             )
-        await self.store.async_update_config(data)
+        if save:
+            await self.store.async_update_config(data)
 
     async def track_update_time(self, *args):
         """Track and schedule periodic updates for Smart Irrigation based on configuration."""

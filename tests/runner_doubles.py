@@ -90,6 +90,9 @@ def make_hass():
         return task
 
     hass.async_create_task = _create_task
+    hass.async_create_background_task = lambda coro, *a, **k: hass.async_create_task(
+        coro
+    )
     hass.bus = Mock()
     hass.bus.async_fire = Mock()
     return hass

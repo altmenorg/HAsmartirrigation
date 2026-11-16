@@ -28,6 +28,10 @@ class Scheduler(ProgramSchedulerMixin, ValveRunnerMixin):
     def __init__(self, programs, *, zones=None, last_runs=None, full=True):
         self.hass = Mock()
         self.hass.async_create_task = lambda coro: asyncio.ensure_future(coro)
+        # A run is a background task (valve_runner._spawn_valve_run).
+        self.hass.async_create_background_task = (
+            lambda coro, *args, **kwargs: asyncio.ensure_future(coro)
+        )
         # The real tracking, so a teardown reaches what a schedule started.
         self._valve_run_tasks = set()
         self.store = MagicMock()
