@@ -196,12 +196,24 @@ class ProgramSchedulerMixin:
                     continue
                 armed[key] = (upcoming["target"], upcoming["fire"])
                 if upcoming["catch_up"]:
-                    _LOGGER.warning(
-                        "Program %s: its start (%s) has gone by but is still "
-                        "within the catch-up window, so it starts now",
-                        program_id,
-                        dt_util.as_local(upcoming["target"]).strftime("%H:%M"),
-                    )
+                    moment = dt_util.as_local(upcoming["target"]).strftime("%H:%M")
+                    if upcoming["target"] > dt_util.utcnow():
+                        # Anchored at its end: the target is when it is to be
+                        # done, not its start (which gave "its start (07:25)
+                        # has gone by" at 06:54).
+                        _LOGGER.warning(
+                            "Program %s: its start has gone by, and it is to be "
+                            "done by %s, so it starts now",
+                            program_id,
+                            moment,
+                        )
+                    else:
+                        _LOGGER.warning(
+                            "Program %s: its start (%s) has gone by but is still "
+                            "within the catch-up window, so it starts now",
+                            program_id,
+                            moment,
+                        )
                     # Tracked, so a reload cancels the run with the others.
                     self._spawn_valve_run(
                         self._fire_program_schedule(
