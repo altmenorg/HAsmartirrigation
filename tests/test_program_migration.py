@@ -221,6 +221,26 @@ def test_after_the_older_move_the_trigger_schedule_ends_up_in_the_program():
     assert [s["zones"] for s in program["steps"]] == [[2], [0], [1]]
 
 
+def test_an_inactive_trigger_ends_up_as_a_schedule_switched_off():
+    """Both moves: the inactive trigger is found again, off, and never fires."""
+    old = {
+        const.CONF_FULL_CONTROLLER: True,
+        const.CONF_ZONE_SEQUENCING: "sequential",
+        const.CONF_ACTIVE_START_TRIGGER: "dawn",
+        const.CONF_IRRIGATION_START_TRIGGERS: [
+            {"name": "dawn", "type": "sunrise", "enabled": True},
+            {"name": "late", "type": "time", "at": "22:00", "enabled": True},
+        ],
+    }
+    moved = {**old, **migration_changes(old)}
+    converted = conversion_changes(moved, _zones(), "en")
+
+    [program] = converted[const.CONF_PROGRAMS]
+    dawn, late = program["schedules"]
+    assert (dawn["event"], dawn["enabled"]) == ("sunrise", True)
+    assert (late["type"], late["time"], late["enabled"]) == ("time", "22:00", False)
+
+
 # --- the same run, second by second ---------------------------------------------------
 
 

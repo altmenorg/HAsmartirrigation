@@ -323,7 +323,6 @@
           "water-note": "Calculating and watering: Smart Irrigation works out what each zone needs and opens the valves itself, with its programs. Each program waters the zones of its steps at its schedules."
         }
       },
-      "description": "This page provides global settings.",
       "title": "General",
       "sections": {
         "calculation": "Calculation",
@@ -332,8 +331,7 @@
         "calculation-sub": "How much each zone needs, and when it is worked out.",
         "control-sub": "What opens the valves, and what starts a run.",
         "system-sub": "The panel, the blueprints, the setup assistant and moving over from Irrigation Unlimited."
-      },
-      "moved-to-weather": "The weather service, the location, how often the weather is read and the skip checks are on this tab:"
+      }
     },
     "help": {
       "title": "Help",
@@ -1263,7 +1261,7 @@
   },
   "planning": {
     "title": "Planning",
-    "description": "What the programs will water over the next three days. A run the rain may hold back is marked from today's forecast; the weather when it is due decides.",
+    "description": "What the programs will water over the next {days} days. A run the rain may hold back is marked from today's forecast; the weather when it is due decides.",
     "nothing_planned": "No program is planned. Add a schedule to a program.",
     "nothing_to_water": "Nothing to water for now: no zone of this run is short enough of water.",
     "expected": "Expected duration:",
@@ -1332,7 +1330,10 @@
     "add_step": "Add a step",
     "delete_step": "Delete the step",
     "add": "New program",
-    "all_zones_now_title": "Irrigate all zones now",
+    "run_all": "Run every program now",
+    "confirm_run_all": "Run every program now? Their valves open: programs that share a supply take turns, the others water side by side.",
+    "run_all_done": "Every program has started or is waiting for its turn.",
+    "all_zones_button_title": "Settings of the Irrigate all zones button",
     "all_zones_now_help": "Only for the Irrigate all zones button: every zone with a valve, in this order, with these passes and pause. The programs keep their own steps.",
     "delete": "Delete the program",
     "schedule": "Schedule",
@@ -1378,6 +1379,7 @@
     "schedule_fallback_time_help": "For a day without a sunrise or sunset (polar day or night).",
     "schedule_months": "Months",
     "schedule_months_help": "None ticked: every month.",
+    "schedule_yaml_only": "Set in YAML (Edit in YAML, at the top of the program): shown here because this schedule uses it.",
     "schedule_from": "From",
     "schedule_until": "Until",
     "schedule_period_help": "A period of the year, which may run over New Year (from November to March). Empty: the whole year.",
@@ -1405,7 +1407,6 @@
     "confirm_delete_step": "Delete this step?",
     "confirm_delete_schedule": "Delete this schedule?",
     "deleted_zone": "(deleted zone)",
-    "controls_help": "For a watering that is under way. Pause closes the valves and holds everything; the rest is watered after the resume. Next step ends the zones the program is on. Stop ends everything.",
     "max_litres": "Volume limit",
     "max_litres_help": "A zone of this step stops once its water meter has counted this volume, in litres or gallons as the panel shows volumes. 0: no limit. The meter reports every so often, so the volume is not exact. A zone without a meter ignores it.",
     "new_program": "Program",
@@ -1415,6 +1416,8 @@
     "run_replace": "Replace what is running",
     "run_replace_help": "Off: the program waits for its turn behind what is watering. On: what is watering is stopped cleanly first.",
     "stop_program": "Stop this program",
+    "state_running": "Running",
+    "state_waiting": "Waiting for its turn",
     "confirm_stop_program": "Stop the program \"{name}\"? Its open zones are closed, or it leaves the queue if it is waiting.",
     "min_seconds": "Minimum water",
     "max_seconds": "Maximum water",

@@ -527,6 +527,14 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
             : html`<ha-button @click=${() => control("pause_watering")}>
                 ${localize("programs.pause", this._lang)}
               </ha-button>`}
+          ${!paused && (programs.length || valves.length)
+            ? html`<ha-button
+                appearance="plain"
+                @click=${() => control("next_step")}
+              >
+                ${localize("programs.next_step", this._lang)}
+              </ha-button>`
+            : ""}
           <ha-button variant="danger" @click=${stop}>
             ${localize("programs.stop", this._lang)}
           </ha-button>
@@ -1062,17 +1070,31 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
             ? html`<div class="info-note">
                 ${this.t("cards.decision.unavailable")}
               </div>`
-            : html`
-                <div class="verdict ${preview.should_skip ? "skip" : "run"}">
-                  ${preview.should_skip
-                    ? this.t("cards.decision.will-skip")
-                    : this.t("cards.decision.will-run")}
-                </div>
-                ${preview.checks.map((check) => this.renderCheck(check))}
-                <div class="info-note">
-                  ${this.t("cards.decision.preview-note")}
-                </div>
-              `}
+            : preview.should_skip
+              ? html`
+                  <div class="verdict skip">
+                    ${this.t("cards.decision.will-skip")}
+                  </div>
+                  ${preview.checks.map((check) => this.renderCheck(check))}
+                  <div class="info-note">
+                    ${this.t("cards.decision.preview-note")}
+                  </div>
+                `
+              : // Nothing holds it back: one line, the conditions behind it
+                // for whoever wants to see why.
+                html`
+                  <details class="more">
+                    <summary class="verdict run">
+                      ${this.t("cards.decision.will-run")}
+                    </summary>
+                    <div class="more-body">
+                      ${preview.checks.map((check) => this.renderCheck(check))}
+                      <div class="info-note">
+                        ${this.t("cards.decision.preview-note")}
+                      </div>
+                    </div>
+                  </details>
+                `}
           ${this.renderLastDecision()}
         </div>
       </ha-card>

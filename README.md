@@ -27,6 +27,7 @@ It works out, zone by zone, how much water the plants lost to [evapotranspiratio
 
 - 🗓️ **Programs** of ordered steps, one zone or several at once, watered for the calculated duration or a share of it, with passes, waits, limits and a minimum deficit per step.
 - ⏰ **Schedules** anchored to a start or to an end ("done by sunrise"): days of the week, every N days, odd or even days, months, a period of the year. Each one shows what can hold it back.
+- 🔗 **Chained programs**: a program can start after another one ("the beds 30 minutes after the lawn"), whatever its length that day, only when the first one really watered.
 - 🚿 **Pumps and main valves** with their delays, the other valves of a zone, and a confirmation that a valve really opened.
 - 📅 **A planning** of what will run, when and why, and the running watering shown on the Home page, the zones and the card. Pause, resume, queue, suspend, run now.
 - 🔁 **Imports an Irrigation Unlimited configuration** in a few clicks.

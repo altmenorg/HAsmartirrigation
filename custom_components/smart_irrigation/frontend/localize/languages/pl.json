@@ -323,7 +323,6 @@
           "water-note": "Obliczanie i podlewanie: Smart Irrigation oblicza, czego potrzebuje każda strefa, i sam otwiera zawory, ze swoimi programami. Każdy program podlewa strefy swoich kroków według swoich harmonogramów."
         }
       },
-      "description": "Ta strona zawiera ustawienia globalne.",
       "title": "Ogólne",
       "sections": {
         "calculation": "Obliczenia",
@@ -332,8 +331,7 @@
         "calculation-sub": "Ile potrzebuje każda strefa i kiedy jest to obliczane.",
         "control-sub": "Co otwiera zawory i co uruchamia podlewanie.",
         "system-sub": "Panel, blueprinty, asystent konfiguracji i przejście z Irrigation Unlimited."
-      },
-      "moved-to-weather": "Serwis pogodowy, lokalizacja, częstotliwość odczytu pogody i kontrole pomijania są na tej karcie:"
+      }
     },
     "help": {
       "title": "Pomoc",
@@ -1263,7 +1261,7 @@
   },
   "planning": {
     "title": "Planowanie",
-    "description": "Co programy podleją w ciągu najbliższych trzech dni. Uruchomienie, które deszcz może wstrzymać, jest oznaczane według dzisiejszej prognozy; decyduje pogoda w chwili, gdy przypada.",
+    "description": "Co programy podleją w ciągu najbliższych {days} dni. Uruchomienie, które deszcz może wstrzymać, jest oznaczane według dzisiejszej prognozy; decyduje pogoda w chwili, gdy przypada.",
     "nothing_planned": "Żaden program nie jest zaplanowany. Dodaj harmonogram do programu.",
     "nothing_to_water": "Na razie nie ma czego podlewać: żadnej strefie tego uruchomienia nie brakuje dość wody.",
     "expected": "Oczekiwany czas trwania:",
@@ -1332,7 +1330,10 @@
     "add_step": "Dodaj krok",
     "delete_step": "Usuń krok",
     "add": "Nowy program",
-    "all_zones_now_title": "Podlej teraz wszystkie strefy",
+    "run_all": "Uruchom teraz wszystkie programy",
+    "confirm_run_all": "Uruchomić teraz wszystkie programy? Ich zawory się otworzą: programy ze wspólnym zasilaniem idą po kolei, pozostałe podlewają równocześnie.",
+    "run_all_done": "Wszystkie programy wystartowały lub czekają na swoją kolej.",
+    "all_zones_button_title": "Ustawienia przycisku Podlej wszystkie strefy",
     "all_zones_now_help": "Tylko dla przycisku Podlej wszystkie strefy: każda strefa z zaworem, w tej kolejności, z tymi przejściami i tą przerwą. Programy zachowują własne kroki.",
     "delete": "Usuń program",
     "schedule": "Harmonogram",
@@ -1378,6 +1379,7 @@
     "schedule_fallback_time_help": "Na dzień bez wschodu lub zachodu słońca (dzień lub noc polarna).",
     "schedule_months": "Miesiące",
     "schedule_months_help": "Nic nie zaznaczono: każdy miesiąc.",
+    "schedule_yaml_only": "Ustawiane w YAML (Edytuj w YAML, u góry programu): pokazane tutaj, bo ten harmonogram tego używa.",
     "schedule_from": "Od",
     "schedule_until": "Do",
     "schedule_period_help": "Okres roku, który może przechodzić przez Nowy Rok (od listopada do marca). Puste: cały rok.",
@@ -1405,7 +1407,6 @@
     "confirm_delete_step": "Usunąć ten krok?",
     "confirm_delete_schedule": "Usunąć ten harmonogram?",
     "deleted_zone": "(usunięta strefa)",
-    "controls_help": "Dla trwającego podlewania. Wstrzymaj zamyka zawory i zatrzymuje wszystko; reszta zostanie podlana po wznowieniu. Następny krok kończy strefy, na których jest program. Zatrzymaj kończy wszystko.",
     "max_litres": "Limit objętości",
     "max_litres_help": "Strefa tego kroku zatrzymuje się, gdy jej wodomierz naliczy tę objętość, w litrach lub galonach, tak jak panel pokazuje objętości. 0: bez limitu. Wodomierz raportuje co jakiś czas, więc objętość nie jest dokładna. Strefa bez wodomierza to ignoruje.",
     "new_program": "Program",
@@ -1415,6 +1416,8 @@
     "run_replace": "Zastąp to, co działa",
     "run_replace_help": "Wyłączone: program czeka na swoją kolej za tym, co podlewa. Włączone: to, co podlewa, jest najpierw czysto zatrzymywane.",
     "stop_program": "Zatrzymaj ten program",
+    "state_running": "Działa",
+    "state_waiting": "Czeka na swoją kolej",
     "confirm_stop_program": "Zatrzymać program „{name}”? Jego otwarte strefy zostaną zamknięte, albo opuści kolejkę, jeśli czeka.",
     "min_seconds": "Minimum wody",
     "max_seconds": "Maksimum wody",

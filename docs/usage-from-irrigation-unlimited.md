@@ -88,7 +88,7 @@ If you would rather rebuild than import:
 3. Make a program per IU sequence: its steps are the sequence's zones, in order. Leave the duration on *calculated*.
 4. Add a schedule to each. If IU ran it to finish at sunrise, take *Sunrise*, *must be done*.
 5. Switch IU's own schedules off, and remove the two automations that handed it durations and reset the water balance.
-6. Look at the **Planning** card: it shows the next three days. Compare it with what IU would have done before you remove IU.
+6. Look at the **Planning** card: it shows the next days (3, 7 or 14, as you pick on the chart). Compare it with what IU would have done before you remove IU.
 
 > Previous: [Full controller](usage-full-controller.md)
 

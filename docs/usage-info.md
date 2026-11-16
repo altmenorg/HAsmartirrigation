@@ -57,6 +57,9 @@ still there afterwards. The same thing is available as the
 
 ### Will it be skipped
 
+When nothing holds the run back, the card says so in one line; open it for the
+checks. When something does, the checks are shown straight away.
+
 The seven checks that can hold a day back, each with its own state and its
 own numbers: whether you postponed the run, the rain sensor, the freeze, the
 wind, the rain forecast against your threshold, the days since the last

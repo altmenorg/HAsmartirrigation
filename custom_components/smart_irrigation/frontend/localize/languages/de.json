@@ -323,7 +323,6 @@
           "water-note": "Berechnen und bewässern: Smart Irrigation berechnet, was jede Zone braucht, und öffnet die Ventile selbst, mit seinen Programmen. Jedes Programm bewässert die Zonen seiner Schritte zu seinen Zeitplänen."
         }
       },
-      "description": "Diese Seite ist für allgemeine Einstellungen.",
       "title": "Allgemein",
       "sections": {
         "calculation": "Berechnung",
@@ -332,8 +331,7 @@
         "calculation-sub": "Wie viel jede Zone braucht, und wann das berechnet wird.",
         "control-sub": "Was die Ventile öffnet und was einen Durchlauf startet.",
         "system-sub": "Die Oberfläche, die Blueprints, der Einrichtungsassistent und der Umzug aus Irrigation Unlimited."
-      },
-      "moved-to-weather": "Wetterdienst, Standort, wie oft das Wetter gelesen wird, und die Aussetz-Prüfungen stehen in diesem Tab:"
+      }
     },
     "help": {
       "title": "Hilfe",
@@ -1263,7 +1261,7 @@
   },
   "planning": {
     "title": "Planung",
-    "description": "Was die Programme in den nächsten drei Tagen bewässern werden. Ein Lauf, den Regen zurückhalten könnte, ist nach der Vorhersage von heute markiert; entscheiden wird das Wetter zu seinem Start.",
+    "description": "Was die Programme in den nächsten {days} Tagen bewässern werden. Ein Lauf, den Regen zurückhalten könnte, ist nach der Vorhersage von heute markiert; entscheiden wird das Wetter zu seinem Start.",
     "nothing_planned": "Kein Programm geplant. Füge einem Programm einen Zeitplan hinzu.",
     "nothing_to_water": "Im Moment nichts zu gießen: Keiner Zone dieses Laufs fehlt genug Wasser.",
     "expected": "Erwartete Dauer:",
@@ -1332,7 +1330,10 @@
     "add_step": "Schritt hinzufügen",
     "delete_step": "Schritt löschen",
     "add": "Neues Programm",
-    "all_zones_now_title": "Alle Zonen jetzt bewässern",
+    "run_all": "Alle Programme jetzt starten",
+    "confirm_run_all": "Alle Programme jetzt starten? Ihre Ventile öffnen sich: Programme mit gemeinsamer Versorgung sind nacheinander dran, die anderen bewässern gleichzeitig.",
+    "run_all_done": "Alle Programme sind gestartet oder warten auf ihren Einsatz.",
+    "all_zones_button_title": "Einstellungen der Schaltfläche Alle Zonen bewässern",
     "all_zones_now_help": "Nur für die Schaltfläche Alle Zonen bewässern: jede Zone mit Ventil, in dieser Reihenfolge, mit diesen Durchgängen und dieser Pause. Die Programme behalten ihre eigenen Schritte.",
     "delete": "Programm löschen",
     "schedule": "Zeitplan",
@@ -1378,6 +1379,7 @@
     "schedule_fallback_time_help": "Für einen Tag ohne Sonnenaufgang oder -untergang (Polartag oder -nacht).",
     "schedule_months": "Monate",
     "schedule_months_help": "Keiner angehakt: jeder Monat.",
+    "schedule_yaml_only": "Wird in YAML eingestellt (In YAML bearbeiten, oben im Programm): hier angezeigt, weil dieser Zeitplan es nutzt.",
     "schedule_from": "Von",
     "schedule_until": "Bis",
     "schedule_period_help": "Ein Zeitraum im Jahr, der über Neujahr gehen kann (von November bis März). Leer: das ganze Jahr.",
@@ -1405,7 +1407,6 @@
     "confirm_delete_step": "Diesen Schritt löschen?",
     "confirm_delete_schedule": "Diesen Zeitplan löschen?",
     "deleted_zone": "(gelöschte Zone)",
-    "controls_help": "Für eine laufende Bewässerung. Pause schließt die Ventile und hält alles an; der Rest wird nach dem Fortsetzen bewässert. Nächster Schritt beendet die Zonen, bei denen das Programm gerade ist. Stopp beendet alles.",
     "max_litres": "Mengenbegrenzung",
     "max_litres_help": "Eine Zone dieses Schritts stoppt, sobald ihr Wasserzähler diese Menge gezählt hat, in Litern oder Gallonen, so wie das Panel Mengen anzeigt. 0: keine Begrenzung. Der Zähler meldet nur ab und zu, die Menge ist also nicht exakt. Eine Zone ohne Zähler ignoriert sie.",
     "new_program": "Programm",
@@ -1415,6 +1416,8 @@
     "run_replace": "Laufendes ersetzen",
     "run_replace_help": "Aus: Das Programm wartet, bis es an der Reihe ist, hinter dem, was gerade bewässert. An: Was gerade bewässert, wird zuerst sauber gestoppt.",
     "stop_program": "Dieses Programm stoppen",
+    "state_running": "Läuft",
+    "state_waiting": "Wartet auf seinen Einsatz",
     "confirm_stop_program": "Das Programm „{name}“ stoppen? Seine offenen Zonen werden geschlossen, oder es verlässt die Warteschlange, wenn es wartet.",
     "min_seconds": "Mindestwasser",
     "max_seconds": "Höchstwasser",

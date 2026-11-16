@@ -323,7 +323,6 @@
           "water-note": "Calcolare e irrigare: Smart Irrigation calcola ciò di cui ha bisogno ogni zona e apre le valvole da solo, con i suoi programmi. Ogni programma irriga le zone dei suoi passi ai suoi orari."
         }
       },
-      "description": "Questa pagina fornisce le impostazioni globali.",
       "title": "Generale",
       "sections": {
         "calculation": "Calcolo",
@@ -332,8 +331,7 @@
         "calculation-sub": "Quanto serve a ogni zona e quando viene calcolato.",
         "control-sub": "Cosa apre le valvole e cosa avvia un ciclo.",
         "system-sub": "Il pannello, i blueprint, l'assistente di configurazione e il passaggio da Irrigation Unlimited."
-      },
-      "moved-to-weather": "Il servizio meteo, la posizione, la frequenza di lettura del meteo e i controlli di salto sono in questa scheda:"
+      }
     },
     "help": {
       "title": "Aiuto",
@@ -1263,7 +1261,7 @@
   },
   "planning": {
     "title": "Pianificazione",
-    "description": "Cosa irrigheranno i programmi nei prossimi tre giorni. Un ciclo che la pioggia potrebbe trattenere è segnalato in base alla previsione di oggi; decide il meteo al momento previsto.",
+    "description": "Cosa irrigheranno i programmi nei prossimi {days} giorni. Un ciclo che la pioggia potrebbe trattenere è segnalato in base alla previsione di oggi; decide il meteo al momento previsto.",
     "nothing_planned": "Nessun programma pianificato. Aggiungi un orario a un programma.",
     "nothing_to_water": "Niente da irrigare per ora: a nessuna zona di questo ciclo manca abbastanza acqua.",
     "expected": "Durata prevista:",
@@ -1332,7 +1330,10 @@
     "add_step": "Aggiungi un passo",
     "delete_step": "Elimina il passo",
     "add": "Nuovo programma",
-    "all_zones_now_title": "Irriga tutte le zone ora",
+    "run_all": "Avvia tutti i programmi ora",
+    "confirm_run_all": "Avviare tutti i programmi ora? Le loro valvole si aprono: i programmi che condividono un'alimentazione si alternano, gli altri irrigano in contemporanea.",
+    "run_all_done": "Tutti i programmi sono partiti o attendono il proprio turno.",
+    "all_zones_button_title": "Impostazioni del pulsante Irriga tutte le zone",
     "all_zones_now_help": "Solo per il pulsante Irriga tutte le zone: ogni zona con una valvola, in questo ordine, con questi passaggi e questa pausa. I programmi mantengono i propri passi.",
     "delete": "Elimina il programma",
     "schedule": "Orario",
@@ -1378,6 +1379,7 @@
     "schedule_fallback_time_help": "Per un giorno senza alba né tramonto (giorno o notte polare).",
     "schedule_months": "Mesi",
     "schedule_months_help": "Nessuno spuntato: ogni mese.",
+    "schedule_yaml_only": "Si imposta in YAML (Modifica in YAML, in cima al programma): mostrato qui perché questo orario lo usa.",
     "schedule_from": "Dal",
     "schedule_until": "Fino al",
     "schedule_period_help": "Un periodo dell'anno, che può passare il Capodanno (da novembre a marzo). Vuoto: tutto l'anno.",
@@ -1405,7 +1407,6 @@
     "confirm_delete_step": "Eliminare questo passo?",
     "confirm_delete_schedule": "Eliminare questo orario?",
     "deleted_zone": "(zona eliminata)",
-    "controls_help": "Per un'irrigazione in corso. Pausa chiude le valvole e blocca tutto; il resto viene irrigato dopo la ripresa. Passo successivo termina le zone su cui è il programma. Stop termina tutto.",
     "max_litres": "Limite di volume",
     "max_litres_help": "Una zona di questo passo si ferma quando il suo contatore d'acqua ha contato questo volume, in litri o galloni come il pannello mostra i volumi. 0: nessun limite. Il contatore comunica ogni tanto, quindi il volume non è esatto. Una zona senza contatore lo ignora.",
     "new_program": "Programma",
@@ -1415,6 +1416,8 @@
     "run_replace": "Sostituisci ciò che è in corso",
     "run_replace_help": "Disattivato: il programma aspetta il suo turno dietro ciò che sta irrigando. Attivato: ciò che sta irrigando viene prima fermato in modo pulito.",
     "stop_program": "Ferma questo programma",
+    "state_running": "In corso",
+    "state_waiting": "In attesa del proprio turno",
     "confirm_stop_program": "Fermare il programma \"{name}\"? Le sue zone aperte vengono chiuse, oppure esce dalla coda se è in attesa.",
     "min_seconds": "Acqua minima",
     "max_seconds": "Acqua massima",

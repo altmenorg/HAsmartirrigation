@@ -179,3 +179,66 @@ def test_the_mode_is_read_and_written_as_the_panel_does():
         const.CONF_FULL_CONTROLLER: False,
         const.CONF_DIRECT_VALVE_CONTROL_ENABLED: False,
     }
+
+
+def test_a_trigger_defined_but_not_active_becomes_a_schedule_switched_off():
+    changes = migration_changes(
+        {
+            const.CONF_FULL_CONTROLLER: True,
+            const.CONF_ACTIVE_START_TRIGGER: "evening",
+            const.CONF_IRRIGATION_START_TRIGGERS: [
+                {"name": "evening", "type": "sunset", "enabled": True},
+                {"name": "morning", "type": "time", "at": "06:15", "enabled": True},
+            ],
+        }
+    )
+    [main] = changes[const.CONF_PROGRAMS]
+    evening, morning = main["schedules"]
+    assert (evening["event"], evening["enabled"]) == ("sunset", True)
+    assert (morning["type"], morning["time"], morning["enabled"]) == (
+        "time",
+        "06:15",
+        False,
+    )
+
+
+def test_with_none_active_every_defined_trigger_is_kept_switched_off():
+    changes = migration_changes(
+        {
+            const.CONF_FULL_CONTROLLER: True,
+            const.CONF_ACTIVE_START_TRIGGER: const.START_TRIGGER_NONE,
+            const.CONF_IRRIGATION_START_TRIGGERS: [
+                {"name": "evening", "type": "sunset", "offset_minutes": -20},
+            ],
+        }
+    )
+    [main] = changes[const.CONF_PROGRAMS]
+    [evening] = main["schedules"]
+    assert (evening["event"], evening["offset_minutes"], evening["enabled"]) == (
+        "sunset",
+        -20,
+        False,
+    )
+
+
+def test_the_default_active_keeps_the_defined_triggers_switched_off():
+    changes = migration_changes(
+        {
+            const.CONF_FULL_CONTROLLER: True,
+            const.CONF_IRRIGATION_START_TRIGGERS: [
+                {"name": "noon", "type": "solar_azimuth", "azimuth_angle": 180},
+            ],
+        }
+    )
+    [main] = changes[const.CONF_PROGRAMS]
+    default, noon = main["schedules"]
+    assert (default["event"], default["anchor"], default["enabled"]) == (
+        "sunrise",
+        "end",
+        True,
+    )
+    assert (noon["event"], noon["azimuth"], noon["enabled"]) == (
+        "azimuth",
+        180,
+        False,
+    )

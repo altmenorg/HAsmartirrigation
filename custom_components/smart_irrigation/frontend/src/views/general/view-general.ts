@@ -105,12 +105,12 @@ import {
   mdiMenuDown,
   mdiMinus,
   mdiPlay,
-  mdiPause,
   mdiStop,
-  mdiSkipNext,
   mdiCheck,
   mdiCodeBraces,
   mdiClose,
+  mdiTune,
+  mdiPlaylistPlay,
 } from "@mdi/js";
 
 /**
@@ -789,36 +789,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
       // Three sections, each card in one (#972): what is worked out, what
       // opens the valves, and the panel itself. The weather, its location and
-      // how often it is read are on the Weather tab, with the skip checks.
+      // how often it is read are on the Weather tab, with the skip checks: a
+      // card here said only that, and is gone (the tab is in plain sight).
       // The master switch stays above everything it switches.
-      const r = html`<ha-card>
-          <h1 class="card-header">
-            <span
-              >${localize("panels.general.title", lang)}<si-info
-                >${localize("panels.general.description", lang)}</si-info
-              ></span
-            >
-          </h1>
-          <div class="card-content moved-to-weather">
-            ${localize("panels.general.moved-to-weather", lang)}
-            <a
-              href="/${DOMAIN}/weatherservice"
-              @click=${(e: Event) => {
-                e.preventDefault();
-                navigate(this, `/${DOMAIN}/weatherservice`);
-              }}
-              >${localize("panels.groups.data", lang)}</a
-            >
-          </div> </ha-card
-        >${r18} ${heading("calculation")}${r1}${r8}${r13}${r10}
-        ${
-          // Observed watering is on the advanced panel, the start triggers are
-          // for "Calculate only": with neither, the heading stood alone.
-          !full || this.config.ui_mode === "advanced"
-            ? html`${heading("control")}${r9}${full ? "" : r5}`
-            : ""
-        }
-        ${heading("system")}${r11}${r16}${r12}${r17}`;
+      const r = html`${r18} ${heading("calculation")}${r1}${r8}${r13}${r10}
+      ${
+        // Observed watering is on the advanced panel, the start triggers are
+        // for "Calculate only": with neither, the heading stood alone.
+        !full || this.config.ui_mode === "advanced"
+          ? html`${heading("control")}${r9}${full ? "" : r5}`
+          : ""
+      }
+      ${heading("system")}${r11}${r16}${r12}${r17}`;
 
       return r;
     }
@@ -1009,68 +991,20 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         hour: "2-digit",
         minute: "2-digit",
       }).format(new Date(iso));
-    const tc = (key: string) => localize(`programs.${key}`, lang);
-    const control = (service: string) =>
-      this.hass!.callService(DOMAIN, service, {}).then(() =>
-        this._fetchLive(false),
-      );
-    // Each button only when it can act: they were all live with nothing
-    // watering, and pressing one did nothing that could be seen (#893).
-    const live = this.programsState?.live || {};
-    const paused = live.paused === true;
-    const running =
-      (live.programs || []).some((p: any) => p.state === "running") ||
-      (live.valves || []).length > 0 ||
-      !!live.cycle;
-    const anything = paused || running || (live.programs || []).length > 0;
     // The durations planned, in the form the rest of the panel uses: it said
     // "62 min" where Start said "1 h 02 min".
     const minutes = (seconds: number) => friendlyDuration(seconds);
-    // The week above shows up to 14 days; the list keeps to the next three.
-    const listUntil = Date.now() + 3 * 86400 * 1000;
+    // The list covers the days the week above shows (3, 7 or 14), and says so.
+    const days = this._weekDays;
+    const listUntil = Date.now() + days * 86400 * 1000;
     const planning = (this.planning || []).filter(
       (item: any) => new Date(item.start).getTime() < listUntil,
     );
     return html`
       <ha-card header="${t("title")}">
         <div class="card-content">
-          ${t("description")} ${this.renderLiveState()}
-        </div>
-        <div class="card-content">
-          <div class="si-actions">
-            ${this._actionBtn(
-              mdiPause,
-              tc("pause"),
-              () => control("pause_watering"),
-              false,
-              !running || paused,
-            )}
-            ${this._actionBtn(
-              mdiPlay,
-              tc("resume"),
-              () => control("resume_watering"),
-              false,
-              !paused,
-            )}
-            ${this._actionBtn(
-              mdiSkipNext,
-              tc("next_step"),
-              () => control("next_step"),
-              false,
-              !running || paused,
-            )}
-            ${this._actionBtn(
-              mdiStop,
-              tc("stop"),
-              async () => {
-                if (await this._ask(tc("confirm_stop"), true))
-                  control("stop_watering");
-              },
-              true,
-              !anything,
-            )}
-          </div>
-          <div class="setting-hint row-hint">${tc("controls_help")}</div>
+          ${t("description").replace("{days}", String(days))}
+          ${this.renderLiveState()}
         </div>
 
         ${planning.length
@@ -1388,9 +1322,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       );
     };
     // What a manual run can be asked for: kept for the next press only, not
-    // saved, so folded away rather than shown among the saved settings (#893).
+    // saved, so shown only once asked for from the header's button (#893).
+    // Folding it hides it again.
     const runOptions = (id: string | undefined) => html`
-      <details class="more">
+      <details
+        class="more"
+        open
+        @toggle=${(e: Event) => {
+          if ((e.target as HTMLDetailsElement).open) return;
+          this._setOpen(`run_options:${id}`, false);
+          this._scheduleUpdate();
+        }}
+      >
         <summary>${t("run_options")}</summary>
         <div class="more-body">
           <div class="setting-row">
@@ -1443,10 +1386,34 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         program_id: program.id,
       }).then(() => this._fetchLive(false));
     };
-    // Starting a program is what the page is opened for most: its button heads
-    // the program, with Stop beside it while it runs, and the options for this
-    // one start folded under them. It stood under every setting.
-    // A program with no zone in its steps has nothing to start yet.
+    // Every program now, one after the other as "Run now" would start them:
+    // those that share a supply queue for their turn, the others water side
+    // by side. One under way already is left as it is.
+    const runnable = programs.filter((p) => programCanRun(p));
+    const runAll = async () => {
+      if (!(await this._ask(t("confirm_run_all")))) return;
+      const failed: string[] = [];
+      for (const program of runnable) {
+        if (isUnderWay(program)) continue;
+        try {
+          await this.hass!.callService(DOMAIN, "run_program", {
+            program_id: program.id,
+          });
+        } catch (err: any) {
+          failed.push(
+            t("run_failed")
+              .replace("{name}", programName(program))
+              .replace("{error}", err?.message ?? String(err)),
+          );
+        }
+      }
+      await this._fetchLive(false);
+      toast(failed.length ? failed.join(" ") : t("run_all_done"));
+    };
+    // Starting a program is what the page is opened for most: its button is in
+    // the program's header row, with Stop beside it while it runs, Edit in YAML
+    // and the options for this one start; the name and the flow come first in
+    // the body. A program with no zone in its steps has nothing to start yet.
     const suspendedLine = (program: SmartIrrigationProgram) => {
       // Suspended by the suspend action: the card said so, this page did not,
       // and nothing here could lift it (UX walk of 13 Nov., Q3).
@@ -1473,30 +1440,51 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
       `;
     };
-    // ``extra``: an action of the program shown beside Run now (Edit in YAML).
-    const runHead = (
-      program: SmartIrrigationProgram,
-      extra: TemplateResult | string = "",
-    ) => {
-      const runs = ["running", "waiting"].includes(stateOf(program.id)?.state);
-      return html`
-        ${suspendedLine(program)}
-        <div class="si-actions plain">
-          ${programCanRun(program)
-            ? this._actionBtn(mdiPlay, t("run_now"), () => run(program))
-            : ""}
-          ${runs
-            ? this._actionBtn(
-                mdiStop,
-                t("stop_program"),
-                () => stopProgram(program),
-                true,
-              )
-            : ""}
-          ${extra}
-        </div>
-        ${programCanRun(program) ? runOptions(program.id) : ""}
-      `;
+    // Whether the program is under way: running, paused, or queued for its
+    // turn. Stop is offered then only.
+    const isUnderWay = (program: SmartIrrigationProgram) =>
+      ["running", "paused", "waiting"].includes(stateOf(program.id)?.state);
+    // What heads the program's body: its suspension, and the options for the
+    // next run once asked for from the header's button.
+    const runHead = (program: SmartIrrigationProgram) => html`
+      ${suspendedLine(program)}
+      ${programCanRun(program) && this._isOpen(`run_options:${program.id}`)
+        ? runOptions(program.id)
+        : ""}
+    `;
+    // "Running, step 2/3, 12 min left" beside the name: the card said nothing
+    // while its program ran.
+    const stateChip = (program: SmartIrrigationProgram) => {
+      const state = stateOf(program.id);
+      if (!state || !["running", "paused", "waiting"].includes(state.state))
+        return "";
+      const label =
+        state.state === "running"
+          ? t("state_running")
+          : state.state === "paused"
+            ? localize("planning.paused", lang)
+            : t("state_waiting");
+      const bits: string[] = [];
+      const live = state.live || {};
+      if (state.state !== "waiting" && live.steps > 1 && live.step) {
+        bits.push(
+          localize("cards.running.step", lang)
+            .replace("{step}", String(live.step))
+            .replace("{steps}", String(live.steps)),
+        );
+      }
+      if (state.state === "running" && live.remaining_seconds != null) {
+        bits.push(
+          localize("cards.running.program-left", lang).replace(
+            "{time}",
+            friendlyDuration(live.remaining_seconds),
+          ),
+        );
+      }
+      return html`<span class="state-chip ${state.state}">${label}</span
+        >${bits.length
+          ? html` <span class="state-detail">${bits.join(", ")}</span>`
+          : ""}`;
     };
     // "50 %, until 21:05": what is in force, said as short as the card says it.
     // It read "In force: 50 % and 0 s per step, until 13/11/2026, 21:05:14",
@@ -1949,19 +1937,59 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
       `;
     };
-    const yamlButton = (program: SmartIrrigationProgram) =>
-      html`${this._actionBtn(mdiCodeBraces, t("yaml_edit"), () =>
-        openYaml(
-          program.id ?? "",
-          programToYaml(program, this.zones, programs),
-        ),
-      )} `;
-
-    // In YAML, the button that was "Edit in YAML" goes back to the form.
-    const backButton = (program: SmartIrrigationProgram) =>
-      html`${this._actionBtn(mdiFormSelect, t("yaml_back"), () =>
-        closeYaml(program.id ?? ""),
-      )} `;
+    // The program's actions, as icons in its header row: Run now, Stop while
+    // it is under way, Edit in YAML (Back to the editor in YAML) and the
+    // options for this run. A click on one acts, and neither folds nor
+    // unfolds the program, except to show what it opened.
+    const headActions = (program: SmartIrrigationProgram) => {
+      const id = program.id ?? "";
+      const icon = (path: string, label: string, act: () => void, cls = "") =>
+        html`<ha-icon-button
+          class=${cls}
+          .path=${path}
+          .label=${label}
+          title=${label}
+          @click=${(e: Event) => {
+            e.stopPropagation();
+            e.preventDefault();
+            act();
+          }}
+        ></ha-icon-button>`;
+      const unfold = () => this._setOpen(`program:${id}`, true);
+      const optionsKey = `run_options:${id}`;
+      return html`<span class="head-actions">
+        ${programCanRun(program)
+          ? icon(mdiPlay, t("run_now"), () => run(program))
+          : ""}
+        ${isUnderWay(program)
+          ? icon(
+              mdiStop,
+              t("stop_program"),
+              () => stopProgram(program),
+              "danger",
+            )
+          : ""}
+        ${yamlOpen(id)
+          ? icon(mdiFormSelect, t("yaml_back"), () => closeYaml(id))
+          : icon(mdiCodeBraces, t("yaml_edit"), () => {
+              unfold();
+              openYaml(id, programToYaml(program, this.zones, programs));
+            })}
+        ${programCanRun(program)
+          ? icon(
+              mdiTune,
+              t("run_options"),
+              () => {
+                const open = !this._isOpen(optionsKey);
+                this._setOpen(optionsKey, open);
+                if (open) unfold();
+                this._scheduleUpdate();
+              },
+              this._isOpen(optionsKey) ? "on" : "",
+            )
+          : ""}
+      </span>`;
+    };
 
     const renderStep = (
       program: SmartIrrigationProgram,
@@ -2593,86 +2621,113 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       }),
                   )
                 : ""}
-              ${this._selectRow(
-                t("schedule_parity"),
-                html`
-                  <option
-                    value="any"
-                    ?selected=${schedule.parity !== "even" &&
-                    schedule.parity !== "odd"}
-                  >
-                    ${t("parity_any")}
-                  </option>
-                  <option value="even" ?selected=${schedule.parity === "even"}>
-                    ${t("parity_even")}
-                  </option>
-                  <option value="odd" ?selected=${schedule.parity === "odd"}>
-                    ${t("parity_odd")}
-                  </option>
-                `,
-                (e: Event) =>
-                  patchSchedule({
-                    parity: (e.target as HTMLSelectElement)
-                      .value as SmartIrrigationSchedule["parity"],
-                  }),
-              )}
-              ${this._textRow(
-                html`${t("schedule_days_of_month")}<si-info
-                    >${t("schedule_days_of_month_help")}</si-info
-                  >`,
-                `1, 15, ${t("last_word")}`,
-                (schedule.days_of_month || [])
-                  .map((day) => (day === "last" ? t("last_word") : day))
-                  .join(", "),
-                (v) =>
-                  patchSchedule({
-                    days_of_month: v
-                      .split(/[,;\s]+/)
-                      .map((part) => part.trim().toLowerCase())
-                      // The word of the panel's language, or "last" as stored.
-                      .map((part) =>
-                        part === t("last_word").toLowerCase() ? "last" : part,
-                      )
-                      .filter(
-                        (part) =>
-                          part === "last" ||
-                          (/^\d+$/.test(part) &&
-                            Number(part) >= 1 &&
-                            Number(part) <= 31),
-                      )
-                      .map((part) => (part === "last" ? part : Number(part))),
-                  }),
-              )}
-              <div class="setting-row">
-                <div class="setting-label">
-                  ${t("schedule_months")}<si-info
-                    >${t("schedule_months_help")}</si-info
-                  >
-                </div>
-                <div>
-                  ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(
-                    (month) => html`
-                      <label style="margin-right: 10px; white-space: nowrap;">
-                        <input
-                          type="checkbox"
-                          .checked=${(schedule.months || []).includes(
-                            month + 1,
-                          )}
-                          @change=${(e: Event) =>
-                            patchSchedule({
-                              months: toggle(
-                                schedule.months,
+              ${
+                // Even or odd days, days of the month and months are set in
+                // YAML: shown here only on a schedule that uses them, so that
+                // nothing acts on the watering out of sight.
+                schedule.parity === "even" || schedule.parity === "odd"
+                  ? this._selectRow(
+                      html`${t("schedule_parity")}<si-info
+                          >${t("schedule_yaml_only")}</si-info
+                        >`,
+                      html`
+                        <option
+                          value="any"
+                          ?selected=${schedule.parity !== "even" &&
+                          schedule.parity !== "odd"}
+                        >
+                          ${t("parity_any")}
+                        </option>
+                        <option
+                          value="even"
+                          ?selected=${schedule.parity === "even"}
+                        >
+                          ${t("parity_even")}
+                        </option>
+                        <option
+                          value="odd"
+                          ?selected=${schedule.parity === "odd"}
+                        >
+                          ${t("parity_odd")}
+                        </option>
+                      `,
+                      (e: Event) =>
+                        patchSchedule({
+                          parity: (e.target as HTMLSelectElement)
+                            .value as SmartIrrigationSchedule["parity"],
+                        }),
+                    )
+                  : ""
+              }
+              ${(schedule.days_of_month || []).length
+                ? this._textRow(
+                    html`${t("schedule_days_of_month")}<si-info
+                        >${t("schedule_days_of_month_help")}
+                        ${t("schedule_yaml_only")}</si-info
+                      >`,
+                    `1, 15, ${t("last_word")}`,
+                    (schedule.days_of_month || [])
+                      .map((day) => (day === "last" ? t("last_word") : day))
+                      .join(", "),
+                    (v) =>
+                      patchSchedule({
+                        days_of_month: v
+                          .split(/[,;\s]+/)
+                          .map((part) => part.trim().toLowerCase())
+                          // The word of the panel's language, or "last" as stored.
+                          .map((part) =>
+                            part === t("last_word").toLowerCase()
+                              ? "last"
+                              : part,
+                          )
+                          .filter(
+                            (part) =>
+                              part === "last" ||
+                              (/^\d+$/.test(part) &&
+                                Number(part) >= 1 &&
+                                Number(part) <= 31),
+                          )
+                          .map((part) =>
+                            part === "last" ? part : Number(part),
+                          ),
+                      }),
+                  )
+                : ""}
+              ${(schedule.months || []).length
+                ? html`<div class="setting-row">
+                    <div class="setting-label">
+                      ${t("schedule_months")}<si-info
+                        >${t("schedule_months_help")}
+                        ${t("schedule_yaml_only")}</si-info
+                      >
+                    </div>
+                    <div>
+                      ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(
+                        (month) => html`
+                          <label
+                            style="margin-right: 10px; white-space: nowrap;"
+                          >
+                            <input
+                              type="checkbox"
+                              .checked=${(schedule.months || []).includes(
                                 month + 1,
-                                (e.target as HTMLInputElement).checked,
-                              ),
-                            })}
-                        />
-                        ${monthName(month)}
-                      </label>
-                    `,
-                  )}
-                </div>
-              </div>
+                              )}
+                              @change=${(e: Event) =>
+                                patchSchedule({
+                                  months: toggle(
+                                    schedule.months,
+                                    month + 1,
+                                    (e.target as HTMLInputElement).checked,
+                                  ),
+                                })}
+                            />
+                            ${monthName(month)}
+                          </label>
+                        `,
+                      )}
+                    </div>
+                  </div>`
+                : ""}
               ${this._monthDayRow(
                 t("schedule_from"),
                 schedule.from_date,
@@ -2926,30 +2981,35 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             <div class="card-content">
               ${fold(
                 `program:${program.id}`,
-                html`<span class="fold-title">${programName(program)}</span> ·
-                  ${countLabel((program.steps || []).length, {
-                    none: t("steps_none"),
-                    one: t("steps_one"),
-                    many: t("steps_many"),
-                  })}
-                  ·
-                  ${countLabel((program.schedules || []).length, {
-                    none: t("schedules_none"),
-                    one: t("schedules_one"),
-                    many: t("schedules_many"),
-                  })}${(program.schedules || []).length &&
-                  !(program.schedules || []).some((s) => s.enabled !== false)
-                    ? html` · <em>${t("no_schedule_on")}</em>`
-                    : ""}${stateOf(program.id)?.suspended_until
-                    ? html` · <em>${t("suspended")}</em>`
-                    : ""}${adjustmentOf(program)
-                    ? html` · <em>${adjustText(program)}</em>`
-                    : ""}`,
+                html`<span class="fold-head"
+                  ><span class="fold-head-text"
+                    ><span class="fold-title">${programName(program)}</span>
+                    ${stateChip(program)} ·
+                    ${countLabel((program.steps || []).length, {
+                      none: t("steps_none"),
+                      one: t("steps_one"),
+                      many: t("steps_many"),
+                    })}
+                    ·
+                    ${countLabel((program.schedules || []).length, {
+                      none: t("schedules_none"),
+                      one: t("schedules_one"),
+                      many: t("schedules_many"),
+                    })}${(program.schedules || []).length &&
+                    !(program.schedules || []).some((s) => s.enabled !== false)
+                      ? html` · <em>${t("no_schedule_on")}</em>`
+                      : ""}${stateOf(program.id)?.suspended_until
+                      ? html` · <em>${t("suspended")}</em>`
+                      : ""}${adjustmentOf(program)
+                      ? html` · <em>${adjustText(program)}</em>`
+                      : ""}</span
+                  >${headActions(program)}</span
+                >`,
                 yamlOpen(program.id ?? "")
-                  ? html`${runHead(program, backButton(program))}
+                  ? html`${runHead(program)}
                     ${yamlBlock(program.id ?? "", index)}`
                   : html`
-                      ${runHead(program, yamlButton(program))}
+                      ${runHead(program)}
                       ${this._textRow(t("name"), "", program.name, (v) =>
                         patch(index, { name: v }),
                       )}
@@ -3053,6 +3113,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         )}
         <div class="card-content">
           <div class="si-actions">
+            ${runnable.length > 1
+              ? this._actionBtn(mdiPlaylistPlay, t("run_all"), runAll)
+              : ""}
             ${this._actionBtn(mdiPlus, t("add"), () =>
               save([
                 ...programs,
@@ -3070,8 +3133,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
         <div class="card-content">
           <!-- The order, passes and pause of a one-off run of every zone (the
-               "irrigate all zones now" button and action): no program has
-               them, so they are kept here, folded, for that run alone. -->
+               "Irrigate all zones" button of the hub device, for automations):
+               no program has them, so they are kept here, folded, for that run
+               alone. Titled as the settings they are: it read as a button. -->
           <details
             class="more"
             ?open=${this._isOpen("all_zones_now")}
@@ -3081,11 +3145,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 (e.target as HTMLDetailsElement).open,
               )}
           >
-            <summary>${t("all_zones_now_title")}</summary>
+            <summary>
+              ${t("all_zones_button_title")}<si-info
+                >${t("all_zones_now_help")}</si-info
+              >
+            </summary>
             <div class="more-body">
-              <div class="setting-hint row-hint">
-                ${t("all_zones_now_help")}
-              </div>
               ${this.renderExecutionSettings(lang, true)}
             </div>
           </details>
@@ -5176,8 +5241,48 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         margin: -4px 0 8px;
       }
 
-      .skip-soil a,
-      .moved-to-weather a {
+      /* A program's header row: its name and state, then its actions as
+         icons. On a phone the text wraps and the icons keep their room. */
+      .head-actions {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        --mdc-icon-button-size: 36px;
+        --mdc-icon-size: 20px;
+        --ha-icon-button-size: 36px;
+      }
+      .head-actions ha-icon-button {
+        color: var(--primary-color);
+      }
+      .head-actions ha-icon-button.danger {
+        color: var(--error-color, #db4437);
+      }
+      .head-actions ha-icon-button.on {
+        background: rgba(var(--rgb-primary-color, 3, 169, 244), 0.12);
+        border-radius: 50%;
+      }
+      .state-chip {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 0 8px;
+        border-radius: 10px;
+        font-size: 0.8em;
+        font-weight: 500;
+        line-height: 1.6;
+        color: var(--text-primary-color, #fff);
+        background: var(--primary-color);
+      }
+      .state-chip.waiting,
+      .state-chip.paused {
+        color: var(--primary-text-color);
+        background: var(--secondary-background-color, #e5e5e5);
+      }
+      .state-detail {
+        color: var(--secondary-text-color);
+        font-size: 0.9em;
+      }
+
+      .skip-soil a {
         color: var(--primary-color);
       }
 

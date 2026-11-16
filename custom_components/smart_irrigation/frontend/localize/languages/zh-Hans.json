@@ -323,7 +323,6 @@
           "water-note": "计算并浇水：Smart Irrigation 计算每个区域需要多少水，并用它的程序自己打开阀门。每个程序按自己的时间表浇灌其步骤中的区域。"
         }
       },
-      "description": "此页面提供全局设置。",
       "title": "常规",
       "sections": {
         "calculation": "计算",
@@ -332,8 +331,7 @@
         "calculation-sub": "每个区域需要多少水，以及何时计算。",
         "control-sub": "由什么打开阀门，由什么启动一次浇水。",
         "system-sub": "面板、蓝图、设置向导，以及从 Irrigation Unlimited 迁移。"
-      },
-      "moved-to-weather": "天气服务、位置、读取天气的频率以及跳过检查都在此选项卡中："
+      }
     },
     "help": {
       "title": "帮助",
@@ -1263,7 +1261,7 @@
   },
   "planning": {
     "title": "规划",
-    "description": "程序在未来三天将浇哪些水。可能因雨被推迟的浇水会根据今天的预报标出；最终由届时的天气决定。",
+    "description": "程序在未来 {days} 天将浇哪些水。可能因雨被推迟的浇水会根据今天的预报标出；最终由届时的天气决定。",
     "nothing_planned": "没有计划中的程序。请为程序添加一个时间表。",
     "nothing_to_water": "暂时无需浇水：本次运行的区域都还不够缺水。",
     "expected": "预计时长：",
@@ -1332,7 +1330,10 @@
     "add_step": "添加步骤",
     "delete_step": "删除步骤",
     "add": "新程序",
-    "all_zones_now_title": "立即浇灌所有区域",
+    "run_all": "立即运行所有程序",
+    "confirm_run_all": "立即运行所有程序？它们的阀门将打开：共用同一供水的程序轮流进行，其他程序同时浇水。",
+    "run_all_done": "所有程序都已启动或正在等待轮到它们。",
+    "all_zones_button_title": "“浇灌所有区域”按钮的设置",
     "all_zones_now_help": "仅用于“浇灌所有区域”按钮：每个有阀门的区域，按此顺序，使用这些分段和间隔。各程序保留自己的步骤。",
     "delete": "删除程序",
     "schedule": "时间表",
@@ -1378,6 +1379,7 @@
     "schedule_fallback_time_help": "用于没有日出或日落的日子（极昼或极夜）。",
     "schedule_months": "月份",
     "schedule_months_help": "都不勾选：每个月。",
+    "schedule_yaml_only": "在 YAML 中设置（程序顶部的“以 YAML 编辑”）：因为此计划使用了它，所以在此显示。",
     "schedule_from": "从",
     "schedule_until": "到",
     "schedule_period_help": "一年中的一段时间，可以跨越新年（从十一月到三月）。留空：全年。",
@@ -1405,7 +1407,6 @@
     "confirm_delete_step": "删除此步骤吗？",
     "confirm_delete_schedule": "删除此时间表吗？",
     "deleted_zone": "（已删除的区域）",
-    "controls_help": "用于正在进行的浇水。暂停会关闭阀门并保持一切不动；其余部分在继续后浇完。“下一步骤”会结束程序当前所在的区域。“停止”会结束一切。",
     "max_litres": "水量上限",
     "max_litres_help": "此步骤中的区域在其水表累计到该水量后停止，单位为升或加仑，与面板显示水量的单位一致。0：无上限。水表只是隔一段时间上报一次，所以水量并不精确。没有水表的区域会忽略它。",
     "new_program": "程序",
@@ -1415,6 +1416,8 @@
     "run_replace": "替换正在运行的内容",
     "run_replace_help": "关：程序排在正在浇水的内容之后等待轮到它。开：先干净地停止正在浇水的内容。",
     "stop_program": "停止此程序",
+    "state_running": "运行中",
+    "state_waiting": "等待轮到它",
     "confirm_stop_program": "停止程序“{name}”吗？它已打开的区域会被关闭，若它在等待则会退出队列。",
     "min_seconds": "最小水量",
     "max_seconds": "最大水量",

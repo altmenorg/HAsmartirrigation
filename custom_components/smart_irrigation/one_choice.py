@@ -10,7 +10,8 @@ program and the main program's own "Program on". Here:
   "Calculate only", where it fires the start event an automation listens to.
 - ``migration_changes`` moves an installation over once, so that it keeps
   watering exactly as before: direct valve control alone becomes the full
-  controller, the active start trigger becomes a schedule of the main program,
+  controller, the active start trigger becomes a schedule of the main program
+  (the other defined triggers become schedules switched off, so none is lost),
   and a main program switched off becomes one whose schedules are off. The
   main program it works on is then converted into an ordinary program
   (program_migration.py), so this part only matters to an old store.
@@ -100,28 +101,16 @@ def mode_changes(mode: str, config: Any) -> dict:
     raise ValueError(f"mode must be one of {', '.join(MODES)}")
 
 
-def schedule_from_trigger(config: Any) -> dict | None:
-    """The main program's schedule that starts it as the active trigger did.
+def _defined_triggers(config: Any) -> list:
+    return [
+        t
+        for t in _value(config, const.CONF_IRRIGATION_START_TRIGGERS, []) or []
+        if isinstance(t, dict)
+    ]
 
-    None for "none" (nothing started it). A trigger that accounts for the
-    watering's length ends at its moment ("done by"); one that does not starts
-    at it. The default trigger is "done by sunrise".
-    """
-    active = _value(
-        config, const.CONF_ACTIVE_START_TRIGGER, const.CONF_DEFAULT_ACTIVE_START_TRIGGER
-    )
-    if active == const.START_TRIGGER_NONE:
-        return None
-    trigger = None
-    if active and active != const.START_TRIGGER_DEFAULT:
-        trigger = next(
-            (
-                t
-                for t in _value(config, const.CONF_IRRIGATION_START_TRIGGERS, []) or []
-                if isinstance(t, dict) and t.get(const.TRIGGER_CONF_NAME) == active
-            ),
-            None,
-        )
+
+def _schedule_of(trigger: dict | None) -> dict:
+    """The schedule that starts a program as ``trigger`` did (None: the default)."""
     schedule: dict = {
         const.SCHEDULE_ENABLED: True,
         const.SCHEDULE_TYPE: "sun",
@@ -166,6 +155,49 @@ def schedule_from_trigger(config: Any) -> dict | None:
         schedule[const.SCHEDULE_OFFSET_MINUTES] = offset
     schedule[const.SCHEDULE_ANCHOR] = "end" if done_by else "start"
     return schedule
+
+
+def schedule_from_trigger(config: Any) -> dict | None:
+    """The main program's schedule that starts it as the active trigger did.
+
+    None for "none" (nothing started it). A trigger that accounts for the
+    watering's length ends at its moment ("done by"); one that does not starts
+    at it. The default trigger is "done by sunrise".
+    """
+    active = _value(
+        config, const.CONF_ACTIVE_START_TRIGGER, const.CONF_DEFAULT_ACTIVE_START_TRIGGER
+    )
+    if active == const.START_TRIGGER_NONE:
+        return None
+    trigger = None
+    if active and active != const.START_TRIGGER_DEFAULT:
+        trigger = next(
+            (
+                t
+                for t in _defined_triggers(config)
+                if t.get(const.TRIGGER_CONF_NAME) == active
+            ),
+            None,
+        )
+    return _schedule_of(trigger)
+
+
+def schedules_from_triggers(config: Any) -> list:
+    """Every start trigger as a schedule: the active one as it started, the others off.
+
+    A trigger that was defined but not the active one never fired; it becomes
+    a schedule switched off, so it is not lost and can be switched on again.
+    """
+    active = _value(
+        config, const.CONF_ACTIVE_START_TRIGGER, const.CONF_DEFAULT_ACTIVE_START_TRIGGER
+    )
+    started = schedule_from_trigger(config)
+    schedules = [started] if started is not None else []
+    for trigger in _defined_triggers(config):
+        if started is not None and trigger.get(const.TRIGGER_CONF_NAME) == active:
+            continue
+        schedules.append({**_schedule_of(trigger), const.SCHEDULE_ENABLED: False})
+    return schedules
 
 
 def first_program(config: Any, zones, programs, language=None) -> list:
@@ -250,16 +282,17 @@ def migration_changes(config: Any) -> dict:
         for s in main.get(const.PROGRAM_SCHEDULES) or []
     )
     if not has_enabled:
-        # The trigger started it: its schedule does now. Disabled schedules
-        # it had did not start it, and are kept beside the new one.
-        schedule = schedule_from_trigger(config)
-        if schedule is not None:
+        # The trigger started it: its schedule does now. The other triggers
+        # it could have used come along switched off, and disabled schedules
+        # it had did not start it: they are all kept beside the new one.
+        schedules = schedules_from_triggers(config)
+        if schedules:
             seeded = [
                 (
                     {
                         **p,
                         const.PROGRAM_SCHEDULES: [
-                            schedule,
+                            *schedules,
                             *(p.get(const.PROGRAM_SCHEDULES) or []),
                         ],
                     }

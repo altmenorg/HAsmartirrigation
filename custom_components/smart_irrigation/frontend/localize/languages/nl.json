@@ -323,7 +323,6 @@
           "water-note": "Berekenen en bewateren: Smart Irrigation berekent wat elke zone nodig heeft en opent de kleppen zelf, met zijn programma's. Elk programma bewatert de zones van zijn stappen op zijn schema's."
         }
       },
-      "description": "Dit zijn de algemene instellingen.",
       "title": "Algemeen",
       "sections": {
         "calculation": "Berekening",
@@ -332,8 +331,7 @@
         "calculation-sub": "Hoeveel elke zone nodig heeft, en wanneer dat wordt berekend.",
         "control-sub": "Wat de ventielen opent, en wat een ronde start.",
         "system-sub": "Het paneel, de blueprints, de installatieassistent en de overstap van Irrigation Unlimited."
-      },
-      "moved-to-weather": "De weerdienst, de locatie, hoe vaak het weer wordt gelezen en de controles om over te slaan staan op dit tabblad:"
+      }
     },
     "help": {
       "title": "Hulp",
@@ -1263,7 +1261,7 @@
   },
   "planning": {
     "title": "Planning",
-    "description": "Wat de programma's de komende drie dagen gaan bewateren. Een ronde die de regen kan tegenhouden, wordt gemarkeerd op basis van de verwachting van vandaag; het weer op het moment zelf beslist.",
+    "description": "Wat de programma's de komende {days} dagen gaan bewateren. Een ronde die de regen kan tegenhouden, wordt gemarkeerd op basis van de verwachting van vandaag; het weer op het moment zelf beslist.",
     "nothing_planned": "Er is geen programma gepland. Voeg een schema toe aan een programma.",
     "nothing_to_water": "Voorlopig niets te sproeien: geen zone van deze beurt komt genoeg water tekort.",
     "expected": "Verwachte duur:",
@@ -1332,7 +1330,10 @@
     "add_step": "Een stap toevoegen",
     "delete_step": "De stap verwijderen",
     "add": "Nieuw programma",
-    "all_zones_now_title": "Alle zones nu bewateren",
+    "run_all": "Alle programma's nu uitvoeren",
+    "confirm_run_all": "Alle programma's nu uitvoeren? Hun kleppen gaan open: programma's met een gedeelde voeding komen om de beurt, de andere bewateren tegelijk.",
+    "run_all_done": "Alle programma's zijn gestart of wachten op hun beurt.",
+    "all_zones_button_title": "Instellingen van de knop Alle zones bewateren",
     "all_zones_now_help": "Alleen voor de knop Alle zones bewateren: elke zone met een klep, in deze volgorde, met deze beurten en deze pauze. De programma's houden hun eigen stappen.",
     "delete": "Het programma verwijderen",
     "schedule": "Schema",
@@ -1378,6 +1379,7 @@
     "schedule_fallback_time_help": "Voor een dag zonder zonsopkomst of zonsondergang (pooldag of -nacht).",
     "schedule_months": "Maanden",
     "schedule_months_help": "Niets aangevinkt: elke maand.",
+    "schedule_yaml_only": "Wordt in YAML ingesteld (Bewerken in YAML, bovenaan het programma): hier getoond omdat dit schema het gebruikt.",
     "schedule_from": "Vanaf",
     "schedule_until": "Tot",
     "schedule_period_help": "Een periode van het jaar, die over Nieuwjaar mag lopen (van november tot maart). Leeg: het hele jaar.",
@@ -1405,7 +1407,6 @@
     "confirm_delete_step": "Deze stap verwijderen?",
     "confirm_delete_schedule": "Dit schema verwijderen?",
     "deleted_zone": "(verwijderde zone)",
-    "controls_help": "Voor een bewatering die bezig is. Pauzeren sluit de ventielen en houdt alles vast; de rest wordt na het hervatten bewaterd. Volgende stap beëindigt de zones waar het programma mee bezig is. Stop beëindigt alles.",
     "max_litres": "Volumelimiet",
     "max_litres_help": "Een zone van deze stap stopt zodra haar watermeter dit volume heeft geteld, in liters of gallons zoals het paneel volumes toont. 0: geen limiet. De meter meldt zich af en toe, dus het volume is niet exact. Een zone zonder meter negeert het.",
     "new_program": "Programma",
@@ -1415,6 +1416,8 @@
     "run_replace": "Vervang wat er loopt",
     "run_replace_help": "Uit: het programma wacht op zijn beurt achter wat bewatert. Aan: wat bewatert wordt eerst netjes gestopt.",
     "stop_program": "Dit programma stoppen",
+    "state_running": "Loopt",
+    "state_waiting": "Wacht op zijn beurt",
     "confirm_stop_program": "Het programma \"{name}\" stoppen? Zijn geopende zones worden gesloten, of het verlaat de wachtrij als het wacht.",
     "min_seconds": "Minimaal water",
     "max_seconds": "Maximaal water",

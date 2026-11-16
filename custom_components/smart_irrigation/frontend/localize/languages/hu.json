@@ -323,7 +323,6 @@
           "water-note": "Számolás és öntözés: a Smart Irrigation kiszámolja, mire van szüksége minden zónának, és maga nyitja a szelepeket, a programjaival. Minden program a lépései zónáit öntözi az ütemezései szerint."
         }
       },
-      "description": "Ez az oldal globális beállításokat biztosít.",
       "title": "Általános",
       "sections": {
         "calculation": "Számítás",
@@ -332,8 +331,7 @@
         "calculation-sub": "Mennyi kell az egyes zónáknak, és mikor számolódik ki.",
         "control-sub": "Mi nyitja a szelepeket, és mi indít el egy öntözést.",
         "system-sub": "A panel, a blueprintek, a beállítási segéd és az átállás az Irrigation Unlimitedről."
-      },
-      "moved-to-weather": "Az időjárás-szolgáltatás, a hely, az időjárás leolvasásának gyakorisága és a kihagyási ellenőrzések ezen a lapon vannak:"
+      }
     },
     "help": {
       "title": "Súgó",
@@ -1263,7 +1261,7 @@
   },
   "planning": {
     "title": "Tervezés",
-    "description": "Mit fognak öntözni a programok a következő három napban. Az eső miatt esetleg elmaradó futás a mai előrejelzés alapján meg van jelölve; az időjárás dönt, amikor eljön az ideje.",
+    "description": "Mit fognak öntözni a programok a következő {days} napban. Az eső miatt esetleg elmaradó futás a mai előrejelzés alapján meg van jelölve; az időjárás dönt, amikor eljön az ideje.",
     "nothing_planned": "Nincs betervezett program. Adj egy ütemezést egy programhoz.",
     "nothing_to_water": "Egyelőre nincs mit locsolni: ennek a futásnak egyik zónájából sem hiányzik elég víz.",
     "expected": "Várható időtartam:",
@@ -1332,7 +1330,10 @@
     "add_step": "Lépés hozzáadása",
     "delete_step": "A lépés törlése",
     "add": "Új program",
-    "all_zones_now_title": "Minden zóna öntözése most",
+    "run_all": "Minden program futtatása most",
+    "confirm_run_all": "Minden programot futtat most? A szelepeik kinyílnak: a közös ellátású programok egymás után jönnek, a többiek egyszerre öntöznek.",
+    "run_all_done": "Minden program elindult, vagy a sorára vár.",
+    "all_zones_button_title": "A Minden zóna öntözése gomb beállításai",
     "all_zones_now_help": "Csak a Minden zóna öntözése gombhoz: minden szelepes zóna, ebben a sorrendben, ezekkel a szakaszokkal és szünettel. A programok megtartják a saját lépéseiket.",
     "delete": "A program törlése",
     "schedule": "Ütemezés",
@@ -1378,6 +1379,7 @@
     "schedule_fallback_time_help": "Olyan napra, amikor nincs napkelte vagy napnyugta (sarki nappal vagy éjszaka).",
     "schedule_months": "Hónapok",
     "schedule_months_help": "Egy sincs kipipálva: minden hónap.",
+    "schedule_yaml_only": "YAML-ben állítható (Szerkesztés YAML-ben, a program tetején): azért látszik itt, mert ez az ütemezés használja.",
     "schedule_from": "Ettől",
     "schedule_until": "Eddig",
     "schedule_period_help": "Az év egy időszaka, amely átnyúlhat az újéven (novembertől márciusig). Üres: az egész év.",
@@ -1405,7 +1407,6 @@
     "confirm_delete_step": "Törlöd ezt a lépést?",
     "confirm_delete_schedule": "Törlöd ezt az ütemezést?",
     "deleted_zone": "(törölt zóna)",
-    "controls_help": "A folyamatban lévő öntözéshez. A Szünet bezárja a szelepeket és mindent megállít; a maradék a folytatás után kerül öntözésre. A Következő lépés befejezi azokat a zónákat, amelyeknél a program tart. A Leállítás mindent befejez.",
     "max_litres": "Térfogatkorlát",
     "max_litres_help": "A lépés egy zónája leáll, amint a vízmérője ennyi térfogatot számolt, literben vagy gallonban, ahogy a panel a térfogatokat mutatja. 0: nincs korlát. A mérő csak időnként jelent, így a térfogat nem pontos. A mérő nélküli zóna figyelmen kívül hagyja.",
     "new_program": "Program",
@@ -1415,6 +1416,8 @@
     "run_replace": "A futó lecserélése",
     "run_replace_help": "Ki: a program megvárja a sorát az éppen öntöző mögött. Be: ami éppen öntöz, azt előbb szabályosan leállítja.",
     "stop_program": "A program leállítása",
+    "state_running": "Fut",
+    "state_waiting": "A sorára vár",
     "confirm_stop_program": "Leállítod a(z) „{name}” programot? A nyitott zónái bezáródnak, vagy kikerül a sorból, ha várakozik.",
     "min_seconds": "Minimális víz",
     "max_seconds": "Maximális víz",

@@ -323,7 +323,6 @@
           "water-note": "計算並澆水：Smart Irrigation 計算每個區域需要多少水，並用它的程式自行開啟閥門。每個程式依自己的排程澆灌其步驟中的區域。"
         }
       },
-      "description": "此頁面提供全域設定。",
       "title": "一般",
       "sections": {
         "calculation": "計算",
@@ -332,8 +331,7 @@
         "calculation-sub": "每個區域需要多少水，以及何時計算。",
         "control-sub": "什麼會開啟閥門，以及什麼會啟動一次執行。",
         "system-sub": "面板、藍圖、設定精靈，以及從 Irrigation Unlimited 轉移。"
-      },
-      "moved-to-weather": "氣象服務、位置、氣象資料的讀取頻率與略過檢查都在此分頁："
+      }
     },
     "help": {
       "title": "說明",
@@ -1263,7 +1261,7 @@
   },
   "planning": {
     "title": "規劃",
-    "description": "程式在未來三天內預計澆水的內容。可能因降雨而暫緩的執行會依今天的預報標示；實際如何則由到期當下的天氣決定。",
+    "description": "程式在未來 {days} 天內預計澆水的內容。可能因降雨而暫緩的執行會依今天的預報標示；實際如何則由到期當下的天氣決定。",
     "nothing_planned": "沒有規劃任何程式。請為程式新增排程。",
     "nothing_to_water": "目前無需澆水：此次執行的區域都沒有缺水到需要澆水。",
     "expected": "預期時間長度：",
@@ -1332,7 +1330,10 @@
     "add_step": "新增步驟",
     "delete_step": "刪除步驟",
     "add": "新增程式",
-    "all_zones_now_title": "立即澆灌所有區域",
+    "run_all": "立即執行所有程式",
+    "confirm_run_all": "立即執行所有程式？它們的閥門將開啟：共用同一供水的程式輪流進行，其他程式同時澆水。",
+    "run_all_done": "所有程式都已啟動或正在等待輪到它們。",
+    "all_zones_button_title": "「澆灌所有區域」按鈕的設定",
     "all_zones_now_help": "僅用於「澆灌所有區域」按鈕：每個有閥門的區域，依此順序，使用這些分輪與間隔。各程式保留自己的步驟。",
     "delete": "刪除程式",
     "schedule": "排程",
@@ -1378,6 +1379,7 @@
     "schedule_fallback_time_help": "適用於沒有日出或日落的日子（極晝或極夜）。",
     "schedule_months": "月份",
     "schedule_months_help": "未勾選：每個月。",
+    "schedule_yaml_only": "在 YAML 中設定（程式頂部的「以 YAML 編輯」）：因為此排程使用了它，所以在此顯示。",
     "schedule_from": "從",
     "schedule_until": "到",
     "schedule_period_help": "一年中的某段期間，可以跨越新年（例如從 11 月到 3 月）。留空：全年。",
@@ -1405,7 +1407,6 @@
     "confirm_delete_step": "要刪除此步驟嗎？",
     "confirm_delete_schedule": "要刪除此排程嗎？",
     "deleted_zone": "（已刪除的區域）",
-    "controls_help": "用於進行中的澆水。「暫停」會關閉閥門並暫緩所有項目；恢復後會繼續澆其餘的水。「下一步驟」會結束程式目前所在的區域。「停止」則結束所有項目。",
     "max_litres": "水量上限",
     "max_litres_help": "當此步驟中某區域的水表累計達到此水量時，該區域就會停止，單位為公升或加侖，依面板顯示水量的單位而定。0：不限制。水表只會每隔一段時間回報一次，因此水量並不精確。沒有水表的區域會忽略此設定。",
     "new_program": "程式",
@@ -1415,6 +1416,8 @@
     "run_replace": "取代正在執行的項目",
     "run_replace_help": "關閉：程式會排在正在澆水的項目後面等待。開啟：會先完整停止正在澆水的項目。",
     "stop_program": "停止此程式",
+    "state_running": "執行中",
+    "state_waiting": "等待輪到它",
     "confirm_stop_program": "要停止程式「{name}」嗎？其已開啟的區域會被關閉，若正在等待則會離開佇列。",
     "min_seconds": "最少水量",
     "max_seconds": "最多水量",
