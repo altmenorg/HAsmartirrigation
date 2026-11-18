@@ -1250,6 +1250,8 @@
     "effective_rain_description": "Figyelmen kívül hagyja az időszak evapotranszpirációjának ötödénél kisebb zivatart: megnedvesíti a leveleket, és elpárolog. A két számítás közötti teljes időszak alapján ítéli meg.",
     "forecast_label": "Az előrejelzett eső figyelembe vétele",
     "forecast_description": "A küszöb alatt minden zónát a hiányának megfelelően öntöz, csökkentve a következő 24 órára előrejelzett esővel, az időjárás-szolgáltató által megadott valószínűséggel súlyozva: 4 mm előrejelzés és 10 mm hiány esetén 6 mm-t öntöz. A küszöbnél vagy afölött az öntözést kihagyja a szabadban lévő zónáknál. Az üvegházban lévő zónákat ez nem érinti.",
+    "forecast_no_service": "Időjárás-szolgáltatás kell hozzá: tőle jön az előrejelzés.",
+    "forecast_no_service_on": "Nincs időjárás-szolgáltatás: nincs mit beolvasni, így ez semmit sem tart vissza.",
     "forecast_set_up_service": "Időjárás-szolgáltatás beállítása"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "Engedi az időjárás?",
     "weather_sub": "Eső, fagy, szél…",
     "weather_yes": "Igen",
+    "weather_yes_unread": "Igen, de a(z) {reason} nem olvasható",
     "weather_no": "Nem: {reason}",
     "otherwise": "Különben: aznap semmi",
     "supply_on": "{name} be",

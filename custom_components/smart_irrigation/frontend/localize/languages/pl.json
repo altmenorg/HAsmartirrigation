@@ -1250,6 +1250,8 @@
     "effective_rain_description": "Ignoruj opad mniejszy niż jedna piąta ewapotranspiracji okresu: zwilża liście i paruje. Ocenia się go na całym okresie między dwoma obliczeniami.",
     "forecast_label": "Uwzględnij prognozowany deszcz",
     "forecast_description": "Poniżej progu każda strefa jest nawadniana na wysokość swojego deficytu pomniejszonego o deszcz prognozowany na najbliższe 24 godziny, ważony prawdopodobieństwem podanym przez usługę pogodową: 4 mm prognozy przy deficycie 10 mm daje 6 mm. Od progu wzwyż nawadnianie jest pomijane w strefach na otwartym powietrzu. Strefy w szklarni nie są objęte.",
+    "forecast_no_service": "Wymaga serwisu pogodowego: to z niego pochodzi prognoza.",
+    "forecast_no_service_on": "Brak serwisu pogodowego: nie ma prognozy do odczytu, więc to niczego nie wstrzymuje.",
     "forecast_set_up_service": "Skonfiguruj serwis pogodowy"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "Pogoda pozwala?",
     "weather_sub": "Deszcz, mróz, wiatr…",
     "weather_yes": "Tak",
+    "weather_yes_unread": "Tak, ale nie udało się odczytać: {reason}",
     "weather_no": "Nie: {reason}",
     "otherwise": "W przeciwnym razie: nic tego dnia",
     "supply_on": "{name} włączona",

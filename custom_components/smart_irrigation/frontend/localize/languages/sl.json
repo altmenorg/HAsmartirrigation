@@ -1250,6 +1250,8 @@
     "effective_rain_description": "Prezri ploho, manjšo od petine evapotranspiracije obdobja: zmoči liste in izhlapi. Presoja se na celotnem obdobju med dvema izračunoma.",
     "forecast_label": "Upoštevaj napovedani dež",
     "forecast_description": "Pod pragom se vsaka cona zaliva za svoj primanjkljaj, zmanjšan za dež, napovedan v naslednjih 24 urah, utežen z verjetnostjo, ki jo poda vremenska storitev: 4 mm napovedi ob primanjkljaju 10 mm zalije 6 mm. Na pragu ali nad njim se zagon za cone na prostem preskoči. Cone v rastlinjaku niso prizadete.",
+    "forecast_no_service": "Potrebuje vremensko storitev: napoved prihaja od nje.",
+    "forecast_no_service_on": "Ni vremenske storitve: ni napovedi za branje, zato to ničesar ne zadrži.",
     "forecast_set_up_service": "Nastavi vremensko storitev"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "Vreme dopušča?",
     "weather_sub": "Dež, zmrzal, veter…",
     "weather_yes": "Da",
+    "weather_yes_unread": "Da, vendar {reason} ni bilo mogoče prebrati",
     "weather_no": "Ne: {reason}",
     "otherwise": "Sicer: ta dan nič",
     "supply_on": "{name} vklopljena",

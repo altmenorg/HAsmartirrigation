@@ -1250,6 +1250,8 @@
     "effective_rain_description": "Negeer een bui van minder dan een vijfde van de verdamping van de periode: ze maakt de bladeren nat en verdampt. Het wordt beoordeeld over de hele periode tussen twee berekeningen.",
     "forecast_label": "Verwachte regen meerekenen",
     "forecast_description": "Onder de drempel wordt elke zone bewaterd voor haar tekort min de regen die de komende 24 uur wordt verwacht, gewogen met de kans die de weerdienst opgeeft: 4 mm verwacht bij een tekort van 10 mm geeft 6 mm. Vanaf de drempel wordt de irrigatie overgeslagen voor de zones in de open lucht. Zones in een kas worden niet beïnvloed.",
+    "forecast_no_service": "Heeft een weerdienst nodig: de voorspelling komt daarvandaan.",
+    "forecast_no_service_on": "Geen weerdienst: er is geen voorspelling om te lezen, dus dit houdt niets tegen.",
     "forecast_set_up_service": "Een weerdienst instellen"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "Laat het weer het toe?",
     "weather_sub": "Regen, vorst, wind…",
     "weather_yes": "Ja",
+    "weather_yes_unread": "Ja, maar {reason} kon niet worden gelezen",
     "weather_no": "Nee: {reason}",
     "otherwise": "Anders: niets die dag",
     "supply_on": "{name} aan",

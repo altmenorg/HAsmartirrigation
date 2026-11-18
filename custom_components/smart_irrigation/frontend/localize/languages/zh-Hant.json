@@ -1250,6 +1250,8 @@
     "effective_rain_description": "忽略小於該期間蒸發散量五分之一的陣雨：它只會打濕葉片然後蒸發。此判斷是針對兩次計算之間的整段期間。",
     "forecast_label": "納入預報降雨",
     "forecast_description": "低於閾值時，每個區域的缺水量會減去 24 小時預報降雨量（依其機率加權）：預報 4 公釐、缺水 10 公釐，則澆水 6 公釐。達到或高於閾值時，戶外區域會被略過。溫室區域不受影響。",
+    "forecast_no_service": "需要天氣服務：預報來自天氣服務。",
+    "forecast_no_service_on": "沒有天氣服務：沒有可讀取的預報，因此這不會阻止任何澆水。",
     "forecast_set_up_service": "設定氣象服務"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "天氣允許？",
     "weather_sub": "雨、霜、風…",
     "weather_yes": "是",
+    "weather_yes_unread": "是，但無法讀取{reason}",
     "weather_no": "否：{reason}",
     "otherwise": "否則：當天不澆",
     "supply_on": "{name} 開啟",

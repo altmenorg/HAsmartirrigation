@@ -1250,6 +1250,8 @@
     "effective_rain_description": "Ignorar um aguaceiro inferior a um quinto da evapotranspiração do período: molha as folhas e evapora. É avaliado sobre todo o período entre dois cálculos.",
     "forecast_label": "Ter em conta a chuva prevista",
     "forecast_description": "Abaixo do limiar, cada zona é regada pelo seu défice menos a chuva prevista para as próximas 24 horas, ponderada pela probabilidade indicada pelo serviço meteorológico: 4 mm previstos para um défice de 10 mm regam 6 mm. A partir do limiar, a irrigação é saltada nas zonas ao ar livre. As zonas em estufa não são afetadas.",
+    "forecast_no_service": "Precisa de um serviço meteorológico: a previsão vem dele.",
+    "forecast_no_service_on": "Sem serviço meteorológico: não há previsão para ler, por isso isto não retém nada.",
     "forecast_set_up_service": "Configurar um serviço meteorológico"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "O tempo permite?",
     "weather_sub": "Chuva, geada, vento…",
     "weather_yes": "Sim",
+    "weather_yes_unread": "Sim, mas não foi possível ler {reason}",
     "weather_no": "Não: {reason}",
     "otherwise": "Senão: nada nesse dia",
     "supply_on": "{name} ligada",

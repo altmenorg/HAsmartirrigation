@@ -1250,6 +1250,8 @@
     "effective_rain_description": "忽略小于该时段蒸散量五分之一的阵雨：它只会打湿叶片然后蒸发。按两次计算之间的整个时段来判断。",
     "forecast_label": "计入预报降雨",
     "forecast_description": "低于阈值时，每个区域的灌溉量为其亏缺量减去未来 24 小时的预报降雨量，并按天气服务给出的概率加权：预报 4 毫米、亏缺 10 毫米时，灌溉 6 毫米。达到或超过阈值时，露天区域将跳过本次运行。温室中的区域不受影响。",
+    "forecast_no_service": "需要天气服务：预报来自天气服务。",
+    "forecast_no_service_on": "没有天气服务：没有可读取的预报，因此这不会阻止任何浇水。",
     "forecast_set_up_service": "设置天气服务"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "天气允许？",
     "weather_sub": "雨、霜、风…",
     "weather_yes": "是",
+    "weather_yes_unread": "是，但无法读取{reason}",
     "weather_no": "否：{reason}",
     "otherwise": "否则：当天不浇",
     "supply_on": "{name} 开启",

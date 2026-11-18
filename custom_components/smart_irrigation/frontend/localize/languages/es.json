@@ -1250,6 +1250,8 @@
     "effective_rain_description": "Ignora un chubasco inferior a la quinta parte de la evapotranspiración del periodo: moja las hojas y se evapora. Se juzga sobre todo el periodo entre dos cálculos.",
     "forecast_label": "Tener en cuenta la lluvia prevista",
     "forecast_description": "Por debajo del umbral, cada zona se riega con su déficit menos la lluvia prevista para las próximas 24 horas, ponderada por la probabilidad que da el servicio meteorológico: 4 mm previstos frente a un déficit de 10 mm riegan 6 mm. A partir del umbral, el riego se omite en las zonas al aire libre. Las zonas en un invernadero no se ven afectadas.",
+    "forecast_no_service": "Necesita un servicio meteorológico: la previsión viene de él.",
+    "forecast_no_service_on": "Sin servicio meteorológico: no hay previsión que leer, así que esto no retiene nada.",
     "forecast_set_up_service": "Configurar un servicio meteorológico"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "¿El tiempo lo permite?",
     "weather_sub": "Lluvia, helada, viento…",
     "weather_yes": "Sí",
+    "weather_yes_unread": "Sí, pero no se pudo leer {reason}",
     "weather_no": "No: {reason}",
     "otherwise": "Si no: nada ese día",
     "supply_on": "{name} en marcha",

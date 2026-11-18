@@ -1250,6 +1250,8 @@
     "effective_rain_description": "Ignorer une averse inférieure au cinquième de l'évapotranspiration de la période : elle mouille les feuilles et s'évapore. Jugé sur toute la période entre deux calculs.",
     "forecast_label": "Tenir compte de la pluie prévue",
     "forecast_description": "En dessous du seuil, chaque zone est arrosée pour son déficit moins la pluie prévue dans les 24 heures suivantes, pondérée par la probabilité donnée par le service météo : 4 mm prévus sur un déficit de 10 mm arrosent 6 mm. À partir du seuil, le départ est sauté pour les zones à l'air libre. Les zones en serre ne sont pas concernées.",
+    "forecast_no_service": "A besoin d'un service météo : c'est lui qui fournit la prévision.",
+    "forecast_no_service_on": "Pas de service météo : il n'y a aucune prévision à lire, donc ceci ne retient rien.",
     "forecast_set_up_service": "Configurer un service météo"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "Météo favorable ?",
     "weather_sub": "Pluie, gel, vent…",
     "weather_yes": "Oui",
+    "weather_yes_unread": "Oui, mais {reason} n'a pas pu être lu",
     "weather_no": "Non : {reason}",
     "otherwise": "Sinon : rien ce jour-là",
     "supply_on": "{name} en marche",

@@ -1250,6 +1250,8 @@
     "effective_rain_description": "Ignore a shower smaller than a fifth of the evapotranspiration of the period: it wets the leaves and evaporates. It is judged on the whole period between two calculations.",
     "forecast_label": "Take the forecast rain into account",
     "forecast_description": "Below the threshold, each zone gets its deficit less the rain forecast for 24 hours, weighted by its probability: 4 mm forecast against a 10 mm deficit waters 6 mm. At or above it, zones in the open are skipped. Greenhouse zones are not affected.",
+    "forecast_no_service": "Needs a weather service: the forecast comes from it.",
+    "forecast_no_service_on": "No weather service: there is no forecast to read, so this holds nothing back.",
     "forecast_set_up_service": "Set up a weather service"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "Weather allows it?",
     "weather_sub": "Rain, frost, wind…",
     "weather_yes": "Yes",
+    "weather_yes_unread": "Yes, but {reason} could not be read",
     "weather_no": "No: {reason}",
     "otherwise": "Otherwise: nothing that day",
     "supply_on": "{name} on",

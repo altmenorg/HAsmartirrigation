@@ -1250,6 +1250,8 @@
     "effective_rain_description": "Ohita jakson haihdunnan viidennestä pienempi sadekuuro: se kastelee lehdet ja haihtuu. Arvio tehdään koko kahden laskennan väliseltä jaksolta.",
     "forecast_label": "Ota ennustettu sade huomioon",
     "forecast_description": "Kynnysarvon alapuolella kutakin aluetta kastellaan sen vajauksen verran vähennettynä seuraavan 24 tunnin ennustetulla sateella, painotettuna sääpalvelun antamalla todennäköisyydellä: 4 mm:n ennuste 10 mm:n vajauksella kastelee 6 mm. Kynnysarvon kohdalla tai sen yläpuolella kastelu ohitetaan ulkona sijaitsevilta alueilta. Kasvihuoneessa olevia alueita tämä ei koske.",
+    "forecast_no_service": "Tarvitsee sääpalvelun: ennuste tulee siltä.",
+    "forecast_no_service_on": "Ei sääpalvelua: luettavaa ennustetta ei ole, joten tämä ei pidätä mitään.",
     "forecast_set_up_service": "Määritä sääpalvelu"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "Salliiko sää?",
     "weather_sub": "Sade, pakkanen, tuuli…",
     "weather_yes": "Kyllä",
+    "weather_yes_unread": "Kyllä, mutta kohdetta {reason} ei voitu lukea",
     "weather_no": "Ei: {reason}",
     "otherwise": "Muuten: ei mitään sinä päivänä",
     "supply_on": "{name} päälle",

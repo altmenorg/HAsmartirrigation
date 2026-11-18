@@ -130,7 +130,8 @@ export type WeatherVerdict =
   | { state: "off" }
   /** Nothing to go on yet (no answer from the backend). */
   | { state: "unknown" }
-  | { state: "yes" }
+  /** ``unread``: a check that applies but could not be read (no forecast). */
+  | { state: "yes"; unread?: string }
   /** ``reason`` is a skip condition id; ``mm`` the rain forecast behind it. */
   | { state: "no"; reason: string; mm?: number | null };
 
@@ -212,5 +213,15 @@ export const weatherVerdict = (
       ? { state: "no", reason: holding.id, mm: holding.forecast_mm ?? null }
       : { state: "no", reason: holding.id };
   }
-  return { state: "yes" };
+  // A check that could not be read holds nothing back, but a plain "Yes" hid
+  // it: without a weather service, "Rain forecast" never reads, and the flow
+  // said Yes in green as if the forecast had been checked.
+  const unread = checks.find(
+    (c) =>
+      applies(c.id) &&
+      c.enabled !== false &&
+      c.available === false &&
+      !(c.id === "precipitation" && planned),
+  );
+  return unread ? { state: "yes", unread: unread.id } : { state: "yes" };
 };

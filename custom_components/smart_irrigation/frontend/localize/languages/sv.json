@@ -1250,6 +1250,8 @@
     "effective_rain_description": "Bortse från regn som bara väter bladen och sedan avdunstar. Gränsen går vid en femtedel av evapotranspirationen och bedömningen görs för hela perioden mellan två beräkningar.",
     "forecast_label": "Ta hänsyn till prognostiserat regn",
     "forecast_description": "Under gränsvärdet minskas den planerade bevattningsmängden med det regn som väntas de närmaste 24 timmarna, viktat med sannolikheten för regn enligt vädertjänsten. Om vattenunderskottet är 10 mm och 4 mm regn räknas av blir bevattningen 6 mm. Om regnmängden når eller överstiger gränsen hoppas bevattningen över utomhus. Växthuszoner påverkas inte.",
+    "forecast_no_service": "Behöver en vädertjänst: prognosen kommer därifrån.",
+    "forecast_no_service_on": "Ingen vädertjänst: det finns ingen prognos att läsa, så detta håller inte tillbaka något.",
     "forecast_set_up_service": "Konfigurera en vädertjänst"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "Tillåter vädret det?",
     "weather_sub": "Regn, frost, vind…",
     "weather_yes": "Ja",
+    "weather_yes_unread": "Ja, men {reason} kunde inte läsas",
     "weather_no": "Nej: {reason}",
     "otherwise": "Annars: inget den dagen",
     "supply_on": "{name} på",

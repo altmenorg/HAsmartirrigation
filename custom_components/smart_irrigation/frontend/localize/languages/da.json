@@ -1250,6 +1250,8 @@
     "effective_rain_description": "Ignorer en byge, der er mindre end en femtedel af periodens evapotranspiration: den fugter bladene og fordamper. Den vurderes over hele perioden mellem to beregninger.",
     "forecast_label": "Tag højde for den varslede regn",
     "forecast_description": "Under tærsklen vandes hver zone med sit underskud minus den regn, der er varslet for de næste 24 timer, vægtet efter den sandsynlighed, vejrtjenesten angiver: 4 mm varslet mod et underskud på 10 mm giver 6 mm. Ved eller over tærsklen springes vandingen over for zonerne udendørs. Zoner i et drivhus påvirkes ikke.",
+    "forecast_no_service": "Kræver en vejrtjeneste: prognosen kommer derfra.",
+    "forecast_no_service_on": "Ingen vejrtjeneste: der er ingen prognose at læse, så dette holder intet tilbage.",
     "forecast_set_up_service": "Opsæt en vejrtjeneste"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "Tillader vejret det?",
     "weather_sub": "Regn, frost, vind…",
     "weather_yes": "Ja",
+    "weather_yes_unread": "Ja, men {reason} kunne ikke læses",
     "weather_no": "Nej: {reason}",
     "otherwise": "Ellers: intet den dag",
     "supply_on": "{name} tændt",

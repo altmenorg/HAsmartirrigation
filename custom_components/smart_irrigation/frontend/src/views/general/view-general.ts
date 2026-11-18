@@ -3561,21 +3561,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   this.hass.language,
                 )}
               </si-info>
-              ${this.config.use_weather_service
-                ? ""
-                : html`<si-info
-                    ><a
-                      href="/${DOMAIN}/weatherservice"
-                      @click=${(e: Event) => {
-                        e.preventDefault();
-                        navigate(this, `/${DOMAIN}/weatherservice`);
-                      }}
-                      >${localize(
-                        "weather_skip.forecast_set_up_service",
-                        this.hass.language,
-                      )}</a
-                    ></si-info
-                  >`}
             </div>
             <ha-switch
               .checked=${!!(
@@ -3596,7 +3581,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 })}
             ></ha-switch>
           </div>
-
+          ${this._forecastWithoutService()}
           ${this.config.skip_irrigation_on_precipitation ||
           this.config.forecast_rain_credit
             ? this._numRow(
@@ -4608,6 +4593,38 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
       </div>
     `;
+  }
+
+  /**
+   * Without a weather service there is no forecast. In sight, not behind a
+   * second "i": switched on (kept from before), it holds nothing back.
+   */
+  private _forecastWithoutService() {
+    if (!this.hass || !this.config || this.config.use_weather_service)
+      return "";
+    const on = !!(
+      this.config.skip_irrigation_on_precipitation ||
+      this.config.forecast_rain_credit
+    );
+    return html`<div class="setting-hint row-hint ${on ? "warning-hint" : ""}">
+      ${localize(
+        on
+          ? "weather_skip.forecast_no_service_on"
+          : "weather_skip.forecast_no_service",
+        this.hass.language,
+      )}
+      <a
+        href="/${DOMAIN}/weatherservice"
+        @click=${(e: Event) => {
+          e.preventDefault();
+          navigate(this, `/${DOMAIN}/weatherservice`);
+        }}
+        >${localize(
+          "weather_skip.forecast_set_up_service",
+          this.hass.language,
+        )}</a
+      >
+    </div>`;
   }
 
   private _numRow(

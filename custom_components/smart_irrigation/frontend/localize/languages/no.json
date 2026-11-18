@@ -1250,6 +1250,8 @@
     "effective_rain_description": "Ignorer en byge på under en femtedel av fordampingen i perioden: den fukter bladene og fordamper. Den vurderes over hele perioden mellom to beregninger.",
     "forecast_label": "Ta hensyn til varslet regn",
     "forecast_description": "Under terskelen vannes hver sone for sitt underskudd minus regnet som er varslet de neste 24 timene, vektet etter sannsynligheten værtjenesten oppgir: 4 mm varslet mot et underskudd på 10 mm gir 6 mm. Ved terskelen eller over hoppes vanningen over for sonene utendørs. Soner i drivhus påvirkes ikke.",
+    "forecast_no_service": "Trenger en værtjeneste: værvarselet kommer derfra.",
+    "forecast_no_service_on": "Ingen værtjeneste: det finnes ikke noe varsel å lese, så dette holder ingenting tilbake.",
     "forecast_set_up_service": "Sett opp en værtjeneste"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "Tillater været det?",
     "weather_sub": "Regn, frost, vind…",
     "weather_yes": "Ja",
+    "weather_yes_unread": "Ja, men {reason} kunne ikke leses",
     "weather_no": "Nei: {reason}",
     "otherwise": "Ellers: ingenting den dagen",
     "supply_on": "{name} på",

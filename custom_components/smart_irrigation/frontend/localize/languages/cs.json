@@ -1250,6 +1250,8 @@
     "effective_rain_description": "Ignorovat přeháňku menší než pětina evapotranspirace za období: zvlhčí listy a vypaří se. Posuzuje se za celé období mezi dvěma výpočty.",
     "forecast_label": "Zohlednit předpovězený déšť",
     "forecast_description": "Pod prahem se každá zóna zalévá podle svého deficitu sníženého o déšť předpovězený na následujících 24 hodin, vážený pravděpodobností od meteorologické služby: při předpovědi 4 mm a deficitu 10 mm se zalévá 6 mm. Od prahu výše se zavlažování přeskočí pro zóny ve venkovním prostředí. Zóny ve skleníku to neovlivní.",
+    "forecast_no_service": "Potřebuje meteorologickou službu: předpověď pochází z ní.",
+    "forecast_no_service_on": "Žádná meteorologická služba: není co číst, takže tohle nic nezadrží.",
     "forecast_set_up_service": "Nastavit meteorologickou službu"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "Dovolí to počasí?",
     "weather_sub": "Déšť, mráz, vítr…",
     "weather_yes": "Ano",
+    "weather_yes_unread": "Ano, ale {reason} nešlo přečíst",
     "weather_no": "Ne: {reason}",
     "otherwise": "Jinak: ten den nic",
     "supply_on": "{name} zapnuto",

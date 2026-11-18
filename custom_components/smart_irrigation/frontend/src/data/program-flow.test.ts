@@ -135,14 +135,38 @@ describe("weatherVerdict", () => {
         checks: [check("freeze", false), check("precipitation", false)],
       }),
     ).toEqual({ state: "yes" });
-    // A check turned off or that could not be read holds nothing back.
+    // A check turned off holds nothing back.
+    expect(
+      weatherVerdict(on, {
+        checks: [check("wind", true, { enabled: false })],
+      }),
+    ).toEqual({ state: "yes" });
+  });
+
+  it("says yes, naming a check that could not be read", () => {
+    // It holds nothing back, but a plain Yes hid it: no weather service.
     expect(
       weatherVerdict(on, {
         checks: [
-          check("wind", true, { enabled: false }),
-          check("freeze", true, { available: false }),
+          check("freeze", false),
+          check("precipitation", false, { available: false }),
         ],
       }),
+    ).toEqual({ state: "yes", unread: "precipitation" });
+    // The planned run read the forecast for its own start: it was read.
+    expect(
+      weatherVerdict(
+        on,
+        { checks: [check("precipitation", false, { available: false })] },
+        { forecast_known: true },
+      ),
+    ).toEqual({ state: "yes" });
+    // A condition the schedule does not apply is not named.
+    expect(
+      weatherVerdict(
+        [{ enabled: true, weather: true, skip_conditions: ["wind"] }],
+        { checks: [check("precipitation", false, { available: false })] },
+      ),
     ).toEqual({ state: "yes" });
   });
 

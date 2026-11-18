@@ -1250,6 +1250,8 @@
     "effective_rain_description": "Ignora un acquazzone inferiore a un quinto dell'evapotraspirazione del periodo: bagna le foglie ed evapora. Viene valutato sull'intero periodo tra due calcoli.",
     "forecast_label": "Tieni conto della pioggia prevista",
     "forecast_description": "Sotto la soglia, ogni zona viene irrigata per il suo deficit meno la pioggia prevista nelle prossime 24 ore, ponderata dalla probabilità fornita dal servizio meteo: 4 mm previsti contro un deficit di 10 mm irrigano 6 mm. Alla soglia o oltre, l'irrigazione viene saltata per le zone all'aperto. Le zone in serra non sono interessate.",
+    "forecast_no_service": "Serve un servizio meteo: la previsione arriva da lì.",
+    "forecast_no_service_on": "Nessun servizio meteo: non c'è alcuna previsione da leggere, quindi questo non trattiene nulla.",
     "forecast_set_up_service": "Configura un servizio meteo"
   },
   "coordinate_config": {
@@ -1690,6 +1692,7 @@
     "weather": "Il meteo lo permette?",
     "weather_sub": "Pioggia, gelo, vento…",
     "weather_yes": "Sì",
+    "weather_yes_unread": "Sì, ma {reason} non è stato letto",
     "weather_no": "No: {reason}",
     "otherwise": "Altrimenti: niente quel giorno",
     "supply_on": "{name} accesa",
