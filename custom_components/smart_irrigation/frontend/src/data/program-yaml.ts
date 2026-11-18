@@ -155,6 +155,12 @@ export const programToYaml = (
   return out;
 };
 
+/** What the YAML editor read, when it is a set of keys (a copy), or null. */
+export const asMapping = (value: unknown): Plain | null =>
+  !value || typeof value !== "object" || Array.isArray(value)
+    ? null
+    : { ...(value as Plain) };
+
 /**
  * What the editor sends to be cleaned: the YAML as typed, its id kept to the
  * program it replaces (a program renamed in YAML is still that program).
@@ -163,8 +169,8 @@ export const programFromYaml = (
   value: unknown,
   replacing?: SmartIrrigationProgram,
 ): Plain | null => {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  const program = { ...(value as Plain) };
+  const program = asMapping(value);
+  if (!program) return null;
   if (replacing) program.id = replacing.id;
   return program;
 };

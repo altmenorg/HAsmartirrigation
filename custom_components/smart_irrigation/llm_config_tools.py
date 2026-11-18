@@ -248,7 +248,8 @@ class SaveZoneTool(_WriteTool):
         "linked_entity (the valve or switch that waters it), mapping (sensor "
         "group id), module (calculation module id), lead_time (s), "
         "maximum_duration (s), multiplier, soil and plant settings, "
-        "supply_id... Metric figures. Returns the zone as saved."
+        "supply_id... Metric figures. GetConfigReference lists every field. "
+        "Returns the zone as saved."
     )
     parameters = _parameters({vol.Required("zone"): dict})
 
@@ -424,8 +425,9 @@ class SaveProgramTool(_WriteTool):
         "id of an existing program it replaces it, without one it is added. "
         "Refused when a zone it names matches none, when its `after` "
         "schedules would make programs start each other in a loop, or name a "
-        "program that does not exist. Returns the program as saved and its "
-        "run, as PreviewProgram does."
+        "program that does not exist. GetConfigReference lists every field, "
+        "including those only set in YAML. Returns the program as saved and "
+        "its run, as PreviewProgram does."
     )
     parameters = _parameters({vol.Required("program"): dict})
 
