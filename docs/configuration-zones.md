@@ -101,6 +101,26 @@ The default of `0` is there to keep existing installs behaving exactly as before
 * view watering calendar. View a yearly watering calendar based on the location and normal weather patterns.
 * delete the zone.
 
+### A zone in YAML
+
+The **Edit in YAML** icon in a zone's header row shows its settings as text, in place of the form, and back, as for a [program](usage-full-controller.md#a-program-in-yaml). The numbers are in the units the panel shows. Only settings are written: what the calculation and the runs write (water balance, duration, explanation, last calculation, measured throughput...) is not, and cannot be set there. An optional setting you remove is cleared; a required one (`name`, `size`, `state`...) is kept. Nothing is saved until **Apply**, which saves only what changed, the same way the form does; a key that is not a zone setting, or a value the zone refuses, is named under the editor.
+
+```yaml
+name: Front lawn
+state: automatic
+size: 50
+throughput: 12
+linked_entity: valve.front_lawn
+safety_off_topic: zigbee2mqtt/front_lawn_valve/set
+safety_off_state_key: state_l1
+open_resends: 0
+```
+
+<a id="zone-yaml-only-options"></a>**YAML only**: two zone options have no field in the form, even when they are set. Editing the zone in the form keeps them, and a zone that uses one says so in a **Set in YAML (not editable here)** box, with **Edit in YAML** at hand:
+
+- `safety_off_state_key: state_l1`, the [safety off state key](configuration-closed-loop.md#hardware-auto-off-mqtt-on_time-dead-man) (empty is `state`);
+- `open_resends: 0`, how often [the open is sent again](configuration-closed-loop.md#when-smart-irrigation-runs-the-valves) while the valve has not confirmed (0 to 10; empty is the default).
+
 > Main page: [Configuration](configuration.md)<br/>
 > Previous: [Weather configuration](configuration-weather.md)<br/>
 > Next: [Module configuration](configuration-modules.md)

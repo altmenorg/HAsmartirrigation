@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "Vypnutá zóna sa nikdy nezalieva, takže nemá čas zavlažovania.",
         "et-deficiency-help": "Čo táto zóna potrebuje za deň: ETc, referenčná evapotranspirácia krát plodinový faktor, vrátane sezónnej úpravy. Pred prepočtom na interval a pred dažďom, čo je práve to, čo ju robí porovnateľnou medzi konfiguráciami. Senzor zóny nesie aj samotnú referenčnú hodnotu, ako atribút `eto`, na porovnanie s tým, čo zverejňuje meteoslužba.",
         "safety-off-entity": "Vlastný čas ventilu",
-        "safety-off-entity-help": "Pre ventil, ktorý sa sám zatvorí po vlastnom čase, napríklad Gardena (jeho číslo „čas zavlažovania“, 1 min, ak nebolo zmenené): vyberte tu toto číslo. Pred každým otvorením doň Smart Irrigation zapíše dĺžku dávky plus 30 s, takže ventil zostane otvorený počas celej dávky a aj tak sa sám zatvorí, ak sa Home Assistant zastaví. Bez toho sa taký ventil zatvorí po svojom prednastavenom čase."
+        "safety-off-entity-help": "Pre ventil, ktorý sa sám zatvorí po vlastnom čase, napríklad Gardena (jeho číslo „čas zavlažovania“, 1 min, ak nebolo zmenené): vyberte tu toto číslo. Pred každým otvorením doň Smart Irrigation zapíše dĺžku dávky plus 30 s, takže ventil zostane otvorený počas celej dávky a aj tak sa sám zatvorí, ak sa Home Assistant zastaví. Bez toho sa taký ventil zatvorí po svojom prednastavenom čase.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Zatiaľ nie sú definované žiadne zóny.",
       "title": "Zóny",
@@ -867,6 +868,13 @@
         "zone": "Zóna a ventil",
         "need": "Čo potrebuje",
         "status": "Ako je na tom"
+      },
+      "yaml": {
+        "only_help": "Nastavenia, ktoré vizuálny editor nezobrazuje. Pri úpravách tu zostanú zachované.",
+        "help": "Nastavenia zóny ako text, v jednotkách panela. Vynechané voliteľné nastavenie sa vymaže, povinné (názov, plocha...) zostane. Nič sa neuloží, kým nepoužijete.",
+        "not_a_zone": "Toto nie je zóna: zóna je súbor kľúčov (name, size, throughput...).",
+        "not_settings": "Nie sú to nastavenia zóny, alebo sa tu nedajú nastaviť: {keys}",
+        "applied": "Zóna uložená"
       }
     },
     "history": {
@@ -1242,6 +1250,8 @@
     "effective_rain_description": "Ignorovať prehánku menšiu než pätina evapotranspirácie obdobia: zmočí listy a vyparí sa. Posudzuje sa podľa celého obdobia medzi dvoma výpočtami.",
     "forecast_label": "Zohľadniť predpovedaný dážď",
     "forecast_description": "Pod prahom sa každá zóna zavlažuje na svoj deficit znížený o dážď predpovedaný na nasledujúcich 24 hodín, vážený pravdepodobnosťou, ktorú udáva poveternostná služba: predpoveď 4 mm pri deficite 10 mm znamená zavlažovanie 6 mm. Pri prahu a nad ním sa spustenie preskočí pre zóny vo voľnom priestore. Zóny v skleníku nie sú dotknuté.",
+    "forecast_no_service": "Potrebuje meteorologickú službu: predpoveď pochádza z nej.",
+    "forecast_no_service_on": "Žiadna meteorologická služba: nie je čo čítať, takže toto nič nezadrží.",
     "forecast_set_up_service": "Nastaviť meteorologickú službu"
   },
   "coordinate_config": {
@@ -1317,7 +1327,6 @@
     "step_delay": "Čakanie po tomto kroku",
     "step_delay_help": "Záporné: ďalší krok sa začne o toľko skôr, než tento skončí.",
     "tours": "Kolá",
-    "tours_help": "Celý zoznam krokov sa zaleje toľkokrát, každé kolo so svojím podielom vody. Na rozdiel od dávok, ktoré opakujú jeden krok pred ďalším, kolo nechá každú zónu vsakovať, kým ostatné zalievajú.",
     "enabled": "Zapnutý",
     "add_step": "Pridať krok",
     "delete_step": "Odstrániť krok",
@@ -1359,17 +1368,11 @@
     "schedule_every_offset": "Posunuté o",
     "schedule_every_help": "Každé 3 dni s posunom 0, 1 alebo 2 umožní trom programom striedať sa, raz za tri dni, nikdy v ten istý deň.",
     "schedule_parity": "Dni v mesiaci",
-    "parity_any": "Všetky",
     "parity_even": "Párne dni",
     "parity_odd": "Nepárne dni",
     "schedule_days_of_month": "Konkrétne dni v mesiaci",
-    "schedule_days_of_month_help": "Čísla dní oddelené čiarkami a „posledný“ pre posledný deň mesiaca (napríklad 1, 15, posledný). Mesiac, ktorý je pre daný deň príliš krátky, ho vynechá. Prázdne: ktorýkoľvek deň. Pridáva sa k ostatným filtrom.",
     "schedule_fallback_time": "Ak nie je východ ani západ slnka",
-    "schedule_fallback_time_help": "Pre deň bez východu alebo západu slnka (polárny deň alebo noc).",
     "schedule_months": "Mesiace",
-    "schedule_months_help": "Nič nezaškrtnuté: každý mesiac.",
-    "schedule_yaml_only": "Nastavuje sa v YAML (Upraviť v YAML, hore v programe): zobrazené tu, pretože ho tento plán používa.",
-    "yaml_only_set": "Nastavuje sa v YAML (Upraviť v YAML, hore v programe): zobrazené tu, pretože je nastavené.",
     "schedule_from": "Od",
     "schedule_until": "Do",
     "schedule_period_help": "Obdobie roka, ktoré môže prechádzať cez Nový rok (od novembra do marca). Prázdne: celý rok.",
@@ -1383,9 +1386,8 @@
     "condition_precipitation": "Predpoveď dažďa",
     "condition_days_between": "Dni od posledného zavlažovania",
     "condition_soil_moisture": "Vlhkosť pôdy",
+    "conditions_subset": "Len tieto kontroly počasia",
     "schedule_weather_help": "Zapnuté: kontroly v Počasie, Vynechanie zavlažovania môžu zavlažovanie zadržať alebo skrátiť: dážď, mráz, vietor, dni medzi zavlažovaniami, vlhká pôda a odložené dni. Vypnite pre kvapkovú závlahu v skleníku, ktorej sa počasie netýka.",
-    "schedule_conditions_only": "Len: {list}",
-    "schedule_conditions_yaml": "Tento plán uplatňuje len tieto kontroly, zoznam nastavený v YAML (skip_conditions). Zmeňte alebo odstráňte ho v YAML programu: bez neho platia všetky.",
     "pause": "Pozastaviť",
     "resume": "Pokračovať",
     "next_step": "Ďalší krok",
@@ -1412,7 +1414,6 @@
     "adjust_seconds": "Čas pridaný (+) alebo ubraný (-)",
     "step_bounds_help": "Poradie použitia: najprv percento z „Úprava trvania“ programu, ak nejaké platí (nastavuje sa v programe, nie tu), potom pridaný alebo ubraný čas, potom minimum a maximum. 0 pre minimum alebo maximum: žiadne. Krok, ktorý nepotrebuje vodu, zostane na nule: minimum ho nikdy nespustí.",
     "min_deficit_mm": "Zalievať, iba ak je deficit aspoň",
-    "min_deficit_mm_help": "V mm, 0 na polievanie vždy. Ak je nastavený, nahrádza pre tento krok vlastný prah zóny. Kroky s pevnou dobou sa polievajú vždy.",
     "adjust_title": "Úprava trvania",
     "adjust_none": "Žiadna úprava nie je v platnosti.",
     "adjust_percent": "Percento",
@@ -1437,9 +1438,7 @@
     "steps_title": "Kroky",
     "schedules_title": "Rozvrhy",
     "passes_help": "Cycle and soak pre tento krok: jeho voda rozdelená do toľkých dávok, každá zóna medzi dvoma dávkami vsakuje. 1: naraz.",
-    "schedule_fallback_skip": "Ten deň vynechať",
     "schedule_fallback_previous": "Použiť čas posledného zaznamenaného",
-    "schedule_fallback_at": "Spustiť v pevný čas",
     "summary_start_sunrise": "začína pri východe slnka",
     "summary_start_sunset": "začína pri západe slnka",
     "summary_start_azimuth": "začne, keď je slnko na {deg}°",
@@ -1467,6 +1466,8 @@
     "preview_help": "Každá zóna na vlastnom riadku, s časmi, ktoré by Smart Irrigation zavlažoval teraz. Riadia sa počasím, takže zavlažovanie sa pri štarte môže líšiť.",
     "yaml_back": "Späť do editora",
     "yaml_edit": "Upraviť v YAML",
+    "yaml_only_title": "Nastavené v YAML (tu sa nedá upraviť)",
+    "yaml_only_help": "Nastavenia, ktoré vizuálny editor nezobrazuje. Pri úpravách tu zostanú zachované.",
     "yaml_help": "Program ako text. Krok uvádza svoje zóny menom alebo číslom a čo chýba, má predvolenú hodnotu. Nič sa neuloží, kým nepoužijete: časová os nižšie ukazuje, čo by program urobil.",
     "yaml_apply": "Použiť",
     "yaml_invalid": "Toto nie je platný YAML.",
@@ -1485,7 +1486,8 @@
     "schedule_azimuth": "Azimut slnka",
     "schedule_azimuth_help": "Stupne v smere hodín od severu: 90 východ, 180 juh, 270 západ. Pre záhon, z ktorého v tej chvíli odchádza tieň múru alebo stromu.",
     "view_flow": "Schéma",
-    "view_timeline": "Časová os"
+    "view_timeline": "Časová os",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Čerpadlá a hlavné ventily",
@@ -1690,6 +1692,7 @@
     "weather": "Dovolí to počasie?",
     "weather_sub": "Dážď, mráz, vietor…",
     "weather_yes": "Áno",
+    "weather_yes_unread": "Áno, ale {reason} sa nepodarilo prečítať",
     "weather_no": "Nie: {reason}",
     "otherwise": "Inak: v ten deň nič",
     "supply_on": "{name} zapnuté",

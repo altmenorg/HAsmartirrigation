@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "已停用的区域永远不会浇水，所以没有浇水时长。",
         "et-deficiency-help": "该区域每天需要的量：ETc，即参考蒸散量乘以作物系数，已包含季节性调整。它在按时间间隔换算之前、在扣除降雨之前，正因如此不同配置之间才可以互相比较。区域传感器还单独带有参考值，作为 `eto` 属性，便于和天气服务公布的数值对照。",
         "safety-off-entity": "阀门自身的时长",
-        "safety-off-entity-help": "适用于按自身时长到点自动关闭的阀门，例如 Gardena（它的“浇水时长”数值实体，未修改时为 1 分钟）：在此选择该数值实体。每次打开前，Smart Irrigation 会把该段时长加 30 秒写入其中，使阀门在整段期间保持打开，而 Home Assistant 停止时仍会自行关闭。不设置时，这类阀门会在其预设时间后关闭。"
+        "safety-off-entity-help": "适用于按自身时长到点自动关闭的阀门，例如 Gardena（它的“浇水时长”数值实体，未修改时为 1 分钟）：在此选择该数值实体。每次打开前，Smart Irrigation 会把该段时长加 30 秒写入其中，使阀门在整段期间保持打开，而 Home Assistant 停止时仍会自行关闭。不设置时，这类阀门会在其预设时间后关闭。",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "尚未定义任何区域。",
       "title": "区域",
@@ -867,6 +868,13 @@
         "zone": "区域与阀门",
         "need": "它的需求",
         "status": "当前状态"
+      },
+      "yaml": {
+        "only_help": "可视化编辑器不显示的设置。在此编辑时会保留它们。",
+        "help": "区域设置的文本形式，使用面板显示的单位。省略的可选设置会被清除；必需的设置（名称、面积等）会保留。应用之前不会保存任何内容。",
+        "not_a_zone": "这不是区域：区域是一组键（name、size、throughput 等）。",
+        "not_settings": "不是区域的设置，或不能在此设置：{keys}",
+        "applied": "区域已保存"
       }
     },
     "history": {
@@ -1242,6 +1250,8 @@
     "effective_rain_description": "忽略小于该时段蒸散量五分之一的阵雨：它只会打湿叶片然后蒸发。按两次计算之间的整个时段来判断。",
     "forecast_label": "计入预报降雨",
     "forecast_description": "低于阈值时，每个区域的灌溉量为其亏缺量减去未来 24 小时的预报降雨量，并按天气服务给出的概率加权：预报 4 毫米、亏缺 10 毫米时，灌溉 6 毫米。达到或超过阈值时，露天区域将跳过本次运行。温室中的区域不受影响。",
+    "forecast_no_service": "需要天气服务：预报来自天气服务。",
+    "forecast_no_service_on": "没有天气服务：没有可读取的预报，因此这不会阻止任何浇水。",
     "forecast_set_up_service": "设置天气服务"
   },
   "coordinate_config": {
@@ -1317,7 +1327,6 @@
     "step_delay": "此步骤之后的等待",
     "step_delay_help": "负值：下一步骤在本步骤结束前这么久开始。",
     "tours": "轮数",
-    "tours_help": "整个步骤列表浇这么多轮，每轮分到各自的水量。与重复同一步骤后再继续的分段不同，一轮让每个区域在其他区域浇水时渗透。",
     "enabled": "已启用",
     "add_step": "添加步骤",
     "delete_step": "删除步骤",
@@ -1359,17 +1368,11 @@
     "schedule_every_offset": "偏移",
     "schedule_every_help": "每 3 天、偏移 0、1 或 2，可让三个程序轮流进行，三天一次，绝不在同一天。",
     "schedule_parity": "每月的日期",
-    "parity_any": "全部",
     "parity_even": "偶数日",
     "parity_odd": "奇数日",
     "schedule_days_of_month": "每月的特定日期",
-    "schedule_days_of_month_help": "用逗号分隔的日期数字，以及表示当月最后一天的“最后”（例如 1, 15, 最后）。当月天数不足时会跳过该日。留空：任意日期。它会与其他筛选条件叠加。",
     "schedule_fallback_time": "没有日出或日落时",
-    "schedule_fallback_time_help": "用于没有日出或日落的日子（极昼或极夜）。",
     "schedule_months": "月份",
-    "schedule_months_help": "都不勾选：每个月。",
-    "schedule_yaml_only": "在 YAML 中设置（程序顶部的“以 YAML 编辑”）：因为此计划使用了它，所以在此显示。",
-    "yaml_only_set": "在 YAML 中设置（程序顶部的“以 YAML 编辑”）：因已设置而显示在此处。",
     "schedule_from": "从",
     "schedule_until": "到",
     "schedule_period_help": "一年中的一段时间，可以跨越新年（从十一月到三月）。留空：全年。",
@@ -1383,9 +1386,8 @@
     "condition_precipitation": "降雨预报",
     "condition_days_between": "距上次浇水的天数",
     "condition_soil_moisture": "土壤湿度",
+    "conditions_subset": "仅这些天气检查",
     "schedule_weather_help": "开启时，“天气 > 取消浇水”中的检查可以阻止或缩短浇水：雨、霜冻、风、两次浇水之间的天数、潮湿的土壤以及推迟的日期。对不受天气影响的温室滴灌请关闭。",
-    "schedule_conditions_only": "仅：{list}",
-    "schedule_conditions_yaml": "此计划只应用这些检查，这是在 YAML 中设置的列表（skip_conditions）。请在程序的 YAML 中修改或删除：没有它时全部适用。",
     "pause": "暂停",
     "resume": "继续",
     "next_step": "下一步骤",
@@ -1412,7 +1414,6 @@
     "adjust_seconds": "增加 (+) 或减少 (-) 的时间",
     "step_bounds_help": "应用顺序：先应用程序“调整时长”中的百分比（如有生效；它在程序上设置，而不是在这里），再增加或减少的时间，然后是最小值和最大值。最小值或最大值为 0：不设。不需要水的步骤保持为零：最小值不会启动它。",
     "min_deficit_mm": "仅当亏缺至少为以下值时才浇水",
-    "min_deficit_mm_help": "单位为毫米，0 表示始终浇水。设置后，此步骤将以它代替区域自身的阈值。固定时长的步骤始终浇水。",
     "adjust_title": "调整时长",
     "adjust_none": "当前没有生效的调整。",
     "adjust_percent": "百分比",
@@ -1437,9 +1438,7 @@
     "steps_title": "步骤",
     "schedules_title": "时间表",
     "passes_help": "此步骤的 cycle and soak：水量分成这么多段，每个区域在两段之间渗透。1：一次浇完。",
-    "schedule_fallback_skip": "跳过那天",
     "schedule_fallback_previous": "使用最近一次看到的时间",
-    "schedule_fallback_at": "在固定时间开始",
     "summary_start_sunrise": "日出时开始",
     "summary_start_sunset": "日落时开始",
     "summary_start_azimuth": "太阳位于 {deg}° 时开始",
@@ -1467,6 +1466,8 @@
     "preview_help": "每个区域一行，显示 Smart Irrigation 现在会浇的时长。时长随天气变化，因此实际开始时可能不同。",
     "yaml_back": "返回编辑器",
     "yaml_edit": "以 YAML 编辑",
+    "yaml_only_title": "在 YAML 中设置（此处不可编辑）",
+    "yaml_only_help": "可视化编辑器不显示的设置。在此编辑时会保留它们。",
     "yaml_help": "以文本表示的程序。步骤可用名称或编号指定区域，省略的项使用默认值。应用之前不会保存任何内容：下方的时间线显示程序会做什么。",
     "yaml_apply": "应用",
     "yaml_invalid": "这不是有效的 YAML。",
@@ -1485,7 +1486,8 @@
     "schedule_azimuth": "太阳方位角",
     "schedule_azimuth_help": "从正北顺时针计的度数：90 为东，180 为南，270 为西。适用于墙或树的阴影在那一刻离开的花圃。",
     "view_flow": "示意图",
-    "view_timeline": "时间轴"
+    "view_timeline": "时间轴",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "水泵和总阀",
@@ -1690,6 +1692,7 @@
     "weather": "天气允许？",
     "weather_sub": "雨、霜、风…",
     "weather_yes": "是",
+    "weather_yes_unread": "是，但无法读取{reason}",
     "weather_no": "否：{reason}",
     "otherwise": "否则：当天不浇",
     "supply_on": "{name} 开启",

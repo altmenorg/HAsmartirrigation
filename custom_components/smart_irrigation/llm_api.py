@@ -11,7 +11,8 @@ authentication and the transport.
 It reads the zones and where they stand, the next run and why a zone is held
 back, the programs and the planning, the settings and sensor groups, the
 entities of Home Assistant a setup is made of, and dry-runs a program as
-written (the YAML editor's ``program_preview``).
+written (the YAML editor's ``program_preview``), and lists every field it can
+write, YAML-only options included (config_reference.py).
 
 It also configures Smart Irrigation: zones, sensor groups, settings and
 programs, through the paths the panel saves with (llm_config_tools.py). No
@@ -74,8 +75,11 @@ DeleteProgram. Read before you write (GetZoneSettings, GetSensorGroups, \
 GetSettings, GetPrograms) and send only the fields you change, with the id of \
 what you change. Use FindEntities to find the user's valves, switches and \
 sensors, ask the user what you cannot tell (soil, plants, sprinklers, a \
-pump), and say what you are about to change before you change it. Check a \
-program with PreviewProgram before SaveProgram. Zone figures are metric (m2, \
+pump), and say what you are about to change before you change it. \
+GetConfigReference lists every field of a program, its steps and schedules, \
+and of a zone, with its values, range and default, including the options set \
+only in YAML (yaml_only: the panel's form has no field for them, but you can \
+set them). Check a program with PreviewProgram before SaveProgram. Zone figures are metric (m2, \
 l/min, mm); settings are in the unit system of Home Assistant, as GetSettings \
 returns them."""
 
@@ -216,8 +220,10 @@ class GetProgramsTool(_ReadOnlyTool):
     description = (
         "The watering programs of Smart Irrigation, with their steps (zones "
         "by id, and their names in zone_names) and their schedules, and the "
-        "mode (they water only in mode `water`). Also the shape to write a "
-        "program in for PreviewProgram."
+        "mode (they water only in mode `water`). A program is written for "
+        "PreviewProgram and SaveProgram in the shape it is read in; "
+        "GetConfigReference lists every field, including those only set in "
+        "YAML."
     )
 
     async def async_call(
@@ -311,7 +317,7 @@ class PreviewProgramTool(_ReadOnlyTool):
         "zone, and zones the run leaves out (no valve, or disabled). Nothing is "
         "saved and no valve opens. A step names its zones by name or id; an "
         "`after` schedule names the program it follows in after_program, by id "
-        "or name."
+        "or name. GetConfigReference lists every field a program takes."
     )
     parameters = _parameters({vol.Required("program"): dict})
 
@@ -325,6 +331,29 @@ class PreviewProgramTool(_ReadOnlyTool):
         preview["total_seconds"] = timeline.get("total")
         preview["zones_in_order"] = _timeline_summary(timeline)
         return _result(preview)
+
+
+class GetConfigReferenceTool(_ReadOnlyTool):
+    """Every field a program, a step, a schedule or a zone can be written with."""
+
+    name = "GetConfigReference"
+    description = (
+        "Every field that can be written: of a program, its steps, its "
+        "schedules (time, sun, after) and its notify, and of a zone. For each: "
+        "type, allowed values or min/max, unit, default and meaning, and "
+        "yaml_only: true for the options the panel sets only in YAML, which "
+        "you can still set. `section`: program or zone (default: all)."
+    )
+    parameters = _parameters(
+        {vol.Optional("section"): vol.In(("program", "zone", "all"))}
+    )
+
+    async def async_call(
+        self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
+    ) -> Any:
+        from .config_reference import config_reference
+
+        return _result(config_reference(tool_input.tool_args.get("section")))
 
 
 # --- the API --------------------------------------------------------------------
@@ -344,6 +373,7 @@ class SmartIrrigationAPI(llm.API):
             GetProgramsTool(),
             GetPlanningTool(),
             PreviewProgramTool(),
+            GetConfigReferenceTool(),
             *reading_tools(),
         ]
         tools += writing_tools()

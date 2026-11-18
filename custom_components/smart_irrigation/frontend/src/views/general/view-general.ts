@@ -54,6 +54,13 @@ import {
   wouldLoop,
 } from "../../data/program-chain";
 import { notifyTargets } from "../../data/notify-targets";
+import {
+  withProgram,
+  withSchedule,
+  withStep,
+  yamlOnlyLine,
+  yamlOnlyOptions,
+} from "../../data/yaml-only";
 import "../../dialogs/trigger-dialog";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import {
@@ -122,16 +129,6 @@ import {
  * Kept outside the element: each tab renders its own template, so switching
  * tabs creates a new element and an instance field would fold everything back.
  */
-// The skip condition ids of a schedule, as in const.py SKIP_CONDITION_IDS.
-const SKIP_CONDITION_IDS = [
-  "postponed",
-  "rain_sensor",
-  "freeze",
-  "wind",
-  "precipitation",
-  "days_between",
-  "soil_moisture",
-];
 
 // The days the week view shows, kept by this browser across tabs and reloads
 // (#1051). Storage can be missing or refused (private window): then 7.
@@ -1193,7 +1190,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       this._scheduleUpdate();
     };
     const patch = (index: number, changes: Partial<SmartIrrigationProgram>) =>
-      save(programs.map((p, n) => (n === index ? { ...p, ...changes } : p)));
+      // Every key the form has no field for (the YAML-only options) is kept.
+      save(programs.map((p, n) => (n === index ? withProgram(p, changes) : p)));
     const num = (v: string, fallback = 0) => {
       const n = parseFloat(v);
       return isNaN(n) ? fallback : n;
@@ -1899,6 +1897,27 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       </span>`;
     };
 
+    // As Home Assistant's own visual editors do: the options set in YAML only
+    // have no field in the form, even when set. The form keeps them as they
+    // are, and the program says, once and read-only, which ones it uses, with
+    // Edit in YAML at hand to change them.
+    const yamlOnlyNotice = (program: SmartIrrigationProgram) => {
+      const groups = yamlOnlyOptions(program, { t, monthName });
+      if (!groups.length) return "";
+      const id = program.id ?? "";
+      return html`<ha-alert alert-type="info" .title=${t("yaml_only_title")}>
+        ${t("yaml_only_help")}
+        ${groups.map((group) => html`<div>${yamlOnlyLine(group)}</div>`)}
+        <ha-button
+          slot="action"
+          appearance="plain"
+          @click=${() =>
+            openYaml(id, programToYaml(program, this.zones, programs))}
+          >${t("yaml_edit")}</ha-button
+        >
+      </ha-alert>`;
+    };
+
     const renderStep = (
       program: SmartIrrigationProgram,
       index: number,
@@ -1906,11 +1925,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       stepIndex: number,
     ) => {
       const patchStep = (changes: Partial<SmartIrrigationStep>) =>
-        patch(index, {
-          steps: (program.steps || []).map((s, n) =>
-            n === stepIndex ? { ...s, ...changes } : s,
-          ),
-        });
+        patch(index, withStep(program, stepIndex, changes));
       const toggleZone = (zoneId: number, on: boolean) => {
         const zones = (step.zones || []).filter((z) => z !== zoneId);
         patchStep({ zones: on ? [...zones, zoneId] : zones });
@@ -2063,8 +2078,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             (step.max_litres ?? 0) > 0 ||
               (step.min_seconds ?? 0) > 0 ||
               (step.max_seconds ?? 0) > 0 ||
-              (step.adjust_seconds ?? 0) !== 0 ||
-              (step.min_deficit_mm ?? 0) > 0 ||
               (step.delay !== null && step.delay !== undefined),
             html`
               ${this._numRow(
@@ -2112,41 +2125,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     )}
                   </div>`
                 : ""}
-              ${
-                // The time added or removed and the deficit a step waits for
-                // are set in YAML: shown here only on a step that uses them,
-                // so that nothing acts on the watering out of sight.
-                (step.adjust_seconds ?? 0) !== 0
-                  ? this._numRow(
-                      html`${t("adjust_seconds")}<si-info
-                          >${t("yaml_only_set")}</si-info
-                        >`,
-                      localize("common.units.seconds", lang),
-                      step.adjust_seconds ?? 0,
-                      (v) =>
-                        patchStep({
-                          adjust_seconds: Math.max(
-                            -21600,
-                            Math.min(21600, Math.round(num(v))),
-                          ),
-                        }),
-                    )
-                  : ""
-              }
-              ${(step.min_deficit_mm ?? 0) > 0
-                ? this._numRow(
-                    html`${t("min_deficit_mm")}<si-info
-                        >${t("min_deficit_mm_help")}
-                        ${t("yaml_only_set")}</si-info
-                      >`,
-                    "mm",
-                    step.min_deficit_mm ?? 0,
-                    (v) => patchStep({ min_deficit_mm: Math.max(0, num(v)) }),
-                    1,
-                    false,
-                    0,
-                  )
-                : ""}
               ${this._textRow(
                 html`${t("step_delay")}<si-info
                     >${t("step_delay_help")}</si-info
@@ -2185,11 +2163,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       scheduleIndex: number,
     ) => {
       const patchSchedule = (changes: Partial<SmartIrrigationSchedule>) =>
-        patch(index, {
-          schedules: (program.schedules || []).map((s, n) =>
-            n === scheduleIndex ? { ...s, ...changes } : s,
-          ),
-        });
+        patch(index, withSchedule(program, scheduleIndex, changes));
       // The programs this one may start after: not itself, and none that
       // already waits for it (they would start each other in a loop).
       const followable = programs.filter(
@@ -2436,36 +2410,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               .checked=${schedule.weather !== false}
               @change=${(e: Event) =>
                 // A list of conditions set in YAML is kept: on again, it
-                // applies again, and shows below.
+                // applies again (the program's "Set in YAML" notice says so).
                 patchSchedule({ weather: (e.target as any).checked })}
             ></ha-switch>
           </div>
-          ${schedule.weather !== false &&
-          Array.isArray(schedule.skip_conditions)
-            ? // Some of the conditions only: chosen in YAML, shown here so
-              // that it never acts out of sight.
-              html`<div class="setting-hint row-hint">
-                ${t("schedule_conditions_only").replace(
-                  "{list}",
-                  SKIP_CONDITION_IDS.filter(
-                    (id) =>
-                      id === "postponed" ||
-                      schedule.skip_conditions!.includes(id),
-                  )
-                    .map((id) => t(`condition_${id}`))
-                    .join(", "),
-                )}<si-info>${t("schedule_conditions_yaml")}</si-info>
-              </div>`
-            : ""}
           ${more(
             `more:schedule:${schedule.id}`,
-            !!schedule.fallback_time ||
-              schedule.hard_deadline === true ||
+            schedule.hard_deadline === true ||
               (schedule.every_n_days ?? 1) > 1 ||
-              schedule.parity === "even" ||
-              schedule.parity === "odd" ||
-              (schedule.days_of_month || []).length > 0 ||
-              (schedule.months || []).length > 0 ||
               !!schedule.from_date ||
               !!schedule.until_date,
             html`
@@ -2480,131 +2432,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     every_n_days: Math.max(1, Math.round(num(v, 1))),
                   }),
               )}
-              ${
-                // The shift lets programs take turns on "every N days": set in
-                // YAML, shown here only on a schedule that uses it.
-                (schedule.every_n_days ?? 1) > 1 &&
-                (schedule.every_offset ?? 0) > 0
-                  ? this._numRow(
-                      html`${t("schedule_every_offset")}<si-info
-                          >${t("schedule_yaml_only")}</si-info
-                        >`,
-                      t("schedule_days"),
-                      schedule.every_offset ?? 0,
-                      (v) =>
-                        patchSchedule({
-                          every_offset: Math.max(0, Math.round(num(v))),
-                        }),
-                    )
-                  : ""
-              }
-              ${
-                // Even or odd days, days of the month and months are set in
-                // YAML: shown here only on a schedule that uses them, so that
-                // nothing acts on the watering out of sight.
-                schedule.parity === "even" || schedule.parity === "odd"
-                  ? this._selectRow(
-                      html`${t("schedule_parity")}<si-info
-                          >${t("schedule_yaml_only")}</si-info
-                        >`,
-                      html`
-                        <option
-                          value="any"
-                          ?selected=${schedule.parity !== "even" &&
-                          schedule.parity !== "odd"}
-                        >
-                          ${t("parity_any")}
-                        </option>
-                        <option
-                          value="even"
-                          ?selected=${schedule.parity === "even"}
-                        >
-                          ${t("parity_even")}
-                        </option>
-                        <option
-                          value="odd"
-                          ?selected=${schedule.parity === "odd"}
-                        >
-                          ${t("parity_odd")}
-                        </option>
-                      `,
-                      (e: Event) =>
-                        patchSchedule({
-                          parity: (e.target as HTMLSelectElement)
-                            .value as SmartIrrigationSchedule["parity"],
-                        }),
-                    )
-                  : ""
-              }
-              ${(schedule.days_of_month || []).length
-                ? this._textRow(
-                    html`${t("schedule_days_of_month")}<si-info
-                        >${t("schedule_days_of_month_help")}
-                        ${t("schedule_yaml_only")}</si-info
-                      >`,
-                    `1, 15, ${t("last_word")}`,
-                    (schedule.days_of_month || [])
-                      .map((day) => (day === "last" ? t("last_word") : day))
-                      .join(", "),
-                    (v) =>
-                      patchSchedule({
-                        days_of_month: v
-                          .split(/[,;\s]+/)
-                          .map((part) => part.trim().toLowerCase())
-                          // The word of the panel's language, or "last" as stored.
-                          .map((part) =>
-                            part === t("last_word").toLowerCase()
-                              ? "last"
-                              : part,
-                          )
-                          .filter(
-                            (part) =>
-                              part === "last" ||
-                              (/^\d+$/.test(part) &&
-                                Number(part) >= 1 &&
-                                Number(part) <= 31),
-                          )
-                          .map((part) =>
-                            part === "last" ? part : Number(part),
-                          ),
-                      }),
-                  )
-                : ""}
-              ${(schedule.months || []).length
-                ? html`<div class="setting-row">
-                    <div class="setting-label">
-                      ${t("schedule_months")}<si-info
-                        >${t("schedule_months_help")}
-                        ${t("schedule_yaml_only")}</si-info
-                      >
-                    </div>
-                    <div>
-                      ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(
-                        (month) => html`
-                          <label
-                            style="margin-right: 10px; white-space: nowrap;"
-                          >
-                            <input
-                              type="checkbox"
-                              .checked=${(schedule.months || []).includes(
-                                month + 1,
-                              )}
-                              @change=${(e: Event) =>
-                                patchSchedule({
-                                  months: toggle(
-                                    schedule.months,
-                                    month + 1,
-                                    (e.target as HTMLInputElement).checked,
-                                  ),
-                                })}
-                            />
-                            ${monthName(month)}
-                          </label>
-                        `,
-                      )}
-                    </div>
-                  </div>`
-                : ""}
               ${this._monthDayRow(
                 t("schedule_from"),
                 schedule.from_date,
@@ -2619,60 +2446,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 monthName,
                 (v) => patchSchedule({ until_date: v }),
               )}
-              ${
-                // What a day without a sunrise or sunset does (polar days) is
-                // set in YAML: shown here only on a schedule that has one, so
-                // that nothing acts on the watering out of sight. Left out,
-                // that day is skipped.
-                schedule.type === "sun" && schedule.fallback_time
-                  ? html`
-                      ${this._selectRow(
-                        html`${t("schedule_fallback_time")}<si-info
-                            >${t("schedule_fallback_time_help")}
-                            ${t("schedule_yaml_only")}</si-info
-                          >`,
-                        html`
-                          <option value="" ?selected=${!schedule.fallback_time}>
-                            ${t("schedule_fallback_skip")}
-                          </option>
-                          <option
-                            value="previous"
-                            ?selected=${schedule.fallback_time === "previous"}
-                          >
-                            ${t("schedule_fallback_previous")}
-                          </option>
-                          <option
-                            value="at"
-                            ?selected=${!!schedule.fallback_time &&
-                            schedule.fallback_time !== "previous"}
-                          >
-                            ${t("schedule_fallback_at")}
-                          </option>
-                        `,
-                        (e: Event) => {
-                          const choice = (e.target as HTMLSelectElement).value;
-                          const fixed =
-                            schedule.fallback_time &&
-                            schedule.fallback_time !== "previous"
-                              ? schedule.fallback_time
-                              : "06:00";
-                          patchSchedule({
-                            fallback_time:
-                              choice === "at" ? fixed : choice || null,
-                          });
-                        },
-                      )}
-                      ${schedule.fallback_time &&
-                      schedule.fallback_time !== "previous"
-                        ? this._timeRow(
-                            t("schedule_time"),
-                            schedule.fallback_time,
-                            (v) => patchSchedule({ fallback_time: v || null }),
-                          )
-                        : ""}
-                    `
-                  : ""
-              }
               ${schedule.anchor === "end"
                 ? html`
                     <div class="setting-row">
@@ -2893,7 +2666,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   ? html`${runHead(program)}
                     ${yamlBlock(program.id ?? "", index)}`
                   : html`
-                      ${runHead(program)}
+                      ${yamlOnlyNotice(program)} ${runHead(program)}
                       ${this._textRow(t("name"), "", program.name, (v) =>
                         patch(index, { name: v }),
                       )}
@@ -2927,28 +2700,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       </div>
                       <div class="fold-section">${t("schedules_title")}</div>
                       ${renderSchedules(program, index)}
-                      ${
-                        // Rounds are set in YAML: shown here only on a
-                        // program that waters in more than one, so that
-                        // nothing acts on the watering out of sight.
-                        (program.tours ?? 1) > 1
-                          ? this._numRow(
-                              html`${t("tours")}<si-info
-                                  >${t("tours_help")}
-                                  ${t("yaml_only_set")}</si-info
-                                >`,
-                              "",
-                              program.tours ?? 1,
-                              (v) =>
-                                patch(index, {
-                                  tours: Math.max(1, Math.round(num(v, 1))),
-                                }),
-                              1,
-                              false,
-                              1,
-                            )
-                          : ""
-                      }
                       ${renderNotify(program, index)} ${adjustBlock(program)}
                       ${
                         // The last program cannot be deleted (the backend

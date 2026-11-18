@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "Uma zona desativada nunca é irrigada, então não tem tempo de irrigação.",
         "et-deficiency-help": "O que esta zona precisa por dia: ETc, a evapotranspiração de referência vezes o fator de cultura, ajuste sazonal incluído. Antes do ajuste ao intervalo e antes da chuva, e é isso que torna o número comparável de uma configuração para outra. O sensor da zona também carrega o valor de referência sozinho, no atributo `eto`, para comparar com o que um serviço de meteorologia publica.",
         "safety-off-entity": "Duração própria da válvula",
-        "safety-off-entity-help": "Para uma válvula que fecha sozinha após uma duração própria, como a Gardena (o número \"duração de irrigação\" dela, 1 min se não foi alterado): escolha esse número aqui. Antes de cada abertura, o Smart Irrigation grava nele a duração da passagem mais 30 s, para que a válvula fique aberta durante toda a passagem e ainda feche sozinha se o Home Assistant parar. Sem isso, uma válvula assim fecha após o tempo predefinido dela."
+        "safety-off-entity-help": "Para uma válvula que fecha sozinha após uma duração própria, como a Gardena (o número \"duração de irrigação\" dela, 1 min se não foi alterado): escolha esse número aqui. Antes de cada abertura, o Smart Irrigation grava nele a duração da passagem mais 30 s, para que a válvula fique aberta durante toda a passagem e ainda feche sozinha se o Home Assistant parar. Sem isso, uma válvula assim fecha após o tempo predefinido dela.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Ainda não há nenhuma zona definida.",
       "title": "Zonas",
@@ -867,6 +868,13 @@
         "zone": "Zona e válvula",
         "need": "O que ela precisa",
         "status": "Como ela está"
+      },
+      "yaml": {
+        "only_help": "Configurações que o editor visual não mostra. Elas são mantidas ao editar aqui.",
+        "help": "As configurações da zona como texto, nas unidades do painel. Uma configuração opcional retirada é apagada; uma obrigatória (nome, área...) é mantida. Nada é salvo até você aplicar.",
+        "not_a_zone": "Isto não é uma zona: uma zona é um conjunto de chaves (name, size, throughput...).",
+        "not_settings": "Não são configurações de uma zona, ou não são definidas aqui: {keys}",
+        "applied": "Zona salva"
       }
     },
     "history": {
@@ -1242,6 +1250,8 @@
     "effective_rain_description": "Ignorar um aguaceiro menor que um quinto da evapotranspiração do período: ele molha as folhas e evapora. Ele é avaliado sobre todo o período entre dois cálculos.",
     "forecast_label": "Levar em conta a chuva prevista",
     "forecast_description": "Abaixo do limite, cada zona é irrigada pelo seu déficit menos a chuva prevista para as próximas 24 horas, ponderada pela probabilidade informada pelo serviço de meteorologia: 4 mm previstos para um déficit de 10 mm irrigam 6 mm. A partir do limite, a irrigação é pulada nas zonas ao ar livre. As zonas em estufa não são afetadas.",
+    "forecast_no_service": "Precisa de um serviço de clima: a previsão vem dele.",
+    "forecast_no_service_on": "Sem serviço de clima: não há previsão para ler, então isto não segura nada.",
     "forecast_set_up_service": "Configurar um serviço de meteorologia"
   },
   "coordinate_config": {
@@ -1317,7 +1327,6 @@
     "step_delay": "Espera após esta etapa",
     "step_delay_help": "Negativa: a próxima etapa começa tanto tempo antes do fim desta.",
     "tours": "Rodadas",
-    "tours_help": "Toda a lista de etapas é irrigada tantas vezes, cada rodada com sua parte da água. Ao contrário das passagens, que repetem uma etapa antes de seguir, uma rodada deixa cada zona absorver enquanto as outras irrigam.",
     "enabled": "Ativado",
     "add_step": "Adicionar uma etapa",
     "delete_step": "Excluir a etapa",
@@ -1359,17 +1368,11 @@
     "schedule_every_offset": "Deslocado em",
     "schedule_every_help": "A cada 3 dias com um deslocamento de 0, 1 ou 2 permite que três programas se revezem, um dia em três, nunca no mesmo dia.",
     "schedule_parity": "Dias do mês",
-    "parity_any": "Todos",
     "parity_even": "Dias pares",
     "parity_odd": "Dias ímpares",
     "schedule_days_of_month": "Dias específicos do mês",
-    "schedule_days_of_month_help": "Números dos dias separados por vírgulas, e \"último\" para o último dia do mês (por exemplo 1, 15, último). Um mês curto demais para um dia o ignora. Vazio: qualquer dia. Soma-se aos outros filtros.",
     "schedule_fallback_time": "Se não houver nascer ou pôr do sol",
-    "schedule_fallback_time_help": "Para um dia sem nascer nem pôr do sol (dia ou noite polar).",
     "schedule_months": "Meses",
-    "schedule_months_help": "Nenhum marcado: todos os meses.",
-    "schedule_yaml_only": "Definido em YAML (Editar em YAML, no topo do programa): exibido aqui porque este agendamento o usa.",
-    "yaml_only_set": "Definido em YAML (Editar em YAML, no topo do programa): mostrado aqui porque está definido.",
     "schedule_from": "De",
     "schedule_until": "Até",
     "schedule_period_help": "Um período do ano, que pode passar o Ano-Novo (de novembro a março). Vazio: o ano todo.",
@@ -1383,9 +1386,8 @@
     "condition_precipitation": "Previsão de chuva",
     "condition_days_between": "Dias desde a última irrigação",
     "condition_soil_moisture": "Umidade do solo",
+    "conditions_subset": "Só estas verificações do clima",
     "schedule_weather_help": "Ligado, as verificações de Clima, Cancelar a irrigação podem segurar ou encurtar a irrigação: chuva, geada, vento, dias entre irrigações, solo úmido e dias adiados. Desligue para um gotejamento de estufa que o clima não afeta.",
-    "schedule_conditions_only": "Só: {list}",
-    "schedule_conditions_yaml": "Esta programação aplica só estas verificações, uma lista definida em YAML (skip_conditions). Altere ou remova no YAML do programa: sem ela, todas se aplicam.",
     "pause": "Pausar",
     "resume": "Retomar",
     "next_step": "Próxima etapa",
@@ -1412,7 +1414,6 @@
     "adjust_seconds": "Tempo adicionado (+) ou removido (-)",
     "step_bounds_help": "Ordem de aplicação: primeiro a porcentagem de “Ajustar durações” do programa, quando houver uma em vigor (ela é definida no programa, não aqui), depois o tempo adicionado ou removido, depois o mínimo e o máximo. 0 para o mínimo ou o máximo: nenhum. Uma etapa que não precisa de água fica em zero: o mínimo nunca a inicia.",
     "min_deficit_mm": "Irrigar apenas quando o déficit for de pelo menos",
-    "min_deficit_mm_help": "Em mm, 0 para sempre irrigar. Se definido, substitui o limite da própria zona nesta etapa. Etapas de duração fixa são sempre irrigadas.",
     "adjust_title": "Ajustar durações",
     "adjust_none": "Nenhum ajuste em vigor.",
     "adjust_percent": "Porcentagem",
@@ -1437,9 +1438,7 @@
     "steps_title": "Etapas",
     "schedules_title": "Agendamentos",
     "passes_help": "Cycle and soak para esta etapa: sua água dividida em tantas passagens, e cada zona absorve entre duas delas. 1: de uma vez só.",
-    "schedule_fallback_skip": "Pular esse dia",
     "schedule_fallback_previous": "Usar o horário do último visto",
-    "schedule_fallback_at": "Começar em um horário fixo",
     "summary_start_sunrise": "começa ao nascer do sol",
     "summary_start_sunset": "começa ao pôr do sol",
     "summary_start_azimuth": "começa quando o sol está a {deg}°",
@@ -1467,6 +1466,8 @@
     "preview_help": "Cada zona em sua linha, com as durações que o Smart Irrigation irrigaria agora. Elas seguem o clima, então uma irrigação pode mudar quando começar.",
     "yaml_back": "Voltar ao editor",
     "yaml_edit": "Editar em YAML",
+    "yaml_only_title": "Definido em YAML (não editável aqui)",
+    "yaml_only_help": "Configurações que o editor visual não mostra. Elas são mantidas ao editar aqui.",
     "yaml_help": "O programa como texto. Um passo indica suas zonas pelo nome ou pelo número, e o que for omitido usa o valor padrão. Nada é salvo antes de aplicar: a linha do tempo abaixo mostra o que o programa faria.",
     "yaml_apply": "Aplicar",
     "yaml_invalid": "Isto não é YAML válido.",
@@ -1485,7 +1486,8 @@
     "schedule_azimuth": "Azimute do sol",
     "schedule_azimuth_help": "Graus no sentido horário a partir do norte: 90 leste, 180 sul, 270 oeste. Para um canteiro que a sombra de um muro ou de uma árvore deixa nesse momento.",
     "view_flow": "Esquema",
-    "view_timeline": "Linha do tempo"
+    "view_timeline": "Linha do tempo",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Bombas e válvulas principais",
@@ -1690,6 +1692,7 @@
     "weather": "O tempo permite?",
     "weather_sub": "Chuva, geada, vento…",
     "weather_yes": "Sim",
+    "weather_yes_unread": "Sim, mas não foi possível ler {reason}",
     "weather_no": "Não: {reason}",
     "otherwise": "Senão: nada nesse dia",
     "supply_on": "{name} ligada",

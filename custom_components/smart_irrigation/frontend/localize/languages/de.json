@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "Eine deaktivierte Zone wird nie bewässert, sie hat also keine Laufzeit.",
         "et-deficiency-help": "Was diese Zone pro Tag braucht: ETc, ET0 mal Pflanzenfaktor mit saisonaler Anpassung, vor Regen und vor der Skalierung aufs Intervall, also vergleichbar. ET0 allein steht im Attribut `eto` des Zonensensors, zum Abgleich mit einem Wetterdienst.",
         "safety-off-entity": "Eigene Dauer des Ventils",
-        "safety-off-entity-help": "Für ein Ventil, das nach einer eigenen Dauer selbst schließt, etwa Gardena (seine Zahl „Bewässerungsdauer“, ohne Änderung 1 min): diese Zahl hier wählen. Vor jedem Öffnen schreibt Smart Irrigation die Länge des Durchgangs plus 30 s hinein, damit das Ventil den ganzen Durchgang offen bleibt und trotzdem selbst schließt, falls Home Assistant ausfällt. Ohne sie schließt ein solches Ventil nach seiner voreingestellten Zeit."
+        "safety-off-entity-help": "Für ein Ventil, das nach einer eigenen Dauer selbst schließt, etwa Gardena (seine Zahl „Bewässerungsdauer“, ohne Änderung 1 min): diese Zahl hier wählen. Vor jedem Öffnen schreibt Smart Irrigation die Länge des Durchgangs plus 30 s hinein, damit das Ventil den ganzen Durchgang offen bleibt und trotzdem selbst schließt, falls Home Assistant ausfällt. Ohne sie schließt ein solches Ventil nach seiner voreingestellten Zeit.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Es ist noch keine Zone vorhanden.",
       "title": "Zonen",
@@ -867,6 +868,13 @@
         "zone": "Zone und Ventil",
         "need": "Was sie braucht",
         "status": "Wo sie steht"
+      },
+      "yaml": {
+        "only_help": "Einstellungen, die der visuelle Editor nicht anzeigt. Beim Bearbeiten hier bleiben sie erhalten.",
+        "help": "Die Einstellungen der Zone als Text, in den Einheiten des Panels. Eine weggelassene optionale Einstellung wird gelöscht, eine erforderliche (Name, Fläche...) bleibt erhalten. Gespeichert wird erst beim Übernehmen.",
+        "not_a_zone": "Das ist keine Zone: Eine Zone ist eine Menge von Schlüsseln (name, size, throughput...).",
+        "not_settings": "Keine Einstellungen einer Zone oder hier nicht setzbar: {keys}",
+        "applied": "Zone gespeichert"
       }
     },
     "history": {
@@ -1319,7 +1327,6 @@
     "step_delay": "Wartezeit nach diesem Schritt",
     "step_delay_help": "Negativ: Der nächste Schritt startet so lange vor dem Ende dieses Schritts.",
     "tours": "Runden",
-    "tours_help": "Die ganze Liste der Schritte wird so oft bewässert, jede Runde mit ihrem Anteil am Wasser. Anders als Durchgänge, die einen Schritt wiederholen, bevor es weitergeht, lässt eine Runde jede Zone einsickern, während die anderen bewässern.",
     "enabled": "Aktiviert",
     "add_step": "Schritt hinzufügen",
     "delete_step": "Schritt löschen",
@@ -1361,17 +1368,11 @@
     "schedule_every_offset": "Verschoben um",
     "schedule_every_help": "Alle 3 Tage mit einer Verschiebung von 0, 1 oder 2 lässt drei Programme sich abwechseln, eines an jedem dritten Tag, nie am selben Tag.",
     "schedule_parity": "Tage des Monats",
-    "parity_any": "Alle",
     "parity_even": "Gerade Tage",
     "parity_odd": "Ungerade Tage",
     "schedule_days_of_month": "Bestimmte Tage des Monats",
-    "schedule_days_of_month_help": "Tagesnummern durch Kommas getrennt, und „letzter“ für den letzten Tag des Monats (zum Beispiel 1, 15, letzter). Ist ein Monat für einen Tag zu kurz, wird er übersprungen. Leer: jeder Tag. Es kommt zu den anderen Filtern hinzu.",
     "schedule_fallback_time": "Wenn es keinen Sonnenaufgang oder -untergang gibt",
-    "schedule_fallback_time_help": "Für einen Tag ohne Sonnenaufgang oder -untergang (Polartag oder -nacht).",
     "schedule_months": "Monate",
-    "schedule_months_help": "Keiner angehakt: jeder Monat.",
-    "schedule_yaml_only": "Wird in YAML eingestellt (In YAML bearbeiten, oben im Programm): hier angezeigt, weil dieser Zeitplan es nutzt.",
-    "yaml_only_set": "Wird in YAML eingestellt (In YAML bearbeiten, oben im Programm): hier angezeigt, weil es gesetzt ist.",
     "schedule_from": "Von",
     "schedule_until": "Bis",
     "schedule_period_help": "Ein Zeitraum im Jahr, der über Neujahr gehen kann (von November bis März). Leer: das ganze Jahr.",
@@ -1385,9 +1386,8 @@
     "condition_precipitation": "Regenvorhersage",
     "condition_days_between": "Tage seit der letzten Bewässerung",
     "condition_soil_moisture": "Bodenfeuchte",
+    "conditions_subset": "Nur diese Wetterprüfungen",
     "schedule_weather_help": "Ein: die Prüfungen unter Wetter, Bewässerung aussetzen können den Lauf zurückhalten oder kürzen: Regen, Frost, Wind, die Tage zwischen Bewässerungen, nasser Boden und zurückgestellte Tage. Aus für eine Tropfleitung im Gewächshaus, die das Wetter nicht betrifft.",
-    "schedule_conditions_only": "Nur: {list}",
-    "schedule_conditions_yaml": "Dieser Zeitplan wendet nur diese Prüfungen an, eine in YAML gesetzte Liste (skip_conditions). Im YAML des Programms ändern oder entfernen: ohne sie gelten alle.",
     "pause": "Pause",
     "resume": "Fortsetzen",
     "next_step": "Nächster Schritt",
@@ -1414,7 +1414,6 @@
     "adjust_seconds": "Zeit hinzu (+) oder weg (-)",
     "step_bounds_help": "Reihenfolge: der Prozentsatz von „Dauern anpassen“ des Programms, falls einer gilt (er wird am Programm eingestellt), dann die hinzugefügte oder abgezogene Zeit, dann Minimum und Maximum (0: keines). Ein Schritt ohne Wasserbedarf bleibt bei null; das Minimum startet ihn nie.",
     "min_deficit_mm": "Nur bewässern, wenn das Defizit mindestens",
-    "min_deficit_mm_help": "In mm, 0 bewässert immer. Gesetzt, ersetzt er für diesen Schritt die eigene Schwelle der Zone. Schritte mit fester Dauer werden immer bewässert.",
     "adjust_title": "Dauern anpassen",
     "adjust_none": "Keine Anpassung aktiv.",
     "adjust_percent": "Prozent",
@@ -1439,9 +1438,7 @@
     "steps_title": "Schritte",
     "schedules_title": "Zeitpläne",
     "passes_help": "In Durchgängen bewässern, für diesen Schritt: sein Wasser auf so viele Durchgänge verteilt, jede Zone sickert zwischen zwei Durchgängen ein. 1: in einem Zug.",
-    "schedule_fallback_skip": "Diesen Tag auslassen",
     "schedule_fallback_previous": "Die Zeit des zuletzt gesehenen nehmen",
-    "schedule_fallback_at": "Zu einer festen Zeit starten",
     "summary_start_sunrise": "startet bei Sonnenaufgang",
     "summary_start_sunset": "startet bei Sonnenuntergang",
     "summary_start_azimuth": "startet, wenn die Sonne bei {deg}° steht",
@@ -1469,6 +1466,8 @@
     "preview_help": "Jede Zone in einer eigenen Zeile, mit den Dauern, die Smart Irrigation jetzt bewässern würde. Sie folgen dem Wetter, daher kann ein Lauf beim Start abweichen.",
     "yaml_back": "Zurück zum Editor",
     "yaml_edit": "In YAML bearbeiten",
+    "yaml_only_title": "In YAML eingestellt (hier nicht bearbeitbar)",
+    "yaml_only_help": "Einstellungen, die der visuelle Editor nicht anzeigt. Beim Bearbeiten hier bleiben sie erhalten.",
     "yaml_help": "Das Programm als Text. Ein Schritt nennt seine Zonen mit Namen oder Nummer, und was fehlt, nimmt seinen Standardwert. Gespeichert wird erst beim Übernehmen: Die Zeitleiste darunter zeigt, was das Programm tun würde.",
     "yaml_apply": "Übernehmen",
     "yaml_invalid": "Das ist kein gültiges YAML.",
@@ -1487,7 +1486,8 @@
     "schedule_azimuth": "Azimut der Sonne",
     "schedule_azimuth_help": "Grad im Uhrzeigersinn ab Norden: 90 Ost, 180 Süd, 270 West. Für ein Beet, das der Schatten einer Mauer oder eines Baums in diesem Moment verlässt.",
     "view_flow": "Schema",
-    "view_timeline": "Zeitleiste"
+    "view_timeline": "Zeitleiste",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Pumpen und Hauptventile",

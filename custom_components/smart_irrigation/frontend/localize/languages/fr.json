@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "Une zone désactivée n'est jamais arrosée, elle n'a donc pas de durée d'arrosage.",
         "et-deficiency-help": "Ce dont cette zone a besoin par jour : ETc, l'évapotranspiration de référence multipliée par le facteur de culture, ajustement saisonnier inclus. Avant la mise à l'échelle de l'intervalle et avant la pluie, ce qui la rend comparable d'une configuration à l'autre. Le capteur de la zone porte aussi la valeur de référence seule, dans l'attribut `eto`, à confronter à ce que publie un service météo.",
         "safety-off-entity": "Durée propre de la vanne",
-        "safety-off-entity-help": "Pour une vanne qui se ferme d'elle-même au bout d'une durée qui lui est propre, comme Gardena (son nombre « durée d'arrosage », 1 min sauf si tu l'as changé) : choisis ce nombre ici. Avant chaque ouverture, Smart Irrigation y écrit la durée de la passe plus 30 s, pour que la vanne reste ouverte pendant toute la passe et se ferme quand même d'elle-même si Home Assistant s'arrête. Sans cela, une telle vanne se ferme au bout de sa durée préréglée."
+        "safety-off-entity-help": "Pour une vanne qui se ferme d'elle-même au bout d'une durée qui lui est propre, comme Gardena (son nombre « durée d'arrosage », 1 min sauf si tu l'as changé) : choisis ce nombre ici. Avant chaque ouverture, Smart Irrigation y écrit la durée de la passe plus 30 s, pour que la vanne reste ouverte pendant toute la passe et se ferme quand même d'elle-même si Home Assistant s'arrête. Sans cela, une telle vanne se ferme au bout de sa durée préréglée.",
+        "yaml_only_item": "{label} : {value}"
       },
       "no_items": "Il n'y a pas encore de zone définie.",
       "title": "Zones",
@@ -867,6 +868,13 @@
         "zone": "Zone et vanne",
         "need": "Ce dont elle a besoin",
         "status": "Où elle en est"
+      },
+      "yaml": {
+        "only_help": "Des réglages que l'éditeur visuel n'affiche pas. Ils sont conservés quand tu modifies ici.",
+        "help": "Les réglages de la zone en texte, dans les unités du panneau. Un réglage facultatif retiré est effacé ; un réglage obligatoire (nom, surface...) est conservé. Rien n'est enregistré avant que tu appliques.",
+        "not_a_zone": "Ce n'est pas une zone : une zone est un ensemble de clés (name, size, throughput...).",
+        "not_settings": "Pas des réglages d'une zone, ou pas modifiables ici : {keys}",
+        "applied": "Zone enregistrée"
       }
     },
     "history": {
@@ -1242,6 +1250,8 @@
     "effective_rain_description": "Ignorer une averse inférieure au cinquième de l'évapotranspiration de la période : elle mouille les feuilles et s'évapore. Jugé sur toute la période entre deux calculs.",
     "forecast_label": "Tenir compte de la pluie prévue",
     "forecast_description": "En dessous du seuil, chaque zone est arrosée pour son déficit moins la pluie prévue dans les 24 heures suivantes, pondérée par la probabilité donnée par le service météo : 4 mm prévus sur un déficit de 10 mm arrosent 6 mm. À partir du seuil, le départ est sauté pour les zones à l'air libre. Les zones en serre ne sont pas concernées.",
+    "forecast_no_service": "A besoin d'un service météo : c'est lui qui fournit la prévision.",
+    "forecast_no_service_on": "Pas de service météo : il n'y a aucune prévision à lire, donc ceci ne retient rien.",
     "forecast_set_up_service": "Configurer un service météo"
   },
   "coordinate_config": {
@@ -1317,7 +1327,6 @@
     "step_delay": "Attente après cette étape",
     "step_delay_help": "Négatif : l'étape suivante démarre ce temps avant la fin de celle-ci.",
     "tours": "Tours d'arrosage",
-    "tours_help": "Toute la liste des étapes est arrosée autant de fois, chaque tour avec sa part de l'eau. Contrairement aux passes, qui répètent une étape avant de passer à la suivante, un tour laisse chaque zone absorber pendant que les autres arrosent.",
     "enabled": "Activé",
     "add_step": "Ajouter une étape",
     "delete_step": "Supprimer l'étape",
@@ -1359,17 +1368,11 @@
     "schedule_every_offset": "Décalé de",
     "schedule_every_help": "Tous les 3 jours avec un décalage de 0, 1 ou 2 permet à trois programmes de se relayer, un jour sur trois, jamais le même jour.",
     "schedule_parity": "Jours du mois",
-    "parity_any": "Tous",
     "parity_even": "Jours pairs",
     "parity_odd": "Jours impairs",
     "schedule_days_of_month": "Jours précis du mois",
-    "schedule_days_of_month_help": "Des numéros de jour séparés par des virgules, et « dernier » pour le dernier jour du mois (par exemple 1, 15, dernier). Un mois trop court pour un jour l'ignore. Vide : tous les jours. S'ajoute aux autres filtres.",
     "schedule_fallback_time": "S'il n'y a ni lever ni coucher",
-    "schedule_fallback_time_help": "Pour un jour sans lever ni coucher du soleil (jour ou nuit polaire).",
     "schedule_months": "Mois",
-    "schedule_months_help": "Aucun coché : tous les mois.",
-    "schedule_yaml_only": "Se règle en YAML (Modifier en YAML, en haut du programme) : affiché ici parce que cet horaire l'utilise.",
-    "yaml_only_set": "Se règle en YAML (Modifier en YAML, en haut du programme) : affiché ici parce qu'il est renseigné.",
     "schedule_from": "Du",
     "schedule_until": "Au",
     "schedule_period_help": "Une période de l'année, qui peut passer le Nouvel An (de novembre à mars). Vide : toute l'année.",
@@ -1383,9 +1386,8 @@
     "condition_precipitation": "Pluie prévue",
     "condition_days_between": "Jours depuis le dernier arrosage",
     "condition_soil_moisture": "Humidité du sol",
+    "conditions_subset": "Seulement ces vérifications météo",
     "schedule_weather_help": "Activé, les contrôles de Météo, Annulation de l'arrosage peuvent annuler ou raccourcir l'arrosage : pluie, gel, vent, jours entre deux arrosages, sol humide et jours reportés. À désactiver pour un goutte-à-goutte de serre que la météo ne concerne pas.",
-    "schedule_conditions_only": "Seulement : {list}",
-    "schedule_conditions_yaml": "Ce planning n'applique que ces contrôles, une liste définie en YAML (skip_conditions). Modifiez-la ou retirez-la dans le YAML du programme : sans elle, tous s'appliquent.",
     "pause": "Pause",
     "resume": "Reprendre",
     "next_step": "Étape suivante",
@@ -1412,7 +1414,6 @@
     "adjust_seconds": "Temps ajouté (+) ou retiré (-)",
     "step_bounds_help": "Ordre d'application : d'abord le pourcentage de « Ajuster les durées » du programme, s'il y en a un en cours (il se règle sur le programme, pas ici), puis le temps ajouté ou retiré, puis le minimum et le maximum. 0 pour le minimum ou le maximum : aucun. Une étape qui n'a besoin d'aucune eau reste à zéro : le minimum ne la lance jamais.",
     "min_deficit_mm": "N'arroser que si le déficit atteint au moins",
-    "min_deficit_mm_help": "En mm, 0 pour toujours arroser. S'il est renseigné, il remplace le seuil de la zone pour cette étape. Les étapes à durée fixe sont toujours arrosées.",
     "adjust_title": "Ajuster les durées",
     "adjust_none": "Aucun ajustement en cours.",
     "adjust_percent": "Pourcentage",
@@ -1437,9 +1438,7 @@
     "steps_title": "Étapes",
     "schedules_title": "Horaires",
     "passes_help": "Cycle and soak pour cette étape : son eau répartie en autant de passes, chaque zone absorbant entre deux passes. 1 : en une seule fois.",
-    "schedule_fallback_skip": "Sauter ce jour",
     "schedule_fallback_previous": "Reprendre l'heure du dernier vu",
-    "schedule_fallback_at": "Démarrer à une heure fixe",
     "summary_start_sunrise": "démarre au lever du soleil",
     "summary_start_sunset": "démarre au coucher du soleil",
     "summary_start_azimuth": "démarre quand le soleil est à {deg}°",
@@ -1467,6 +1466,8 @@
     "preview_help": "Une ligne par zone, avec les durées que Smart Irrigation arroserait maintenant. Elles suivent la météo : l'arrosage peut différer au moment où il démarre.",
     "yaml_back": "Revenir à l'éditeur",
     "yaml_edit": "Modifier en YAML",
+    "yaml_only_title": "Réglé en YAML (non modifiable ici)",
+    "yaml_only_help": "Des réglages que l'éditeur visuel n'affiche pas. Ils sont conservés quand tu modifies ici.",
     "yaml_help": "Le programme sous forme de texte. Une étape désigne ses zones par leur nom ou leur numéro, et ce qui est omis prend sa valeur par défaut. Rien n'est enregistré avant d'appliquer : la frise ci-dessous montre ce que ferait le programme.",
     "yaml_apply": "Appliquer",
     "yaml_invalid": "Ce n'est pas du YAML valide.",
@@ -1485,7 +1486,8 @@
     "schedule_azimuth": "Azimut du soleil",
     "schedule_azimuth_help": "Degrés depuis le nord dans le sens horaire : 90 est, 180 sud, 270 ouest. Pour un massif que l'ombre d'un mur ou d'un arbre quitte à ce moment-là.",
     "view_flow": "Schéma",
-    "view_timeline": "Frise"
+    "view_timeline": "Frise",
+    "yaml_only_item": "{label} : {value}"
   },
   "supplies": {
     "title": "Pompes et vannes générales",
@@ -1690,6 +1692,7 @@
     "weather": "Météo favorable ?",
     "weather_sub": "Pluie, gel, vent…",
     "weather_yes": "Oui",
+    "weather_yes_unread": "Oui, mais {reason} n'a pas pu être lu",
     "weather_no": "Non : {reason}",
     "otherwise": "Sinon : rien ce jour-là",
     "supply_on": "{name} en marche",

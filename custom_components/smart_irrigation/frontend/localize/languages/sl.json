@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "Izklopljena cona se nikoli ne zaliva, zato nima časa delovanja.",
         "et-deficiency-help": "Kaj ta cona potrebuje na dan: ETc, referenčna evapotranspiracija krat faktor rastline, vključno s sezonsko prilagoditvijo. Pred prilagoditvijo na interval in pred dežjem, kar omogoča primerjavo med različnimi nastavitvami. Senzor cone ima tudi samo referenčno vrednost, kot atribut `eto`, za primerjavo s tem, kar objavlja vremenska storitev.",
         "safety-off-entity": "Lastno trajanje ventila",
-        "safety-off-entity-help": "Za ventil, ki se sam zapre po lastnem trajanju, npr. Gardena (njegovo število „trajanje zalivanja“, 1 min, če ga nisi spremenil): tukaj izberi to število. Pred vsakim odprtjem Smart Irrigation vanj zapiše dolžino prehoda in 30 s, tako da ventil ostane odprt ves prehod in se kljub temu sam zapre, če se Home Assistant ustavi. Brez tega se tak ventil zapre po svojem prednastavljenem času."
+        "safety-off-entity-help": "Za ventil, ki se sam zapre po lastnem trajanju, npr. Gardena (njegovo število „trajanje zalivanja“, 1 min, če ga nisi spremenil): tukaj izberi to število. Pred vsakim odprtjem Smart Irrigation vanj zapiše dolžino prehoda in 30 s, tako da ventil ostane odprt ves prehod in se kljub temu sam zapre, če se Home Assistant ustavi. Brez tega se tak ventil zapre po svojem prednastavljenem času.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Nobena cona še ni določena.",
       "title": "Cone",
@@ -867,6 +868,13 @@
         "zone": "Cona in ventil",
         "need": "Kaj potrebuje",
         "status": "Kako je z njo"
+      },
+      "yaml": {
+        "only_help": "Nastavitve, ki jih vizualni urejevalnik ne prikaže. Pri urejanju tukaj se ohranijo.",
+        "help": "Nastavitve cone kot besedilo, v enotah plošče. Izpuščena izbirna nastavitev se počisti, obvezna (ime, površina...) ostane. Nič se ne shrani, dokler ne uveljavite.",
+        "not_a_zone": "To ni cona: cona je nabor ključev (name, size, throughput...).",
+        "not_settings": "To niso nastavitve cone ali se jih tu ne nastavlja: {keys}",
+        "applied": "Cona shranjena"
       }
     },
     "history": {
@@ -1242,6 +1250,8 @@
     "effective_rain_description": "Prezri ploho, manjšo od petine evapotranspiracije obdobja: zmoči liste in izhlapi. Presoja se na celotnem obdobju med dvema izračunoma.",
     "forecast_label": "Upoštevaj napovedani dež",
     "forecast_description": "Pod pragom se vsaka cona zaliva za svoj primanjkljaj, zmanjšan za dež, napovedan v naslednjih 24 urah, utežen z verjetnostjo, ki jo poda vremenska storitev: 4 mm napovedi ob primanjkljaju 10 mm zalije 6 mm. Na pragu ali nad njim se zagon za cone na prostem preskoči. Cone v rastlinjaku niso prizadete.",
+    "forecast_no_service": "Potrebuje vremensko storitev: napoved prihaja od nje.",
+    "forecast_no_service_on": "Ni vremenske storitve: ni napovedi za branje, zato to ničesar ne zadrži.",
     "forecast_set_up_service": "Nastavi vremensko storitev"
   },
   "coordinate_config": {
@@ -1317,7 +1327,6 @@
     "step_delay": "Čakanje po tem koraku",
     "step_delay_help": "Negativno: naslednji korak se začne toliko pred koncem tega.",
     "tours": "Krogi",
-    "tours_help": "Celoten seznam korakov se zalije tolikokrat, vsak krog s svojim deležem vode. Za razliko od prehodov, ki ponovijo en korak pred naslednjim, krog pusti vsaki coni vpijati, medtem ko se druge zalivajo.",
     "enabled": "Vklopljeno",
     "add_step": "Dodaj korak",
     "delete_step": "Izbriši korak",
@@ -1359,17 +1368,11 @@
     "schedule_every_offset": "Zamaknjeno za",
     "schedule_every_help": "Vsake 3 dni z zamikom 0, 1 ali 2 omogoča, da se trije programi izmenjujejo, en dan od treh, nikoli na isti dan.",
     "schedule_parity": "Dnevi v mesecu",
-    "parity_any": "Vsi",
     "parity_even": "Sodi dnevi",
     "parity_odd": "Lihi dnevi",
     "schedule_days_of_month": "Določeni dnevi v mesecu",
-    "schedule_days_of_month_help": "Številke dni, ločene z vejicami, in \"zadnji\" za zadnji dan v mesecu (na primer 1, 15, zadnji). Mesec, ki je za nek dan prekratek, ga preskoči. Prazno: kateri koli dan. Dopolnjuje ostale filtre.",
     "schedule_fallback_time": "Če ni sončnega vzhoda ali zahoda",
-    "schedule_fallback_time_help": "Za dan brez sončnega vzhoda ali zahoda (polarni dan ali noč).",
     "schedule_months": "Meseci",
-    "schedule_months_help": "Nič označeno: vsak mesec.",
-    "schedule_yaml_only": "Nastavi se v YAML (Uredi v YAML, na vrhu programa): prikazano tukaj, ker ga ta urnik uporablja.",
-    "yaml_only_set": "Nastavi se v YAML (Uredi v YAML, na vrhu programa): prikazano tukaj, ker je nastavljeno.",
     "schedule_from": "Od",
     "schedule_until": "Do",
     "schedule_period_help": "Obdobje leta, ki lahko poteka čez novo leto (od novembra do marca). Prazno: vse leto.",
@@ -1383,9 +1386,8 @@
     "condition_precipitation": "Napoved dežja",
     "condition_days_between": "Dnevi od zadnjega zalivanja",
     "condition_soil_moisture": "Vlažnost tal",
+    "conditions_subset": "Samo ta preverjanja vremena",
     "schedule_weather_help": "Vklopljeno: preverjanja v Vreme, Preskok namakanja lahko namakanje zadržijo ali skrajšajo: dež, zmrzal, veter, dnevi med namakanji, mokra tla in odloženi dnevi. Izklopite za kapljično cev v rastlinjaku, ki je vreme ne zadeva.",
-    "schedule_conditions_only": "Samo: {list}",
-    "schedule_conditions_yaml": "Ta urnik uporablja samo ta preverjanja, seznam, nastavljen v YAML (skip_conditions). Spremenite ali odstranite ga v YAML programa: brez njega veljajo vsa.",
     "pause": "Začasno ustavi",
     "resume": "Nadaljuj",
     "next_step": "Naslednji korak",
@@ -1412,7 +1414,6 @@
     "adjust_seconds": "Dodani (+) ali odvzeti (-) čas",
     "step_bounds_help": "Vrstni red: najprej odstotek iz „Prilagodi trajanja“ programa, kadar ta velja (nastavi se v programu, ne tukaj), nato dodani ali odvzeti čas, nato najmanjša in največja vrednost. 0 za najmanjšo ali največjo: brez. Korak, ki ne potrebuje vode, ostane na nič: najmanjša vrednost ga nikoli ne zažene.",
     "min_deficit_mm": "Zalivaj samo, ko je primanjkljaj vsaj",
-    "min_deficit_mm_help": "V mm, 0 za vedno zalivanje. Če je nastavljen, za ta korak nadomesti lasten prag cone. Koraki s fiksnim trajanjem se vedno zalivajo.",
     "adjust_title": "Prilagodi trajanja",
     "adjust_none": "Nobena prilagoditev ne velja.",
     "adjust_percent": "Odstotek",
@@ -1437,9 +1438,7 @@
     "steps_title": "Koraki",
     "schedules_title": "Urniki",
     "passes_help": "Cikel in vpijanje za ta korak: njegova voda razdeljena na toliko prehodov, vsaka cona pa med dvema prehodoma vpija. 1: naenkrat.",
-    "schedule_fallback_skip": "Preskoči ta dan",
     "schedule_fallback_previous": "Uporabi čas zadnjega videnega",
-    "schedule_fallback_at": "Začni ob določeni uri",
     "summary_start_sunrise": "začne ob sončnem vzhodu",
     "summary_start_sunset": "začne ob sončnem zahodu",
     "summary_start_azimuth": "začne, ko je sonce na {deg}°",
@@ -1467,6 +1466,8 @@
     "preview_help": "Vsaka cona v svoji vrstici, s trajanji, ki bi jih Smart Irrigation zalival zdaj. Sledijo vremenu, zato se lahko zalivanje ob začetku razlikuje.",
     "yaml_back": "Nazaj v urejevalnik",
     "yaml_edit": "Uredi v YAML",
+    "yaml_only_title": "Nastavljeno v YAML (tukaj ni mogoče urejati)",
+    "yaml_only_help": "Nastavitve, ki jih vizualni urejevalnik ne prikaže. Pri urejanju tukaj se ohranijo.",
     "yaml_help": "Program kot besedilo. Korak navede svoje cone z imenom ali številko, kar je izpuščeno, pa dobi privzeto vrednost. Nič se ne shrani, dokler ne uveljavite: časovnica spodaj kaže, kaj bi naredil program.",
     "yaml_apply": "Uveljavi",
     "yaml_invalid": "To ni veljaven YAML.",
@@ -1485,7 +1486,8 @@
     "schedule_azimuth": "Azimut sonca",
     "schedule_azimuth_help": "Stopinje v smeri urinega kazalca od severa: 90 vzhod, 180 jug, 270 zahod. Za gredo, ki jo senca zidu ali drevesa v tistem trenutku zapusti.",
     "view_flow": "Shema",
-    "view_timeline": "Časovnica"
+    "view_timeline": "Časovnica",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Črpalke in glavni ventili",
@@ -1690,6 +1692,7 @@
     "weather": "Vreme dopušča?",
     "weather_sub": "Dež, zmrzal, veter…",
     "weather_yes": "Da",
+    "weather_yes_unread": "Da, vendar {reason} ni bilo mogoče prebrati",
     "weather_no": "Ne: {reason}",
     "otherwise": "Sicer: ta dan nič",
     "supply_on": "{name} vklopljena",

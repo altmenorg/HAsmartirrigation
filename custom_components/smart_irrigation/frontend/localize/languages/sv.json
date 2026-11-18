@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "En inaktiverad zon vattnas aldrig och har därför ingen bevattningstid.",
         "et-deficiency-help": "Zonens vattenbehov per dygn (ETc) beräknas genom att multiplicera referensevapotranspirationen med grödkoefficienten och ta hänsyn till säsongsjusteringen. Värdet visas före omräkning till beräkningsintervallet och före avdrag för nederbörd, så att du kan jämföra olika inställningar. Zonsensorns attribut `eto` visar referensevapotranspirationen separat för jämförelse med uppgifter från en vädertjänst.",
         "safety-off-entity": "Ventilens egen bevattningstid",
-        "safety-off-entity-help": "För en ventil som stänger av sig själv efter en egen tid, till exempel Gardena (dess nummer \"bevattningstid\", 1 min om det inte ändrats): välj det numret här. Före varje öppning skriver Smart Irrigation passets längd plus 30 s till det, så att ventilen hålls öppen hela passet och ändå stänger av sig själv om Home Assistant stannar. Utan det stänger en sådan ventil efter sin förinställda tid."
+        "safety-off-entity-help": "För en ventil som stänger av sig själv efter en egen tid, till exempel Gardena (dess nummer \"bevattningstid\", 1 min om det inte ändrats): välj det numret här. Före varje öppning skriver Smart Irrigation passets längd plus 30 s till det, så att ventilen hålls öppen hela passet och ändå stänger av sig själv om Home Assistant stannar. Utan det stänger en sådan ventil efter sin förinställda tid.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Det finns inga zoner definierade ännu.",
       "title": "Zoner",
@@ -867,6 +868,13 @@
         "zone": "Zon och ventil",
         "need": "Vattenbehov",
         "status": "Zonens status"
+      },
+      "yaml": {
+        "only_help": "Inställningar som den visuella redigeraren inte visar. De behålls när du redigerar här.",
+        "help": "Zonens inställningar som text, i panelens enheter. En valfri inställning som utelämnas rensas; en obligatorisk (namn, yta...) behålls. Inget sparas förrän du tillämpar.",
+        "not_a_zone": "Det här är inte en zon: en zon är en uppsättning nycklar (name, size, throughput...).",
+        "not_settings": "Inte inställningar för en zon, eller kan inte anges här: {keys}",
+        "applied": "Zon sparad"
       }
     },
     "history": {
@@ -1242,6 +1250,8 @@
     "effective_rain_description": "Bortse från regn som bara väter bladen och sedan avdunstar. Gränsen går vid en femtedel av evapotranspirationen och bedömningen görs för hela perioden mellan två beräkningar.",
     "forecast_label": "Ta hänsyn till prognostiserat regn",
     "forecast_description": "Under gränsvärdet minskas den planerade bevattningsmängden med det regn som väntas de närmaste 24 timmarna, viktat med sannolikheten för regn enligt vädertjänsten. Om vattenunderskottet är 10 mm och 4 mm regn räknas av blir bevattningen 6 mm. Om regnmängden når eller överstiger gränsen hoppas bevattningen över utomhus. Växthuszoner påverkas inte.",
+    "forecast_no_service": "Behöver en vädertjänst: prognosen kommer därifrån.",
+    "forecast_no_service_on": "Ingen vädertjänst: det finns ingen prognos att läsa, så detta håller inte tillbaka något.",
     "forecast_set_up_service": "Konfigurera en vädertjänst"
   },
   "coordinate_config": {
@@ -1317,7 +1327,6 @@
     "step_delay": "Vänta efter det här steget",
     "step_delay_help": "Med ett negativt värde startar nästa steg så många sekunder innan det här steget slutar.",
     "tours": "Varv",
-    "tours_help": "Antal gånger hela steglistan körs. Vattenmängden delas upp mellan varven. Mellan varven hinner vattnet tränga ner i marken i varje zon medan de andra zonerna bevattnas. Med flera pass i ett steg upprepas i stället samma steg innan programmet går vidare.",
     "enabled": "Aktiverat",
     "add_step": "Lägg till ett steg",
     "delete_step": "Ta bort steget",
@@ -1359,17 +1368,11 @@
     "schedule_every_offset": "Förskjutet med",
     "schedule_every_help": "Tre program som körs var tredje dag kan turas om. Ange en förskjutning på 0, 1 respektive 2 dagar så att de körs på olika dagar.",
     "schedule_parity": "Dagar i månaden",
-    "parity_any": "Alla",
     "parity_even": "Jämna dagar",
     "parity_odd": "Udda dagar",
     "schedule_days_of_month": "Bestämda dagar i månaden",
-    "schedule_days_of_month_help": "Ange datum åtskilda med kommatecken. Skriv ”sista” för månadens sista dag, till exempel 1, 15, sista. Datum som saknas i en månad hoppas över. Lämna fältet tomt om alla datum ska vara tillåtna. Övriga filter gäller fortfarande.",
     "schedule_fallback_time": "Om det inte finns någon soluppgång eller solnedgång",
-    "schedule_fallback_time_help": "För en dag utan soluppgång eller solnedgång (polardag eller -natt).",
     "schedule_months": "Månader",
-    "schedule_months_help": "Lämna alla månader omarkerade för att köra programmet året om.",
-    "schedule_yaml_only": "Ställs in i YAML (Redigera i YAML, överst i programmet): visas här eftersom det här schemat använder det.",
-    "yaml_only_set": "Ställs in i YAML (Redigera i YAML, överst i programmet): visas här eftersom det är inställt.",
     "schedule_from": "Från",
     "schedule_until": "Till",
     "schedule_period_help": "En period av året, som kan gå över nyår (från november till mars). Tomt: hela året.",
@@ -1383,9 +1386,8 @@
     "condition_precipitation": "Regnprognos",
     "condition_days_between": "Dagar sedan senaste vattningen",
     "condition_soil_moisture": "Markfuktighet",
+    "conditions_subset": "Bara de här vädervillkoren",
     "schedule_weather_help": "På: kontrollerna under Väder, Hoppa över bevattning kan hålla tillbaka eller korta bevattningen: regn, frost, vind, dagar mellan bevattningar, blöt mark och uppskjutna dagar. Stäng av för en droppslang i växthuset som vädret inte berör.",
-    "schedule_conditions_only": "Bara: {list}",
-    "schedule_conditions_yaml": "Det här schemat tillämpar bara dessa kontroller, en lista satt i YAML (skip_conditions). Ändra eller ta bort den i programmets YAML: utan den gäller alla.",
     "pause": "Pausa",
     "resume": "Återuppta",
     "next_step": "Nästa steg",
@@ -1412,7 +1414,6 @@
     "adjust_seconds": "Tid som läggs till (+) eller dras av (-)",
     "step_bounds_help": "Först tillämpas en eventuell procentsats från programmets inställning ”Justera bevattningstider”. Sedan läggs tid till eller dras av. Till sist tillämpas den kortaste och längsta tillåtna tiden. Ange 0 för att ta bort respektive gräns. Om steget inte behöver något vatten förblir bevattningstiden noll även om en minimitid har angetts.",
     "min_deficit_mm": "Vattna bara när underskottet är minst",
-    "min_deficit_mm_help": "Ange vattenunderskottet i mm. Ange 0 för att alltid bevattna. Ett angivet värde ersätter zonens egen bevattningströskel i det här steget. Steg med fast bevattningstid körs alltid.",
     "adjust_title": "Justera bevattningstider",
     "adjust_none": "Ingen justering gäller.",
     "adjust_percent": "Procent",
@@ -1437,9 +1438,7 @@
     "steps_title": "Steg",
     "schedules_title": "Scheman",
     "passes_help": "Dela upp bevattningen i flera pass så att vattnet hinner tränga ner i marken mellan passen. Ange 1 för att bevattna i ett enda pass.",
-    "schedule_fallback_skip": "Hoppa över den dagen",
     "schedule_fallback_previous": "Använd tiden för den senaste soluppgången eller solnedgången",
-    "schedule_fallback_at": "Starta vid en fast tid",
     "summary_start_sunrise": "startar vid soluppgång",
     "summary_start_sunset": "startar vid solnedgång",
     "summary_start_azimuth": "startar när solen står i {deg}°",
@@ -1467,6 +1466,8 @@
     "preview_help": "Varje zon på en egen rad, med de tider Smart Irrigation skulle vattna nu. De följer vädret, så en bevattning kan bli annorlunda när den startar.",
     "yaml_back": "Tillbaka till redigeraren",
     "yaml_edit": "Redigera i YAML",
+    "yaml_only_title": "Inställt i YAML (kan inte redigeras här)",
+    "yaml_only_help": "Inställningar som den visuella redigeraren inte visar. De behålls när du redigerar här.",
     "yaml_help": "Programmet som text. Ett steg anger sina zoner med namn eller nummer, och det som utelämnas får sitt standardvärde. Inget sparas förrän du tillämpar: tidslinjen nedan visar vad programmet skulle göra.",
     "yaml_apply": "Tillämpa",
     "yaml_invalid": "Det här är inte giltig YAML.",
@@ -1485,7 +1486,8 @@
     "schedule_azimuth": "Solens azimut",
     "schedule_azimuth_help": "Grader medurs från norr: 90 öst, 180 syd, 270 väst. För en rabatt som skuggan från en mur eller ett träd lämnar i det ögonblicket.",
     "view_flow": "Schema",
-    "view_timeline": "Tidslinje"
+    "view_timeline": "Tidslinje",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Pumpar och huvudventiler",
@@ -1690,6 +1692,7 @@
     "weather": "Tillåter vädret det?",
     "weather_sub": "Regn, frost, vind…",
     "weather_yes": "Ja",
+    "weather_yes_unread": "Ja, men {reason} kunde inte läsas",
     "weather_no": "Nej: {reason}",
     "otherwise": "Annars: inget den dagen",
     "supply_on": "{name} på",
