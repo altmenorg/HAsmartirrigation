@@ -230,7 +230,7 @@ async def test_a_due_schedule_is_recorded_armed_again_then_run(armed):
     # Armed again for the next day, not for the occurrence that just fired.
     assert armed.times[-1] == _utc(2, 6)
     scheduler.async_run_program.assert_awaited_once_with(
-        "evening", manual=False, only_zones=None, note_day=ANY
+        "evening", manual=False, only_zones=None, note_day=ANY, chain_moment=ANY
     )
     # The day is counted by the run, when a step really starts: not before.
     scheduler._note_watering_day.assert_not_awaited()
@@ -257,7 +257,7 @@ async def test_a_day_of_rain_runs_only_the_sheltered_zones(armed):
     await scheduler._fire_program_schedule("evening", "schedule_1", _utc(1, 6))
 
     scheduler.async_run_program.assert_awaited_once_with(
-        "evening", manual=False, only_zones={1}, note_day=ANY
+        "evening", manual=False, only_zones={1}, note_day=ANY, chain_moment=ANY
     )
 
 

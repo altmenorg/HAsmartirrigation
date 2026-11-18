@@ -788,8 +788,8 @@ class TriggersMixin:
             )
         else:
             _LOGGER.info(
-                "Trigger '%s' fired with nothing to water; the days since "
-                "the last irrigation keep counting",
+                "'%s' started with nothing to water; the days since the "
+                "last irrigation keep counting",
                 name,
             )
         if not self._start_event_fired_today:
@@ -806,24 +806,174 @@ class TriggersMixin:
             }
         )
 
-    async def _prepare_watering_for_today(self, name, event_data, soil_moisture=True):
-        """Decide whether today is a watering day, and prepare the day's run.
+    async def _day_skip_checks(self) -> dict:
+        """The checks of the conditions about the day, decided once a day.
+
+        ``{check id: check}`` for the rain forecast and the days between
+        irrigation (``const.SKIP_CONDITIONS_OF_THE_DAY``), evaluated at the first
+        start of the day, whatever conditions that start's schedule applies, and
+        kept for every later start that day: the first run resets the days since
+        the last irrigation, and a second start must not read that as "just
+        watered". ``_watering_decision_today`` says whether they let the day
+        water. After a restart on a day that already had its start, they are
+        taken as decided in its favour (nothing of the day holds it back).
+        """
+        checks = getattr(self, "_day_checks", None)
+        if checks is not None:
+            return checks
+        if getattr(self, "_watering_decision_today", None) is True:
+            self._day_checks = {}
+            return self._day_checks
+        evaluation = await self.async_evaluate_skip_conditions(
+            only=list(const.SKIP_CONDITIONS_OF_THE_DAY)
+        )
+        checks = {
+            check["id"]: check
+            for check in evaluation.get("checks") or []
+            if check.get("id") in const.SKIP_CONDITIONS_OF_THE_DAY
+        }
+        self._day_checks = checks
+        self._watering_decision_today = not any(c.get("skip") for c in checks.values())
+        # Decided with the day: the first run resets the counters, and a
+        # second start must not read that as "just watered".
+        try:
+            self._zones_held_by_days_between = (
+                await self.async_zones_held_by_days_between()
+            )
+        except Exception as e:  # noqa: BLE001 - an extra, not the decision
+            self._zones_held_by_days_between = set()
+            _LOGGER.warning(
+                "Could not work out the zones held by their days between "
+                "irrigation: %s",
+                e,
+            )
+        vetoing = [check_id for check_id, c in checks.items() if c.get("skip")]
+        if vetoing:
+            _LOGGER.info(
+                "Today is held back by %s: the schedules that apply it do not "
+                "water today",
+                ", ".join(vetoing),
+            )
+            # Do NOT increment days-since-irrigation here: the midnight reset
+            # already counts every calendar day exactly once, skipped days
+            # included. Counting again here advanced the counter by 2 per
+            # skipped day, so a days-between setting of 5 watered every 3
+            # days (#802).
+        return checks
+
+    async def _evaluate_this_start(self, conditions=None) -> dict:
+        """The skip evaluation of a start: the moment's readings, the day's record.
+
+        ``conditions`` is the schedule's own list of condition ids, None for
+        all of them. The readings of the moment (the postponement, the rain
+        sensor, the frost, the wind, the soil moisture) are read now, at each
+        start; the conditions about the day come from the day's record
+        (``_day_skip_checks``). The result has the shape of
+        ``async_evaluate_skip_conditions``; a check decided for the day says so
+        with ``decided_for_the_day``.
+        """
+
+        def applies(check_id):
+            return conditions is None or check_id in conditions
+
+        day = await self._day_skip_checks()
+        now = await self.async_evaluate_skip_conditions(
+            only=[c for c in const.SKIP_CONDITIONS_OF_THE_MOMENT if applies(c)]
+        )
+        by_id = {c.get("id"): c for c in now.get("checks") or []}
+        for check_id in const.SKIP_CONDITIONS_OF_THE_DAY:
+            if applies(check_id) and check_id in day:
+                by_id[check_id] = {**day[check_id], "decided_for_the_day": True}
+        order = {check_id: i for i, check_id in enumerate(const.SKIP_CONDITION_IDS)}
+        checks = sorted(by_id.values(), key=lambda c: order.get(c.get("id"), 99))
+        if now.get("should_skip"):
+            # The moment's conditions come first in the order of the checks.
+            reason = now.get("reason")
+        else:
+            reason = next(
+                (
+                    check_id
+                    for check_id in const.SKIP_CONDITIONS_OF_THE_DAY
+                    if applies(check_id) and (day.get(check_id) or {}).get("skip")
+                ),
+                None,
+            )
+        return {
+            "should_skip": bool(now.get("should_skip")) or reason is not None,
+            "reason": reason,
+            "checks": checks,
+        }
+
+    def with_the_days_decision(self, preview, run_start):
+        """A live skip preview, as the start at ``run_start`` will judge it.
+
+        A start later today does not read the rain forecast or the days between
+        irrigation again: it keeps what the day's first start decided. So the
+        preview of such a start shows those checks as decided, and the panel
+        cannot say "held back, too few days since the last irrigation" over an
+        evening run the morning run's decision lets go. The readings of the
+        moment stay live. A start on another day, or before the day's decision
+        is made, is shown as evaluated.
+        """
+        day = getattr(self, "_day_checks", None)
+        if not isinstance(preview, dict) or not day or run_start is None:
+            return preview
+        try:
+            if dt_util.as_local(run_start).date() != dt_util.now().date():
+                return preview
+        except (AttributeError, TypeError, ValueError, OverflowError):
+            return preview
+        checks = [
+            (
+                {**day[c.get("id")], "decided_for_the_day": True}
+                if isinstance(c, dict) and c.get("id") in day
+                else c
+            )
+            for c in preview.get("checks") or []
+        ]
+        vetoing = next(
+            (c for c in checks if isinstance(c, dict) and c.get("skip")), None
+        )
+        return {
+            **preview,
+            "checks": checks,
+            "should_skip": vetoing is not None,
+            "reason": vetoing.get("id") if vetoing else None,
+        }
+
+    async def _count_precipitation_skip_once_today(self) -> None:
+        """Count the day held back by the forecast, once whatever the starts."""
+        today = dt_util.now().date()
+        if getattr(self, "_precipitation_skip_counted_on", None) == today:
+            return
+        self._precipitation_skip_counted_on = today
+        await self._count_precipitation_skip()
+
+    async def _prepare_watering_for_today(
+        self, name, event_data, soil_moisture=True, conditions=None
+    ):
+        """Decide whether this start waters, and prepare its run.
+
+        ``conditions`` is the list of skip conditions the schedule applies
+        (None: all of them). The readings of the moment (postponement, rain
+        sensor, frost, wind) are judged at each start against what they read
+        now: a frost at 06:00 holds back the 06:00 run, not the one at 18:00.
+        The conditions about the day (rain forecast, days between irrigation)
+        are decided at the first start of the day and kept for the day.
 
         ``soil_moisture`` False leaves out the hold on zones whose soil reads
-        moist: a schedule that did not choose that condition does not apply it.
-        The hold changes the zones' durations for the whole day, so it cannot be
-        undone for a schedule that comes after one that applied it.
+        moist, as does a list of conditions without it. The hold changes the
+        zones' durations (their bucket is set to field capacity), so it cannot
+        be undone for a schedule that comes after one that applied it.
 
         ``(go, sheltered)``: whether to water, and the zones that are sheltered
         from the rain when the forecast says rain (only those run then).
 
-        The decision is made once a day and shared by whatever starts the
-        watering: the start trigger, or a program's schedule. The holds that
-        follow it (zones that wait longer, a moist soil, the rain since the
-        calculation or forecast for the day ahead) change the durations the
-        zones are watered for, so they are made once a day too: the first start
-        of the day makes them and the ones after it find the durations as they
-        left them.
+        The holds that follow the decision (zones that wait longer, a moist
+        soil, the rain since the calculation or forecast for the day ahead)
+        change the durations the zones are watered for, so they are made once
+        until the next calculation: the first start makes them and the ones
+        after it find the durations as they left them.
         """
         # Fresh numbers first, when the user asked for them, before every
         # start: the skip checks and the durations below rest on them. A second
@@ -832,67 +982,46 @@ class TriggersMixin:
         # calculation clears the day's holds, so they are made again on its
         # durations below.
         await self._recalculate_before_start()
-        # Decide once per day whether today is a watering day.
-        if self._watering_decision_today is None:
-            # One structured evaluation rather than two booleans, so
-            # what the panel shows and what the runner decides come from
-            # the same call (#794).
-            evaluation = await self.async_evaluate_skip_conditions()
-            # Stamp it: the panel shows this next to the live preview,
-            # and "what it decided" is only meaningful with "when".
-            self._last_skip_evaluation = {
-                **evaluation,
-                "evaluated_at": dt_util.now().isoformat(),
-            }
-            skip_reason = evaluation["reason"]
-            self._watering_decision_today = not evaluation["should_skip"]
-            # Decided with the day: the first run resets the counters,
-            # and a second trigger must not read that as "just watered".
-            try:
-                self._zones_held_by_days_between = (
-                    await self.async_zones_held_by_days_between()
-                )
-            except Exception as e:  # noqa: BLE001 - an extra, not the decision
-                self._zones_held_by_days_between = set()
-                _LOGGER.warning(
-                    "Could not work out the zones held by their days "
-                    "between irrigation: %s",
-                    e,
-                )
-            # Count the days the forecast holds the run back, so that
-            # showers forecast day after day cannot hold it back for
-            # ever (skip_conditions.py).
-            if skip_reason == "precipitation":
-                await self._count_precipitation_skip()
-            if skip_reason is not None:
-                _LOGGER.info(
-                    "Today is not a watering day (%s); start triggers " "will not fire",
-                    skip_reason,
-                )
-                # Do NOT increment days-since-irrigation here: the
-                # midnight reset already counts every calendar day
-                # exactly once, skipped days included. Counting again
-                # here advanced the counter by 2 per skipped day, so a
-                # days-between setting of 5 watered every 3 days (#802).
+        if conditions is not None and "soil_moisture" not in conditions:
+            soil_moisture = False
+        # One structured evaluation rather than booleans, so what the panel
+        # shows and what the runner decides come from the same call (#794).
+        evaluation = await self._evaluate_this_start(conditions)
+        # Stamp it: the panel shows this next to the live preview, and "what it
+        # decided" is only meaningful with "when".
+        self._last_skip_evaluation = {
+            **evaluation,
+            "evaluated_at": dt_util.now().isoformat(),
+        }
+        skip_reason = evaluation["reason"]
+        # Count the days the forecast holds the run back, so that showers
+        # forecast day after day cannot hold it back for ever
+        # (skip_conditions.py).
+        if skip_reason == "precipitation":
+            await self._count_precipitation_skip_once_today()
+        held_by_days = (
+            getattr(self, "_zones_held_by_days_between", None) or set()
+            if conditions is None or "days_between" in conditions
+            else set()
+        )
 
         sheltered = set()
-        if not self._watering_decision_today:
+        if evaluation["should_skip"]:
             # A rain forecast is a statement about the sky, so it has
             # nothing to say about zones under glass. When some of them
             # are sheltered the run goes ahead for those, and only the
             # zones the rain can actually reach are held back.
-            if (
-                self._last_skip_evaluation
-                and self._last_skip_evaluation.get("reason") == "precipitation"
-            ):
+            if skip_reason == "precipitation":
                 sheltered = await self.async_zones_sheltered_from_rain()
             if not sheltered:
-                # Nothing is sheltered, so this is a skip day exactly as
-                # before: no event, and no automation of the user's runs
-                # against zeroed durations it may not think to check.
+                # Nothing is sheltered: this start does not water, no start
+                # event, and no automation of the user's runs against zeroed
+                # durations it may not think to check.
                 _LOGGER.info(
-                    "Trigger '%s' reached but today is a skip day; not " "firing event",
+                    "'%s' is due but held back (%s); it does not water at this "
+                    "start",
                     name,
+                    skip_reason,
                 )
                 # Say so. A skipped day used to be the absence of an
                 # event, which an automation cannot listen for: users
@@ -902,8 +1031,8 @@ class TriggersMixin:
                     f"{const.DOMAIN}_{const.EVENT_IRRIGATE_SKIPPED}",
                     {
                         **event_data,
-                        "reason": (self._last_skip_evaluation or {}).get("reason"),
-                        "checks": (self._last_skip_evaluation or {}).get("checks", []),
+                        "reason": skip_reason,
+                        "checks": evaluation.get("checks", []),
                     },
                 )
                 return False, set()
@@ -919,9 +1048,7 @@ class TriggersMixin:
         if not getattr(self, "_watering_prepared_today", False):
             # A zone that has to wait longer between two irrigations sits
             # this run out, whatever the other zones do (#875).
-            await self._hold_back_zones_held_by_days_between(
-                getattr(self, "_zones_held_by_days_between", None) or set()
-            )
+            await self._hold_back_zones_held_by_days_between(held_by_days)
 
             # A zone whose own soil is already moist sits this run out, unless
             # the schedule that starts this run left that condition out.
@@ -1401,6 +1528,7 @@ class TriggersMixin:
         # recomputed on the next trigger that is reached.
         self._fired_triggers_today.clear()
         self._watering_decision_today = None
+        self._day_checks = None
         self._watering_prepared_today = False
         self._soil_moisture_hold_applied = False
         if self._start_event_fired_today:

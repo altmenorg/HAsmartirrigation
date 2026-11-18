@@ -401,7 +401,9 @@ class ProgramStatusMixin:
         ``ends`` maps a program id to ``(next start, run seconds)``. A program
         whose "after" schedule waits for one in it starts at that one's end
         plus the offset, the soonest of its schedules, and before its own
-        timed schedules only if sooner. Passes repeat for a chain of chains.
+        timed schedules only if sooner; after one with nothing to water, at
+        that one's start plus the offset (it starts the next all the same).
+        Passes repeat for a chain of chains.
         """
         found = dict(ends)
         for _ in range(len(programs)):
@@ -417,10 +419,11 @@ class ProgramStatusMixin:
                     ):
                         continue
                     start, total = found[after]
-                    if total <= 0:
-                        # A run with nothing to water starts nothing after it.
-                        continue
-                    due = chained_start(schedule, start + timedelta(seconds=total), tz)
+                    # A run with nothing to water still starts what comes
+                    # after it, from its moment.
+                    due = chained_start(
+                        schedule, start + timedelta(seconds=max(0, total)), tz
+                    )
                     if due is None:
                         continue
                     if program_id not in found or due < found[program_id][0]:
@@ -702,14 +705,15 @@ class ProgramStatusMixin:
     async def _plan_chained_runs(self, planned: list, contexts: dict, until, tz):
         """Add to ``planned`` the runs started after another planned run.
 
-        Each planned run expected to water (not with nothing to water, held
-        back by the forecast or suspended: then it does not really run, and
-        nothing starts after it) starts the programs waiting for it, at its
-        end plus their offset, on the days their schedules allow, up to
-        ``until``. Those runs start the next ones in turn. Every item gets a
-        ``run_key``; a chained one says which run it follows in ``after_run``
-        and names that program in ``after``, so planning_sequence.py can move
-        it behind where that run really ends.
+        Each planned run starts the programs waiting for it, on the days their
+        schedules allow, up to ``until``: a run expected to water at its end
+        plus their offset, one that will not water (nothing to water, held back
+        by the forecast or suspended) at its planned moment plus their offset,
+        as the scheduler does. Those runs start the next ones in turn. Every
+        item gets a ``run_key``; a chained one names the program it follows in
+        ``after`` (with ``held_back`` true when that one does not water), and
+        says which run it follows in ``after_run`` when that one waters, so
+        planning_sequence.py can move it behind where that run really ends.
         """
         loop = set(chain_loop([c[0] for c in contexts.values()]) or ())
         for item in planned:
@@ -717,13 +721,14 @@ class ProgramStatusMixin:
         queue = list(planned)
         while queue:
             before = queue.pop(0)
-            if (
-                before.get("nothing_to_water")
-                or before.get("skipped_reason")
-                or before.get("program_id") in loop
-            ):
+            if before.get("program_id") in loop:
                 continue
-            end = dt_util.parse_datetime(str(before.get("end") or ""))
+            held_back = bool(
+                before.get("nothing_to_water") or before.get("skipped_reason")
+            )
+            end = dt_util.parse_datetime(
+                str(before.get("target" if held_back else "end") or "")
+            )
             if end is None:
                 continue
             for program, item_for in contexts.values():
@@ -740,8 +745,10 @@ class ProgramStatusMixin:
                         "offset_minutes": max(
                             0, int(schedule.get(const.SCHEDULE_OFFSET_MINUTES) or 0)
                         ),
+                        "held_back": held_back,
                     }
-                    item["after_run"] = before["run_key"]
+                    if not held_back:
+                        item["after_run"] = before["run_key"]
                     item["run_key"] = _run_key(item)
                     planned.append(item)
                     queue.append(item)

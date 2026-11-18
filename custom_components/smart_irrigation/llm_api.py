@@ -49,7 +49,10 @@ How it reasons: each zone has a water balance (its bucket, in mm). Evaporation \
 takes water out, rain and watering put it back. Below zero the zone has a \
 deficit and is watered for the time that brings it back to zero (its \
 duration, in seconds). A zone can be held back by skip conditions (rain \
-forecast, frost, wind, a moist soil, days between waterings).
+forecast, frost, wind, a moist soil, days between waterings). What is \
+measured (frost, wind, the rain sensor, a postponement) is judged at each \
+program start; the rain forecast and the days between waterings are decided \
+once a day, at the day's first start.
 
 Programs (mode `water`): a program is an ordered list of steps; a step is \
 one zone, or several watered together. A step takes the duration Smart \
@@ -58,9 +61,11 @@ seconds. Schedules say when a program starts (or must be done); a program \
 whose schedules are all off starts only when run by hand. A schedule of the \
 type `after` (with `after_program`, the id of another program, and \
 `offset_minutes`, 0 or more) starts its program that many minutes after the \
-other program has really watered and finished, by hand or scheduled; not when \
-that one was held back by the weather, suspended, had nothing to water or was \
-stopped. Its days and weather still apply. Programs cannot start after each \
+other program has really watered and finished, by hand or scheduled. When a \
+scheduled run of the other program does not water (held back by the weather, \
+suspended, nothing to water), it still starts, that many minutes after that \
+run's planned moment. When the other program was stopped by hand or its run \
+failed, it does not start. Its own days and weather setting still apply. Programs cannot start after each \
 other in a loop, and a program another one starts after cannot be deleted. \
 All programs are equal: a zone is watered only by the programs whose steps \
 name it.

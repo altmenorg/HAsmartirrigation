@@ -206,7 +206,9 @@ SCHEDULE_FIELDS: dict[str, dict] = {
     const.SCHEDULE_TYPE: _field(
         "string",
         "time: at a clock time; sun: at a sun event with an offset; after: "
-        "when another program has really watered and finished.",
+        "when another program has really watered and finished, or at its "
+        "planned moment when it did not water (held back, suspended, nothing "
+        "to water); not when it was stopped by hand or failed.",
         values=s.SCHEDULE_TYPES,
         default=s.SCHEDULE_TYPE_TIME,
     ),
@@ -235,7 +237,8 @@ SCHEDULE_FIELDS: dict[str, dict] = {
     const.SCHEDULE_OFFSET_MINUTES: _field(
         "integer",
         "sun: minutes after the event (negative: before). after: minutes "
-        "after the other program finished (0 or more).",
+        "after the other program finished, or after its planned moment when it "
+        "did not water (0 or more).",
         default=0,
         low=-s.MAX_OFFSET_MINUTES,
         high=s.MAX_OFFSET_MINUTES,
@@ -325,7 +328,9 @@ SCHEDULE_FIELDS: dict[str, dict] = {
     const.SCHEDULE_WEATHER: _field(
         "boolean",
         "Whether the skip conditions (rain, frost, wind, moist soil...) can "
-        "hold the run back.",
+        "hold the run back. Frost, wind, the rain sensor and a postponement "
+        "are read at each start; the rain forecast and the days between "
+        "waterings are decided once a day, at its first start.",
         default=True,
     ),
     const.SCHEDULE_SKIP_CONDITIONS: _field(

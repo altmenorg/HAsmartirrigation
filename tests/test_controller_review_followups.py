@@ -9,7 +9,7 @@ decision.
 
 import asyncio
 from types import SimpleNamespace
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import homeassistant.util.dt as dt_util
 
@@ -17,6 +17,7 @@ from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.program_scheduler import (
     ProgramSchedulerMixin,
 )
+from custom_components.smart_irrigation.triggers import TriggersMixin
 from tests.runner_doubles import (
     REAL_SLEEP,
     Coordinator,
@@ -253,41 +254,40 @@ async def test_a_failing_record_of_the_pause_the_queue_or_a_start_warns(
     assert any("record the start" in m for m in warned)
 
 
-# --- 7. two schedules firing together do not see each other's decision --------------------
+# --- 7. two schedules firing together make the day's decision once ----------------------
 
 
-class _Scheduler(ProgramSchedulerMixin):
+class _Scheduler(ProgramSchedulerMixin, TriggersMixin):
     def __init__(self):
         self._watering_decision_today = None
+        self._day_checks = None
         self._last_skip_evaluation = None
         self._zones_held_by_days_between = set()
-        self.seen = {}
+        self._watering_prepared_today = True
+        self._soil_moisture_hold_applied = True
+        self.asked = []
+        self.hass = MagicMock()
+        self._recalculate_before_start = AsyncMock()
 
     async def async_evaluate_skip_conditions(self, only=None):
+        self.asked.append(tuple(only or ()))
         await REAL_SLEEP(0)
-        return {"should_skip": only == ["a"], "reason": None, "checks": []}
+        return {"should_skip": False, "reason": None, "checks": []}
 
     async def async_zones_held_by_days_between(self):
+        await REAL_SLEEP(0)
         return set()
 
-    async def _count_precipitation_skip(self):
-        return None
 
-    async def _prepare_watering_for_today(self, name, event_data, soil_moisture=True):
-        await REAL_SLEEP(0)
-        await REAL_SLEEP(0)
-        self.seen[name] = self._watering_decision_today
-        return self._watering_decision_today, set()
-
-
-async def test_two_preparations_at_once_each_keep_their_own_decision():
+async def test_two_preparations_at_once_make_the_days_decision_once():
     scheduler = _Scheduler()
 
     (go_a, _), (go_b, _) = await asyncio.gather(
-        scheduler._prepare_program_watering("a", {}, ["a"]),
-        scheduler._prepare_program_watering("b", {}, ["b"]),
+        scheduler._prepare_program_watering("a", {}, ["wind"]),
+        scheduler._prepare_program_watering("b", {}, None),
     )
 
-    assert go_a is False and go_b is True
-    assert scheduler.seen == {"a": False, "b": True}
-    assert scheduler._watering_decision_today is None
+    assert go_a is True and go_b is True
+    day = tuple(const.SKIP_CONDITIONS_OF_THE_DAY)
+    assert scheduler.asked.count(day) == 1
+    assert scheduler._watering_decision_today is True
