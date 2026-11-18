@@ -198,7 +198,7 @@
         "no-data": "Még nem érkezett adat az időjárás-szolgáltatástól."
       },
       "title": "Időjárás-szolgáltatás",
-      "description": "Tekintse meg és módosítsa az időjárási adatok lekéréséhez használt időjárás-szolgáltatást — nincs szükség az integráció újratelepítésére. Az API-kulcs ellenőrzésre kerül, és a változás azonnal érvénybe lép.",
+      "description": "Tekintse meg és módosítsa az időjárási adatok lekéréséhez használt időjárás-szolgáltatást: nincs szükség az integráció újratelepítésére. Az API-kulcs ellenőrzésre kerül, és a változás azonnal érvénybe lép.",
       "labels": {
         "use-weather-service": "Időjárás-szolgáltatás használata",
         "service": "Időjárás-szolgáltatás",
@@ -212,7 +212,7 @@
         "open-sensor-groups": "Érzékelőcsoportok megnyitása"
       },
       "messages": {
-        "no-service": "Nincs használatban időjárás-szolgáltatás — az időjárási adatok kizárólag a saját érzékelőiből származnak.",
+        "no-service": "Nincs használatban időjárás-szolgáltatás: az időjárási adatok kizárólag a saját érzékelőiből származnak.",
         "saved": "Az időjárás-szolgáltatás frissítve és alkalmazva.",
         "reload-note": "A mentés ellenőrzi az API-kulcsot a szolgáltatásnál, és azonnal alkalmazza a változást.",
         "owm-onecall-hint": "Az OpenWeatherMap a One Call API 3.0 csomagot igényli (One Call by Call). Napi 1000 hívásig ingyenes, de kártyával kell aktiválni, és egy új kulcs pár órát is igénybe vehet, míg működni kezd. Egy sima alapértelmezett kulcs visszautasításra kerül.",
@@ -243,7 +243,7 @@
       },
       "messages": {
         "exported": "Biztonsági mentési fájl letöltve.",
-        "restored": "A konfiguráció visszaállítva — az integráció újratöltése folyamatban.",
+        "restored": "A konfiguráció visszaállítva: az integráció újratöltése folyamatban.",
         "invalid-file": "Ez a fájl nem érvényes Smart Irrigation biztonsági mentés.",
         "confirm-title": "Lecseréli a teljes konfigurációt?",
         "summary": "Ez a biztonsági mentés a következőket tartalmazza",
@@ -499,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "Itt semmi nem nyit szelepet",
-          "body": "A Smart Irrigation kiszámolja, mennyi ideig kell öntözni; valaminek cselekednie kell ez alapján. Vagy kapcsold be a közvetlen szelepvezérlést a Beállítások alatt, majd csatolj egy szelepet minden zónához, vagy írj egy automatizálást az indítási eseményre (a blueprintek ezt megteszik helyetted). Ha egy automatizálás már megteszi, nincs mit változtatni.",
+          "body": "A Smart Irrigation kiszámolja, mennyi ideig kell öntözni; ezt valaminek végre is kell hajtania. Vagy válaszd a Beállításokban a „Számol és öntöz” lehetőséget, és rendelj szelepet minden zónához, vagy írj automatizálást az indítási eseményre (a blueprintek ezt megteszik helyetted). Ha egy automatizálás ezt már elvégzi, nincs mit változtatni.",
           "action": "Ugrás a szelepvezérléshez"
         }
       }
@@ -710,7 +710,7 @@
         "data-number-of-data-points": "Adatpontok száma",
         "drainage_rate": "Elvezetési sebesség",
         "linked-entity": "Csatlakoztatott szelep/kapcsoló",
-        "linked-entity-hint": "A szelep vagy kapcsoló, amely ezt a zónát öntözi. Amikor működik (kézi nyitás, automatizálás vagy maga a Smart Irrigation, ha a közvetlen szelepvezérlés be van kapcsolva), a vízmérleg a működési időből és a zóna átfolyásából töltődik fel. A zárt hurkú funkciókhoz szükséges.",
+        "linked-entity-hint": "A szelep vagy kapcsoló, amely ezt a zónát öntözi. „Számol és öntöz” módban a Smart Irrigation nyitja és zárja. Megfigyelt öntözéssel minden futása (kézzel, automatizálással vagy a Smart Irrigation által) jóváíródik a vízmérlegben a futási idő és az átfolyás alapján.",
         "valve-off": "Szelep akkor kapcsolható, ha a Smart Irrigation öntöz (Számol és öntöz), vagy a megfigyelt öntözés be van kapcsolva.",
         "valve-off-link": "Bekapcsolás",
         "supply": "Szivattyú vagy főszelep",
@@ -725,7 +725,7 @@
         "observed-ignore-seconds-help": "Az ilyen rövid vagy rövidebb szelepnyitás nem kerül jóváírásra: néhány perc a levelek hűtésére egy forró délutánon többnyire elpárolog. A hosszabb öntözés teljes egészében számít. Üres: minden öntözés jóváírásra kerül.",
         "confirm-timeout": "Várakozás a szelep visszajelzésére",
         "open-resends": "Nyitás újraküldése",
-        "confirm-timeout-help": "Mennyi ideje van a szelepnek jelezni, hogy kinyílt vagy bezárult, és hányszor küldi újra a nyitást ezalatt. Üresen az alapértékek maradnak: 8 másodperc újraküldés nélkül, vagy 30 másodperc és két újraküldés a teljes vezérlővel, és 5 másodperc a záráshoz. Egy felhős szelep, például a Gardena, lassan jelez vissza, és minden parancsot beszámít egy kvótába: adj neki hosszabb várakozást és 0 újraküldést. A zárást mindig megpróbálja másodszor is.",
+        "confirm-timeout-help": "Mennyi ideje van a szelepnek jelezni, hogy kinyílt vagy bezárult, és hányszor küldi újra a nyitást ezalatt. Üresen: 30 mp és két újraküldés; zárás 5 mp, mindig kétszer próbálja. Felhős szelepek, például a Gardena: várj tovább, 0 újraküldés, minden parancs beleszámít egy kvótába.",
         "safety-off-topic": "Biztonsági kikapcsolás MQTT-topicja",
         "safety-off-state-key": "Biztonsági kikapcsolás állapotkulcsa",
         "safety-off-mode": "Biztonsági kikapcsolás módja",
@@ -878,7 +878,7 @@
     },
     "history": {
       "title": "Előzmények",
-      "description": "Minden öntözés, amelyet a Smart Irrigation elszámolt egy zónához: mikor kezdődött, meddig tartott és mennyi vizet használt. Az öntözéseket a közvetlen szelepvezérlés és a megfigyelt öntözés rögzíti, és 90 napig őrizzük meg őket.",
+      "description": "Minden öntözés, amelyet a Smart Irrigation elszámolt egy zónához: mikor kezdődött, meddig tartott és mennyi vizet használt. Az öntözéseket rögzítjük, amikor a Smart Irrigation öntöz, és a megfigyelt öntözés is rögzíti őket, és 90 napig őrizzük meg őket.",
       "refresh": "Frissítés",
       "no-data": "Még nincs rögzített öntözés.",
       "table": {
@@ -1009,7 +1009,7 @@
         },
         "nothing-waters": "Az importálás semmit sem öntöz. Az Irrigation Unlimited tovább öntöz, amíg ki nem kapcsolod, és be nem kapcsolod ezeket az ütemezéseket.",
         "blocked": "Előbb oldd meg, ami pirossal van jelölve; addig semmit sem lehet importálni.",
-        "full-controller-off": "A teljes vezérlő ki van kapcsolva: a programok importálódnak, de csak akkor öntöznek, ha bekapcsolod.",
+        "full-controller-off": "A Smart Irrigation nincs „Számol és öntöz” módban: a programok importálódnak, de csak akkor öntöznek, ha ezt választod.",
         "nothing-waters-iu-off": "Az importálás semmit sem öntöz, és az Irrigation Unlimited nem fut: a Home Assistant nem töltötte be (lásd a naplóját). Semmi sem öntöz, amíg be nem kapcsolod ezeket az ütemezéseket."
       },
       "errors": {
@@ -1033,16 +1033,16 @@
         "programs": "{count, plural, one {# program} other {# program}}",
         "next": "Az új programok ütemezései ki vannak kapcsolva, így továbbra is az Irrigation Unlimited öntöz. Ha készen állsz, kapcsold ki az Irrigation Unlimited vezérlőit, és kapcsold be ezeket az ütemezéseket a Programok oldalon.",
         "open-programs": "Programok megnyitása",
-        "next-off": "A teljes vezérlő ki van kapcsolva, így ezek a programok még nem öntöznek, az Irrigation Unlimited pedig tovább öntöz. Kapcsold be a teljes vezérlőt a beállításokban, majd kapcsold ki az Irrigation Unlimitedet, és kapcsold be ezeket az ütemezéseket.",
+        "next-off": "A Smart Irrigation nincs „Számol és öntöz” módban, ezért ezek a programok még nem öntöznek, és az Irrigation Unlimited tovább öntöz. Válaszd a beállításokban a „Számol és öntöz” lehetőséget, majd válts át az oldal tetején.",
         "open-settings": "Beállítások megnyitása",
         "next-iu-off": "Az új programok ütemezései ki vannak kapcsolva, és az Irrigation Unlimited nem fut: most semmi sem öntöz. Nézd át a programokat, majd kapcsold be az ütemezéseiket.",
-        "next-off-iu-off": "A teljes vezérlő ki van kapcsolva, így ezek a programok még nem öntöznek, és az Irrigation Unlimited nem fut: most semmi sem öntöz. Kapcsold be a teljes vezérlőt a beállításokban, majd a programok ütemezéseit."
+        "next-off-iu-off": "A Smart Irrigation nincs „Számol és öntöz” módban, ezért ezek a programok még nem öntöznek, és az Irrigation Unlimited nem fut: egyelőre semmi sem öntöz. Válaszd a beállításokban a „Számol és öntöz” lehetőséget, majd kapcsold be a programok ütemezéseit."
       },
       "conflicts": {
         "zone_twice": "{zone} és {other} is {target} lenne. Válassz másik zónát az egyiküknek.",
         "calculated_needs_zone": "{zone} értékét ma a Smart Irrigation számolja abból a zónából, amelyből egy időigazító automatizálás táplálja. Válaszd azt a zónát vagy egy másik meglévőt.",
-        "program_exists": "Egy „{name}” ({id}) program útban van: egyik importálás sem hozta létre. Előbb nevezd át vagy töröld itt: Öntözés, Programok (bekapcsolt teljes vezérlővel).",
-        "supply_exists": "Egy „{name}” ({id}) szivattyú útban van: egyik importálás sem hozta létre. Előbb nevezd át vagy töröld itt: Öntözés, Szivattyúk és szelepek (bekapcsolt teljes vezérlővel)."
+        "program_exists": "Egy „{name}” ({id}) program útban van: egyik importálás sem hozta létre. Előbb nevezd át vagy töröld itt: Öntözés, Programok (miután a „Számol és öntöz” ki van választva).",
+        "supply_exists": "Egy „{name}” ({id}) szivattyú útban van: egyik importálás sem hozta létre. Előbb nevezd át vagy töröld itt: Öntözés, Szivattyúk és szelepek (miután a „Számol és öntöz” ki van választva)."
       },
       "confirm_remove": "Ez az importálás törli, amit egy korábbi importálás hozott létre, és ami már nincs meg az Irrigation Unlimitedben: {names}. Folytatod?",
       "cutover": {
@@ -1052,7 +1052,7 @@
         "si-waters-now": "A Smart Irrigation öntöz: az áthozott ütemezések be vannak kapcsolva, az Irrigation Unlimited vezérlői pedig ki.",
         "nobody-waters": "Semmi sem öntöz: az Irrigation Unlimited vezérlői ki vannak kapcsolva, és az áthozott ütemezések is.",
         "both-on": "Mindkettő öntözne: az Irrigation Unlimitedben be van kapcsolva egy vezérlő, és áthozott ütemezések is be vannak kapcsolva. Kapcsold ki az Irrigation Unlimitedet vagy az ütemezéseket.",
-        "full-controller-off": "A teljes vezérlő ki van kapcsolva: előbb kapcsold be a beállításokban, különben az áthozott programok nem öntöznek.",
+        "full-controller-off": "A Smart Irrigation nincs „Számol és öntöz” módban: előbb válaszd ezt a beállításokban, különben az importált programok nem öntöznek.",
         "programs": "Az áthozott programok",
         "schedules-on": "{count} ütemezésből {on} bekapcsolva",
         "open-programs": "Nézd meg őket a Programok oldalon, mielőtt átváltasz",
@@ -1071,7 +1071,7 @@
         "confirm-back": "Az áthozott ütemezések kikapcsolnak, az Irrigation Unlimited vezérlői pedig újra bekapcsolnak. Újra az Irrigation Unlimited öntöz.",
         "errors": {
           "generic": "Ez nem sikerült.",
-          "full_controller_off": "Előbb kapcsold be a teljes vezérlőt: nélküle semmi sem öntöz.",
+          "full_controller_off": "Előbb válaszd a „Számol és öntöz” lehetőséget: nélküle semmi sem öntöz.",
           "not_imported": "Még nincs semmi importálva.",
           "iu_failed": "Az Irrigation Unlimited nem fogadta el a váltást. Amit ez a lépés megváltoztatott, vissza lett vonva: fent látod, ki öntöz.",
           "not_switched": "Az öntözés nem került át a Smart Irrigationhöz, így nincs miből visszaváltani.",
@@ -1105,7 +1105,7 @@
         "every_limit": "{every, number} naponta: a Smart Irrigation legfeljebb {max, number} napig megy",
         "every_not_number": "{value} nem napok száma",
         "feeds_other_zone": "egy automatizálás a(z) {from} zónából táplálja, de a(z) {to} zónához van rendelve: a számolt időtartama annak a zónának az időtartama",
-        "full_controller_off": "a teljes vezérlő ki van kapcsolva: a programok importálódnak, de csak akkor öntöznek, ha bekapcsolod",
+        "full_controller_off": "a Smart Irrigation nincs „Számol és öntöz” módban: a programok importálódnak, de csak akkor öntöznek, ha ezt választod",
         "held_to_limit": "{seconds, number} s {limit, number} s-ra korlátozva, ennél többet a Smart Irrigation nem enged",
         "lead_kept": "{time} megmarad: a szivattyú {lead, number} s előfutásával korábbra hozva más napra esne",
         "lead_time": "a(z) „{zone}” zóna felfutási ideje {lead, number} s, amelyet a Smart Irrigation minden fix futáshoz hozzáad: ennyivel tovább öntöz, mint az IU-ban, hacsak a felfutási időt nem állítod 0-ra, vagy nem rövidíted a lépést",
@@ -1118,7 +1118,7 @@
         "off_in_iu_matched": "az IU-ban kikapcsolva, és a(z) „{zone}” zónához rendelve, amely változatlan marad: a programok kihagyják",
         "offset_limit": "{offset, number} perces eltolás: a Smart Irrigation {max, number} percet enged",
         "offset_rounded": "a {seconds, number} s eltolás {minutes, number} percre kerekítve: a Smart Irrigation ott percekben számol",
-        "overlap": "{count} zónának és szekvenciának van ütemezése: ahol a futásaik átfedik egymást, az IU egyszerre öntözi őket, a teljes vezérlő egymás után",
+        "overlap": "{count} zónának és szekvenciának van ütemezése: ahol a futásaik átfedik egymást, az IU egyszerre öntözi őket, a Smart Irrigation egymás után",
         "passes_held": "{repeats, number} ismétlés {max, number} szakaszra korlátozva",
         "period_needs_both": "a(z) {from} és {until} közötti időszakhoz mindkét nap kell: az ütemezés egész évben fut",
         "program_per_duration": "{count} program, ütemezési időtartamonként egy",
@@ -1163,7 +1163,7 @@
     "active_default": "Alapértelmezett: napkeltére kész",
     "active_hint": "Csak a kiválasztott trigger indítja az öntözést, naponta egyszer. Az Alapértelmezett úgy indít, hogy minden zóna napkeltére végezzen; a Nincs esetén a Smart Irrigation semmit sem indít.",
     "usage_before": "Amikor egy trigger aktiválódik, a Smart Irrigation kibocsátja a következő eseményt: ",
-    "usage_after": " — figyelje ezt egy automatizálásban az öntözés indításához. Az esemény adatai tartalmazzák a trigger_name, trigger_type és offset_minutes mezőket, így triggerenként eltérően reagálhat. A csapadékalapú kihagyás és az öntözések közötti napok beállításai továbbra is érvényesek: kihagyott napon nem keletkezik esemény.",
+    "usage_after": ". Figyelje ezt egy automatizálásban az öntözés indításához. Az esemény adatai tartalmazzák a trigger_name, trigger_type és offset_minutes mezőket, így triggerenként eltérően reagálhat. A csapadékalapú kihagyás és az öntözések közötti napok beállításai továbbra is érvényesek: kihagyott napon nem keletkezik esemény.",
     "add_trigger": "Trigger hozzáadása",
     "edit_trigger": "Trigger szerkesztése",
     "delete_trigger": "Trigger törlése",
@@ -1208,7 +1208,7 @@
       "cancel": "Mégse",
       "save": "Mentés",
       "delete": "Törlés",
-      "help": "Amikor ez a trigger aktiválódik, a Smart Irrigation kibocsátja a következő eseményt — használja egy automatizálásban az öntözés indításához. Az esemény adatai tartalmazzák ennek a triggernek a nevét (valamint a típusát/eltolását), így konkrétan reagálhat rá:"
+      "help": "Amikor ez a trigger aktiválódik, a Smart Irrigation kibocsátja a következő eseményt. Használja egy automatizálásban az öntözés indításához. Az esemény adatai tartalmazzák ennek a triggernek a nevét (valamint a típusát/eltolását), így konkrétan reagálhat rá:"
     },
     "offset_auto": "Automatikus (a teljes zónaidőtartamból számítva)",
     "confirm_delete": "Biztosan törli a(z) „{name}” triggert?",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "Alkalmaz",
     "adjust_reset": "Visszaállítás",
     "confirm_reset_adjustment": "Eltávolítod ennek a programnak a módosítását?",
-    "mode_off": "A teljes vezérlő ki van kapcsolva. Kapcsold be a Beállítások, Általános részben.",
+    "mode_off": "Egyik program sem öntöz: a Smart Irrigation nincs „Számol és öntöz” módban. Válaszd ki a Beállítások, Általános részben, a „Mit csinál a Smart Irrigation” alatt.",
     "no_zone": "nincs zóna",
     "mode_calculated_short": "számolt",
     "every_day": "minden nap",
@@ -1508,7 +1508,7 @@
     "title": "Megfigyelt öntözés (zárt hurok)",
     "description": "Töltsd fel minden zóna vízmérlegét automatikusan a valós öntözésből, ahelyett hogy a vízmérleget egy automatizálásból állítanád vissza. Az engedélyezés után válassz egy szelep/kapcsoló entitást zónánként a Zónák lapon: amíg nyitva van, a vízmérleg a működési időből és a zóna átfolyásából töltődik fel. A pontos elszámoláshoz zónánként választhatsz egy kumulatív térfogatmérőt is (vízmérő jellegű összérték), és a mért térfogat lesz felhasználva helyette. Fontos: amikor ez be van kapcsolva, csak ez tölti fel a vízmérleget, ezért távolítsd el a set_bucket és reset_bucket hívásokat az öntözési automatizálásodból a dupla számolás elkerülése érdekében.",
     "enabled_label": "Megfigyelt öntözés engedélyezése",
-    "confirm_full_controller": "Bekapcsolod a teljes vezérlőt? A Smart Irrigation vezérli majd a szelepeket, és maga indítja az öntözést. Az indításkor nyitva talált szelep, amelyet egyik futásunk sem birtokol, bezáródik.",
+    "confirm_full_controller": "Számol és öntöz? A Smart Irrigation ekkor maga nyitja a szelepeket, és a programjaival indítja az öntözést. Az indításkor nyitva talált szelep, amelyet egyik futásunk sem birtokol, bezáródik.",
     "sequencing_label": "Zóna sorrend",
     "sequencing": {
       "sequential": "Szekvenciális (egy zóna egyszerre)",
@@ -1632,7 +1632,7 @@
       "zones": "Zónák (mind, ha üres)",
       "show_next_start": "Következő indítás mutatása",
       "compact": "Csak az öntöző zónák",
-      "show_programs": "A programok megjelenítése (teljes vezérlő)"
+      "show_programs": "A programok megjelenítése"
     },
     "no_valve": "nincs csatolt szelep, nem öntöz",
     "no_trigger": "Nincs indítási kiváltó",

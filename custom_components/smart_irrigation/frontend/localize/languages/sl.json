@@ -499,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "Nič tu ne odpre ventila",
-          "body": "Smart Irrigation izračuna, kako dolgo zalivati; nekaj mora to izvesti. V Nastavitvah vklopi neposredno upravljanje ventilov in nato vsaki coni poveži ventil, ali pa napiši avtomatizacijo na dogodek zagona (blueprinti to naredijo namesto tebe). Če to že počne kakšna avtomatizacija, ni treba ničesar spreminjati.",
+          "body": "Smart Irrigation izračuna, kako dolgo zalivati; nekaj mora po tem ukrepati. Bodisi v Nastavitvah izberi \"Računaj in zalivaj\" in vsaki coni poveži ventil, bodisi napiši avtomatizacijo na dogodek zagona (blueprinti to naredijo namesto tebe). Če to že počne avtomatizacija, ni treba ničesar spreminjati.",
           "action": "Na upravljanje ventilov"
         }
       }
@@ -710,7 +710,7 @@
         "data-number-of-data-points": "Število podatkovnih točk",
         "drainage_rate": "Hitrost drenaže",
         "linked-entity": "Povezan ventil/stikalo",
-        "linked-entity-hint": "Ventil ali stikalo, ki zaliva to cono. Smart Irrigation ga odpre in zapre, ko je vklopljeno neposredno upravljanje ventilov. Ko je vklopljeno opazovano zalivanje, vsak njegov zagon (ročni vklop, avtomatizacija ali Smart Irrigation sam) prišteje vodni bilanci glede na čas delovanja in pretok cone.",
+        "linked-entity-hint": "Ventil ali stikalo, ki zaliva to cono. Z \"Računaj in zalivaj\" ga Smart Irrigation odpira in zapira. Z opazovanim zalivanjem se vsak njegov zagon (ročno, z avtomatizacijo ali s Smart Irrigation) pripiše vodni bilanci glede na čas delovanja in pretok.",
         "valve-off": "Ventil lahko povežete, ko Smart Irrigation zaliva (Računaj in zalivaj) ali je vklopljeno opazovano zalivanje.",
         "valve-off-link": "Vklopi",
         "supply": "Črpalka ali glavni ventil",
@@ -725,7 +725,7 @@
         "observed-ignore-seconds-help": "Tako kratko ali krajše odprtje ventila se ne upošteva: nekaj minut za hlajenje listov v vročem popoldnevu večinoma izhlapi. Daljše zalivanje se šteje v celoti. Prazno: upošteva se vsako zalivanje.",
         "confirm-timeout": "Počakaj na potrditev ventila",
         "open-resends": "Ponovno pošlji odpiranje",
-        "confirm-timeout-help": "Koliko časa ima ventil, da sporoči, da se je odprl ali zaprl, in kolikokrat se v tem času odpiranje pošlje znova. Prazno ohrani privzete vrednosti: 8 sekund brez ponovitve ali 30 sekund in dve ponovitvi s polnim krmilnikom ter 5 sekund za zapiranje. Oblačni ventil, kot je Gardena, potrjuje počasi in vsak ukaz šteje v kvoto: dajte mu daljše čakanje in 0 ponovitev. Zapiranje se vedno poskusi še drugič.",
+        "confirm-timeout-help": "Koliko časa ima ventil, da sporoči, da se je odprl ali zaprl, in kolikokrat se v tem času odpiranje pošlje znova. Prazno: 30 s in dve ponovitvi; zapiranje 5 s, vedno poskušeno dvakrat. Oblačni ventili, kot je Gardena: počakaj dlje, 0 ponovitev, vsak ukaz šteje v kvoto.",
         "safety-off-topic": "Tema MQTT za varnostni izklop",
         "safety-off-state-key": "Ključ stanja za varnostni izklop",
         "safety-off-mode": "Način varnostnega izklopa",
@@ -878,7 +878,7 @@
     },
     "history": {
       "title": "Zgodovina",
-      "description": "Vsako zalivanje, ki ga je Smart Irrigation prištel coni: kdaj se je začelo, kako dolgo je zalivalo in koliko vode je porabilo. Zalivanja beležita neposredno upravljanje ventilov in opazovano zalivanje, hranijo pa se 90 dni.",
+      "description": "Vsako zalivanje, ki ga je Smart Irrigation prištel coni: kdaj se je začelo, kako dolgo je zalivalo in koliko vode je porabilo. Zalivanja se beležijo, ko zaliva Smart Irrigation, in z opazovanim zalivanjem, hranijo pa se 90 dni.",
       "refresh": "Osveži",
       "no-data": "Zabeleženo še ni bilo nobeno zalivanje.",
       "table": {
@@ -1009,7 +1009,7 @@
         },
         "nothing-waters": "Uvoz ničesar ne zaliva. Irrigation Unlimited zaliva naprej, dokler ga ne izklopiš in vklopiš teh urnikov.",
         "blocked": "Najprej razreši, kar je označeno z rdečo; do takrat ni mogoče ničesar uvoziti.",
-        "full-controller-off": "Celoten krmilnik je izklopljen: programi se uvozijo, a zalivajo šele, ko je vklopljen.",
+        "full-controller-off": "Smart Irrigation ni nastavljen na \"Računaj in zalivaj\": programi so uvoženi, a zalivajo šele, ko je to izbrano.",
         "nothing-waters-iu-off": "Uvoz ničesar ne zaliva, Irrigation Unlimited pa ne teče: Home Assistant ga ni naložil (glej njegov dnevnik). Nič ne zaliva, dokler ne vklopiš teh urnikov."
       },
       "errors": {
@@ -1033,16 +1033,16 @@
         "programs": "{count, plural, one {# program} two {# programa} few {# programi} other {# programov}}",
         "next": "Urniki novih programov so izklopljeni, zato še vedno zaliva Irrigation Unlimited. Ko boš pripravljen, izklopi krmilnike Irrigation Unlimited in vklopi te urnike na strani Programi.",
         "open-programs": "Odpri programe",
-        "next-off": "Celoten krmilnik je izklopljen, zato ti programi še ne zalivajo in Irrigation Unlimited zaliva naprej. Vklopi celoten krmilnik v nastavitvah, nato izklopi Irrigation Unlimited in vklopi te urnike.",
+        "next-off": "Smart Irrigation ni nastavljen na \"Računaj in zalivaj\", zato ti programi še ne zalivajo, Irrigation Unlimited pa zaliva naprej. V nastavitvah izberi \"Računaj in zalivaj\", nato preklopi na vrhu te strani.",
         "open-settings": "Odpri nastavitve",
         "next-iu-off": "Urniki novih programov so izklopljeni, Irrigation Unlimited pa ne teče: zaenkrat nič ne zaliva. Preglej programe, nato vklopi njihove urnike.",
-        "next-off-iu-off": "Celoten krmilnik je izklopljen, zato ti programi še ne zalivajo, Irrigation Unlimited pa ne teče: zaenkrat nič ne zaliva. Vklopi celoten krmilnik v nastavitvah, nato urnike programov."
+        "next-off-iu-off": "Smart Irrigation ni nastavljen na \"Računaj in zalivaj\", zato ti programi še ne zalivajo, Irrigation Unlimited pa ne teče: zaenkrat nič ne zaliva. V nastavitvah izberi \"Računaj in zalivaj\", nato vklopi urnike programov."
       },
       "conflicts": {
         "zone_twice": "{zone} in {other} bi obe postali {target}. Za eno od njiju izberi drugo cono.",
         "calculated_needs_zone": "{zone} danes izračunava Smart Irrigation, iz cone, iz katere jo napaja avtomatizacija prilagoditve časa. Izberi to cono ali drugo obstoječo.",
-        "program_exists": "Program \"{name}\" ({id}) je v napoto: ustvaril ga ni noben uvoz. Najprej ga preimenuj ali izbriši v Zalivanje, Programi (z vklopljenim celotnim krmilnikom).",
-        "supply_exists": "Črpalka \"{name}\" ({id}) je v napoto: ustvaril je ni noben uvoz. Najprej jo preimenuj ali izbriši v Zalivanje, Črpalke in ventili (z vklopljenim celotnim krmilnikom)."
+        "program_exists": "Program \"{name}\" ({id}) je v napoto: ustvaril ga ni noben uvoz. Najprej ga preimenuj ali izbriši v Zalivanje, Programi (ko je izbrano \"Računaj in zalivaj\").",
+        "supply_exists": "Črpalka \"{name}\" ({id}) je v napoto: ustvaril je ni noben uvoz. Najprej jo preimenuj ali izbriši v Zalivanje, Črpalke in ventili (ko je izbrano \"Računaj in zalivaj\")."
       },
       "confirm_remove": "Ta uvoz izbriše to, kar je ustvaril prejšnji uvoz in česar Irrigation Unlimited nima več: {names}. Nadaljujem?",
       "cutover": {
@@ -1052,7 +1052,7 @@
         "si-waters-now": "Zaliva Smart Irrigation: uvoženi urniki so vklopljeni, krmilniki Irrigation Unlimited pa izklopljeni.",
         "nobody-waters": "Nič ne zaliva: krmilniki Irrigation Unlimited so izklopljeni, prav tako uvoženi urniki.",
         "both-on": "Zalivala bi oba: Irrigation Unlimited ima vklopljen krmilnik, vklopljeni pa so tudi uvoženi urniki. Izklopi Irrigation Unlimited ali urnike.",
-        "full-controller-off": "Celoten krmilnik je izklopljen: najprej ga vklopi v nastavitvah, sicer uvoženi programi ne zalivajo.",
+        "full-controller-off": "Smart Irrigation ni nastavljen na \"Računaj in zalivaj\": najprej to izberi v nastavitvah, sicer uvoženi programi ne zalivajo.",
         "programs": "Uvoženi programi",
         "schedules-on": "vklopljeni urniki: {on} od {count}",
         "open-programs": "Preden preklopiš, si jih oglej na strani Programi",
@@ -1071,7 +1071,7 @@
         "confirm-back": "Uvoženi urniki se izklopijo, krmilniki Irrigation Unlimited pa znova vklopijo. Znova zaliva Irrigation Unlimited.",
         "errors": {
           "generic": "To ni uspelo.",
-          "full_controller_off": "Najprej vklopi celoten krmilnik: brez njega nič ne zaliva.",
+          "full_controller_off": "Najprej izberi \"Računaj in zalivaj\": brez tega nič ne zaliva.",
           "not_imported": "Uvoženo ni še nič.",
           "iu_failed": "Irrigation Unlimited ni sprejel preklopa. Kar je ta korak spremenil, je razveljavljeno: kdo zaliva, vidiš zgoraj.",
           "not_switched": "Zalivanje ni bilo predano Smart Irrigation, zato se ni od česa vračati.",
@@ -1105,7 +1105,7 @@
         "every_limit": "vsakih {every, number} dni: Smart Irrigation gre do {max, number}",
         "every_not_number": "{value} ni število dni",
         "feeds_other_zone": "avtomatizacija jo napaja iz cone {from}, vendar je povezana s cono {to}: njeno izračunano trajanje je trajanje te cone",
-        "full_controller_off": "celoten krmilnik je izklopljen: programi se uvozijo, a zalivajo šele, ko je vklopljen",
+        "full_controller_off": "Smart Irrigation ni nastavljen na \"Računaj in zalivaj\": programi so uvoženi, a zalivajo šele, ko je to izbrano",
         "held_to_limit": "{seconds, number} s se omeji na {limit, number} s, več Smart Irrigation ne dovoli",
         "lead_kept": "{time} ostane: premik naprej za predhod črpalke {lead, number} s bi spremenil dan",
         "lead_time": "cona \"{zone}\" ima čas zagona {lead, number} s, ki ga Smart Irrigation prišteje vsakemu fiksnemu zalivanju: zaliva toliko dlje kot v IU, razen če se čas zagona nastavi na 0 ali se korak skrajša",
@@ -1118,7 +1118,7 @@
         "off_in_iu_matched": "izklopljeno v IU in povezano s \"{zone}\", ki ostane, kot je: programi jo izpustijo",
         "offset_limit": "zamik {offset, number} min: Smart Irrigation dovoli {max, number}",
         "offset_rounded": "zamik {seconds, number} s se zaokroži na {minutes, number} min: Smart Irrigation tam računa v minutah",
-        "overlap": "cone in zaporedja z urniki: {count}; kjer se njihova zalivanja prekrivajo, jih IU zaliva hkrati, celoten krmilnik drugo za drugim",
+        "overlap": "cone in zaporedja z urniki: {count}; kjer se njihova zalivanja prekrivajo, jih IU zaliva hkrati, Smart Irrigation drugo za drugim",
         "passes_held": "ponovitve: {repeats, number}, omejeno na prehode: {max, number}",
         "period_needs_both": "obdobje od {from} do {until} potrebuje oba dneva: urnik velja vse leto",
         "program_per_duration": "programi: {count}, po eden za vsako trajanje urnika",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "Uporabi",
     "adjust_reset": "Ponastavi",
     "confirm_reset_adjustment": "Odstranim prilagoditev tega programa?",
-    "mode_off": "Celoten krmilnik je izklopljen. Vklopi ga v Nastavitve, Splošno.",
+    "mode_off": "Noben program ne zaliva: Smart Irrigation ni nastavljen na \"Računaj in zalivaj\". Izberi to v Nastavitve, Splošno, pod \"Kaj počne Smart Irrigation\".",
     "no_zone": "brez cone",
     "mode_calculated_short": "izračunano",
     "every_day": "vsak dan",
@@ -1508,7 +1508,7 @@
     "title": "Opazovano zalivanje (zaprta zanka)",
     "description": "Vodno bilanco vsake cone dopolni iz dejanskega zalivanja, namesto da jo ponastavlja avtomatizacija. Na zavihku Cone za vsako cono izberi ventil ali stikalo: dokler je odprt, se prišteje čas delovanja, pomnožen s pretokom, ali prostornina, ki jo je izmeril števec. Iz svojih avtomatizacij odstrani klice set_bucket in reset_bucket, sicer se šteje dvakrat.",
     "enabled_label": "Vklopi opazovano zalivanje",
-    "confirm_full_controller": "Vklopim celoten krmilnik? Smart Irrigation bo upravljal ventile in sam zaganjal zalivanje. Ventil, ki je ob zagonu odprt in ga ne upravlja nobeno naše zalivanje, se zapre.",
+    "confirm_full_controller": "Računaj in zalivaj? Smart Irrigation bo sam odpiral ventile in zaganjal zalivanje s svojimi programi. Ventil, ki je ob zagonu odprt in ga ne upravlja nobeno naše zalivanje, se zapre.",
     "sequencing_label": "Zaporedje con",
     "sequencing": {
       "sequential": "Zaporedno (ena cona naenkrat)",
@@ -1632,7 +1632,7 @@
       "zones": "Cone (vse, če je prazno)",
       "show_next_start": "Prikaži naslednji zagon",
       "compact": "Samo cone, ki bi zalivale",
-      "show_programs": "Prikaži programe (celoten krmilnik)"
+      "show_programs": "Prikaži programe"
     },
     "no_valve": "ni povezanega ventila, se ne zaliva",
     "no_trigger": "Ni sprožilca zagona",

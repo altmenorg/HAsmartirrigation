@@ -312,7 +312,7 @@
     },
     "run_program": {
       "name": "Suorita ohjelma",
-      "description": "Suorita täyden ohjaimen ohjelma nyt, tai heti kun on sen vuoro, jos toinen ohjelma on käynnissä. Ohjelma kastelee vyöhykkeensä Smart Irrigationin laskemilla kestoilla, elleivät sen vaiheet määrää toisin.",
+      "description": "Suorita ohjelma nyt, tai heti kun on sen vuoro, jos toinen ohjelma on käynnissä. Ohjelma kastelee vyöhykkeensä Smart Irrigationin laskemilla kestoilla, elleivät sen vaiheet määrää toisin.",
       "fields": {
         "program_id": {
           "name": "Ohjelma",
@@ -430,7 +430,7 @@
     },
     "adjust_program": {
       "name": "Säädä ohjelmaa",
-      "description": "Saa täyden ohjaimen ohjelma kastelemaan pidempään tai lyhyemmin joksikin aikaa. Säätö korvaa edellisen (säädöt eivät koskaan summaudu), koskee sen asettamisen jälkeen alkavia ajoja ja päättyy annettujen tuntien jälkeen.",
+      "description": "Saa ohjelma kastelemaan pidempään tai lyhyemmin joksikin aikaa. Säätö korvaa edellisen (säädöt eivät koskaan summaudu), koskee sen asettamisen jälkeen alkavia ajoja ja päättyy annettujen tuntien jälkeen.",
       "fields": {
         "program_id": {
           "name": "Ohjelma",

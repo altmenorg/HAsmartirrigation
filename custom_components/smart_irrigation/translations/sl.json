@@ -312,7 +312,7 @@
     },
     "run_program": {
       "name": "Zaženi program",
-      "description": "Zaženi program celotnega krmilnika zdaj ali, če teče drug, takoj ko pride na vrsto. Program zaliva svoje cone s trajanji, ki jih je izračunal Smart Irrigation, razen če njegovi koraki določajo drugače.",
+      "description": "Zaženi program zdaj ali, če teče drug, takoj ko pride na vrsto. Program zaliva svoje cone s trajanji, ki jih je izračunal Smart Irrigation, razen če njegovi koraki določajo drugače.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -430,7 +430,7 @@
     },
     "adjust_program": {
       "name": "Prilagodi program",
-      "description": "Za nekaj časa naj program celotnega krmilnika zaliva dlje ali krajše. Prilagoditev nadomesti prejšnjo (nikoli se ne sešteva), velja za zagone, ki se začnejo po njeni nastavitvi, in se konča po podanih urah.",
+      "description": "Za nekaj časa naj program zaliva dlje ali krajše. Prilagoditev nadomesti prejšnjo (nikoli se ne sešteva), velja za zagone, ki se začnejo po njeni nastavitvi, in se konča po podanih urah.",
       "fields": {
         "program_id": {
           "name": "Program",

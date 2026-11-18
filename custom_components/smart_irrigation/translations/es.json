@@ -312,7 +312,7 @@
     },
     "run_program": {
       "name": "Ejecutar programa",
-      "description": "Ejecutar ahora un programa del controlador completo, o en cuanto le toque si otro se está ejecutando. El programa riega sus zonas con las duraciones que calculó Smart Irrigation, salvo que sus pasos indiquen otra cosa.",
+      "description": "Ejecutar ahora un programa, o en cuanto le toque si otro se está ejecutando. El programa riega sus zonas con las duraciones que calculó Smart Irrigation, salvo que sus pasos indiquen otra cosa.",
       "fields": {
         "program_id": {
           "name": "Programa",
@@ -430,7 +430,7 @@
     },
     "adjust_program": {
       "name": "Ajustar un programa",
-      "description": "Hacer que un programa del controlador completo riegue más o menos tiempo, durante un tiempo. El ajuste reemplaza al anterior (nunca se suma), se aplica a las ejecuciones que empiezan después de fijarlo y termina tras las horas indicadas.",
+      "description": "Hacer que un programa riegue más o menos tiempo, durante un tiempo. El ajuste reemplaza al anterior (nunca se suma), se aplica a las ejecuciones que empiezan después de fijarlo y termina tras las horas indicadas.",
       "fields": {
         "program_id": {
           "name": "Programa",

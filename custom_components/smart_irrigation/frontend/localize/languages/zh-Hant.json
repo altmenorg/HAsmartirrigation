@@ -499,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "這裡沒有任何項目會開啟閥門",
-          "body": "Smart Irrigation 負責計算澆水多久；還需要有東西去執行。你可以在「設定」下開啟直接閥門控制，然後為每個區域連結閥門，或針對啟動事件撰寫自動化（藍圖會為你處理這件事）。如果已有自動化在處理，就不需要變更。",
+          "body": "Smart Irrigation 會計算澆水時長，但需要有東西去執行。請在「設定」中選擇「計算並澆水」並為每個區域連結一個閥門，或針對啟動事件撰寫自動化（藍圖會替你完成）。如果已有自動化在執行，就不需要變更。",
           "action": "前往閥門控制"
         }
       }
@@ -710,7 +710,7 @@
         "data-number-of-data-points": "資料點數量",
         "drainage_rate": "排水率",
         "linked-entity": "連結的閥門／開關",
-        "linked-entity-hint": "為此區域澆水的閥門或開關。使用直接閥門控制時，Smart Irrigation 會開啟與關閉它。使用觀察式澆水時，每次執行（手動、自動化或 Smart Irrigation）都會依運作時間與出水率計入水量平衡。",
+        "linked-entity-hint": "為此區域澆水的閥門或開關。選擇「計算並澆水」時，Smart Irrigation 會開啟與關閉它。啟用觀察式澆水時，它的每次執行（手動、自動化或 Smart Irrigation）都會依執行時間與流量計入水分平衡。",
         "valve-off": "當 Smart Irrigation 負責澆水（計算並澆水）或已開啟觀察澆水時，即可連結閥門。",
         "valve-off-link": "開啟",
         "supply": "水泵或主閥",
@@ -725,7 +725,7 @@
         "observed-ignore-seconds-help": "閥門運轉不超過此時長時不計入水量平衡：炎熱午後為葉片降溫的幾分鐘水大多會蒸發。更長的運轉全部計入。留空：每次運轉都計入。",
         "confirm-timeout": "等待閥門確認",
         "open-resends": "重新送出開啟指令",
-        "confirm-timeout-help": "閥門回報已開啟或已關閉的等待時間，以及這段期間重新送出開啟指令的頻率。留空：8 秒、不重送（完整控制器：30 秒、兩次）；關閉則為 5 秒，一律嘗試兩次。對於 Gardena 等雲端閥門：請等待更久、重送 0 次，因為每個指令都會計入配額。",
+        "confirm-timeout-help": "閥門回報已開啟或已關閉的等待時間，以及這段期間重新送出開啟指令的頻率。留空：30 秒、重送兩次；關閉則為 5 秒，一律嘗試兩次。對於 Gardena 等雲端閥門：請等待更久、重送 0 次，因為每個指令都會計入配額。",
         "safety-off-topic": "安全關閉 MQTT 主題",
         "safety-off-state-key": "安全關閉狀態鍵",
         "safety-off-mode": "安全關閉模式",
@@ -878,7 +878,7 @@
     },
     "history": {
       "title": "歷史記錄",
-      "description": "Smart Irrigation 計入各區域的每一次灑水執行：何時開始、澆了多久，以及用了多少水。執行記錄來自直接閥門控制與觀察式澆水，並保留 90 天。",
+      "description": "Smart Irrigation 計入各區域的每一次灑水執行：何時開始、澆了多久，以及用了多少水。Smart Irrigation 澆水時與觀察式澆水時都會記錄，並保留 90 天。",
       "refresh": "重新整理",
       "no-data": "尚未記錄任何灑水執行。",
       "table": {
@@ -1009,7 +1009,7 @@
         },
         "nothing-waters": "匯入本身不會澆水。在你將其關閉並開啟這些排程之前，Irrigation Unlimited 會持續澆水。",
         "blocked": "請先解決標示為紅色的項目；在此之前無法匯入。",
-        "full-controller-off": "完整控制器已關閉：程式會匯入，但要等到開啟後才會澆水。",
+        "full-controller-off": "Smart Irrigation 未設為「計算並澆水」：程式已匯入，但要選擇它之後才會澆水。",
         "nothing-waters-iu-off": "匯入本身不會澆水，且 Irrigation Unlimited 並未執行：Home Assistant 並未將它設定完成（請查看其記錄）。在你開啟這些排程之前不會澆水。"
       },
       "errors": {
@@ -1033,16 +1033,16 @@
         "programs": "{count, plural, one {# 個程式} other {# 個程式}}",
         "next": "新程式的排程為關閉狀態，因此仍由 Irrigation Unlimited 負責澆水。請查看程式，然後在本頁頂端切換。",
         "open-programs": "開啟程式",
-        "next-off": "完整控制器已關閉，因此這些程式還不會澆水，Irrigation Unlimited 會繼續澆水。請在設定中開啟完整控制器，然後在本頁頂端切換。",
+        "next-off": "Smart Irrigation 未設為「計算並澆水」，因此這些程式尚未澆水，Irrigation Unlimited 會繼續澆水。請在設定中選擇「計算並澆水」，然後在此頁面頂端切換。",
         "open-settings": "開啟設定",
         "next-iu-off": "新程式的排程為關閉狀態，且 Irrigation Unlimited 並未執行：目前不會澆任何水。請查看程式，然後開啟其排程。",
-        "next-off-iu-off": "完整控制器已關閉，因此這些程式還不會澆水，且 Irrigation Unlimited 並未執行：目前不會澆任何水。請在設定中開啟完整控制器，然後開啟程式的排程。"
+        "next-off-iu-off": "Smart Irrigation 未設為「計算並澆水」，因此這些程式尚未澆水，而 Irrigation Unlimited 未在執行：目前不會澆水。請在設定中選擇「計算並澆水」，然後開啟這些程式的排程。"
       },
       "conflicts": {
         "zone_twice": "{zone} 與 {other} 都會變成 {target}。請為其中一個選擇其他區域。",
         "calculated_needs_zone": "{zone} 目前由 Smart Irrigation 計算，資料來自由調整時間的自動化供應資料的那個區域。請選擇該區域或另一個既有區域。",
-        "program_exists": "有一個程式「{name}」（{id}）擋住了：它並非由任何匯入所建立。請先在「澆水」、「程式」中重新命名或刪除它（需開啟完整控制器）。",
-        "supply_exists": "有一個水泵「{name}」（{id}）擋住了：它並非由任何匯入所建立。請先在「澆水」、「水泵與閥門」中重新命名或刪除它（需開啟完整控制器）。"
+        "program_exists": "有一個程式「{name}」（{id}）擋住了：它並非由任何匯入所建立。請先在「澆水」、「程式」中重新命名或刪除它（需選擇「計算並澆水」）。",
+        "supply_exists": "有一個水泵「{name}」（{id}）擋住了：它並非由任何匯入所建立。請先在「澆水」、「水泵與閥門」中重新命名或刪除它（需選擇「計算並澆水」）。"
       },
       "confirm_remove": "此次匯入會刪除先前匯入所建立、但 Irrigation Unlimited 已不再有的項目：{names}。要繼續嗎？",
       "cutover": {
@@ -1052,7 +1052,7 @@
         "si-waters-now": "由 Smart Irrigation 澆水：匯入的排程已開啟，Irrigation Unlimited 的控制器已關閉。",
         "nobody-waters": "沒有任何項目澆水：Irrigation Unlimited 的控制器已關閉，匯入的排程也已關閉。",
         "both-on": "兩者都會澆水：Irrigation Unlimited 有控制器開啟，且匯入的排程也已開啟。請關閉 Irrigation Unlimited 或這些排程。",
-        "full-controller-off": "完整控制器已關閉：請先在設定中開啟，否則匯入的程式不會澆水。",
+        "full-controller-off": "Smart Irrigation 未設為「計算並澆水」：請先在設定中選擇它，否則匯入的程式不會澆水。",
         "programs": "匯入的程式",
         "schedules-on": "{count} 個排程中有 {on} 個已開啟",
         "open-programs": "切換之前，請先在「程式」頁面查看它們",
@@ -1071,7 +1071,7 @@
         "confirm-back": "匯入的排程將被關閉，Irrigation Unlimited 的控制器則重新開啟。由 Irrigation Unlimited 重新負責澆水。",
         "errors": {
           "generic": "操作未成功。",
-          "full_controller_off": "請先開啟完整控制器：沒有它就不會澆水。",
+          "full_controller_off": "請先選擇「計算並澆水」：否則不會澆水。",
           "not_imported": "尚未匯入任何內容。",
           "iu_failed": "Irrigation Unlimited 沒有接受切換。此步驟所做的變更已復原：請看上方確認由誰澆水。",
           "not_switched": "澆水尚未交給 Smart Irrigation，因此沒有可切換回去的內容。",
@@ -1105,7 +1105,7 @@
         "every_limit": "每 {every, number} 天：Smart Irrigation 最多支援到 {max, number}",
         "every_not_number": "{value} 不是天數",
         "feeds_other_zone": "有自動化從區域 {from} 提供資料給它，但它對應的是區域 {to}：其計算出的時間長度為該區域的時間長度",
-        "full_controller_off": "完整控制器已關閉：程式會匯入，但要等到開啟後才會澆水",
+        "full_controller_off": "Smart Irrigation 未設為「計算並澆水」：程式已匯入，但要選擇它之後才會澆水",
         "held_to_limit": "{seconds, number} 秒已限制為 {limit, number} 秒，這是 Smart Irrigation 允許的最大值",
         "lead_kept": "保留 {time}：若依供水裝置的提前時間 {lead, number} 秒往前移，會改變日期",
         "lead_time": "區域「{zone}」的提前時間為 {lead, number} 秒，Smart Irrigation 會將此時間加到每個固定執行上：除非將提前時間設為 0 或縮短步驟，否則它會比在 IU 中多澆這麼久",
@@ -1118,7 +1118,7 @@
         "off_in_iu_matched": "在 IU 中已關閉並對應到「{zone}」，該區域維持原樣：程式會將它排除",
         "offset_limit": "偏移量 {offset, number} 分鐘：Smart Irrigation 允許 {max, number}",
         "offset_rounded": "{seconds, number} 秒的偏移量會四捨五入為 {minutes, number} 分鐘：Smart Irrigation 在此以分鐘為單位運作",
-        "overlap": "{count} 個區域與序列有排程：在它們的執行重疊之處，IU 會同時澆水，完整控制器則會依序澆水",
+        "overlap": "{count} 個區域與序列有排程：在它們的執行重疊之處，IU 會同時澆水，Smart Irrigation 則會依序澆水",
         "passes_held": "{repeats, number} 次重複已限制為 {max, number} 輪",
         "period_needs_both": "{from} 至 {until} 的期間需要兩個日期：排程會全年執行",
         "program_per_duration": "{count} 個程式，每種排程時間長度各一個",
@@ -1163,7 +1163,7 @@
     "active_default": "預設：在日出前完成",
     "active_hint": "只有選取的觸發條件會啟動澆水，每天一次。預設會讓每個區域在日出前完成；選擇「無」時，Smart Irrigation 不會啟動任何澆水。",
     "usage_before": "當觸發條件觸發時，Smart Irrigation 會發出事件 ",
-    "usage_after": " — 請在自動化中回應它以開始澆水。其資料包含 trigger_name、trigger_type 與 offset_minutes，可用來區分不同的觸發條件。在因降雨或灑水間隔天數而略過的日子，不會觸發任何事件。",
+    "usage_after": "。請在自動化中回應它以開始澆水。其資料包含 trigger_name、trigger_type 與 offset_minutes，可用來區分不同的觸發條件。在因降雨或灑水間隔天數而略過的日子，不會觸發任何事件。",
     "add_trigger": "新增觸發條件",
     "edit_trigger": "編輯觸發條件",
     "delete_trigger": "刪除觸發條件",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "套用",
     "adjust_reset": "重設",
     "confirm_reset_adjustment": "要移除此程式的調整嗎？",
-    "mode_off": "完整控制器已關閉。請在「設定」、「一般」中開啟。",
+    "mode_off": "沒有程式在澆水：Smart Irrigation 未設為「計算並澆水」。請在「設定」、「一般」的「Smart Irrigation 做什麼」中選擇它。",
     "no_zone": "沒有區域",
     "mode_calculated_short": "已計算",
     "every_day": "每天",
@@ -1508,7 +1508,7 @@
     "title": "觀察式澆水（閉環）",
     "description": "依實際澆水量計入各區域的水量平衡，而不是由自動化來重設。請在「區域」下為每個區域選擇閥門或開關：閥門開啟期間，會計入運作時間乘以出水率的水量，或水表測得的水量。請從你的自動化中移除 set_bucket 與 reset_bucket 的呼叫，否則會重複計算。",
     "enabled_label": "啟用觀察式澆水",
-    "confirm_full_controller": "要開啟完整控制器嗎？Smart Irrigation 會自行驅動閥門並啟動澆水。啟動時發現已開啟、但不屬於我們任何一次執行的閥門，會被關閉。",
+    "confirm_full_controller": "計算並澆水？Smart Irrigation 會自行開啟閥門，並依其程式啟動澆水。啟動時發現已開啟、但不屬於我們任何一次執行的閥門，會被關閉。",
     "sequencing_label": "區域排序",
     "sequencing": {
       "sequential": "依序（一次一個區域）",
@@ -1632,7 +1632,7 @@
       "zones": "區域（留空則為全部）",
       "show_next_start": "顯示下次啟動",
       "compact": "只顯示會澆水的區域",
-      "show_programs": "顯示程式（完整控制器）"
+      "show_programs": "顯示程式"
     },
     "no_valve": "未連結閥門，不會澆水",
     "no_trigger": "沒有啟動觸發條件",

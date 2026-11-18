@@ -312,7 +312,7 @@
     },
     "run_program": {
       "name": "Programm starten",
-      "description": "Startet ein Programm der vollen Steuerung jetzt, oder sobald es an der Reihe ist, wenn schon ein anderes läuft. Das Programm bewässert seine Zonen mit den Dauern, die Smart Irrigation berechnet hat, sofern seine Schritte nichts anderes vorgeben.",
+      "description": "Startet ein Programm jetzt, oder sobald es an der Reihe ist, wenn schon ein anderes läuft. Das Programm bewässert seine Zonen mit den Dauern, die Smart Irrigation berechnet hat, sofern seine Schritte nichts anderes vorgeben.",
       "fields": {
         "program_id": {
           "name": "Programm",
@@ -436,7 +436,7 @@
     },
     "adjust_program": {
       "name": "Programm anpassen",
-      "description": "Lässt ein Programm der vollen Steuerung eine Zeit lang länger oder kürzer bewässern. Die Anpassung ersetzt die vorige (sie addiert sich nie), gilt für die Läufe, die danach starten, und endet nach den angegebenen Stunden.",
+      "description": "Lässt ein Programm eine Zeit lang länger oder kürzer bewässern. Die Anpassung ersetzt die vorige (sie addiert sich nie), gilt für die Läufe, die danach starten, und endet nach den angegebenen Stunden.",
       "fields": {
         "program_id": {
           "name": "Programm",

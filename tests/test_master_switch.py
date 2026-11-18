@@ -313,23 +313,6 @@ async def test_calculating_only_opens_no_valve_and_runs_no_program(monkeypatch):
     assert hass.calls == []
 
 
-async def test_calculating_only_fires_the_skip_and_not_the_start():
-    coord = SimpleNamespace(
-        store=SimpleNamespace(
-            config=SimpleNamespace(irrigation_enabled=True, watering_enabled=False)
-        ),
-        hass=SimpleNamespace(bus=Mock(), async_create_task=asyncio.ensure_future),
-        _fired_triggers_today=set(),
-        _prepare_watering_for_today=AsyncMock(),
-    )
-
-    TriggersMixin._fire_start_event(coord, {const.TRIGGER_CONF_NAME: "Sunrise"})
-    await _settle()
-
-    [call] = coord.hass.bus.fire.call_args_list
-    assert call.args[1]["reason"] == "calculate_only"
-
-
 async def test_choosing_calculate_only_stops_what_is_watering():
     from unittest.mock import patch
 
@@ -341,3 +324,28 @@ async def test_choosing_calculate_only_stops_what_is_watering():
 
     coordinator.async_stop_watering.assert_awaited_once()
     coordinator._start_windows_now.assert_not_awaited()
+
+
+async def test_the_config_view_ignores_the_old_calculate_only_switch():
+    """watering_enabled: false is no longer stored (the one choice replaced it)."""
+    from custom_components.smart_irrigation.websockets import (
+        SmartIrrigationConfigView,
+    )
+
+    coordinator = SimpleNamespace(async_update_config=AsyncMock())
+    request = SimpleNamespace(
+        app={"hass": SimpleNamespace(data={const.DOMAIN: {"coordinator": coordinator}})}
+    )
+    view = SmartIrrigationConfigView()
+    from unittest.mock import patch
+
+    with patch("custom_components.smart_irrigation.websockets.async_dispatcher_send"):
+        await view.post.__wrapped__(
+            view,
+            request,
+            {const.CONF_WATERING_ENABLED: False, const.CONF_AUTO_CALC_ENABLED: True},
+        )
+
+    coordinator.async_update_config.assert_awaited_once_with(
+        {const.CONF_AUTO_CALC_ENABLED: True}
+    )

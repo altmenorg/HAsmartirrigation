@@ -442,7 +442,9 @@ class WateringControlMixin:
         """
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
-            _LOGGER.warning("Nothing changed: the full controller is off")
+            _LOGGER.warning(
+                "Nothing changed: Smart Irrigation is not set to Calculate and water"
+            )
             return False
         programs = copy.deepcopy(getattr(config, const.CONF_PROGRAMS, None) or [])
         program = find_program(programs, program_id)
@@ -484,7 +486,9 @@ class WateringControlMixin:
         """
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
-            _LOGGER.warning("Nothing changed: the full controller is off")
+            _LOGGER.warning(
+                "Nothing changed: Smart Irrigation is not set to Calculate and water"
+            )
             return False
         programs = copy.deepcopy(getattr(config, const.CONF_PROGRAMS, None) or [])
         program = find_program(programs, program_id)

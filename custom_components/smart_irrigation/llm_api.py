@@ -283,7 +283,8 @@ class GetPlanningTool(_ReadOnlyTool):
     name = "GetPlanning"
     description = (
         "What Smart Irrigation's programs will water over the next days "
-        "(full controller): each run's start and end, its program, the zones "
+        '(with "Calculate and water"): '
+        "each run's start and end, its program, the zones "
         "and seconds of each step, and whether the weather or a suspension is "
         "expected to hold it back."
     )

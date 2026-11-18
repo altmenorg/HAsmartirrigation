@@ -312,7 +312,7 @@
     },
     "run_program": {
       "name": "Kör program",
-      "description": "Startar ett program i läget Fullständig bevattningsstyrning. Om ett annat program körs får programmet vänta på sin tur. Varje zon vattnas under den tid som Smart Irrigation har beräknat, om inte en annan tid anges i programsteget.",
+      "description": "Startar ett program nu. Om ett annat program körs får programmet vänta på sin tur. Varje zon vattnas under den tid som Smart Irrigation har beräknat, om inte en annan tid anges i programsteget.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -430,7 +430,7 @@
     },
     "adjust_program": {
       "name": "Justera ett program",
-      "description": "Förlänger eller förkortar tillfälligt bevattningstiden i ett program i läget Fullständig bevattningsstyrning. Justeringen ersätter en eventuell tidigare justering och gäller körningar som startar därefter. Den upphör efter angivet antal timmar.",
+      "description": "Förlänger eller förkortar tillfälligt bevattningstiden i ett program. Justeringen ersätter en eventuell tidigare justering och gäller körningar som startar därefter. Den upphör efter angivet antal timmar.",
       "fields": {
         "program_id": {
           "name": "Program",

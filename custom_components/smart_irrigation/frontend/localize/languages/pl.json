@@ -198,7 +198,7 @@
         "no-data": "Nie pobrano jeszcze żadnych danych z serwisu pogodowego."
       },
       "title": "Usługa pogodowa",
-      "description": "Przeglądaj i zmieniaj usługę pogodową używaną do pobierania danych pogodowych — bez potrzeby ponownej instalacji integracji. Klucz API jest weryfikowany, a zmiana jest stosowana natychmiast.",
+      "description": "Przeglądaj i zmieniaj usługę pogodową używaną do pobierania danych pogodowych, bez potrzeby ponownej instalacji integracji. Klucz API jest weryfikowany, a zmiana jest stosowana natychmiast.",
       "labels": {
         "use-weather-service": "Użyj usługi pogodowej",
         "service": "Usługa pogodowa",
@@ -212,7 +212,7 @@
         "open-sensor-groups": "Otwórz grupy czujników"
       },
       "messages": {
-        "no-service": "Nie jest używana żadna usługa pogodowa — dane pogodowe pochodzą wyłącznie z Twoich własnych czujników.",
+        "no-service": "Nie jest używana żadna usługa pogodowa: dane pogodowe pochodzą wyłącznie z Twoich własnych czujników.",
         "saved": "Usługa pogodowa zaktualizowana i zastosowana.",
         "reload-note": "Zapisanie weryfikuje klucz API w usłudze i stosuje zmianę natychmiast.",
         "owm-onecall-hint": "OpenWeatherMap wymaga planu One Call API 3.0 (One Call by Call). Jest darmowy do 1000 wywołań na dobę, ale musi zostać aktywowany kartą, a nowy klucz może zacząć działać po paru godzinach. Zwykły klucz domyślny jest odrzucany.",
@@ -243,7 +243,7 @@
       },
       "messages": {
         "exported": "Plik kopii zapasowej pobrany.",
-        "restored": "Konfiguracja przywrócona — ponowne ładowanie integracji.",
+        "restored": "Konfiguracja przywrócona: ponowne ładowanie integracji.",
         "invalid-file": "Ten plik nie jest prawidłową kopią zapasową Smart Irrigation.",
         "confirm-title": "Zastąpić całą konfigurację?",
         "summary": "Ta kopia zapasowa zawiera",
@@ -499,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "Nic tutaj nie otwiera zaworu",
-          "body": "Smart Irrigation obliczy, jak długo podlewać; coś musi na to zareagować. Albo włącz bezpośrednie sterowanie zaworami w Ustawieniach, a potem powiąż zawór z każdą strefą, albo napisz automatyzację na zdarzenie startu (blueprinty robią to za ciebie). Jeśli automatyzacja już to robi, nie ma czego zmieniać.",
+          "body": "Smart Irrigation oblicza, jak długo podlewać; coś musi na tej podstawie działać. Wybierz w Ustawieniach „Obliczaj i podlewaj” i przypisz zawór do każdej strefy albo napisz automatyzację na zdarzenie startu (blueprinty zrobią to za Ciebie). Jeśli automatyzacja już to robi, nie trzeba nic zmieniać.",
           "action": "Do sterowania zaworami"
         }
       }
@@ -710,7 +710,7 @@
         "data-number-of-data-points": "Liczba punktów danych",
         "drainage_rate": "Natężenie drenażu",
         "linked-entity": "Połączony zawór/przełącznik",
-        "linked-entity-hint": "Zawór lub przełącznik nawadniający tę strefę. Za każdym razem, gdy działa (ręczne odkręcenie, automatyzacja lub sam Smart Irrigation, gdy włączone jest bezpośrednie sterowanie zaworem), bilans wodny jest zasilany na podstawie czasu działania i przepływu strefy. Wymagane dla funkcji zamkniętej pętli.",
+        "linked-entity-hint": "Zawór lub przełącznik, który podlewa tę strefę. W trybie „Obliczaj i podlewaj” Smart Irrigation go otwiera i zamyka. Przy obserwowanym podlewaniu każde jego uruchomienie (ręcznie, przez automatyzację lub przez Smart Irrigation) zasila bilans wodny według czasu pracy i przepływu.",
         "valve-off": "Zawór można połączyć, gdy Smart Irrigation podlewa (Obliczaj i podlewaj) lub obserwowane podlewanie jest włączone.",
         "valve-off-link": "Włącz",
         "supply": "Pompa lub zawór główny",
@@ -725,7 +725,7 @@
         "observed-ignore-seconds-help": "Tak krótkie lub krótsze otwarcie zaworu nie jest zaliczane: kilka minut chłodzenia liści w upalne popołudnie w większości odparowuje. Dłuższe podlewanie liczy się w całości. Puste: zaliczane jest każde podlewanie.",
         "confirm-timeout": "Czekaj na potwierdzenie zaworu",
         "open-resends": "Wyślij otwarcie ponownie",
-        "confirm-timeout-help": "Ile czasu zawór ma na zgłoszenie, że się otworzył lub zamknął, i ile razy w tym czasie otwarcie jest wysyłane ponownie. Puste zachowuje wartości domyślne: 8 sekund bez ponowienia albo 30 sekund i dwa ponowienia z pełnym sterownikiem oraz 5 sekund na zamknięcie. Zawór chmurowy, taki jak Gardena, potwierdza powoli i wlicza każde polecenie do limitu: daj mu dłuższe oczekiwanie i 0 ponowień. Zamknięcie jest zawsze ponawiane drugi raz.",
+        "confirm-timeout-help": "Ile czasu zawór ma na zgłoszenie, że się otworzył lub zamknął, i ile razy w tym czasie otwarcie jest wysyłane ponownie. Puste: 30 s i dwa ponowienia; zamknięcie 5 s, zawsze próbowane dwa razy. Zawory chmurowe, np. Gardena: czekaj dłużej, 0 ponowień, każde polecenie liczy się do limitu.",
         "safety-off-topic": "Temat MQTT wyłączenia awaryjnego",
         "safety-off-state-key": "Klucz stanu wyłączenia awaryjnego",
         "safety-off-mode": "Tryb zabezpieczającego wyłączenia",
@@ -878,7 +878,7 @@
     },
     "history": {
       "title": "Historia",
-      "description": "Każde nawadnianie, które Smart Irrigation zaliczył strefie: kiedy się zaczęło, jak długo podlewało i ile wody zużyło. Nawadnianie zapisuje bezpośrednie sterowanie zaworami oraz obserwowane podlewanie, a zapisy są przechowywane 90 dni.",
+      "description": "Każde nawadnianie, które Smart Irrigation zaliczył strefie: kiedy się zaczęło, jak długo podlewało i ile wody zużyło. Nawadnianie jest zapisywane, gdy podlewa Smart Irrigation, oraz przez obserwowane podlewanie, a zapisy są przechowywane 90 dni.",
       "refresh": "Odśwież",
       "no-data": "Nie zapisano jeszcze żadnego nawadniania.",
       "table": {
@@ -1009,7 +1009,7 @@
         },
         "nothing-waters": "Import niczego nie podlewa. Irrigation Unlimited podlewa dalej, dopóki go nie wyłączysz i nie włączysz tych harmonogramów.",
         "blocked": "Najpierw rozwiąż to, co jest zaznaczone na czerwono; do tego czasu nic nie da się zaimportować.",
-        "full-controller-off": "Pełny kontroler jest wyłączony: programy zostaną zaimportowane, ale zaczną podlewać dopiero po jego włączeniu.",
+        "full-controller-off": "Smart Irrigation nie jest ustawiony na „Obliczaj i podlewaj”: programy są importowane, ale podlewają dopiero po tym wyborze.",
         "nothing-waters-iu-off": "Import niczego nie podlewa, a Irrigation Unlimited nie działa: Home Assistant go nie wczytał (zobacz jego dziennik). Nic nie podlewa, dopóki nie włączysz tych harmonogramów."
       },
       "errors": {
@@ -1033,16 +1033,16 @@
         "programs": "{count, plural, one {# program} few {# programy} other {# programów}}",
         "next": "Harmonogramy nowych programów są wyłączone, więc nadal podlewa Irrigation Unlimited. Gdy będziesz gotowy, wyłącz kontrolery Irrigation Unlimited i włącz te harmonogramy na stronie Programy.",
         "open-programs": "Otwórz programy",
-        "next-off": "Pełny kontroler jest wyłączony, więc te programy jeszcze nie podlewają, a Irrigation Unlimited podlewa dalej. Włącz pełny kontroler w ustawieniach, potem wyłącz Irrigation Unlimited i włącz te harmonogramy.",
+        "next-off": "Smart Irrigation nie jest ustawiony na „Obliczaj i podlewaj”, więc te programy jeszcze nie podlewają, a Irrigation Unlimited dalej podlewa. Wybierz „Obliczaj i podlewaj” w ustawieniach, a potem przełącz u góry tej strony.",
         "open-settings": "Otwórz ustawienia",
         "next-iu-off": "Harmonogramy nowych programów są wyłączone, a Irrigation Unlimited nie działa: na razie nic nie podlewa. Przejrzyj programy, a potem włącz ich harmonogramy.",
-        "next-off-iu-off": "Pełny kontroler jest wyłączony, więc te programy jeszcze nie podlewają, a Irrigation Unlimited nie działa: na razie nic nie podlewa. Włącz pełny kontroler w ustawieniach, a potem harmonogramy programów."
+        "next-off-iu-off": "Smart Irrigation nie jest ustawiony na „Obliczaj i podlewaj”, więc te programy jeszcze nie podlewają, a Irrigation Unlimited nie działa: na razie nic nie podlewa. Wybierz „Obliczaj i podlewaj” w ustawieniach, a potem włącz harmonogramy programów."
       },
       "conflicts": {
         "zone_twice": "{zone} i {other} stałyby się obie strefą {target}. Wybierz inną strefę dla jednej z nich.",
         "calculated_needs_zone": "{zone} jest dziś obliczana przez Smart Irrigation na podstawie strefy, z której zasila ją automatyzacja korekty czasu. Wybierz tę strefę lub inną istniejącą.",
-        "program_exists": "Program „{name}” ({id}) przeszkadza: nie utworzył go żaden import. Najpierw zmień jego nazwę lub go usuń, w Podlewanie, Programy (przy włączonym pełnym kontrolerze).",
-        "supply_exists": "Pompa „{name}” ({id}) przeszkadza: nie utworzył jej żaden import. Najpierw zmień jej nazwę lub ją usuń, w Podlewanie, Pompy i zawory (przy włączonym pełnym kontrolerze)."
+        "program_exists": "Program „{name}” ({id}) przeszkadza: nie utworzył go żaden import. Najpierw zmień jego nazwę lub go usuń, w Podlewanie, Programy (po wybraniu „Obliczaj i podlewaj”).",
+        "supply_exists": "Pompa „{name}” ({id}) przeszkadza: nie utworzył jej żaden import. Najpierw zmień jej nazwę lub ją usuń, w Podlewanie, Pompy i zawory (po wybraniu „Obliczaj i podlewaj”)."
       },
       "confirm_remove": "Ten import usuwa to, co utworzył wcześniejszy import, a czego Irrigation Unlimited już nie ma: {names}. Kontynuować?",
       "cutover": {
@@ -1052,7 +1052,7 @@
         "si-waters-now": "Podlewa Smart Irrigation: zaimportowane harmonogramy są włączone, a kontrolery Irrigation Unlimited wyłączone.",
         "nobody-waters": "Nic nie podlewa: kontrolery Irrigation Unlimited są wyłączone, zaimportowane harmonogramy też.",
         "both-on": "Podlewałyby oba: Irrigation Unlimited ma włączony kontroler, a zaimportowane harmonogramy też są włączone. Wyłącz Irrigation Unlimited albo harmonogramy.",
-        "full-controller-off": "Pełny kontroler jest wyłączony: najpierw włącz go w ustawieniach, inaczej zaimportowane programy nie podlewają.",
+        "full-controller-off": "Smart Irrigation nie jest ustawiony na „Obliczaj i podlewaj”: najpierw wybierz to w ustawieniach, inaczej zaimportowane programy nie podlewają.",
         "programs": "Zaimportowane programy",
         "schedules-on": "włączone harmonogramy: {on} z {count}",
         "open-programs": "Obejrzyj je na stronie Programy, zanim się przełączysz",
@@ -1071,7 +1071,7 @@
         "confirm-back": "Zaimportowane harmonogramy zostaną wyłączone, a kontrolery Irrigation Unlimited ponownie włączone. Znowu podlewa Irrigation Unlimited.",
         "errors": {
           "generic": "To się nie udało.",
-          "full_controller_off": "Najpierw włącz pełny kontroler: bez niego nic nie podlewa.",
+          "full_controller_off": "Najpierw wybierz „Obliczaj i podlewaj”: bez tego nic nie podlewa.",
           "not_imported": "Nic jeszcze nie zaimportowano.",
           "iu_failed": "Irrigation Unlimited nie przyjął przełączenia. To, co ten krok zmienił, zostało cofnięte: zobacz wyżej, kto podlewa.",
           "not_switched": "Podlewanie nie zostało przekazane Smart Irrigation, więc nie ma z czego wracać.",
@@ -1105,7 +1105,7 @@
         "every_limit": "co {every, number} dni: Smart Irrigation obsługuje do {max, number}",
         "every_not_number": "{value} nie jest liczbą dni",
         "feeds_other_zone": "automatyzacja zasila ją ze strefy {from}, ale jest przypisana do strefy {to}: jej obliczony czas trwania to czas tej strefy",
-        "full_controller_off": "pełny kontroler jest wyłączony: programy zostaną zaimportowane, ale zaczną podlewać dopiero po jego włączeniu",
+        "full_controller_off": "Smart Irrigation nie jest ustawiony na „Obliczaj i podlewaj”: programy są importowane, ale podlewają dopiero po tym wyborze",
         "held_to_limit": "{seconds, number} s zostaje ograniczone do {limit, number} s, więcej Smart Irrigation nie pozwala",
         "lead_kept": "{time} pozostaje: przesunięcie wcześniej o wyprzedzenie pompy {lead, number} s zmieniłoby dzień",
         "lead_time": "strefa „{zone}” ma czas wyprzedzenia {lead, number} s, który Smart Irrigation dodaje do każdego stałego podlewania: podlewa o tyle dłużej niż w IU, chyba że czas wyprzedzenia zostanie ustawiony na 0 albo krok skrócony",
@@ -1118,7 +1118,7 @@
         "off_in_iu_matched": "wyłączona w IU i przypisana do „{zone}”, która zostaje bez zmian: programy ją pomijają",
         "offset_limit": "przesunięcie o {offset, number} min: Smart Irrigation pozwala na {max, number}",
         "offset_rounded": "przesunięcie o {seconds, number} s zostaje zaokrąglone do {minutes, number} min: Smart Irrigation liczy tam w minutach",
-        "overlap": "strefy i sekwencje z harmonogramami: {count}; gdy ich podlewania się nakładają, IU podlewa je jednocześnie, pełny kontroler jedno po drugim",
+        "overlap": "strefy i sekwencje z harmonogramami: {count}; gdy ich podlewania się nakładają, IU podlewa je jednocześnie, Smart Irrigation jedno po drugim",
         "passes_held": "powtórzenia: {repeats, number}, ograniczone do przejść: {max, number}",
         "period_needs_both": "okres od {from} do {until} wymaga obu dni: harmonogram obowiązuje cały rok",
         "program_per_duration": "programy: {count}, po jednym na każdy czas trwania harmonogramu",
@@ -1163,7 +1163,7 @@
     "active_default": "Domyślny: gotowe do wschodu słońca",
     "active_hint": "Podlewanie uruchamia tylko wybrany wyzwalacz, raz dziennie. Domyślny startuje tak, aby każda strefa skończyła do wschodu słońca; przy Brak Smart Irrigation niczego nie uruchamia.",
     "usage_before": "Gdy wyzwalacz zadziała, Smart Irrigation emituje zdarzenie ",
-    "usage_after": " — nasłuchuj go w automatyzacji, aby rozpocząć podlewanie. Dane zdarzenia zawierają trigger_name, trigger_type i offset_minutes, dzięki czemu możesz reagować inaczej dla każdego wyzwalacza. Ustawienia pomijania z powodu opadów oraz dni między nawadnianiem nadal obowiązują: w dniu pominięcia żadne zdarzenie nie jest emitowane.",
+    "usage_after": ". Nasłuchuj go w automatyzacji, aby rozpocząć podlewanie. Dane zdarzenia zawierają trigger_name, trigger_type i offset_minutes, dzięki czemu możesz reagować inaczej dla każdego wyzwalacza. Ustawienia pomijania z powodu opadów oraz dni między nawadnianiem nadal obowiązują: w dniu pominięcia żadne zdarzenie nie jest emitowane.",
     "add_trigger": "Dodaj wyzwalacz",
     "edit_trigger": "Edytuj wyzwalacz",
     "delete_trigger": "Usuń wyzwalacz",
@@ -1208,7 +1208,7 @@
       "cancel": "Anuluj",
       "save": "Zapisz",
       "delete": "Usuń",
-      "help": "Gdy ten wyzwalacz zadziała, Smart Irrigation emituje następujące zdarzenie — użyj go w automatyzacji, aby rozpocząć podlewanie. Dane zdarzenia zawierają nazwę tego wyzwalacza (oraz typ/przesunięcie), dzięki czemu możesz na nie reagować konkretnie:"
+      "help": "Gdy ten wyzwalacz zadziała, Smart Irrigation emituje następujące zdarzenie. Użyj go w automatyzacji, aby rozpocząć podlewanie. Dane zdarzenia zawierają nazwę tego wyzwalacza (oraz typ/przesunięcie), dzięki czemu możesz na nie reagować konkretnie:"
     },
     "offset_auto": "Auto (obliczone z łącznego czasu trwania stref)",
     "confirm_delete": "Czy na pewno chcesz usunąć wyzwalacz „{name}”?",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "Zastosuj",
     "adjust_reset": "Resetuj",
     "confirm_reset_adjustment": "Usunąć korektę tego programu?",
-    "mode_off": "Pełny kontroler jest wyłączony. Włącz go w Ustawienia, Ogólne.",
+    "mode_off": "Żaden program nie podlewa: Smart Irrigation nie jest ustawiony na „Obliczaj i podlewaj”. Wybierz to w Ustawienia, Ogólne, w „Co robi Smart Irrigation”.",
     "no_zone": "brak strefy",
     "mode_calculated_short": "obliczony",
     "every_day": "codziennie",
@@ -1508,7 +1508,7 @@
     "title": "Obserwowane nawadnianie (zamknięta pętla)",
     "description": "Zasila bilans wodny każdej strefy na podstawie rzeczywistego podlewania, zamiast resetowania go przez automatyzację. Wybierz w zakładce Strefy zawór lub przełącznik dla każdej strefy: gdy jest otwarty, zaliczany jest czas działania razy przepływ albo objętość zmierzona przez licznik. Usuń wywołania set_bucket i reset_bucket ze swoich automatyzacji, inaczej woda zostanie policzona dwa razy.",
     "enabled_label": "Włącz obserwowane nawadnianie",
-    "confirm_full_controller": "Włączyć pełny kontroler? Smart Irrigation będzie sterować zaworami i sam uruchamiać podlewanie. Zawór znaleziony otwarty przy starcie, którego nie posiada żadne nasze uruchomienie, zostaje zamknięty.",
+    "confirm_full_controller": "Obliczać i podlewać? Smart Irrigation będzie sam otwierać zawory i uruchamiać podlewanie swoimi programami. Zawór znaleziony otwarty przy starcie, którego nie posiada żadne nasze uruchomienie, zostaje zamknięty.",
     "sequencing_label": "Sekwencjonowanie stref",
     "sequencing": {
       "sequential": "Sekwencyjnie (jedna strefa naraz)",
@@ -1632,7 +1632,7 @@
       "zones": "Strefy (wszystkie, gdy puste)",
       "show_next_start": "Pokaż następny start",
       "compact": "Tylko strefy, które by podlewały",
-      "show_programs": "Pokaż programy (pełny kontroler)"
+      "show_programs": "Pokaż programy"
     },
     "no_valve": "brak powiązanego zaworu, nie jest podlewana",
     "no_trigger": "Brak wyzwalacza startu",

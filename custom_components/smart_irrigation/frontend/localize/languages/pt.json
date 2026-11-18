@@ -198,7 +198,7 @@
         "no-data": "Ainda não foram obtidos dados do serviço meteorológico."
       },
       "title": "Serviço meteorológico",
-      "description": "Veja e altere o serviço meteorológico utilizado para obter dados meteorológicos — sem necessidade de reinstalar a integração. A chave de API é validada e a alteração é aplicada de imediato.",
+      "description": "Veja e altere o serviço meteorológico utilizado para obter dados meteorológicos, sem necessidade de reinstalar a integração. A chave de API é validada e a alteração é aplicada de imediato.",
       "labels": {
         "use-weather-service": "Utilizar um serviço meteorológico",
         "service": "Serviço meteorológico",
@@ -212,7 +212,7 @@
         "open-sensor-groups": "Abrir os grupos de sensores"
       },
       "messages": {
-        "no-service": "Não é utilizado nenhum serviço meteorológico — os dados meteorológicos provêm apenas dos seus próprios sensores.",
+        "no-service": "Não é utilizado nenhum serviço meteorológico: os dados meteorológicos provêm apenas dos seus próprios sensores.",
         "saved": "Serviço meteorológico atualizado e aplicado.",
         "reload-note": "Ao guardar, a chave de API é validada junto do serviço e a alteração é aplicada de imediato.",
         "owm-onecall-hint": "O OpenWeatherMap precisa do plano One Call API 3.0 (One Call by Call). É gratuito até 1000 chamadas por dia, mas tem de ser ativado com um cartão, e uma chave nova pode levar umas duas horas a funcionar. Uma chave normal por omissão é rejeitada.",
@@ -243,7 +243,7 @@
       },
       "messages": {
         "exported": "Ficheiro de cópia de segurança transferido.",
-        "restored": "Configuração restaurada — a recarregar a integração.",
+        "restored": "Configuração restaurada: a recarregar a integração.",
         "invalid-file": "Este ficheiro não é uma cópia de segurança válida do Smart Irrigation.",
         "confirm-title": "Substituir toda a configuração?",
         "summary": "Esta cópia de segurança contém",
@@ -499,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "Aqui nada abre uma válvula",
-          "body": "O Smart Irrigation calcula quanto tempo regar; algo tem de agir em função disso. Ou ative o controlo direto das válvulas em Definições e depois associe uma válvula a cada zona, ou escreva uma automatização sobre o evento de início (os blueprints fazem isso por si). Se uma automatização já o faz, não há nada a mudar.",
+          "body": "O Smart Irrigation calcula quanto tempo regar; algo tem de agir com base nisso. Escolha \"Calcular e regar\" nas Definições e associe uma válvula a cada zona, ou escreva uma automação no evento de início (os blueprints fazem-no por si). Se uma automação já o faz, não há nada a mudar.",
           "action": "Para o controlo das válvulas"
         }
       }
@@ -710,7 +710,7 @@
         "data-number-of-data-points": "Número de pontos de dados",
         "drainage_rate": "Taxa de drenagem",
         "linked-entity": "Válvula/interruptor associado",
-        "linked-entity-hint": "A válvula ou interruptor que rega esta zona. Sempre que funcionar (uma torneira manual, uma automação ou o próprio Smart Irrigation quando o controlo direto da válvula está ativo), o balanço hídrico é creditado a partir do tempo de funcionamento e do débito da zona. Necessário para as funcionalidades de circuito fechado.",
+        "linked-entity-hint": "A válvula ou o interruptor que rega esta zona. Com \"Calcular e regar\", o Smart Irrigation abre-a e fecha-a. Com a rega observada, cada funcionamento dela (à mão, por uma automação ou pelo Smart Irrigation) credita o balanço hídrico pelo tempo de funcionamento e pelo caudal.",
         "valve-off": "Pode ligar uma válvula assim que o Smart Irrigation rega (Calcular e regar) ou a rega observada está ativa.",
         "valve-off-link": "Ativar",
         "supply": "Bomba ou válvula principal",
@@ -725,7 +725,7 @@
         "observed-ignore-seconds-help": "Uma abertura da válvula tão curta ou mais curta não é creditada: alguns minutos para refrescar as folhas numa tarde quente evaporam quase todos. Uma rega mais longa conta por inteiro. Vazio: todas as regas são creditadas.",
         "confirm-timeout": "Aguardar a confirmação da válvula",
         "open-resends": "Reenviar a abertura",
-        "confirm-timeout-help": "Quanto tempo a válvula tem para indicar que abriu ou fechou, e quantas vezes a abertura é reenviada nesse tempo. Vazio mantém os valores predefinidos: 8 segundos sem reenvio, ou 30 segundos e dois reenvios com o controlador completo, e 5 segundos para um fecho. Uma válvula na nuvem como a Gardena confirma devagar e conta cada comando numa quota: dê-lhe uma espera mais longa e 0 reenvios. Um fecho é sempre tentado uma segunda vez.",
+        "confirm-timeout-help": "Quanto tempo a válvula tem para indicar que abriu ou fechou, e quantas vezes a abertura é reenviada nesse tempo. Vazio: 30 s e dois reenvios; fecho 5 s, sempre tentado duas vezes. Válvulas na nuvem como a Gardena: espere mais, 0 reenvios, cada comando conta numa quota.",
         "safety-off-topic": "Tópico MQTT de desligamento de segurança",
         "safety-off-state-key": "Chave de estado do desligamento de segurança",
         "safety-off-mode": "Modo de desativação de segurança",
@@ -878,7 +878,7 @@
     },
     "history": {
       "title": "Histórico",
-      "description": "Cada ciclo de rega que o Smart Irrigation atribuiu a uma zona: quando começou, quanto tempo regou e quanta água usou. Os ciclos são registados pelo controlo direto das válvulas e pela rega observada, e são guardados durante 90 dias.",
+      "description": "Cada ciclo de rega que o Smart Irrigation atribuiu a uma zona: quando começou, quanto tempo regou e quanta água usou. Os ciclos são registados quando o Smart Irrigation rega e pela rega observada, e são guardados durante 90 dias.",
       "refresh": "Atualizar",
       "no-data": "Ainda não foi registado nenhum ciclo de rega.",
       "table": {
@@ -1009,7 +1009,7 @@
         },
         "nothing-waters": "A importação não rega nada. O Irrigation Unlimited continua a regar até o desligar e ativar estes agendamentos.",
         "blocked": "Resolva primeiro o que está marcado a vermelho; até lá nada pode ser importado.",
-        "full-controller-off": "O controlador completo está desligado: os programas são importados, mas só regam quando estiver ligado.",
+        "full-controller-off": "O Smart Irrigation não está em \"Calcular e regar\": os programas são importados, mas só regam depois dessa escolha.",
         "nothing-waters-iu-off": "A importação não rega nada e o Irrigation Unlimited não está a funcionar: o Home Assistant não o carregou (veja o registo dele). Nada rega até ativar estes agendamentos."
       },
       "errors": {
@@ -1033,16 +1033,16 @@
         "programs": "{count, plural, one {# programa} other {# programas}}",
         "next": "Os agendamentos dos novos programas estão desligados, por isso é ainda o Irrigation Unlimited que rega. Quando estiver pronto, desligue os controladores do Irrigation Unlimited e ative estes agendamentos, na página Programas.",
         "open-programs": "Abrir os programas",
-        "next-off": "O controlador completo está desligado, por isso estes programas ainda não regam e o Irrigation Unlimited continua a regar. Ative o controlador completo nas definições, depois desligue o Irrigation Unlimited e ative estes agendamentos.",
+        "next-off": "O Smart Irrigation não está em \"Calcular e regar\", por isso estes programas ainda não regam, e o Irrigation Unlimited continua a regar. Escolha \"Calcular e regar\" nas definições e depois mude no topo desta página.",
         "open-settings": "Abrir as definições",
         "next-iu-off": "Os agendamentos dos novos programas estão desligados e o Irrigation Unlimited não está a funcionar: nada rega por agora. Reveja os programas e depois ative os agendamentos deles.",
-        "next-off-iu-off": "O controlador completo está desligado, por isso estes programas ainda não regam, e o Irrigation Unlimited não está a funcionar: nada rega por agora. Ative o controlador completo nas definições e depois os agendamentos dos programas."
+        "next-off-iu-off": "O Smart Irrigation não está em \"Calcular e regar\", por isso estes programas ainda não regam, e o Irrigation Unlimited não está em execução: nada rega por agora. Escolha \"Calcular e regar\" nas definições e depois ative os agendamentos dos programas."
       },
       "conflicts": {
         "zone_twice": "{zone} e {other} tornar-se-iam ambas {target}. Escolha outra zona para uma delas.",
         "calculated_needs_zone": "{zone} é hoje calculada pelo Smart Irrigation, a partir da zona com que uma automação de ajuste de tempo a alimenta. Escolha essa zona ou outra existente.",
-        "program_exists": "Um programa \"{name}\" ({id}) está a impedir: nenhuma importação o criou. Mude-lhe o nome ou elimine-o primeiro, em Rega, Programas (com o controlador completo ligado).",
-        "supply_exists": "Uma bomba \"{name}\" ({id}) está a impedir: nenhuma importação a criou. Mude-lhe o nome ou elimine-a primeiro, em Rega, Bombas e válvulas (com o controlador completo ligado)."
+        "program_exists": "Um programa \"{name}\" ({id}) está a impedir: nenhuma importação o criou. Mude-lhe o nome ou elimine-o primeiro, em Rega, Programas (depois de escolher \"Calcular e regar\").",
+        "supply_exists": "Uma bomba \"{name}\" ({id}) está a impedir: nenhuma importação a criou. Mude-lhe o nome ou elimine-a primeiro, em Rega, Bombas e válvulas (depois de escolher \"Calcular e regar\")."
       },
       "confirm_remove": "Esta importação elimina o que uma importação anterior criou e que o Irrigation Unlimited já não tem: {names}. Continuar?",
       "cutover": {
@@ -1052,7 +1052,7 @@
         "si-waters-now": "O Smart Irrigation rega: os agendamentos importados estão ligados e os controladores do Irrigation Unlimited desligados.",
         "nobody-waters": "Nada rega: os controladores do Irrigation Unlimited estão desligados, e os agendamentos importados também.",
         "both-on": "Ambos regariam: o Irrigation Unlimited tem um controlador ligado, e também há agendamentos importados ligados. Desligue o Irrigation Unlimited, ou os agendamentos.",
-        "full-controller-off": "O controlador completo está desligado: ative-o primeiro nas definições, senão os programas importados não regam.",
+        "full-controller-off": "O Smart Irrigation não está em \"Calcular e regar\": escolha esta opção primeiro nas definições, ou os programas importados não regam.",
         "programs": "Os programas importados",
         "schedules-on": "{on} de {count} agendamentos ligados",
         "open-programs": "Veja-os na página Programas antes de fazer a mudança",
@@ -1071,7 +1071,7 @@
         "confirm-back": "Os agendamentos importados são desligados, e os controladores do Irrigation Unlimited voltam a ser ligados. O Irrigation Unlimited volta a regar.",
         "errors": {
           "generic": "Não funcionou.",
-          "full_controller_off": "Ative primeiro o controlador completo: sem ele, nada rega.",
+          "full_controller_off": "Escolha primeiro \"Calcular e regar\": sem isso, nada rega.",
           "not_imported": "Ainda não foi importado nada.",
           "iu_failed": "O Irrigation Unlimited não aceitou a mudança. O que esta etapa tinha alterado foi anulado: veja acima quem rega.",
           "not_switched": "A rega não foi passada para o Smart Irrigation, por isso não há nada de onde voltar.",
@@ -1105,7 +1105,7 @@
         "every_limit": "a cada {every, number} dias: o Smart Irrigation vai até {max, number}",
         "every_not_number": "{value} não é um número de dias",
         "feeds_other_zone": "uma automação alimenta-a a partir da zona {from}, mas está associada à zona {to}: a sua duração calculada é a dessa zona",
-        "full_controller_off": "o controlador completo está desligado: os programas são importados, mas só regam quando estiver ligado",
+        "full_controller_off": "o Smart Irrigation não está em \"Calcular e regar\": os programas são importados, mas só regam depois dessa escolha",
         "held_to_limit": "{seconds, number} s são limitados a {limit, number} s, o máximo que o Smart Irrigation permite",
         "lead_kept": "{time} mantém-se: antecipá-lo os {lead, number} s de antecedência da bomba mudaria o dia",
         "lead_time": "a zona \"{zone}\" tem um tempo de antecedência de {lead, number} s, que o Smart Irrigation soma a cada rega fixa: rega esse tempo a mais do que no IU, a menos que o tempo de antecedência seja posto a 0 ou a etapa encurtada",
@@ -1118,7 +1118,7 @@
         "off_in_iu_matched": "desligada no IU e associada a \"{zone}\", que fica como está: os programas deixam-na de fora",
         "offset_limit": "um desvio de {offset, number} min: o Smart Irrigation permite {max, number}",
         "offset_rounded": "o desvio de {seconds, number} s é arredondado para {minutes, number} min: o Smart Irrigation trabalha aí em minutos",
-        "overlap": "{count} zonas e sequências têm agendamentos: onde as suas regas se sobrepõem, o IU rega-as ao mesmo tempo, o controlador completo uma após a outra",
+        "overlap": "{count} zonas e sequências têm agendamentos: onde as suas regas se sobrepõem, o IU rega-as ao mesmo tempo, o Smart Irrigation uma após a outra",
         "passes_held": "{repeats, number} repetições são limitadas a {max, number} passagens",
         "period_needs_both": "o período de {from} a {until} precisa das duas datas: o agendamento aplica-se o ano todo",
         "program_per_duration": "{count} programas, um por duração de agendamento",
@@ -1163,7 +1163,7 @@
     "active_default": "Predefinido: terminado ao nascer do sol",
     "active_hint": "Só o gatilho escolhido inicia a rega, uma vez por dia. Predefinido começa de modo a que todas as zonas terminem ao nascer do sol; com Nenhum, o Smart Irrigation não inicia nada.",
     "usage_before": "Quando um acionador dispara, o Smart Irrigation emite o evento ",
-    "usage_after": " — escute-o numa automação para começar a regar. Os dados do evento incluem trigger_name, trigger_type e offset_minutes, para que possa reagir de forma diferente a cada acionador. As definições de salto por precipitação e de dias entre irrigações continuam a aplicar-se: num dia de salto não é emitido nenhum evento.",
+    "usage_after": ". Escute-o numa automação para começar a regar. Os dados do evento incluem trigger_name, trigger_type e offset_minutes, para que possa reagir de forma diferente a cada acionador. As definições de salto por precipitação e de dias entre irrigações continuam a aplicar-se: num dia de salto não é emitido nenhum evento.",
     "add_trigger": "Adicionar acionador",
     "edit_trigger": "Editar acionador",
     "delete_trigger": "Eliminar acionador",
@@ -1208,7 +1208,7 @@
       "cancel": "Cancelar",
       "save": "Guardar",
       "delete": "Eliminar",
-      "help": "Quando este acionador dispara, o Smart Irrigation emite o evento seguinte — utilize-o numa automação para começar a regar. Os dados do evento incluem o nome deste acionador (e o tipo/desvio), para que possa reagir-lhe especificamente:"
+      "help": "Quando este acionador dispara, o Smart Irrigation emite o evento seguinte. Utilize-o numa automação para começar a regar. Os dados do evento incluem o nome deste acionador (e o tipo/desvio), para que possa reagir-lhe especificamente:"
     },
     "offset_auto": "Automático (calculado a partir da duração total das zonas)",
     "confirm_delete": "Tem a certeza de que pretende eliminar o acionador '{name}'?",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "Aplicar",
     "adjust_reset": "Repor",
     "confirm_reset_adjustment": "Remover o ajuste deste programa?",
-    "mode_off": "O controlador completo está desligado. Ative-o em Definições, Geral.",
+    "mode_off": "Nenhum programa rega: o Smart Irrigation não está em \"Calcular e regar\". Escolha esta opção em Definições, Geral, em \"O que o Smart Irrigation faz\".",
     "no_zone": "nenhuma zona",
     "mode_calculated_short": "calculada",
     "every_day": "todos os dias",
@@ -1508,7 +1508,7 @@
     "title": "Rega observada (circuito fechado)",
     "description": "Credita o balanço hídrico de cada zona a partir da rega real, em vez de uma automatização o repor. Escolha uma válvula ou interruptor por zona em Zonas: enquanto estiver aberto, é creditado o tempo de funcionamento multiplicado pelo débito, ou o volume que um contador mediu. Remova as chamadas set_bucket e reset_bucket das suas automatizações, senão a água é contada duas vezes.",
     "enabled_label": "Ativar rega observada",
-    "confirm_full_controller": "Ativar o controlador completo? O Smart Irrigation vai comandar as válvulas e iniciar a rega sozinho. Uma válvula encontrada aberta no arranque que nenhuma execução nossa controle é fechada.",
+    "confirm_full_controller": "Calcular e regar? O Smart Irrigation vai abrir as válvulas e iniciar a rega sozinho, com os seus programas. Uma válvula encontrada aberta no arranque que nenhuma execução nossa controle é fechada.",
     "sequencing_label": "Sequenciamento de zonas",
     "sequencing": {
       "sequential": "Sequencial (uma zona de cada vez)",
@@ -1632,7 +1632,7 @@
       "zones": "Zonas (todas se vazio)",
       "show_next_start": "Mostrar o próximo início",
       "compact": "Apenas as zonas que regariam",
-      "show_programs": "Mostrar os programas (controlador completo)"
+      "show_programs": "Mostrar os programas"
     },
     "no_valve": "sem válvula associada, não é regada",
     "no_trigger": "Nenhum acionador de início",

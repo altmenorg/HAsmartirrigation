@@ -312,7 +312,7 @@
     },
     "run_program": {
       "name": "Kør program",
-      "description": "Kør et program i den fulde styring nu, eller så snart det er dets tur, når et andet kører. Programmet vander sine zoner med de varigheder, Smart Irrigation har beregnet, medmindre dets trin siger noget andet.",
+      "description": "Kør et program nu, eller så snart det er dets tur, når et andet kører. Programmet vander sine zoner med de varigheder, Smart Irrigation har beregnet, medmindre dets trin siger noget andet.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -430,7 +430,7 @@
     },
     "adjust_program": {
       "name": "Justér et program",
-      "description": "Få et program i den fulde styring til at vande længere eller kortere i et stykke tid. Justeringen erstatter den forrige (den lægges aldrig sammen), gælder for de kørsler, der starter efter den er sat, og slutter efter de angivne timer.",
+      "description": "Få et program til at vande længere eller kortere i et stykke tid. Justeringen erstatter den forrige (den lægges aldrig sammen), gælder for de kørsler, der starter efter den er sat, og slutter efter de angivne timer.",
       "fields": {
         "program_id": {
           "name": "Program",

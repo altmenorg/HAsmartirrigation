@@ -198,7 +198,7 @@
         "no-data": "还没有从天气服务获取到数据。"
       },
       "title": "天气服务",
-      "description": "查看并更改用于获取天气数据的天气服务——无需重新安装集成。API 密钥将被验证，更改会立即生效。",
+      "description": "查看并更改用于获取天气数据的天气服务，无需重新安装集成。API 密钥将被验证，更改会立即生效。",
       "labels": {
         "use-weather-service": "使用天气服务",
         "service": "天气服务",
@@ -212,7 +212,7 @@
         "open-sensor-groups": "打开传感器组"
       },
       "messages": {
-        "no-service": "未使用任何天气服务——天气数据仅来自您自己的传感器。",
+        "no-service": "未使用任何天气服务：天气数据仅来自您自己的传感器。",
         "saved": "天气服务已更新并应用。",
         "reload-note": "保存时会针对该服务验证 API 密钥并立即应用更改。",
         "owm-onecall-hint": "OpenWeatherMap 需要 One Call API 3.0 套餐（One Call by Call）。每天 1000 次调用以内免费，但必须绑卡激活，而且新密钥可能要过一两个小时才能生效。普通的默认密钥会被拒绝。",
@@ -243,7 +243,7 @@
       },
       "messages": {
         "exported": "备份文件已下载。",
-        "restored": "配置已恢复——正在重新加载集成。",
+        "restored": "配置已恢复：正在重新加载集成。",
         "invalid-file": "此文件不是有效的 Smart Irrigation 备份。",
         "confirm-title": "替换整个配置？",
         "summary": "此备份包含",
@@ -499,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "这里没有任何东西会打开阀门",
-          "body": "Smart Irrigation 计算要浇多久；需要有东西照此行动。要么在“设置”下打开直接阀门控制，然后为每个区域关联一个阀门，要么针对启动事件写一个自动化（蓝图会替你做好）。如果已经有自动化在做这件事，就无需改动。",
+          "body": "Smart Irrigation 计算浇水时长，但需要有东西去执行。要么在设置中选择“计算并浇水”，并为每个区域关联一个阀门；要么针对启动事件编写自动化（蓝图会替你完成）。如果已有自动化在执行，就无需更改。",
           "action": "前往阀门控制"
         }
       }
@@ -710,7 +710,7 @@
         "data-number-of-data-points": "数据点数量",
         "drainage_rate": "排水速率",
         "linked-entity": "关联的阀门/开关",
-        "linked-entity-hint": "为该区域浇水的阀门或开关。每当它运行时（手动开启、自动化，或在启用直接阀门控制时由 Smart Irrigation 自身运行），都会根据运行时间和该区域的流量为水量平衡计入水量。闭环功能需要此项。",
+        "linked-entity-hint": "为此区域浇水的阀门或开关。选择“计算并浇水”时，Smart Irrigation 会打开和关闭它。启用观测浇水时，它的每次运行（手动、自动化或 Smart Irrigation）都会按运行时间和流量计入水分平衡。",
         "valve-off": "当 Smart Irrigation 负责浇水（计算并浇水）或已开启观察浇水时，即可关联阀门。",
         "valve-off-link": "开启",
         "supply": "水泵或总阀",
@@ -725,7 +725,7 @@
         "observed-ignore-seconds-help": "阀门运行不超过此时长时不计入水量平衡：炎热午后为叶片降温的几分钟水大多会蒸发。更长的运行全部计入。留空：每次运行都计入。",
         "confirm-timeout": "等待阀门确认",
         "open-resends": "重新发送开启命令",
-        "confirm-timeout-help": "阀门报告已开启或已关闭的等待时间，以及在此期间重新发送开启命令的次数。留空则使用默认值：8 秒且不重发，或使用完整控制器时 30 秒并重发两次，关闭为 5 秒。Gardena 等云端阀门确认较慢，且每条命令都计入配额：请设置更长的等待时间和 0 次重发。关闭总会再尝试一次。",
+        "confirm-timeout-help": "阀门报告已开启或已关闭的等待时间，以及在此期间重新发送开启命令的次数。留空：30 秒并重发两次；关闭为 5 秒，总是尝试两次。Gardena 等云端阀门：等待更久、0 次重发，每条命令都计入配额。",
         "safety-off-topic": "安全关闭 MQTT 主题",
         "safety-off-state-key": "安全关闭状态键",
         "safety-off-mode": "安全关闭模式",
@@ -878,7 +878,7 @@
     },
     "history": {
       "title": "历史",
-      "description": "Smart Irrigation 记到某个区域名下的每次浇水：何时开始、浇了多久、用了多少水。浇水由直接阀门控制和观测浇水记录，保留 90 天。",
+      "description": "Smart Irrigation 记到某个区域名下的每次浇水：何时开始、浇了多久、用了多少水。Smart Irrigation 浇水时以及观测浇水时都会记录，保留 90 天。",
       "refresh": "刷新",
       "no-data": "还没有记录任何浇水。",
       "table": {
@@ -1009,7 +1009,7 @@
         },
         "nothing-waters": "导入不会浇水。Irrigation Unlimited 会继续浇水，直到你关闭它并打开这些时间表。",
         "blocked": "请先解决标为红色的问题；在此之前无法导入。",
-        "full-controller-off": "完整控制器已关闭：程序会被导入，但只有在它打开后才会浇水。",
+        "full-controller-off": "Smart Irrigation 未设为“计算并浇水”：程序已导入，但只有选择它之后才会浇水。",
         "nothing-waters-iu-off": "导入不会浇水，而且 Irrigation Unlimited 没有运行：Home Assistant 没有加载它（请查看其日志）。在你打开这些时间表之前，什么都不会浇水。"
       },
       "errors": {
@@ -1033,16 +1033,16 @@
         "programs": "{count, plural, other {# 个程序}}",
         "next": "新程序的时间表处于关闭状态，所以仍由 Irrigation Unlimited 浇水。准备好后，请关闭 Irrigation Unlimited 的控制器，并在“程序”页面打开这些时间表。",
         "open-programs": "打开程序",
-        "next-off": "完整控制器已关闭，所以这些程序还不会浇水，Irrigation Unlimited 会继续浇水。请在设置中打开完整控制器，然后关闭 Irrigation Unlimited 并打开这些时间表。",
+        "next-off": "Smart Irrigation 未设为“计算并浇水”，因此这些程序尚未浇水，Irrigation Unlimited 会继续浇水。请在设置中选择“计算并浇水”，然后在此页面顶部切换。",
         "open-settings": "打开设置",
         "next-iu-off": "新程序的时间表已关闭，而且 Irrigation Unlimited 没有运行：目前什么都不会浇水。请检查这些程序，然后打开它们的时间表。",
-        "next-off-iu-off": "完整控制器已关闭，所以这些程序还不会浇水，而且 Irrigation Unlimited 没有运行：目前什么都不会浇水。请在设置中打开完整控制器，然后打开程序的时间表。"
+        "next-off-iu-off": "Smart Irrigation 未设为“计算并浇水”，因此这些程序尚未浇水，而 Irrigation Unlimited 未在运行：目前什么都不会浇水。请在设置中选择“计算并浇水”，然后打开这些程序的时间表。"
       },
       "conflicts": {
         "zone_twice": "{zone} 和 {other} 都会变为 {target}。请为其中一个选择另一个区域。",
         "calculated_needs_zone": "{zone} 目前由 Smart Irrigation 计算，数据来自某个时长调整自动化为其提供数据的区域。请选择该区域或另一个现有区域。",
-        "program_exists": "程序“{name}”（{id}）冲突：它不是由任何导入创建的。请先在浇水、程序中重命名或删除它（需打开完整控制器）。",
-        "supply_exists": "水泵“{name}”（{id}）冲突：它不是由任何导入创建的。请先在浇水、水泵和阀门中重命名或删除它（需打开完整控制器）。"
+        "program_exists": "程序“{name}”（{id}）冲突：它不是由任何导入创建的。请先在浇水、程序中重命名或删除它（需选择“计算并浇水”）。",
+        "supply_exists": "水泵“{name}”（{id}）冲突：它不是由任何导入创建的。请先在浇水、水泵和阀门中重命名或删除它（需选择“计算并浇水”）。"
       },
       "confirm_remove": "此导入会删除之前的导入创建、而 Irrigation Unlimited 中已不存在的内容：{names}。继续吗？",
       "cutover": {
@@ -1052,7 +1052,7 @@
         "si-waters-now": "由 Smart Irrigation 浇水：导入的时间表已打开，Irrigation Unlimited 的控制器已关闭。",
         "nobody-waters": "没有任何浇水：Irrigation Unlimited 的控制器已关闭，导入的时间表也已关闭。",
         "both-on": "两者都会浇水：Irrigation Unlimited 有一个控制器处于打开状态，导入的时间表也已打开。请关闭 Irrigation Unlimited，或关闭这些时间表。",
-        "full-controller-off": "完整控制器已关闭：请先在设置中打开它，否则导入的程序不会浇水。",
+        "full-controller-off": "Smart Irrigation 未设为“计算并浇水”：请先在设置中选择它，否则导入的程序不会浇水。",
         "programs": "导入的程序",
         "schedules-on": "已打开 {on}/{count} 个时间表",
         "open-programs": "切换前，请先在“程序”页面查看它们",
@@ -1071,7 +1071,7 @@
         "confirm-back": "导入的时间表将被关闭，Irrigation Unlimited 的控制器将重新打开。Irrigation Unlimited 会再次浇水。",
         "errors": {
           "generic": "操作未成功。",
-          "full_controller_off": "请先打开完整控制器：没有它，什么都不会浇水。",
+          "full_controller_off": "请先选择“计算并浇水”：否则什么都不会浇水。",
           "not_imported": "尚未导入任何内容。",
           "iu_failed": "Irrigation Unlimited 未接受切换。此步骤已做的更改已撤销：请在上方查看由谁浇水。",
           "not_switched": "浇水尚未交给 Smart Irrigation，因此没有可切回的内容。",
@@ -1105,7 +1105,7 @@
         "every_limit": "每 {every, number} 天：Smart Irrigation 最多支持 {max, number}",
         "every_not_number": "{value} 不是天数",
         "feeds_other_zone": "有自动化从区域 {from} 为其提供数据，但它被匹配到区域 {to}：其计算时长取自该区域",
-        "full_controller_off": "完整控制器已关闭：程序会被导入，但只有在它打开后才会浇水",
+        "full_controller_off": "Smart Irrigation 未设为“计算并浇水”：程序已导入，但只有选择它之后才会浇水",
         "held_to_limit": "{seconds, number} 秒被限制为 {limit, number} 秒，这是 Smart Irrigation 允许的上限",
         "lead_kept": "{time} 保持不变：按水泵的 {lead, number} 秒提前时间往前移会跨到另一天",
         "lead_time": "区域“{zone}”的提前时间为 {lead, number} 秒，Smart Irrigation 会把它加到每次固定运行上：除非把提前时间设为 0 或缩短该步骤，否则它会比在 IU 中多浇这么久",
@@ -1118,7 +1118,7 @@
         "off_in_iu_matched": "在 IU 中已关闭，并匹配到“{zone}”，该区域保持原样：程序会跳过它",
         "offset_limit": "偏移 {offset, number} 分钟：Smart Irrigation 允许 {max, number}",
         "offset_rounded": "{seconds, number} 秒的偏移被取整为 {minutes, number} 分钟：Smart Irrigation 在此处以分钟计",
-        "overlap": "{count} 个区域和序列有时间表：运行重叠时，IU 会同时浇水，完整控制器则依次浇水",
+        "overlap": "{count} 个区域和序列有时间表：运行重叠时，IU 会同时浇水，Smart Irrigation 则依次浇水",
         "passes_held": "{repeats, number} 次重复被限制为 {max, number} 段",
         "period_needs_both": "{from} 至 {until} 的时段需要两个日期：该时间表全年运行",
         "program_per_duration": "{count} 个程序，每种时间表时长一个",
@@ -1163,7 +1163,7 @@
     "active_default": "默认：日出前完成",
     "active_hint": "只有选中的触发器会启动浇水，每天一次。“默认”会让每个区域都在日出前浇完；选择“无”时，Smart Irrigation 不启动任何浇水。",
     "usage_before": "当触发器触发时，Smart Irrigation 会发出事件 ",
-    "usage_after": " ——在自动化中监听该事件以开始浇水。事件数据包含 trigger_name、trigger_type 和 offset_minutes，因此您可以针对每个触发器做出不同的响应。降水跳过和灌溉间隔天数设置仍然适用：在跳过日不会发出任何事件。",
+    "usage_after": "。在自动化中监听该事件以开始浇水。事件数据包含 trigger_name、trigger_type 和 offset_minutes，因此您可以针对每个触发器做出不同的响应。降水跳过和灌溉间隔天数设置仍然适用：在跳过日不会发出任何事件。",
     "add_trigger": "添加触发器",
     "edit_trigger": "编辑触发器",
     "delete_trigger": "删除触发器",
@@ -1208,7 +1208,7 @@
       "cancel": "取消",
       "save": "保存",
       "delete": "删除",
-      "help": "当此触发器触发时，Smart Irrigation 会发出以下事件——在自动化中使用它来开始浇水。事件数据包含此触发器的名称（以及类型/偏移量），因此您可以专门对其做出响应："
+      "help": "当此触发器触发时，Smart Irrigation 会发出以下事件。在自动化中使用它来开始浇水。事件数据包含此触发器的名称（以及类型/偏移量），因此您可以专门对其做出响应："
     },
     "offset_auto": "自动（根据区域总持续时间计算）",
     "confirm_delete": "确定要删除触发器“{name}”吗？",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "应用",
     "adjust_reset": "重置",
     "confirm_reset_adjustment": "移除此程序的调整吗？",
-    "mode_off": "完整控制器已关闭。请在设置、常规中打开它。",
+    "mode_off": "没有程序在浇水：Smart Irrigation 未设为“计算并浇水”。请在设置、常规的“Smart Irrigation 做什么”中选择它。",
     "no_zone": "无区域",
     "mode_calculated_short": "已计算",
     "every_day": "每天",
@@ -1508,7 +1508,7 @@
     "title": "实测浇水（闭环）",
     "description": "根据实际灌溉自动为各区域的水量平衡计入水量，而非通过自动化重置水量平衡。启用后，请在“区域”选项卡中为每个区域选择一个阀门/开关实体：当其开启时，会根据运行时间和该区域的流量为水量平衡计入水量。若需精确核算，也可为每个区域选择一个累计水量计（类似水表的累计总量），届时将改用实测水量。重要提示：启用此功能后，它将成为唯一为水量平衡计水的来源，因此请从你的灌溉自动化中移除所有 set_bucket 和 reset_bucket 调用，以免重复计量。",
     "enabled_label": "启用实测浇水",
-    "confirm_full_controller": "要开启完整控制器吗？Smart Irrigation 将控制阀门并自行启动浇水。启动时发现处于打开状态、且不属于我们任何一次运行的阀门会被关闭。",
+    "confirm_full_controller": "计算并浇水？Smart Irrigation 将自行打开阀门，并按其程序启动浇水。启动时发现处于打开状态、且不属于我们任何一次运行的阀门会被关闭。",
     "sequencing_label": "区域排序",
     "sequencing": {
       "sequential": "顺序（一次一个区域）",
@@ -1632,7 +1632,7 @@
       "zones": "区域（留空则为全部）",
       "show_next_start": "显示下次启动",
       "compact": "仅显示需要浇水的区域",
-      "show_programs": "显示程序（完整控制器）"
+      "show_programs": "显示程序"
     },
     "no_valve": "未关联阀门，不浇水",
     "no_trigger": "没有启动触发器",

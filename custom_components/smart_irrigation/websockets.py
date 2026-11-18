@@ -174,6 +174,15 @@ class SmartIrrigationConfigView(HomeAssistantView):
         _LOGGER.debug("[websocket]: request: %s %s", request, data)
         hass = request.app["hass"]
         coordinator = hass.data[const.DOMAIN]["coordinator"]
+        if data.get(const.CONF_WATERING_ENABLED) is False:
+            # The old "calculate only" switch (deprecated, gone in 2027.11):
+            # what Smart Irrigation does is the one choice now, so a client
+            # still sending it off must not leave a state no choice describes.
+            data = {k: v for k, v in data.items() if k != const.CONF_WATERING_ENABLED}
+            _LOGGER.warning(
+                "Ignored watering_enabled: false, which is no longer used; "
+                "choose what Smart Irrigation does in Settings, General"
+            )
         try:
             await coordinator.async_update_config(data)
         except ProgramsRefused as err:

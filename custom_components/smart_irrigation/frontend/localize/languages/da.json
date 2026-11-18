@@ -198,7 +198,7 @@
         "no-data": "Der er endnu ikke hentet data fra vejrtjenesten."
       },
       "title": "Vejrtjeneste",
-      "description": "Se og skift den vejrtjeneste, der bruges til at hente vejrdata — uden at skulle geninstallere integrationen. API-nøglen valideres, og ændringen anvendes med det samme.",
+      "description": "Se og skift den vejrtjeneste, der bruges til at hente vejrdata, uden at skulle geninstallere integrationen. API-nøglen valideres, og ændringen anvendes med det samme.",
       "labels": {
         "use-weather-service": "Brug en vejrtjeneste",
         "service": "Vejrtjeneste",
@@ -212,7 +212,7 @@
         "open-sensor-groups": "Åbn sensorgrupper"
       },
       "messages": {
-        "no-service": "Ingen vejrtjeneste bruges — vejrdata kommer udelukkende fra dine egne sensorer.",
+        "no-service": "Ingen vejrtjeneste bruges: vejrdata kommer udelukkende fra dine egne sensorer.",
         "saved": "Vejrtjeneste opdateret og anvendt.",
         "reload-note": "Når du gemmer, valideres API-nøglen mod tjenesten, og ændringen anvendes med det samme.",
         "owm-onecall-hint": "OpenWeatherMap kræver abonnementet One Call API 3.0 (One Call by Call). Det er gratis op til 1000 kald om dagen, men skal aktiveres med et kort, og en ny nøgle kan være et par timer om at virke. En almindelig standardnøgle bliver afvist.",
@@ -243,7 +243,7 @@
       },
       "messages": {
         "exported": "Sikkerhedskopifil downloadet.",
-        "restored": "Konfiguration gendannet — genindlæser integrationen.",
+        "restored": "Konfiguration gendannet: genindlæser integrationen.",
         "invalid-file": "Denne fil er ikke en gyldig Smart Irrigation-sikkerhedskopi.",
         "confirm-title": "Erstat hele konfigurationen?",
         "summary": "Denne sikkerhedskopi indeholder",
@@ -499,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "Der er intet her der åbner en ventil",
-          "body": "Smart Irrigation beregner hvor længe der skal vandes; noget skal handle på det. Enten slår du direkte ventilstyring til under Indstillinger og knytter derefter en ventil til hver zone, eller du skriver en automatisering på start-hændelsen (blueprints gør det for dig). Hvis en automatisering allerede gør det, er der intet at ændre.",
+          "body": "Smart Irrigation beregner, hvor længe der skal vandes; noget skal handle på det. Vælg enten \"Beregn og vand\" under Indstillinger og knyt en ventil til hver zone, eller skriv en automatisering på startbegivenheden (blueprints gør det for dig). Hvis en automatisering allerede gør det, er der intet at ændre.",
           "action": "Til ventilstyring"
         }
       }
@@ -710,7 +710,7 @@
         "data-number-of-data-points": "Antal datapunkter",
         "drainage_rate": "Drænhastighed",
         "linked-entity": "Tilknyttet ventil/kontakt",
-        "linked-entity-hint": "Ventilen eller kontakten, der vander denne zone. Hver gang den kører (en manuel hane, en automatisering eller Smart Irrigation selv, når direkte ventilstyring er slået til), krediteres vandbalancen ud fra køretiden og zonens gennemstrømning. Påkrævet for funktionerne med lukket sløjfe.",
+        "linked-entity-hint": "Ventilen eller kontakten, der vander denne zone. Med \"Beregn og vand\" åbner og lukker Smart Irrigation den. Med observeret vanding krediterer hver kørsel af den (manuelt, via en automatisering eller af Smart Irrigation) vandbalancen ud fra køretid og gennemstrømning.",
         "valve-off": "En ventil kan tilknyttes, når Smart Irrigation vander (Beregn og vand), eller observeret vanding er slået til.",
         "valve-off-link": "Slå til",
         "supply": "Pumpe eller hovedventil",
@@ -725,7 +725,7 @@
         "observed-ignore-seconds-help": "En så kort eller kortere åbning af ventilen krediteres ikke: et par minutter til at køle bladene en varm eftermiddag fordamper for det meste. En længere vanding tæller fuldt ud. Tom: hver vanding krediteres.",
         "confirm-timeout": "Vent på at ventilen bekræfter",
         "open-resends": "Send åbning igen",
-        "confirm-timeout-help": "Hvor længe ventilen har til at melde, at den åbnede eller lukkede, og hvor mange gange åbningen sendes igen i den tid. Tom beholder standardværdierne: 8 sekunder uden gentagelse, eller 30 sekunder og to gentagelser med den fulde controller, og 5 sekunder for en lukning. En cloud-ventil som Gardena bekræfter langsomt og tæller hver kommando mod en kvote: giv den længere ventetid og 0 gentagelser. En lukning forsøges altid en anden gang.",
+        "confirm-timeout-help": "Hvor længe ventilen har til at melde, at den åbnede eller lukkede, og hvor mange gange åbningen sendes igen i den tid. Tom: 30 s og to gentagelser; lukning 5 s, altid forsøgt to gange. Cloud-ventiler som Gardena: vent længere, 0 gentagelser, hver kommando tæller mod en kvote.",
         "safety-off-topic": "MQTT-emne for sikkerhedsluk",
         "safety-off-state-key": "Tilstandsnøgle for sikkerhedsluk",
         "safety-off-mode": "Sikkerhedsafbrydelse",
@@ -878,7 +878,7 @@
     },
     "history": {
       "title": "Historik",
-      "description": "Hver vanding Smart Irrigation har tilskrevet en zone: hvornår den begyndte, hvor længe der blev vandet, og hvor meget vand det tog. Vandinger registreres af direkte ventilstyring og af observeret vanding, og gemmes i 90 dage.",
+      "description": "Hver vanding Smart Irrigation har tilskrevet en zone: hvornår den begyndte, hvor længe der blev vandet, og hvor meget vand det tog. Vandinger registreres, når Smart Irrigation vander, og af observeret vanding, og gemmes i 90 dage.",
       "refresh": "Opdater",
       "no-data": "Der er endnu ikke registreret nogen vandinger.",
       "table": {
@@ -1009,7 +1009,7 @@
         },
         "nothing-waters": "Importen vander ikke noget. Irrigation Unlimited bliver ved med at vande, indtil du slår den fra og disse tidsplaner til.",
         "blocked": "Løs først det, der er markeret med rødt; indtil da kan intet importeres.",
-        "full-controller-off": "Den fulde styring er slået fra: programmerne importeres, men vander først, når den er slået til.",
+        "full-controller-off": "Smart Irrigation er ikke sat til \"Beregn og vand\": programmerne importeres, men vander først, når det er valgt.",
         "nothing-waters-iu-off": "Importen vander ikke noget, og Irrigation Unlimited kører ikke: Home Assistant indlæste den ikke (se dens log). Intet vandes, før du slår disse tidsplaner til."
       },
       "errors": {
@@ -1033,16 +1033,16 @@
         "programs": "{count, plural, one {# program} other {# programmer}}",
         "next": "Tidsplanerne for nye programmer er slået fra, så det er stadig Irrigation Unlimited, der vander. Når du er klar, så slå Irrigation Unlimiteds controllere fra og disse tidsplaner til på siden Programmer.",
         "open-programs": "Åbn programmerne",
-        "next-off": "Den fulde styring er slået fra, så disse programmer vander ikke endnu, og Irrigation Unlimited bliver ved med at vande. Slå den fulde styring til i indstillingerne, og slå derefter Irrigation Unlimited fra og disse tidsplaner til.",
+        "next-off": "Smart Irrigation er ikke sat til \"Beregn og vand\", så disse programmer vander ikke endnu, og Irrigation Unlimited bliver ved med at vande. Vælg \"Beregn og vand\" i indstillingerne, og skift så over øverst på denne side.",
         "open-settings": "Åbn indstillingerne",
         "next-iu-off": "De nye programmers tidsplaner er slået fra, og Irrigation Unlimited kører ikke: intet vandes lige nu. Gennemse programmerne, og slå derefter deres tidsplaner til.",
-        "next-off-iu-off": "Den fulde styring er slået fra, så disse programmer vander ikke endnu, og Irrigation Unlimited kører ikke: intet vandes lige nu. Slå den fulde styring til i indstillingerne, derefter programmernes tidsplaner."
+        "next-off-iu-off": "Smart Irrigation er ikke sat til \"Beregn og vand\", så disse programmer vander ikke endnu, og Irrigation Unlimited kører ikke: intet vander lige nu. Vælg \"Beregn og vand\" i indstillingerne, og slå så programmernes tidsplaner til."
       },
       "conflicts": {
         "zone_twice": "{zone} og {other} ville begge blive til {target}. Vælg en anden zone til en af dem.",
         "calculated_needs_zone": "{zone} beregnes i dag af Smart Irrigation, ud fra den zone, en automatisering til tidsjustering forsyner den fra. Vælg den zone eller en anden eksisterende.",
-        "program_exists": "Et program \"{name}\" ({id}) står i vejen: ingen import har lavet det. Omdøb eller slet det først under Vanding, Programmer (med den fulde styring slået til).",
-        "supply_exists": "En pumpe \"{name}\" ({id}) står i vejen: ingen import har lavet den. Omdøb eller slet den først under Vanding, Pumper og ventiler (med den fulde styring slået til)."
+        "program_exists": "Et program \"{name}\" ({id}) står i vejen: ingen import har lavet det. Omdøb eller slet det først under Vanding, Programmer (når \"Beregn og vand\" er valgt).",
+        "supply_exists": "En pumpe \"{name}\" ({id}) står i vejen: ingen import har lavet den. Omdøb eller slet den først under Vanding, Pumper og ventiler (når \"Beregn og vand\" er valgt)."
       },
       "confirm_remove": "Denne import sletter det, en tidligere import lavede, og som Irrigation Unlimited ikke længere har: {names}. Fortsæt?",
       "cutover": {
@@ -1052,7 +1052,7 @@
         "si-waters-now": "Smart Irrigation vander: importerede tidsplaner er slået til, og Irrigation Unlimiteds controllere er slået fra.",
         "nobody-waters": "Intet vander: Irrigation Unlimiteds controllere er slået fra, og det er de importerede tidsplaner også.",
         "both-on": "Begge ville vande: Irrigation Unlimited har en controller slået til, og importerede tidsplaner er også slået til. Slå Irrigation Unlimited fra, eller tidsplanerne.",
-        "full-controller-off": "Den fulde styring er slået fra: slå den først til i indstillingerne, ellers vander de importerede programmer ikke.",
+        "full-controller-off": "Smart Irrigation er ikke sat til \"Beregn og vand\": vælg det først i indstillingerne, ellers vander de importerede programmer ikke.",
         "programs": "De importerede programmer",
         "schedules-on": "{on} af {count} tidsplaner slået til",
         "open-programs": "Se dem på siden Programmer, før du skifter over",
@@ -1071,7 +1071,7 @@
         "confirm-back": "De importerede tidsplaner slås fra, og Irrigation Unlimiteds controllere slås til igen. Irrigation Unlimited vander igen.",
         "errors": {
           "generic": "Det lykkedes ikke.",
-          "full_controller_off": "Slå først den fulde styring til: uden den vander intet.",
+          "full_controller_off": "Vælg først \"Beregn og vand\": uden det vander intet.",
           "not_imported": "Der er ikke importeret noget endnu.",
           "iu_failed": "Irrigation Unlimited tog ikke imod skiftet. Det, dette trin havde ændret, er rullet tilbage: se ovenfor, hvem der vander.",
           "not_switched": "Vandingen er ikke overdraget til Smart Irrigation, så der er intet at gå tilbage fra.",
@@ -1105,7 +1105,7 @@
         "every_limit": "hver {every, number}. dag: Smart Irrigation går op til {max, number}",
         "every_not_number": "{value} er ikke et antal dage",
         "feeds_other_zone": "en automatisering forsyner den fra zone {from}, men den er knyttet til zone {to}: dens beregnede varighed er den zones",
-        "full_controller_off": "den fulde styring er slået fra: programmerne importeres, men vander først, når den er slået til",
+        "full_controller_off": "Smart Irrigation er ikke sat til \"Beregn og vand\": programmerne importeres, men vander først, når det er valgt",
         "held_to_limit": "{seconds, number} s holdes på {limit, number} s, det mest Smart Irrigation tillader",
         "lead_kept": "{time} beholdes: at flytte det {lead, number} s tidligere for pumpens forløb ville skifte dag",
         "lead_time": "zonen \"{zone}\" har en opstartstid på {lead, number} s, som Smart Irrigation lægger til hver fast kørsel: den vander så meget længere end i IU, medmindre opstartstiden sættes til 0 eller trinnet afkortes",
@@ -1118,7 +1118,7 @@
         "off_in_iu_matched": "slået fra i IU og knyttet til \"{zone}\", som forbliver som den er: programmerne udelader den",
         "offset_limit": "en forskydning på {offset, number} min: Smart Irrigation tillader {max, number}",
         "offset_rounded": "forskydningen på {seconds, number} s afrundes til {minutes, number} min: Smart Irrigation regner i minutter der",
-        "overlap": "{count} zoner og sekvenser har tidsplaner: hvor deres kørsler overlapper, vander IU dem samtidig, den fulde styring efter hinanden",
+        "overlap": "{count} zoner og sekvenser har tidsplaner: hvor deres kørsler overlapper, vander IU dem samtidig, Smart Irrigation efter hinanden",
         "passes_held": "{repeats, number} gentagelser begrænses til {max, number} omgange",
         "period_needs_both": "perioden {from} til {until} kræver begge dage: tidsplanen gælder hele året",
         "program_per_duration": "{count} programmer, ét pr. tidsplanvarighed",
@@ -1163,7 +1163,7 @@
     "active_default": "Standard: færdig ved solopgang",
     "active_hint": "Kun den valgte udløser starter vandingen, én gang om dagen. Standard starter, så hver zone er færdig ved solopgang; med Ingen starter Smart Irrigation intet.",
     "usage_before": "Når en udløser aktiveres, udsender Smart Irrigation begivenheden ",
-    "usage_after": " — lyt efter den i en automatisering for at starte vanding. Begivenhedsdataene indeholder trigger_name, trigger_type og offset_minutes, så du kan reagere forskelligt pr. udløser. Indstillingerne for nedbørsspring og dage-mellem-vanding gælder stadig: på en springdag udsendes ingen begivenhed.",
+    "usage_after": ". Lyt efter den i en automatisering for at starte vanding. Begivenhedsdataene indeholder trigger_name, trigger_type og offset_minutes, så du kan reagere forskelligt pr. udløser. Indstillingerne for nedbørsspring og dage-mellem-vanding gælder stadig: på en springdag udsendes ingen begivenhed.",
     "add_trigger": "Tilføj udløser",
     "edit_trigger": "Redigér udløser",
     "delete_trigger": "Slet udløser",
@@ -1208,7 +1208,7 @@
       "cancel": "Annullér",
       "save": "Gem",
       "delete": "Slet",
-      "help": "Når denne udløser aktiveres, udsender Smart Irrigation følgende begivenhed — brug den i en automatisering for at starte vanding. Begivenhedsdataene indeholder denne udløsers navn (samt type/offset), så du kan reagere specifikt på den:"
+      "help": "Når denne udløser aktiveres, udsender Smart Irrigation følgende begivenhed. Brug den i en automatisering for at starte vanding. Begivenhedsdataene indeholder denne udløsers navn (samt type/offset), så du kan reagere specifikt på den:"
     },
     "offset_auto": "Auto (beregnet ud fra samlet zonevarighed)",
     "confirm_delete": "Er du sikker på, at du vil slette udløseren '{name}'?",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "Anvend",
     "adjust_reset": "Nulstil",
     "confirm_reset_adjustment": "Fjerne dette programs justering?",
-    "mode_off": "Den fulde styring er slået fra. Slå den til under Indstillinger, Generelt.",
+    "mode_off": "Intet program vander: Smart Irrigation er ikke sat til \"Beregn og vand\". Vælg det under Indstillinger, Generelt, i \"Hvad Smart Irrigation gør\".",
     "no_zone": "ingen zone",
     "mode_calculated_short": "beregnet",
     "every_day": "hver dag",
@@ -1508,7 +1508,7 @@
     "title": "Observeret vanding (lukket sløjfe)",
     "description": "Krediterer hver zones vandbalance ud fra reel vanding i stedet for at en automatisering nulstiller den. Vælg en ventil eller kontakt pr. zone under Zoner: mens den er åben, krediteres køretid gange gennemstrømning, eller den mængde en måler har målt. Fjern kald til set_bucket og reset_bucket fra dine automatiseringer, ellers tælles vandet dobbelt.",
     "enabled_label": "Aktivér observeret vanding",
-    "confirm_full_controller": "Slå fuld styring til? Smart Irrigation styrer så ventilerne og starter selv vandingen. En ventil, der findes åben ved opstart, og som ingen af vores kørsler ejer, lukkes.",
+    "confirm_full_controller": "Beregn og vand? Smart Irrigation åbner så selv ventilerne og starter vandingen med sine programmer. En ventil, der findes åben ved opstart, og som ingen af vores kørsler ejer, lukkes.",
     "sequencing_label": "Zonesekvensering",
     "sequencing": {
       "sequential": "Sekventiel (én zone ad gangen)",
@@ -1632,7 +1632,7 @@
       "zones": "Zoner (alle hvis tom)",
       "show_next_start": "Vis næste start",
       "compact": "Kun zoner, der ville vande",
-      "show_programs": "Vis programmerne (fuld styring)"
+      "show_programs": "Vis programmerne"
     },
     "no_valve": "ingen ventil tilknyttet, vandes ikke",
     "no_trigger": "Ingen startudløser",

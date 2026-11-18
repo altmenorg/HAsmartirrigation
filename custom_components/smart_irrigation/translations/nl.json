@@ -312,7 +312,7 @@
     },
     "run_program": {
       "name": "Programma starten",
-      "description": "Start nu een programma van de volledige controller, of zodra het aan de beurt is als er al een ander loopt. Het programma bewatert zijn zones met de duur die Smart Irrigation heeft berekend, tenzij zijn stappen iets anders zeggen.",
+      "description": "Start nu een programma, of zodra het aan de beurt is als er al een ander loopt. Het programma bewatert zijn zones met de duur die Smart Irrigation heeft berekend, tenzij zijn stappen iets anders zeggen.",
       "fields": {
         "program_id": {
           "name": "Programma",
@@ -430,7 +430,7 @@
     },
     "adjust_program": {
       "name": "Een programma bijstellen",
-      "description": "Laat een programma van de volledige controller een tijdlang langer of korter bewateren. De bijstelling vervangt de vorige (ze telt nooit op), geldt voor de runs die starten nadat ze is ingesteld, en eindigt na het opgegeven aantal uren.",
+      "description": "Laat een programma een tijdlang langer of korter bewateren. De bijstelling vervangt de vorige (ze telt nooit op), geldt voor de runs die starten nadat ze is ingesteld, en eindigt na het opgegeven aantal uren.",
       "fields": {
         "program_id": {
           "name": "Programma",

@@ -212,7 +212,7 @@
         "open-sensor-groups": "Öppna sensorgrupper"
       },
       "messages": {
-        "no-service": "Ingen vädertjänst används — väderdata kommer enbart från dina egna sensorer.",
+        "no-service": "Ingen vädertjänst används: väderdata kommer enbart från dina egna sensorer.",
         "saved": "Den nya inställningen för vädertjänsten gäller nu.",
         "reload-note": "När du sparar valideras API-nyckeln mot tjänsten och ändringen tillämpas omedelbart.",
         "owm-onecall-hint": "För OpenWeatherMap behöver du abonnemanget One Call API 3.0 (One Call by Call). Upp till 1 000 anrop per dag är gratis, men du måste registrera ett betalkort för att aktivera abonnemanget. Det kan ta ett par timmar innan en ny nyckel fungerar. En vanlig standardnyckel godtas inte.",
@@ -243,7 +243,7 @@
       },
       "messages": {
         "exported": "Säkerhetskopian nedladdad.",
-        "restored": "Konfigurationen återställd — laddar om integrationen.",
+        "restored": "Konfigurationen återställd: laddar om integrationen.",
         "invalid-file": "Den här filen är inte en giltig Smart Irrigation-säkerhetskopia.",
         "confirm-title": "Vill du ersätta hela konfigurationen?",
         "summary": "Den här säkerhetskopian innehåller",
@@ -499,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "Ingen ventilstyrning är inställd",
-          "body": "Smart Irrigation beräknar bevattningstiden. För att bevattningen ska starta kan du aktivera direkt ventilstyrning under Inställningar och sedan koppla en ventil till varje zon. Du kan också skapa en automation som reagerar på starthändelsen. Det finns färdiga automationsmallar för detta. Om du redan har en sådan automation behöver du inte ändra något.",
+          "body": "Smart Irrigation beräknar hur länge det ska vattnas, men något måste utföra bevattningen. Välj antingen ”Beräkna och vattna” under Inställningar och koppla en ventil till varje zon, eller skapa en automation som reagerar på starthändelsen (blueprintarna gör det åt dig). Om en automation redan gör det behöver du inte ändra något.",
           "action": "Till ventilstyrning"
         }
       }
@@ -710,7 +710,7 @@
         "data-number-of-data-points": "Antal datapunkter",
         "drainage_rate": "Dräneringshastighet",
         "linked-entity": "Länkad ventil/brytare",
-        "linked-entity-hint": "Ventilen eller brytaren som styr bevattningen i zonen. När direkt ventilstyrning är aktiverad öppnar och stänger Smart Irrigation ventilen. Om observerad bevattning är aktiverad räknas varje bevattning in i vattenbalansen utifrån bevattningstiden och zonens flöde, oavsett om du startar den manuellt, via en automation eller med Smart Irrigation.",
+        "linked-entity-hint": "Ventilen eller brytaren som vattnar den här zonen. Med ”Beräkna och vattna” öppnar och stänger Smart Irrigation den. Med observerad bevattning räknas varje körning (manuell, via en automation eller av Smart Irrigation) in i vattenbalansen utifrån körtid och flöde.",
         "valve-off": "En ventil kan kopplas när Smart Irrigation vattnar (Beräkna och vattna) eller observerad bevattning är på.",
         "valve-off-link": "Aktivera",
         "supply": "Pump eller huvudventil",
@@ -725,7 +725,7 @@
         "observed-ignore-seconds-help": "En så kort eller kortare öppning av ventilen krediteras inte: några minuter för att svalka bladen en varm eftermiddag avdunstar mestadels. En längre bevattning räknas fullt ut. Tomt: varje bevattning krediteras.",
         "confirm-timeout": "Väntetid för ventilens bekräftelse",
         "open-resends": "Antal nya öppningsförsök",
-        "confirm-timeout-help": "Ange hur länge systemet ska vänta på att ventilen bekräftar öppning eller stängning och hur många gånger öppningskommandot får skickas igen under tiden. Lämna fälten tomma för att använda standardvärdena. Vid öppning är väntetiden 8 sekunder utan omsändning, eller 30 sekunder med två omsändningar om den fullständiga bevattningsstyrningen används. Vid stängning är väntetiden 5 sekunder. En molnansluten ventil, till exempel från Gardena, kan svara långsamt och varje kommando räknas mot en kvot. Välj då längre väntetid och 0 omsändningar. Vid utebliven bekräftelse görs alltid ett andra stängningsförsök.",
+        "confirm-timeout-help": "Ange hur länge systemet ska vänta på att ventilen bekräftar öppning eller stängning och hur många gånger öppningskommandot får skickas igen under tiden. Lämna fälten tomma för att använda standardvärdena: 30 sekunder med två omsändningar vid öppning och 5 sekunder vid stängning. En molnansluten ventil, till exempel från Gardena, kan svara långsamt och varje kommando räknas mot en kvot. Välj då längre väntetid och 0 omsändningar. Vid utebliven bekräftelse görs alltid ett andra stängningsförsök.",
         "safety-off-topic": "MQTT-topic för säkerhetsavstängning",
         "safety-off-state-key": "Tillståndsnyckel för säkerhetsavstängning",
         "safety-off-mode": "Läge för säkerhetsavstängning",
@@ -878,7 +878,7 @@
     },
     "history": {
       "title": "Historik",
-      "description": "Här visas varje bevattning som Smart Irrigation har registrerat för en zon, med starttid, bevattningstid och vattenförbrukning. Bevattning registreras både vid direkt ventilstyrning och vid observerad bevattning. Historiken sparas i 90 dagar.",
+      "description": "Här visas varje bevattning som Smart Irrigation har registrerat för en zon, med starttid, bevattningstid och vattenförbrukning. Bevattning registreras både när Smart Irrigation vattnar och vid observerad bevattning. Historiken sparas i 90 dagar.",
       "refresh": "Uppdatera",
       "no-data": "Inga vattningar har registrerats än.",
       "table": {
@@ -1009,7 +1009,7 @@
         },
         "nothing-waters": "Irrigation Unlimited fortsätter att sköta bevattningen efter importen tills du inaktiverar det och aktiverar de importerade schemana.",
         "blocked": "Lös först det som är rödmarkerat; tills dess kan inget importeras.",
-        "full-controller-off": "Den fullständiga bevattningsstyrningen är av: programmen importeras, men vattnar först när den är på.",
+        "full-controller-off": "Smart Irrigation är inte inställt på ”Beräkna och vattna”. Programmen importeras, men vattnar först när det alternativet är valt.",
         "nothing-waters-iu-off": "Importen sköter ingen bevattning, och Irrigation Unlimited körs inte: Home Assistant laddade det inte (se dess logg). Inget bevattnas förrän du aktiverar de här schemana."
       },
       "errors": {
@@ -1033,16 +1033,16 @@
         "programs": "{count, plural, one {# program} other {# program}}",
         "next": "De nya programmens scheman är inaktiverade, så Irrigation Unlimited sköter fortfarande bevattningen. Granska programmen och byt sedan till Smart Irrigation längst upp på den här sidan.",
         "open-programs": "Öppna programmen",
-        "next-off": "Den fullständiga bevattningsstyrningen är avstängd, så Irrigation Unlimited sköter fortfarande bevattningen. Aktivera den fullständiga bevattningsstyrningen i inställningarna och byt sedan till Smart Irrigation längst upp på den här sidan.",
+        "next-off": "Smart Irrigation är inte inställt på ”Beräkna och vattna”, så de här programmen vattnar inte ännu och Irrigation Unlimited fortsätter att vattna. Välj ”Beräkna och vattna” i inställningarna och byt sedan längst upp på den här sidan.",
         "open-settings": "Öppna inställningarna",
         "next-iu-off": "De nya programmens scheman är avstängda, och Irrigation Unlimited körs inte: inget bevattnas just nu. Gå igenom programmen och aktivera sedan deras scheman.",
-        "next-off-iu-off": "Den fullständiga bevattningsstyrningen är avstängd, så programmen bevattnar inte än, och Irrigation Unlimited körs inte: inget bevattnas just nu. Aktivera den fullständiga bevattningsstyrningen i inställningarna, sedan programmens scheman."
+        "next-off-iu-off": "Smart Irrigation är inte inställt på ”Beräkna och vattna”, så de här programmen vattnar inte ännu, och Irrigation Unlimited körs inte. Just nu vattnas ingenting. Välj ”Beräkna och vattna” i inställningarna och aktivera sedan programmens scheman."
       },
       "conflicts": {
         "zone_twice": "{zone} och {other} skulle båda bli {target}. Välj en annan zon för en av dem.",
         "calculated_needs_zone": "En automation hämtar redan bevattningstiden för {zone} från en zon i Smart Irrigation. Välj den zonen eller en annan befintlig zon.",
-        "program_exists": "Programmet ”{name}” ({id}) finns redan och skapades utanför importen. Byt namn på det eller ta bort det under Bevattning → Program när den fullständiga bevattningsstyrningen är aktiverad.",
-        "supply_exists": "Pumpen ”{name}” ({id}) finns redan och skapades utanför importen. Byt namn på den eller ta bort den under Bevattning → Pumpar och ventiler när den fullständiga bevattningsstyrningen är aktiverad."
+        "program_exists": "Programmet ”{name}” ({id}) finns redan och skapades utanför importen. Byt namn på det eller ta bort det under Bevattning → Program när ”Beräkna och vattna” är valt.",
+        "supply_exists": "Pumpen ”{name}” ({id}) finns redan och skapades utanför importen. Byt namn på den eller ta bort den under Bevattning → Pumpar och ventiler när ”Beräkna och vattna” är valt."
       },
       "confirm_remove": "Den här importen tar bort det som en tidigare import skapade och som Irrigation Unlimited inte längre har: {names}. Fortsätta?",
       "cutover": {
@@ -1052,7 +1052,7 @@
         "si-waters-now": "Smart Irrigation sköter bevattningen. De importerade schemana är aktiverade och styrenheterna i Irrigation Unlimited är avstängda.",
         "nobody-waters": "Ingen bevattning sker. Både Irrigation Unlimiteds styrenheter och de importerade schemana är inaktiverade.",
         "both-on": "Båda systemen kan starta bevattningen. En styrenhet i Irrigation Unlimited och importerade scheman är aktiverade samtidigt. Stäng av Irrigation Unlimited eller inaktivera de importerade schemana.",
-        "full-controller-off": "Aktivera först den fullständiga bevattningsstyrningen i inställningarna så att de importerade programmen kan starta bevattningen.",
+        "full-controller-off": "Smart Irrigation är inte inställt på ”Beräkna och vattna”. Välj det först i inställningarna, annars vattnar de importerade programmen inte.",
         "programs": "De importerade programmen",
         "schedules-on": "{on} av {count} scheman är aktiverade",
         "open-programs": "Granska dem på sidan Program innan du byter till Smart Irrigation",
@@ -1071,7 +1071,7 @@
         "confirm-back": "De importerade schemana slås av, och Irrigation Unlimiteds styrenheter slås på igen. Irrigation Unlimited vattnar igen.",
         "errors": {
           "generic": "Det gick inte.",
-          "full_controller_off": "Slå först på den fullständiga bevattningsstyrningen: utan den vattnar inget.",
+          "full_controller_off": "Välj först ”Beräkna och vattna”: utan det vattnas ingenting.",
           "not_imported": "Inget har importerats än.",
           "iu_failed": "Irrigation Unlimited kunde inte genomföra bytet. Ändringarna i det här steget har återställts. Ovan ser du vilket system som sköter bevattningen.",
           "not_switched": "Vattningen har inte lämnats över till Smart Irrigation, så det finns inget att gå tillbaka från.",
@@ -1105,7 +1105,7 @@
         "every_limit": "ett intervall på {every, number} dagar. Smart Irrigation tillåter högst {max, number} dagar",
         "every_not_number": "{value} är inte ett antal dagar",
         "feeds_other_zone": "en automation hämtar tiden från zon {from}, men efter importen används den beräknade bevattningstiden för den kopplade zonen {to}",
-        "full_controller_off": "den fullständiga bevattningsstyrningen är av: programmen importeras, men vattnar först när den är på",
+        "full_controller_off": "Smart Irrigation är inte inställt på ”Beräkna och vattna”: programmen importeras, men vattnar först när det alternativet är valt",
         "held_to_limit": "{seconds, number} s begränsas till {limit, number} s, den längsta tid som Smart Irrigation tillåter",
         "lead_kept": "{time} behålls eftersom en tidigareläggning med {lead, number} s för att låta pumpen starta i förväg skulle flytta starten till föregående dag",
         "lead_time": "zonen ”{zone}” har en ledtid på {lead, number} s som Smart Irrigation lägger till vid varje bevattning med fast tid. Zonen vattnas så mycket längre än i IU om du inte sätter ledtiden till 0 eller kortar steget",
@@ -1118,7 +1118,7 @@
         "off_in_iu_matched": "zonen är inaktiverad i IU och kopplad till ”{zone}”, som lämnas oförändrad. Programmen hoppar över zonen",
         "offset_limit": "en förskjutning på {offset, number} min: Smart Irrigation tillåter {max, number}",
         "offset_rounded": "förskjutningen på {seconds, number} s avrundas till {minutes, number} min: Smart Irrigation räknar i minuter där",
-        "overlap": "{count} zoner och sekvenser har scheman. Vid överlappande bevattningstider kör IU dem samtidigt, medan den fullständiga bevattningsstyrningen kör dem efter varandra",
+        "overlap": "{count} zoner och sekvenser har scheman. Vid överlappande bevattningstider kör IU dem samtidigt, medan Smart Irrigation kör dem efter varandra",
         "passes_held": "{repeats, number} upprepningar begränsas till {max, number} pass",
         "period_needs_both": "perioden {from} till {until} kräver både start- och slutdatum. Schemat gäller därför hela året",
         "program_per_duration": "{count} program, ett för varje bevattningstid i schemana",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "Tillämpa",
     "adjust_reset": "Återställ",
     "confirm_reset_adjustment": "Ta bort justeringen av det här programmet?",
-    "mode_off": "Fullständig bevattningsstyrning är avstängd. Aktivera den under Inställningar → Allmänt.",
+    "mode_off": "Inget program vattnar eftersom Smart Irrigation inte är inställt på ”Beräkna och vattna”. Välj det under Inställningar → Allmänt, i ”Vad Smart Irrigation gör”.",
     "no_zone": "ingen zon",
     "mode_calculated_short": "beräknad",
     "every_day": "varje dag",
@@ -1508,7 +1508,7 @@
     "title": "Observerad bevattning (återkoppling)",
     "description": "Låt den faktiska bevattningen räknas in i varje zons vattenbalans i stället för att en automation nollställer den. Välj en ventil eller brytare för varje zon på fliken Zoner. Medan den är öppen räknas bevattningstiden gånger flödet in, eller den volym som en vattenmätare har mätt. Ta bort anrop till set_bucket och reset_bucket i dina automationer, så att vattnet inte räknas dubbelt.",
     "enabled_label": "Aktivera observerad bevattning",
-    "confirm_full_controller": "Vill du aktivera fullständig bevattningsstyrning? Smart Irrigation styr då ventilerna och startar bevattningen automatiskt. Ventiler som är öppna vid start stängs om de inte ingår i någon pågående körning som Smart Irrigation styr.",
+    "confirm_full_controller": "Vill du välja ”Beräkna och vattna”? Smart Irrigation öppnar då själv ventilerna och startar bevattningen med sina program. Ventiler som är öppna vid start stängs om de inte ingår i någon pågående körning som Smart Irrigation styr.",
     "sequencing_label": "Bevattningsordning för zonerna",
     "sequencing": {
       "sequential": "Sekventiell (en zon i taget)",
@@ -1632,7 +1632,7 @@
       "zones": "Zoner (lämna tomt för att visa alla)",
       "show_next_start": "Visa nästa start",
       "compact": "Visa bara zoner som skulle bevattnas",
-      "show_programs": "Visa programmen (fullständig bevattningsstyrning)"
+      "show_programs": "Visa programmen"
     },
     "no_valve": "ingen ventil kopplad, vattnas inte",
     "no_trigger": "Ingen startutlösare",

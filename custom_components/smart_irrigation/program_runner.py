@@ -347,7 +347,8 @@ class ProgramRunnerMixin:
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
             _LOGGER.warning(
-                "Program %s not run: the full controller is off", program_id
+                "Program %s not run: Smart Irrigation is not set to Calculate and water",
+                program_id,
             )
             return False
         if watering_off(config):

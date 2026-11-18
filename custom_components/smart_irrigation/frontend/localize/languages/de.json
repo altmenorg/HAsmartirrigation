@@ -212,7 +212,7 @@
         "open-sensor-groups": "Sensorgruppen öffnen"
       },
       "messages": {
-        "no-service": "Es wird kein Wetterdienst verwendet — die Wetterdaten stammen ausschließlich von deinen eigenen Sensoren.",
+        "no-service": "Es wird kein Wetterdienst verwendet: die Wetterdaten stammen ausschließlich von deinen eigenen Sensoren.",
         "saved": "Wetterdienst aktualisiert und angewendet.",
         "reload-note": "Beim Speichern wird der API-Schlüssel mit dem Dienst validiert und die Änderung sofort angewendet.",
         "owm-onecall-hint": "OpenWeatherMap benötigt den Tarif One Call API 3.0 (One Call by Call). Er ist bis 1000 Aufrufe/Tag kostenlos, muss aber mit einer Karte aktiviert werden, und ein neuer Schlüssel kann ein paar Stunden brauchen, bis er funktioniert. Ein einfacher Standardschlüssel wird abgelehnt.",
@@ -243,7 +243,7 @@
       },
       "messages": {
         "exported": "Sicherungsdatei heruntergeladen.",
-        "restored": "Konfiguration wiederhergestellt — Integration wird neu geladen.",
+        "restored": "Konfiguration wiederhergestellt: Integration wird neu geladen.",
         "invalid-file": "Diese Datei ist keine gültige Smart Irrigation-Sicherung.",
         "confirm-title": "Gesamte Konfiguration ersetzen?",
         "summary": "Diese Sicherung enthält",
@@ -499,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "Hier öffnet nichts ein Ventil",
-          "body": "Smart Irrigation berechnet, wie lange bewässert wird; etwas muss danach handeln. Schalte unter Einstellungen die direkte Ventilsteuerung ein und verknüpfe dann je Zone ein Ventil, oder reagiere per Automatisierung auf das Startereignis (die Blueprints tun das). Tut das schon eine Automatisierung, bleibt alles.",
+          "body": "Smart Irrigation berechnet, wie lange bewässert wird; etwas muss danach handeln. Wähle unter Einstellungen „Berechnen und bewässern“ und verknüpfe jede Zone mit einem Ventil, oder schreibe eine Automatisierung auf das Start-Ereignis (die Blueprints erledigen das für dich). Wenn eine Automatisierung das schon tut, ist nichts zu ändern.",
           "action": "Zur Ventilsteuerung"
         }
       }
@@ -710,7 +710,7 @@
         "data-number-of-data-points": "Anzahl der Messungen",
         "drainage_rate": "Entwässerungsrate",
         "linked-entity": "Verknüpftes Ventil/Schalter",
-        "linked-entity-hint": "Das Ventil oder der Schalter dieser Zone. Mit direkter Ventilsteuerung öffnet und schließt Smart Irrigation es. Mit beobachteter Bewässerung schreibt jeder Lauf (von Hand, per Automatisierung oder durch Smart Irrigation) der Wasserbilanz Laufzeit mal Durchfluss gut.",
+        "linked-entity-hint": "Das Ventil oder der Schalter, der diese Zone bewässert. Mit „Berechnen und bewässern“ öffnet und schließt Smart Irrigation es. Mit beobachteter Bewässerung schreibt jeder Lauf (von Hand, per Automatisierung oder durch Smart Irrigation) der Wasserbilanz Laufzeit mal Durchfluss gut.",
         "valve-off": "Ein Ventil kann verknüpft werden, sobald Smart Irrigation bewässert (Berechnen und bewässern) oder die beobachtete Bewässerung aktiv ist.",
         "valve-off-link": "Einschalten",
         "supply": "Pumpe oder Hauptventil",
@@ -725,7 +725,7 @@
         "observed-ignore-seconds-help": "Ein so kurzer oder kürzerer Lauf des Ventils wird nicht gutgeschrieben: ein paar Minuten zum Kühlen der Blätter an einem heißen Nachmittag verdunsten größtenteils. Ein längerer Lauf zählt vollständig. Leer: jeder Lauf wird gutgeschrieben.",
         "confirm-timeout": "Warten auf Bestätigung des Ventils",
         "open-resends": "Öffnen erneut senden",
-        "confirm-timeout-help": "Wie lange das Ventil Zeit hat, Öffnen oder Schließen zu melden, und wie oft das Öffnen neu gesendet wird. Leer: 8 s, keine Wiederholung (volle Steuerung: 30 s, zwei); Schließen 5 s, immer zweimal. Cloud-Ventile wie Gardena: länger warten, 0 Wiederholungen, jeder Befehl zählt gegen ein Kontingent.",
+        "confirm-timeout-help": "Wie lange das Ventil Zeit hat, Öffnen oder Schließen zu melden, und wie oft das Öffnen neu gesendet wird. Leer: 30 s, zwei Wiederholungen; Schließen 5 s, immer zweimal. Cloud-Ventile wie Gardena: länger warten, 0 Wiederholungen, jeder Befehl zählt gegen ein Kontingent.",
         "safety-off-topic": "MQTT-Topic für Sicherheitsabschaltung",
         "safety-off-state-key": "Zustandsschlüssel für Sicherheitsabschaltung",
         "safety-off-mode": "Sicherheitsabschaltung",
@@ -878,7 +878,7 @@
     },
     "history": {
       "title": "Verlauf",
-      "description": "Jeder Bewässerungsdurchlauf, den Smart Irrigation einer Zone angerechnet hat: wann er begann, wie lange bewässert wurde und wie viel Wasser dabei verbraucht wurde. Durchläufe werden von der direkten Ventilsteuerung und von der beobachteten Bewässerung aufgezeichnet und 90 Tage aufbewahrt.",
+      "description": "Jeder Bewässerungsdurchlauf, den Smart Irrigation einer Zone angerechnet hat: wann er begann, wie lange bewässert wurde und wie viel Wasser dabei verbraucht wurde. Durchläufe werden aufgezeichnet, wenn Smart Irrigation bewässert, und von der beobachteten Bewässerung und 90 Tage aufbewahrt.",
       "refresh": "Aktualisieren",
       "no-data": "Es wurden noch keine Bewässerungsdurchläufe aufgezeichnet.",
       "table": {
@@ -1009,7 +1009,7 @@
         },
         "nothing-waters": "Die Übernahme bewässert nichts. Irrigation Unlimited bewässert weiter, bis du es ausschaltest und diese Zeitpläne einschaltest.",
         "blocked": "Löse zuerst, was rot markiert ist; bis dahin lässt sich nichts übernehmen.",
-        "full-controller-off": "Der vollständige Controller ist aus: Die Programme werden übernommen, bewässern aber erst, wenn er an ist.",
+        "full-controller-off": "Smart Irrigation steht nicht auf „Berechnen und bewässern“: Die Programme werden übernommen, bewässern aber erst, wenn es gewählt ist.",
         "nothing-waters-iu-off": "Die Übernahme bewässert nichts, und Irrigation Unlimited läuft nicht: Home Assistant hat es nicht eingerichtet (siehe sein Protokoll). Es bewässert nichts, bis du diese Zeitpläne einschaltest."
       },
       "errors": {
@@ -1033,16 +1033,16 @@
         "programs": "{count, plural, one {# Programm} other {# Programme}}",
         "next": "Die Zeitpläne neuer Programme sind aus, es bewässert also weiter Irrigation Unlimited. Sieh dir die Programme an und steig dann oben auf dieser Seite um.",
         "open-programs": "Zu den Programmen",
-        "next-off": "Der vollständige Controller ist aus, diese Programme bewässern also noch nicht, und Irrigation Unlimited bewässert weiter. Schalte den vollständigen Controller in den Einstellungen ein und steig dann oben auf dieser Seite um.",
+        "next-off": "Smart Irrigation steht nicht auf „Berechnen und bewässern“, daher bewässern diese Programme noch nicht, und Irrigation Unlimited bewässert weiter. Wähle in den Einstellungen „Berechnen und bewässern“ und wechsle dann oben auf dieser Seite.",
         "open-settings": "Zu den Einstellungen",
         "next-iu-off": "Die Zeitpläne neuer Programme sind aus, und Irrigation Unlimited läuft nicht: Im Moment bewässert nichts. Sieh dir die Programme an und schalte dann ihre Zeitpläne ein.",
-        "next-off-iu-off": "Der vollständige Controller ist aus, diese Programme bewässern also noch nicht, und Irrigation Unlimited läuft nicht: Im Moment bewässert nichts. Schalte in den Einstellungen den vollständigen Controller ein, dann die Zeitpläne der Programme."
+        "next-off-iu-off": "Smart Irrigation steht nicht auf „Berechnen und bewässern“, daher bewässern diese Programme noch nicht, und Irrigation Unlimited läuft nicht: Im Moment bewässert nichts. Wähle in den Einstellungen „Berechnen und bewässern“ und schalte dann die Zeitpläne der Programme ein."
       },
       "conflicts": {
         "zone_twice": "{zone} und {other} würden beide zu {target}. Wähle für eine der beiden eine andere Zone.",
         "calculated_needs_zone": "{zone} wird heute von Smart Irrigation berechnet, aus der Zone, aus der eine Automatisierung zur Laufzeitanpassung sie versorgt. Wähle diese oder eine andere bestehende Zone.",
-        "program_exists": "Ein Programm „{name}“ ({id}) ist im Weg: Keine Übernahme hat es angelegt. Benenne es zuerst unter Bewässerung, Programme um oder lösche es (mit eingeschaltetem vollständigem Controller).",
-        "supply_exists": "Eine Pumpe „{name}“ ({id}) ist im Weg: Keine Übernahme hat sie angelegt. Benenne sie zuerst unter Bewässerung, „Pumpen und Ventile“ um oder lösche sie (mit eingeschaltetem vollständigem Controller)."
+        "program_exists": "Ein Programm „{name}“ ({id}) ist im Weg: Keine Übernahme hat es angelegt. Benenne es zuerst unter Bewässerung, Programme um oder lösche es (sobald „Berechnen und bewässern“ gewählt ist).",
+        "supply_exists": "Eine Pumpe „{name}“ ({id}) ist im Weg: Keine Übernahme hat sie angelegt. Benenne sie zuerst unter Bewässerung, „Pumpen und Ventile“ um oder lösche sie (sobald „Berechnen und bewässern“ gewählt ist)."
       },
       "confirm_remove": "Diese Übernahme löscht, was eine frühere Übernahme angelegt hat und Irrigation Unlimited nicht mehr hat: {names}. Fortfahren?",
       "cutover": {
@@ -1052,7 +1052,7 @@
         "si-waters-now": "Smart Irrigation bewässert: Übernommene Zeitpläne sind an, und die Controller von Irrigation Unlimited sind aus.",
         "nobody-waters": "Es bewässert nichts: Die Controller von Irrigation Unlimited sind aus, die übernommenen Zeitpläne auch.",
         "both-on": "Beide würden bewässern: Irrigation Unlimited hat einen Controller an, und übernommene Zeitpläne sind auch an. Schalte Irrigation Unlimited aus oder die Zeitpläne.",
-        "full-controller-off": "Der vollständige Controller ist aus: Schalte ihn zuerst in den Einstellungen ein, sonst bewässern die übernommenen Programme nicht.",
+        "full-controller-off": "Smart Irrigation steht nicht auf „Berechnen und bewässern“: Wähle es zuerst in den Einstellungen, sonst bewässern die übernommenen Programme nicht.",
         "programs": "Die übernommenen Programme",
         "schedules-on": "{on} von {count} Zeitplänen an",
         "open-programs": "Sieh sie dir auf der Seite Programme an, bevor du umsteigst",
@@ -1071,7 +1071,7 @@
         "confirm-back": "Die übernommenen Zeitpläne werden ausgeschaltet und die Controller von Irrigation Unlimited wieder eingeschaltet. Dann bewässert wieder Irrigation Unlimited.",
         "errors": {
           "generic": "Das hat nicht geklappt.",
-          "full_controller_off": "Schalte zuerst den vollständigen Controller ein: Ohne ihn bewässert nichts.",
+          "full_controller_off": "Wähle zuerst „Berechnen und bewässern“: Ohne das bewässert nichts.",
           "not_imported": "Es wurde noch nichts übernommen.",
           "iu_failed": "Irrigation Unlimited hat das Umschalten nicht angenommen. Was dieser Schritt schon geändert hatte, ist zurückgenommen: Oben steht, wer bewässert.",
           "not_switched": "Die Bewässerung wurde nicht an Smart Irrigation übergeben, es gibt also nichts zurückzuschalten.",
@@ -1105,7 +1105,7 @@
         "every_limit": "alle {every, number} Tage: Smart Irrigation geht bis {max, number}",
         "every_not_number": "{value} ist keine Zahl von Tagen",
         "feeds_other_zone": "eine Automatisierung versorgt sie aus Zone {from}, zugeordnet ist sie aber Zone {to}: Berechnet wird sie dann wie diese Zone",
-        "full_controller_off": "der vollständige Controller ist aus: Die Programme werden übernommen, bewässern aber erst, wenn er an ist",
+        "full_controller_off": "Smart Irrigation steht nicht auf „Berechnen und bewässern“: Die Programme werden übernommen, bewässern aber erst, wenn es gewählt ist",
         "held_to_limit": "{seconds, number} s werden auf {limit, number} s begrenzt, mehr erlaubt Smart Irrigation nicht",
         "lead_kept": "{time} bleibt: Um den Vorlauf der Versorgung von {lead, number} s früher läge es an einem anderen Tag",
         "lead_time": "Zone „{zone}“ hat eine Vorlaufzeit von {lead, number} s, die Smart Irrigation zu jedem festen Lauf addiert: Sie bewässert so viel länger als in IU, außer die Vorlaufzeit wird auf 0 gesetzt oder der Schritt gekürzt",
@@ -1119,7 +1119,7 @@
         "offset_limit": "ein Versatz von {offset, number} min: Smart Irrigation erlaubt {max, number}",
         "offset_rounded": "der Versatz von {seconds, number} s wird auf {minutes, number} min gerundet: Smart Irrigation rechnet dort in Minuten",
         "shared_queue": "{count} Controller ohne Master: Ihre Programme laufen nacheinander, da Zonen ohne Versorgung eine gemeinsame Warteschlange haben",
-        "overlap": "{count} Zonen und Sequenzen haben Zeitpläne: Wo sich ihre Läufe überschneiden, bewässert IU sie gleichzeitig, der vollständige Controller nacheinander",
+        "overlap": "{count} Zonen und Sequenzen haben Zeitpläne: Wo sich ihre Läufe überschneiden, bewässert IU sie gleichzeitig, Smart Irrigation nacheinander",
         "passes_held": "{repeats, number} Wiederholungen werden auf {max, number} Durchgänge begrenzt",
         "period_needs_both": "der Zeitraum {from} bis {until} braucht beide Tage: Der Zeitplan gilt das ganze Jahr",
         "program_per_duration": "{count} Programme, eines je Dauer der Zeitpläne",
@@ -1163,7 +1163,7 @@
     "active_default": "Standard: fertig bis Sonnenaufgang",
     "active_hint": "Nur der gewählte Auslöser startet die Bewässerung, einmal am Tag. Standard startet so, dass alle Zonen bis Sonnenaufgang fertig sind; mit Keiner startet Smart Irrigation nichts.",
     "usage_before": "Wenn ein Auslöser ausgelöst wird, sendet Smart Irrigation das Ereignis ",
-    "usage_after": " — reagiere darauf in einer Automatisierung, um die Bewässerung zu starten. Die Daten enthalten trigger_name, trigger_type und offset_minutes, um die Auslöser zu unterscheiden. An einem Tag, der wegen Regen oder der Tage zwischen Bewässerungen aussetzt, kommt kein Ereignis.",
+    "usage_after": ". Reagiere darauf in einer Automatisierung, um die Bewässerung zu starten. Die Daten enthalten trigger_name, trigger_type und offset_minutes, um die Auslöser zu unterscheiden. An einem Tag, der wegen Regen oder der Tage zwischen Bewässerungen aussetzt, kommt kein Ereignis.",
     "add_trigger": "Auslöser hinzufügen",
     "edit_trigger": "Auslöser bearbeiten",
     "delete_trigger": "Auslöser löschen",
@@ -1208,7 +1208,7 @@
       "cancel": "Abbrechen",
       "save": "Speichern",
       "delete": "Löschen",
-      "help": "Wenn dieser Auslöser ausgelöst wird, sendet Smart Irrigation das folgende Ereignis — verwende es in einer Automatisierung, um die Bewässerung zu starten. Die Ereignisdaten enthalten den Namen dieses Auslösers (sowie Typ/Versatz), sodass du gezielt darauf reagieren kannst:"
+      "help": "Wenn dieser Auslöser ausgelöst wird, sendet Smart Irrigation das folgende Ereignis. Verwende es in einer Automatisierung, um die Bewässerung zu starten. Die Ereignisdaten enthalten den Namen dieses Auslösers (sowie Typ/Versatz), sodass du gezielt darauf reagieren kannst:"
     },
     "offset_auto": "Automatisch (aus der Gesamtdauer der Zonen berechnet)",
     "confirm_delete": "Möchtest du den Auslöser \"{name}\" wirklich löschen?",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "Anwenden",
     "adjust_reset": "Zurücksetzen",
     "confirm_reset_adjustment": "Die Anpassung dieses Programms entfernen?",
-    "mode_off": "Die volle Steuerung ist aus. Schalte sie unter Einstellungen, Allgemein ein.",
+    "mode_off": "Kein Programm bewässert: Smart Irrigation steht nicht auf „Berechnen und bewässern“. Wähle es unter Einstellungen, Allgemein, bei „Was Smart Irrigation tut“.",
     "no_zone": "keine Zone",
     "mode_calculated_short": "berechnet",
     "every_day": "jeden Tag",
@@ -1508,7 +1508,7 @@
     "title": "Beobachtete Bewässerung",
     "description": "Schreibt der Wasserbilanz jeder Zone die echte Bewässerung gut, statt Zurücksetzen per Automatisierung. Wähle unter Zonen je Zone Ventil oder Schalter: solange offen, zählt Laufzeit mal Durchfluss oder die Menge eines Zählers. Entferne set_bucket- und reset_bucket-Aufrufe aus Automatisierungen, sonst zählt es doppelt.",
     "enabled_label": "Beobachtete Bewässerung aktivieren",
-    "confirm_full_controller": "Volle Steuerung einschalten? Smart Irrigation steuert dann die Ventile und startet die Bewässerung selbst. Ein beim Start offen gefundenes Ventil, das keinem unserer Läufe gehört, wird geschlossen.",
+    "confirm_full_controller": "Berechnen und bewässern? Smart Irrigation öffnet dann selbst die Ventile und startet die Bewässerung mit seinen Programmen. Ein beim Start offen gefundenes Ventil, das keinem unserer Läufe gehört, wird geschlossen.",
     "sequencing_label": "Zonenabfolge",
     "sequencing": {
       "sequential": "Sequenziell (eine Zone nach der anderen)",
@@ -1632,7 +1632,7 @@
       "zones": "Zonen (alle, wenn leer)",
       "show_next_start": "Nächsten Start anzeigen",
       "compact": "Nur Zonen, die bewässern würden",
-      "show_programs": "Die Programme anzeigen (volle Steuerung)"
+      "show_programs": "Die Programme anzeigen"
     },
     "no_valve": "kein Ventil verknüpft, wird nicht bewässert",
     "no_trigger": "Kein Startauslöser",

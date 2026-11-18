@@ -312,7 +312,7 @@
     },
     "run_program": {
       "name": "Spustiť program",
-      "description": "Spustite program plného ovládača teraz, alebo hneď ako príde na rad, keď beží iný. Program zalieva svoje zóny trvaniami, ktoré vypočítala Smart Irrigation, pokiaľ jeho kroky neurčujú inak.",
+      "description": "Spustite program teraz, alebo hneď ako príde na rad, keď beží iný. Program zalieva svoje zóny trvaniami, ktoré vypočítala Smart Irrigation, pokiaľ jeho kroky neurčujú inak.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -430,7 +430,7 @@
     },
     "adjust_program": {
       "name": "Upraviť program",
-      "description": "Nechajte program plného ovládača na čas zalievať dlhšie alebo kratšie. Úprava nahrádza predchádzajúcu (nikdy sa nesčítava), platí pre behy, ktoré začnú po jej nastavení, a končí po zadaných hodinách.",
+      "description": "Nechajte program na čas zalievať dlhšie alebo kratšie. Úprava nahrádza predchádzajúcu (nikdy sa nesčítava), platí pre behy, ktoré začnú po jej nastavení, a končí po zadaných hodinách.",
       "fields": {
         "program_id": {
           "name": "Program",

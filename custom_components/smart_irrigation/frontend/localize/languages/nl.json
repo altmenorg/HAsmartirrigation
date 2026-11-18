@@ -198,7 +198,7 @@
         "no-data": "Er zijn nog geen gegevens van de weerdienst opgehaald."
       },
       "title": "Weerdienst",
-      "description": "Bekijk en wijzig de weerdienst die wordt gebruikt om weergegevens op te halen — zonder de integratie opnieuw te installeren. De API-sleutel wordt gevalideerd en de wijziging wordt direct toegepast.",
+      "description": "Bekijk en wijzig de weerdienst die wordt gebruikt om weergegevens op te halen, zonder de integratie opnieuw te installeren. De API-sleutel wordt gevalideerd en de wijziging wordt direct toegepast.",
       "labels": {
         "use-weather-service": "Een weerdienst gebruiken",
         "service": "Weerdienst",
@@ -212,7 +212,7 @@
         "open-sensor-groups": "Sensorgroepen openen"
       },
       "messages": {
-        "no-service": "Er wordt geen weerdienst gebruikt — de weergegevens komen alleen van je eigen sensoren.",
+        "no-service": "Er wordt geen weerdienst gebruikt: de weergegevens komen alleen van je eigen sensoren.",
         "saved": "Weerdienst bijgewerkt en toegepast.",
         "reload-note": "Bij het opslaan wordt de API-sleutel bij de dienst gevalideerd en de wijziging direct toegepast.",
         "owm-onecall-hint": "OpenWeatherMap heeft het One Call API 3.0-abonnement nodig (One Call by Call). Het is gratis tot 1000 aanroepen per dag, maar moet met een kaart geactiveerd worden, en een nieuwe sleutel kan een paar uur nodig hebben voordat hij werkt. Een gewone standaardsleutel wordt geweigerd.",
@@ -243,7 +243,7 @@
       },
       "messages": {
         "exported": "Back-upbestand gedownload.",
-        "restored": "Configuratie hersteld — integratie wordt herladen.",
+        "restored": "Configuratie hersteld: integratie wordt herladen.",
         "invalid-file": "Dit bestand is geen geldige Smart Irrigation-back-up.",
         "confirm-title": "De volledige configuratie vervangen?",
         "summary": "Deze back-up bevat",
@@ -499,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "Hier opent niets een ventiel",
-          "body": "Smart Irrigation berekent hoe lang er bewaterd moet worden; iets moet daarop handelen. Zet directe klepbesturing aan onder Instellingen en koppel dan een klep aan elke zone, of schrijf een automatisering op het startevent (de blueprints doen dat voor je). Als een automatisering dat al doet, hoeft er niets te veranderen.",
+          "body": "Smart Irrigation berekent hoe lang er bewaterd moet worden; iets moet daarop handelen. Kies onder Instellingen \"Berekenen en beregenen\" en koppel een klep aan elke zone, of schrijf een automatisering op het startevent (de blueprints doen dat voor je). Als een automatisering het al doet, hoeft er niets te veranderen.",
           "action": "Naar klepbesturing"
         }
       }
@@ -710,7 +710,7 @@
         "data-number-of-data-points": "Aantal datapunten",
         "drainage_rate": "Afvoersnelheid",
         "linked-entity": "Gekoppelde klep/schakelaar",
-        "linked-entity-hint": "De klep of schakelaar die deze zone bewatert. Telkens als die actief is (een handmatige kraan, een automatisering of Smart Irrigation zelf wanneer directe klepbesturing aanstaat), wordt de waterbalans bijgewerkt op basis van de looptijd en de doorvoer van de zone. Vereist voor de closed-loop-functies.",
+        "linked-entity-hint": "De klep of schakelaar die deze zone bewatert. Met \"Berekenen en beregenen\" opent en sluit Smart Irrigation hem. Met waargenomen bewatering wordt elke beurt ervan (met de hand, door een automatisering of door Smart Irrigation) op de waterbalans bijgeschreven op basis van looptijd en doorstroming.",
         "valve-off": "Een klep kan gekoppeld worden zodra Smart Irrigation beregent (Berekenen en beregenen) of waargenomen beregening aan staat.",
         "valve-off-link": "Aanzetten",
         "supply": "Pomp of hoofdventiel",
@@ -725,7 +725,7 @@
         "observed-ignore-seconds-help": "Een zo korte of kortere beurt van de klep wordt niet bijgeschreven: een paar minuten om de bladeren te koelen op een hete middag verdampt grotendeels. Een langere beurt telt volledig. Leeg: elke beurt wordt bijgeschreven.",
         "confirm-timeout": "Wachten op bevestiging van de klep",
         "open-resends": "Openen opnieuw sturen",
-        "confirm-timeout-help": "Hoe lang de klep heeft om te melden dat hij open of dicht is, en hoe vaak het openen in die tijd opnieuw wordt gestuurd. Leeg houdt de standaardwaarden: 8 seconden zonder herhaling, of 30 seconden en twee herhalingen met de volledige controller, en 5 seconden voor een sluiting. Een cloudklep zoals Gardena bevestigt traag en telt elk commando mee in een quotum: geef hem een langere wachttijd en 0 herhalingen. Een sluiting wordt altijd een tweede keer geprobeerd.",
+        "confirm-timeout-help": "Hoe lang de klep heeft om te melden dat hij open of dicht is, en hoe vaak het openen in die tijd opnieuw wordt gestuurd. Leeg: 30 s en twee herhalingen; sluiten 5 s, altijd twee keer geprobeerd. Cloudkleppen zoals Gardena: wacht langer, 0 herhalingen, elk commando telt mee in een quotum.",
         "safety-off-topic": "MQTT-topic voor veiligheidsuitschakeling",
         "safety-off-state-key": "Statussleutel voor veiligheidsuitschakeling",
         "safety-off-mode": "Modus voor veiligheidsuitschakeling",
@@ -878,7 +878,7 @@
     },
     "history": {
       "title": "Geschiedenis",
-      "description": "Elke bewateringsronde die Smart Irrigation aan een zone heeft toegerekend: wanneer die begon, hoe lang er bewaterd is en hoeveel water er bij gebruikt is. Rondes worden vastgelegd door de directe ventielbesturing en door waargenomen bewatering, en 90 dagen bewaard.",
+      "description": "Elke bewateringsronde die Smart Irrigation aan een zone heeft toegerekend: wanneer die begon, hoe lang er bewaterd is en hoeveel water er bij gebruikt is. Rondes worden vastgelegd wanneer Smart Irrigation bewatert en door waargenomen bewatering, en 90 dagen bewaard.",
       "refresh": "Verversen",
       "no-data": "Er zijn nog geen bewateringsrondes vastgelegd.",
       "table": {
@@ -1009,7 +1009,7 @@
         },
         "nothing-waters": "De import bewatert niets. Irrigation Unlimited blijft bewateren tot je het uitzet en deze schema's aanzet.",
         "blocked": "Los eerst op wat rood gemarkeerd is; tot dan kan er niets geïmporteerd worden.",
-        "full-controller-off": "De volledige controller is uit: de programma's worden geïmporteerd, maar bewateren pas als hij aan staat.",
+        "full-controller-off": "Smart Irrigation staat niet op \"Berekenen en beregenen\": de programma's worden geïmporteerd, maar bewateren pas als dat gekozen is.",
         "nothing-waters-iu-off": "De import bewatert niets, en Irrigation Unlimited draait niet: Home Assistant heeft het niet geladen (zie het logboek). Er wordt niets bewaterd tot je deze schema's aanzet."
       },
       "errors": {
@@ -1033,16 +1033,16 @@
         "programs": "{count, plural, one {# programma} other {# programma's}}",
         "next": "De schema's van nieuwe programma's staan uit, dus Irrigation Unlimited bewatert nog steeds. Als je klaar bent, zet je de controllers van Irrigation Unlimited uit en deze schema's aan, op de pagina Programma's.",
         "open-programs": "Programma's openen",
-        "next-off": "De volledige controller is uit, dus deze programma's bewateren nog niet en Irrigation Unlimited blijft bewateren. Zet de volledige controller aan in de instellingen, zet daarna Irrigation Unlimited uit en deze schema's aan.",
+        "next-off": "Smart Irrigation staat niet op \"Berekenen en beregenen\", dus deze programma's bewateren nog niet, en Irrigation Unlimited blijft bewateren. Kies \"Berekenen en beregenen\" in de instellingen en schakel daarna bovenaan deze pagina over.",
         "open-settings": "Instellingen openen",
         "next-iu-off": "De schema's van de nieuwe programma's staan uit, en Irrigation Unlimited draait niet: er wordt nu niets bewaterd. Bekijk de programma's en zet daarna hun schema's aan.",
-        "next-off-iu-off": "De volledige controller is uit, dus deze programma's bewateren nog niet, en Irrigation Unlimited draait niet: er wordt nu niets bewaterd. Zet de volledige controller aan in de instellingen, daarna de schema's van de programma's."
+        "next-off-iu-off": "Smart Irrigation staat niet op \"Berekenen en beregenen\", dus deze programma's bewateren nog niet, en Irrigation Unlimited draait niet: er bewatert voorlopig niets. Kies \"Berekenen en beregenen\" in de instellingen en zet daarna de schema's van de programma's aan."
       },
       "conflicts": {
         "zone_twice": "{zone} en {other} zouden allebei {target} worden. Kies een andere zone voor een van beide.",
         "calculated_needs_zone": "{zone} wordt nu door Smart Irrigation berekend, vanuit de zone waaruit een automatisering voor tijdaanpassing haar voedt. Kies die zone of een andere bestaande.",
-        "program_exists": "Een programma \"{name}\" ({id}) zit in de weg: geen import heeft het aangemaakt. Hernoem of verwijder het eerst, in Bewatering, Programma's (met de volledige controller aan).",
-        "supply_exists": "Een pomp \"{name}\" ({id}) zit in de weg: geen import heeft hem aangemaakt. Hernoem of verwijder hem eerst, in Bewatering, Pompen en kleppen (met de volledige controller aan)."
+        "program_exists": "Een programma \"{name}\" ({id}) zit in de weg: geen import heeft het aangemaakt. Hernoem of verwijder het eerst, in Bewatering, Programma's (zodra \"Berekenen en beregenen\" gekozen is).",
+        "supply_exists": "Een pomp \"{name}\" ({id}) zit in de weg: geen import heeft hem aangemaakt. Hernoem of verwijder hem eerst, in Bewatering, Pompen en kleppen (zodra \"Berekenen en beregenen\" gekozen is)."
       },
       "confirm_remove": "Deze import verwijdert wat een eerdere import heeft aangemaakt en Irrigation Unlimited niet meer heeft: {names}. Doorgaan?",
       "cutover": {
@@ -1052,7 +1052,7 @@
         "si-waters-now": "Smart Irrigation bewatert: geïmporteerde schema's staan aan, en de controllers van Irrigation Unlimited staan uit.",
         "nobody-waters": "Er bewatert niets: de controllers van Irrigation Unlimited staan uit, en de geïmporteerde schema's ook.",
         "both-on": "Beide zouden bewateren: Irrigation Unlimited heeft een controller aan, en er staan ook geïmporteerde schema's aan. Zet Irrigation Unlimited uit, of de schema's.",
-        "full-controller-off": "De volledige controller staat uit: zet hem eerst aan in de instellingen, anders bewateren de geïmporteerde programma's niet.",
+        "full-controller-off": "Smart Irrigation staat niet op \"Berekenen en beregenen\": kies het eerst in de instellingen, anders bewateren de geïmporteerde programma's niet.",
         "programs": "De geïmporteerde programma's",
         "schedules-on": "{on} van {count} schema's aan",
         "open-programs": "Bekijk ze op de pagina Programma's voordat je overstapt",
@@ -1071,7 +1071,7 @@
         "confirm-back": "De geïmporteerde schema's worden uitgezet, en de controllers van Irrigation Unlimited weer aangezet. Irrigation Unlimited bewatert weer.",
         "errors": {
           "generic": "Dat is niet gelukt.",
-          "full_controller_off": "Zet eerst de volledige controller aan: zonder hem bewatert er niets.",
+          "full_controller_off": "Kies eerst \"Berekenen en beregenen\": zonder dat bewatert er niets.",
           "not_imported": "Er is nog niets geïmporteerd.",
           "iu_failed": "Irrigation Unlimited nam de omschakeling niet aan. Wat deze stap had veranderd, is teruggedraaid: zie hierboven wie bewatert.",
           "not_switched": "De bewatering is niet aan Smart Irrigation overgedragen, dus er is niets om van terug te gaan.",
@@ -1105,7 +1105,7 @@
         "every_limit": "om de {every, number} dagen: Smart Irrigation gaat tot {max, number}",
         "every_not_number": "{value} is geen aantal dagen",
         "feeds_other_zone": "een automatisering voedt haar vanuit zone {from}, maar ze is gekoppeld aan zone {to}: haar berekende duur is die van die zone",
-        "full_controller_off": "de volledige controller staat uit: de programma's worden geïmporteerd, maar bewateren pas als hij aan staat",
+        "full_controller_off": "Smart Irrigation staat niet op \"Berekenen en beregenen\": de programma's worden geïmporteerd, maar bewateren pas als dat gekozen is",
         "held_to_limit": "{seconds, number} s wordt beperkt tot {limit, number} s, het maximum dat Smart Irrigation toestaat",
         "lead_kept": "{time} blijft staan: het {lead, number} s vervroegen voor de voorloop van de pomp zou de dag veranderen",
         "lead_time": "zone \"{zone}\" heeft een aanlooptijd van {lead, number} s, die Smart Irrigation bij elke vaste beurt optelt: ze bewatert zoveel langer dan in IU, tenzij de aanlooptijd op 0 wordt gezet of de stap wordt ingekort",
@@ -1118,7 +1118,7 @@
         "off_in_iu_matched": "uitgezet in IU en gekoppeld aan \"{zone}\", die blijft zoals ze is: de programma's laten haar weg",
         "offset_limit": "een verschuiving van {offset, number} min: Smart Irrigation staat {max, number} toe",
         "offset_rounded": "de verschuiving van {seconds, number} s wordt afgerond op {minutes, number} min: Smart Irrigation rekent daar in minuten",
-        "overlap": "{count} zones en reeksen hebben schema's: waar hun beurten overlappen, bewatert IU ze tegelijk, de volledige controller na elkaar",
+        "overlap": "{count} zones en reeksen hebben schema's: waar hun beurten overlappen, bewatert IU ze tegelijk, Smart Irrigation na elkaar",
         "passes_held": "{repeats, number} herhalingen worden beperkt tot {max, number} beurten",
         "period_needs_both": "de periode {from} tot {until} heeft beide dagen nodig: het schema geldt het hele jaar",
         "program_per_duration": "{count} programma's, één per schemaduur",
@@ -1163,7 +1163,7 @@
     "active_default": "Standaard: klaar bij zonsopkomst",
     "active_hint": "Alleen de gekozen trigger start de bewatering, één keer per dag. Standaard start zo dat elke zone klaar is bij zonsopkomst; met Geen start Smart Irrigation niets.",
     "usage_before": "Wanneer een trigger afgaat, zendt Smart Irrigation de gebeurtenis ",
-    "usage_after": " — luister ernaar in een automatisering om de irrigatie te starten. De gebeurtenisgegevens bevatten trigger_name, trigger_type en offset_minutes, zodat je per trigger anders kunt reageren. De instellingen voor overslaan bij neerslag en dagen tussen irrigaties blijven gelden: op een overslagdag wordt geen gebeurtenis verzonden.",
+    "usage_after": ". Luister ernaar in een automatisering om de irrigatie te starten. De gebeurtenisgegevens bevatten trigger_name, trigger_type en offset_minutes, zodat je per trigger anders kunt reageren. De instellingen voor overslaan bij neerslag en dagen tussen irrigaties blijven gelden: op een overslagdag wordt geen gebeurtenis verzonden.",
     "add_trigger": "Trigger toevoegen",
     "edit_trigger": "Trigger bewerken",
     "delete_trigger": "Trigger verwijderen",
@@ -1208,7 +1208,7 @@
       "cancel": "Annuleren",
       "save": "Opslaan",
       "delete": "Verwijderen",
-      "help": "Wanneer deze trigger afgaat, zendt Smart Irrigation de volgende gebeurtenis uit — gebruik die in een automatisering om de irrigatie te starten. De gebeurtenisgegevens bevatten de naam van deze trigger (en het type/de offset), zodat je er specifiek op kunt reageren:"
+      "help": "Wanneer deze trigger afgaat, zendt Smart Irrigation de volgende gebeurtenis uit. Gebruik die in een automatisering om de irrigatie te starten. De gebeurtenisgegevens bevatten de naam van deze trigger (en het type/de offset), zodat je er specifiek op kunt reageren:"
     },
     "offset_auto": "Auto (berekend uit de totale zoneduur)",
     "confirm_delete": "Weet je zeker dat je de trigger \"{name}\" wilt verwijderen?",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "Toepassen",
     "adjust_reset": "Resetten",
     "confirm_reset_adjustment": "De aanpassing van dit programma verwijderen?",
-    "mode_off": "De volledige controller is uit. Zet hem aan in Instellingen, Algemeen.",
+    "mode_off": "Geen programma bewatert: Smart Irrigation staat niet op \"Berekenen en beregenen\". Kies het in Instellingen, Algemeen, bij \"Wat Smart Irrigation doet\".",
     "no_zone": "geen zone",
     "mode_calculated_short": "berekend",
     "every_day": "elke dag",
@@ -1508,7 +1508,7 @@
     "title": "Waargenomen bewatering (closed loop)",
     "description": "Schrijft de waterbalans van elke zone bij op basis van echte bewatering, in plaats van dat een automatisering hem terugzet. Kies per zone een klep of schakelaar onder Zones: zolang die open is, wordt looptijd maal doorvoer bijgeschreven, of het volume dat een meter mat. Verwijder de set_bucket- en reset_bucket-aanroepen uit je automatiseringen, anders telt het dubbel.",
     "enabled_label": "Waargenomen bewatering inschakelen",
-    "confirm_full_controller": "De volledige controller inschakelen? Smart Irrigation stuurt dan de ventielen aan en start het bewateren zelf. Een ventiel dat bij het opstarten open staat en door geen enkele ronde van ons wordt beheerd, wordt gesloten.",
+    "confirm_full_controller": "Berekenen en beregenen? Smart Irrigation opent dan zelf de ventielen en start het bewateren met zijn programma's. Een ventiel dat bij het opstarten open staat en door geen enkele ronde van ons wordt beheerd, wordt gesloten.",
     "sequencing_label": "Volgorde van zones",
     "sequencing": {
       "sequential": "Sequentieel (één zone tegelijk)",
@@ -1632,7 +1632,7 @@
       "zones": "Zones (alle als leeg)",
       "show_next_start": "Volgende start tonen",
       "compact": "Alleen zones die zouden beregenen",
-      "show_programs": "Programma's tonen (volledige controller)"
+      "show_programs": "Programma's tonen"
     },
     "no_valve": "geen ventiel gekoppeld, niet bewaterd",
     "no_trigger": "Geen starttrigger",

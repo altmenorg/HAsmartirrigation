@@ -34,7 +34,7 @@ from .helpers import (
     find_next_solar_azimuth_time,
     normalize_azimuth_angle,
 )
-from .master_switch import irrigation_off, watering_off
+from .master_switch import watering_off
 from .rain_history import MAX_FACTOR, MIN_FACTOR, rain_suppression
 from .units import depth_from_display
 
@@ -674,24 +674,17 @@ class TriggersMixin:
             }
             try:
                 if watering_off(self.store):
-                    reason = (
-                        "irrigation_off"
-                        if irrigation_off(self.store)
-                        else "calculate_only"
-                    )
+                    # Stop everything. (The old "calculate only" switch that
+                    # could also land here is no longer stored: see
+                    # one_choice.py and the config view.)
                     _LOGGER.info(
-                        "Trigger '%s' reached but Smart Irrigation is %s; not "
-                        "firing event",
+                        "'%s' is due but Smart Irrigation is switched off; "
+                        "the start event is not fired",
                         name,
-                        (
-                            "switched off"
-                            if reason == "irrigation_off"
-                            else "calculating only"
-                        ),
                     )
                     self.hass.bus.fire(
                         f"{const.DOMAIN}_{const.EVENT_IRRIGATE_SKIPPED}",
-                        {**event_data, "reason": reason, "checks": []},
+                        {**event_data, "reason": "irrigation_off", "checks": []},
                     )
                     return
                 go, _sheltered = await self._prepare_watering_for_today(
