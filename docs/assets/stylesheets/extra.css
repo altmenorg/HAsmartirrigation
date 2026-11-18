@@ -1,0 +1,213 @@
+/*
+ * Smart Irrigation look for MkDocs Material, matching the project's landing
+ * page: the drop blue and the leaf green of the logo, Montserrat headings,
+ * Inter text, JetBrains Mono code.
+ *
+ * Custom admonitions (use them in a page as `!!! yaml-only` or `!!! advanced`,
+ * or collapsible with `??? yaml-only`):
+ *   - yaml-only  "YAML only"      a setting with no field in the panel, set in
+ *                                 the YAML editor of the zone or the program.
+ *   - advanced   "Advanced mode"  a setting shown only on the advanced panel
+ *                                 (Settings > General).
+ * Their default titles come from scripts/mkdocs_hooks.py; a title given in
+ * the page wins, as usual: !!! yaml-only "Rounds"
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap");
+
+:root {
+  --si-drop-1: #7cdbec;
+  --si-drop-2: #2686c1;
+  --si-drop-3: #0260aa;
+  --si-leaf-1: #bae232;
+  --si-leaf-2: #589d3b;
+  --si-drop-gradient: linear-gradient(160deg, var(--si-drop-1), var(--si-drop-2) 55%, var(--si-drop-3));
+  --si-leaf-gradient: linear-gradient(135deg, var(--si-leaf-1), var(--si-leaf-2));
+  --si-display: "Montserrat", "Segoe UI", system-ui, sans-serif;
+}
+
+/* Light scheme */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #1479bd;
+  --md-primary-fg-color--light: #4cafd5;
+  --md-primary-fg-color--dark: #0260aa;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.75);
+  --md-accent-fg-color: #4f9a35;
+  --md-accent-fg-color--transparent: rgba(79, 154, 53, 0.1);
+  --md-typeset-a-color: #1479bd;
+  --md-default-fg-color: rgba(19, 36, 28, 0.9);
+  --md-code-bg-color: #f1f6f3;
+  --si-heading: #0b3d63;
+  --si-yaml-bg: rgba(38, 134, 193, 0.08);
+  --si-advanced-bg: rgba(88, 157, 59, 0.08);
+}
+
+/* Dark scheme: a deep green-black like the landing page, bright water blue links */
+[data-md-color-scheme="slate"] {
+  --md-hue: 150;
+  --md-default-bg-color: #0e1712;
+  --md-default-bg-color--light: #15211a;
+  --md-default-fg-color: rgba(230, 239, 232, 0.88);
+  --md-default-fg-color--light: rgba(230, 239, 232, 0.62);
+  --md-default-fg-color--lighter: rgba(230, 239, 232, 0.32);
+  --md-default-fg-color--lightest: rgba(230, 239, 232, 0.12);
+  --md-primary-fg-color: #0b5a93;
+  --md-primary-fg-color--light: #2686c1;
+  --md-primary-fg-color--dark: #023f70;
+  --md-primary-bg-color: #eaf7ff;
+  --md-primary-bg-color--light: rgba(234, 247, 255, 0.7);
+  --md-accent-fg-color: #8cd36a;
+  --md-accent-fg-color--transparent: rgba(140, 211, 106, 0.12);
+  --md-typeset-a-color: #4fb3e6;
+  --md-code-bg-color: #15211a;
+  --md-footer-bg-color: #0a110d;
+  --md-footer-bg-color--dark: #070c09;
+  --si-heading: #eaf7ff;
+  --si-yaml-bg: rgba(79, 179, 230, 0.1);
+  --si-advanced-bg: rgba(140, 211, 106, 0.1);
+}
+
+/* Header and tabs: a bright sky to water blue, like the drop of the logo */
+.md-header,
+.md-tabs {
+  background: linear-gradient(100deg, #2fa4dc 0%, #1d84c6 55%, #0f6db4 100%);
+}
+[data-md-color-scheme="slate"] .md-header,
+[data-md-color-scheme="slate"] .md-tabs {
+  background: linear-gradient(100deg, #0f5d93 0%, #0b4d7e 55%, #083f69 100%);
+}
+.md-header {
+  box-shadow: none;
+}
+.md-header--shadow {
+  box-shadow: 0 0 0.4rem rgba(0, 0, 0, 0.12), 0 0.2rem 0.6rem rgba(2, 96, 170, 0.25);
+}
+/* The mark has its own colours: give it a white disc so it reads on the blue */
+.md-header__button.md-logo img,
+.md-nav__button.md-logo img {
+  height: 1.7rem;
+  background: #ffffff;
+  border-radius: 50%;
+  padding: 0.12rem;
+}
+.md-header__title {
+  font-family: var(--si-display);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.md-tabs__link {
+  font-weight: 600;
+  opacity: 0.85;
+}
+.md-tabs__item--active .md-tabs__link {
+  opacity: 1;
+}
+/* A leaf green underline under the active tab */
+.md-tabs__item--active {
+  box-shadow: inset 0 -3px 0 var(--si-leaf-1);
+}
+
+/* Headings */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  font-family: var(--si-display);
+  color: var(--si-heading);
+  letter-spacing: -0.01em;
+}
+.md-typeset h1 {
+  font-weight: 800;
+}
+.md-typeset h2 {
+  font-weight: 700;
+}
+.md-typeset h3,
+.md-typeset h4 {
+  font-weight: 700;
+}
+.md-typeset h2 {
+  padding-bottom: 0.2em;
+  border-bottom: 2px solid transparent;
+  border-image: var(--si-leaf-gradient) 1;
+}
+
+/* Links */
+.md-typeset a {
+  color: var(--md-typeset-a-color);
+}
+.md-typeset a:hover,
+.md-typeset a:focus {
+  color: var(--md-accent-fg-color);
+}
+
+/* Sidebar section titles */
+.md-nav__item--section > .md-nav__link {
+  font-family: var(--si-display);
+  font-weight: 700;
+}
+
+/* Images: the screenshots of the panel */
+.md-typeset img {
+  border-radius: 6px;
+}
+
+/* Tables: a light header in the water tone */
+.md-typeset table:not([class]) th {
+  background: var(--si-yaml-bg);
+}
+
+/* Blockquotes (the docs use them for asides): a blue rule */
+.md-typeset blockquote {
+  border-left: 0.2rem solid var(--si-drop-2);
+  color: var(--md-default-fg-color--light);
+}
+
+/* Custom admonition: YAML only (drop blue) */
+:root {
+  --md-admonition-icon--yaml-only: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 3a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2H3v2h1a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h2v-2H8v-5a2 2 0 0 0-2-2 2 2 0 0 0 2-2V5h2V3m6 0a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h1v2h-1a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-2v-2h2v-5a2 2 0 0 1 2-2 2 2 0 0 1-2-2V5h-2V3h2Z"/></svg>');
+  --md-admonition-icon--advanced: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3M3 5v2h10V5H3m10 16v-2h8v-2h-8v-2h-2v6h2M7 9v2H3v2h4v2h2V9H7m14 4v-2H11v2h10m-6-4h2V7h4V5h-4V3h-2v6Z"/></svg>');
+}
+.md-typeset .admonition.yaml-only,
+.md-typeset details.yaml-only {
+  border-color: var(--si-drop-2);
+}
+.md-typeset .yaml-only > .admonition-title,
+.md-typeset .yaml-only > summary {
+  background: var(--si-yaml-bg);
+  border-image: var(--si-drop-gradient) 1;
+}
+.md-typeset .yaml-only > .admonition-title::before,
+.md-typeset .yaml-only > summary::before {
+  background-color: var(--si-drop-2);
+  -webkit-mask-image: var(--md-admonition-icon--yaml-only);
+  mask-image: var(--md-admonition-icon--yaml-only);
+}
+
+/* Custom admonition: Advanced mode (leaf green) */
+.md-typeset .admonition.advanced,
+.md-typeset details.advanced {
+  border-color: var(--si-leaf-2);
+}
+.md-typeset .advanced > .admonition-title,
+.md-typeset .advanced > summary {
+  background: var(--si-advanced-bg);
+}
+.md-typeset .advanced > .admonition-title::before,
+.md-typeset .advanced > summary::before {
+  background-color: var(--si-leaf-2);
+  -webkit-mask-image: var(--md-admonition-icon--advanced);
+  mask-image: var(--md-admonition-icon--advanced);
+}
+.md-typeset .admonition.yaml-only,
+.md-typeset .admonition.advanced,
+.md-typeset details.yaml-only,
+.md-typeset details.advanced {
+  border-left-width: 0.25rem;
+}
+
+/* Footer prev/next */
+.md-footer__title {
+  font-family: var(--si-display);
+}
