@@ -710,11 +710,11 @@
     },
     "missing_input": {
       "title": "Zone {zone} : rien n'a pu être calculé",
-      "description": "L'évapotranspiration de la zone **{zone}** n'a pas pu être calculée, car les données météo n'avaient aucune valeur pour : **{missing}**.\n\nTant que ce n'est pas le cas, le déficit de la zone ne bouge pas et elle n'est pas arrosée, ce qui ressemble exactement à une zone sans besoin.\n\nVérifiez que les capteurs associés à ces champs sont disponibles, ou que le service météo les envoie toujours. Le problème disparaît au prochain calcul possible."
+      "description": "L'évapotranspiration de la zone **{zone}** n'a pas pu être calculée, car les données météo n'avaient aucune valeur pour : **{missing}**.\n\nTant que ce n'est pas le cas, le déficit de la zone ne bouge pas et elle n'est pas arrosée, ce qui ressemble exactement à une zone sans besoin.\n\nVérifie que les capteurs associés à ces champs sont disponibles, ou que le service météo les envoie toujours. Le problème disparaît au prochain calcul possible."
     },
     "undersized_zone": {
       "title": "Zone {zone} : un cycle ne peut pas arroser ce qu'elle perd",
-      "description": "Le cycle le plus long de la zone **{zone}** apporte environ **{capacity} mm**, mais la zone perd environ **{need} mm** entre deux arrosages ({days} jour(s)). Son déficit continuera de croître tant que la météo reste ce qu'elle est.\n\nLe plafond est la durée maximale de la zone. Augmentez-la, donnez plus d'émetteurs ou un débit plus élevé à la zone, ou réduisez les jours entre les arrosages. Si le plafond est voulu, vous pouvez ignorer cet avis."
+      "description": "Le cycle le plus long de la zone **{zone}** apporte environ **{capacity} mm**, mais la zone perd environ **{need} mm** entre deux arrosages ({days} jour(s)). Son déficit continuera de croître tant que la météo reste ce qu'elle est.\n\nLe plafond est la durée maximale de la zone. Augmente-la, donne plus d'émetteurs ou un débit plus élevé à la zone, ou réduis les jours entre les arrosages. Si le plafond est voulu, tu peux ignorer cet avis."
     },
     "throughput_mismatch": {
       "title": "Zone {zone} : le débit mesuré ne correspond pas au débit configuré",
@@ -762,7 +762,7 @@
         "step": {
           "confirm": {
             "title": "Remettre la zone {zone} en service",
-            "description": "La vanne de la zone **{zone}** a échoué {count} fois de suite (elle ne s'est pas ouverte, n'a pas donné d'eau, ou sa minuterie n'a pas pu être réglée), donc Smart Irrigation a cessé de l'arroser.\n\nVérifiez la vanne, son alimentation ou ses piles et son arrivée d'eau. La zone revient d'elle-même quand on voit sa vanne s'ouvrir, par exemple en l'essayant à la main. Ou remettez-la en service maintenant.\n\nSmart Irrigation arrosera de nouveau la zone {zone} dès son prochain arrosage, et recomptera ses échecs à partir de zéro."
+            "description": "La vanne de la zone **{zone}** a échoué {count} fois de suite (elle ne s'est pas ouverte, n'a pas donné d'eau, ou sa minuterie n'a pas pu être réglée), donc Smart Irrigation a cessé de l'arroser.\n\nVérifie la vanne, son alimentation ou ses piles et son arrivée d'eau. La zone revient d'elle-même quand on voit sa vanne s'ouvrir, par exemple en l'essayant à la main. Ou remets-la en service maintenant.\n\nSmart Irrigation arrosera de nouveau la zone {zone} dès son prochain arrosage, et recomptera ses échecs à partir de zéro."
           }
         }
       }
@@ -776,8 +776,8 @@
       "fix_flow": {
         "step": {
           "confirm": {
-            "title": "Votre arrosage continue comme avant",
-            "description": "Smart Irrigation a maintenant un seul réglage pour ce qu'il fait : **Calculer et arroser**, **Calculer seulement** ou **Tout arrêter**, dans l'onglet Réglages. Votre installation ouvrait elle-même les vannes : elle est passée en **Calculer et arroser**.\n\nVos zones sont arrosées comme avant, au même moment : le déclencheur de départ est devenu un horaire du programme **Arrosage**, dans le nouvel onglet **Arrosage**. Choisissez **Calculer seulement** si Smart Irrigation ne doit plus ouvrir les vannes."
+            "title": "Ton arrosage continue comme avant",
+            "description": "Smart Irrigation a maintenant un seul réglage pour ce qu'il fait : **Calculer et arroser**, **Calculer seulement** ou **Tout arrêter**, dans l'onglet Réglages. Ton installation ouvrait elle-même les vannes : elle est passée en **Calculer et arroser**.\n\nTes zones sont arrosées comme avant, au même moment : le déclencheur de départ est devenu un horaire du programme **Arrosage**, dans le nouvel onglet **Arrosage**. Choisis **Calculer seulement** si Smart Irrigation ne doit plus ouvrir les vannes."
           }
         }
       }
