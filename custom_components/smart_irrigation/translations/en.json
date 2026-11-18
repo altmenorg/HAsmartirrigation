@@ -337,7 +337,7 @@
     },
     "stop_program": {
       "name": "Stop program",
-      "description": "Stop one program. If it is running, its open zones are closed the normal way and credited for what they delivered; if it is waiting for its turn, it is taken out of the queue. An unknown program does nothing. The main program is stopped with stop_watering.",
+      "description": "Stop one program. If it is running, its open zones are closed the normal way and credited for what they delivered; if it is waiting for its turn, it is taken out of the queue. An unknown program does nothing. All watering is stopped with stop_watering.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -790,7 +790,7 @@
         "step": {
           "confirm": {
             "title": "Your watering goes on as before",
-            "description": "Smart Irrigation now has one setting for what it does: **Calculate and water**, **Calculate only** or **Stop everything**, in the Settings tab. Your installation opened the valves itself, so it was moved to **Calculate and water**.\n\nYour zones are watered as before, at the same moment: the start trigger became a schedule of the main program, in the new **Watering** tab. Choose **Calculate only** if Smart Irrigation should no longer open the valves."
+            "description": "Smart Irrigation now has one setting for what it does: **Calculate and water**, **Calculate only** or **Stop everything**, in the Settings tab. Your installation opened the valves itself, so it was moved to **Calculate and water**.\n\nYour zones are watered as before, at the same moment: the start trigger became a schedule of the **Watering** program, in the new **Watering** tab. Choose **Calculate only** if Smart Irrigation should no longer open the valves."
           }
         }
       }

@@ -337,7 +337,7 @@
     },
     "stop_program": {
       "name": "Arrêter un programme",
-      "description": "Arrêter un programme. S'il tourne, ses zones ouvertes sont fermées normalement et créditées de ce qu'elles ont apporté ; s'il attend son tour, il est retiré de la file d'attente. Un programme inconnu ne fait rien. Le programme principal s'arrête avec stop_watering.",
+      "description": "Arrêter un programme. S'il tourne, ses zones ouvertes sont fermées normalement et créditées de ce qu'elles ont apporté ; s'il attend son tour, il est retiré de la file d'attente. Un programme inconnu ne fait rien. Tout l'arrosage s'arrête avec stop_watering.",
       "fields": {
         "program_id": {
           "name": "Programme",
@@ -784,7 +784,7 @@
         "step": {
           "confirm": {
             "title": "Votre arrosage continue comme avant",
-            "description": "Smart Irrigation a maintenant un seul réglage pour ce qu'il fait : **Calculer et arroser**, **Calculer seulement** ou **Tout arrêter**, dans l'onglet Réglages. Votre installation ouvrait elle-même les vannes : elle est passée en **Calculer et arroser**.\n\nVos zones sont arrosées comme avant, au même moment : le déclencheur de départ est devenu un horaire du programme principal, dans le nouvel onglet **Arrosage**. Choisissez **Calculer seulement** si Smart Irrigation ne doit plus ouvrir les vannes."
+            "description": "Smart Irrigation a maintenant un seul réglage pour ce qu'il fait : **Calculer et arroser**, **Calculer seulement** ou **Tout arrêter**, dans l'onglet Réglages. Votre installation ouvrait elle-même les vannes : elle est passée en **Calculer et arroser**.\n\nVos zones sont arrosées comme avant, au même moment : le déclencheur de départ est devenu un horaire du programme **Arrosage**, dans le nouvel onglet **Arrosage**. Choisissez **Calculer seulement** si Smart Irrigation ne doit plus ouvrir les vannes."
           }
         }
       }

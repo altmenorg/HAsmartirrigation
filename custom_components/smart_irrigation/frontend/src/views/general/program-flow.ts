@@ -3,11 +3,11 @@ import { customElement, property } from "lit/decorators.js";
 
 import { localize } from "../../../localize/localize";
 import { friendlyDuration } from "../../card/format";
-import { ProgramFlow } from "../../data/program-flow";
+import { ProgramFlow, WeatherVerdict } from "../../data/program-flow";
 
 /**
  * A program drawn as a flow, top to bottom: what starts it, the weather it
- * asks, the pumps it switches on, each step with its valves side by side, the
+ * asks (and its answer for the next run), the pumps it switches on, each step with its valves side by side, the
  * waits between steps, the pumps switched off and who is told. Read only: it
  * follows the form or the YAML as they are edited (data/program-flow.ts).
  */
@@ -16,7 +16,8 @@ export class SmartIrrigationProgramFlow extends LitElement {
   @property({ attribute: false }) flow?: ProgramFlow;
   /** The schedules in words, one per line; none: started by hand. */
   @property({ attribute: false }) schedules: string[] = [];
-  @property({ type: Boolean }) weather = false;
+  /** The weather's answer for the next run (weatherVerdict); off: no node. */
+  @property({ attribute: false }) weather: WeatherVerdict = { state: "off" };
   @property({ type: Boolean }) notify = false;
   @property() lang = "en";
 
@@ -25,6 +26,20 @@ export class SmartIrrigationProgramFlow extends LitElement {
     for (const [k, v] of Object.entries(values))
       text = text.replace(`{${k}}`, v);
     return text;
+  }
+
+  /** "Yes", "No: Wind", "No: Rain forecast 6 mm", or what is asked. */
+  private _verdict(verdict: WeatherVerdict): string {
+    if (verdict.state === "yes") return this._t("weather_yes");
+    if (verdict.state !== "no") return this._t("weather_sub");
+    let reason = localize(
+      `panels.info.cards.decision.check-${verdict.reason}`,
+      this.lang,
+    );
+    if (verdict.reason === "precipitation" && verdict.mm != null) {
+      reason += ` ${Math.round(verdict.mm * 10) / 10} mm`;
+    }
+    return this._t("weather_no", { reason });
   }
 
   private _openZone(zoneId: number) {
@@ -57,12 +72,12 @@ export class SmartIrrigationProgramFlow extends LitElement {
             ? this.schedules.map((s) => html`<div class="sub">${s}</div>`)
             : html`<div class="sub">${this._t("by_hand")}</div>`}
         </div>
-        ${this.weather
+        ${this.weather.state !== "off"
           ? html`${this._arrow()}
               <div class="branch">
-                <div class="node weather">
+                <div class="node weather ${this.weather.state}">
                   <div class="title">${this._t("weather")}</div>
-                  <div class="sub">${this._t("weather_sub")}</div>
+                  <div class="sub">${this._verdict(this.weather)}</div>
                 </div>
                 <div class="side">${this._t("otherwise")}</div>
               </div>`
@@ -223,8 +238,18 @@ export class SmartIrrigationProgramFlow extends LitElement {
       font-size: 0.85em;
       color: var(--secondary-text-color);
     }
-    .weather {
-      border-color: var(--warning-color, #ffa600);
+    .weather.yes {
+      border-color: var(--success-color, #43a047);
+    }
+    .weather.yes .sub {
+      color: var(--success-color, #43a047);
+    }
+    .weather.no {
+      border-color: var(--error-color, #db4437);
+    }
+    .weather.no .sub {
+      color: var(--error-color, #db4437);
+      font-weight: 500;
     }
     .supply {
       border-color: var(--success-color, #43a047);

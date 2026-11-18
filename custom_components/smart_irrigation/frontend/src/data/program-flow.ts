@@ -123,3 +123,94 @@ export const programFlow = (
     .map((z) => ({ zoneId: z.id, name: z.name }));
   return { steps, supplies: flowSupplies, tours, idle };
 };
+
+/** The answer of the flow's "Weather allows it?" node, for the next run. */
+export type WeatherVerdict =
+  /** No schedule of the program takes the weather into account. */
+  | { state: "off" }
+  /** Nothing to go on yet (no answer from the backend). */
+  | { state: "unknown" }
+  | { state: "yes" }
+  /** ``reason`` is a skip condition id; ``mm`` the rain forecast behind it. */
+  | { state: "no"; reason: string; mm?: number | null };
+
+interface CheckLike {
+  id: string;
+  enabled?: boolean;
+  available?: boolean;
+  skip?: boolean;
+  forecast_mm?: number | null;
+}
+
+interface PlanningLike {
+  skipped_reason?: string | null;
+  forecast?: { forecast_mm?: number | null } | null;
+  forecast_known?: boolean;
+}
+
+interface ScheduleLike {
+  enabled?: boolean;
+  weather?: boolean;
+  skip_conditions?: string[] | null;
+}
+
+/**
+ * Whether the weather lets the program's next run go ahead, from what the
+ * backend already says: the skip checks evaluated for the next start
+ * (``skip_preview`` of the info websocket) and the program's next planned run,
+ * whose rain forecast is read for its own start.
+ *
+ * Only the schedules that are on and take the weather into account count, and
+ * only the conditions they apply (a list in YAML, ``skip_conditions``; none:
+ * all of them). The postponement the user asked for always applies. The
+ * planned run's forecast is preferred to the preview's when it was read: the
+ * preview is for the soonest start of any program, which need not be this
+ * one's. A suspension is not the weather, and is left to the program's state.
+ */
+export const weatherVerdict = (
+  schedules: ScheduleLike[] = [],
+  preview?: { checks?: CheckLike[] | null } | null,
+  next?: PlanningLike | null,
+): WeatherVerdict => {
+  const asking = (schedules || []).filter(
+    (s) => s.enabled !== false && s.weather !== false,
+  );
+  if (!asking.length) return { state: "off" };
+  // null: every condition applies.
+  let conditions: Set<string> | null = new Set(["postponed"]);
+  for (const s of asking) {
+    if (!Array.isArray(s.skip_conditions)) {
+      conditions = null;
+      break;
+    }
+    for (const id of s.skip_conditions) conditions.add(id);
+  }
+  const applies = (id: string) => conditions === null || conditions.has(id);
+  const planned = !!next?.forecast_known;
+  if (next?.skipped_reason === "precipitation" && applies("precipitation")) {
+    return {
+      state: "no",
+      reason: "precipitation",
+      mm: next.forecast?.forecast_mm ?? null,
+    };
+  }
+  const checks = preview?.checks;
+  if (!Array.isArray(checks)) {
+    return planned ? { state: "yes" } : { state: "unknown" };
+  }
+  const holding = checks.find(
+    (c) =>
+      applies(c.id) &&
+      c.enabled !== false &&
+      c.available !== false &&
+      c.skip === true &&
+      // The planned run read the forecast for its own start, and it said go.
+      !(c.id === "precipitation" && planned),
+  );
+  if (holding) {
+    return holding.id === "precipitation"
+      ? { state: "no", reason: holding.id, mm: holding.forecast_mm ?? null }
+      : { state: "no", reason: holding.id };
+  }
+  return { state: "yes" };
+};

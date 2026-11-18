@@ -337,7 +337,7 @@
     },
     "stop_program": {
       "name": "Detener programa",
-      "description": "Detener un programa. Si se está ejecutando, sus zonas abiertas se cierran de la forma normal y se acreditan con lo que aportaron; si espera su turno, se saca de la cola. Un programa desconocido no hace nada. El programa principal se detiene con stop_watering.",
+      "description": "Detener un programa. Si se está ejecutando, sus zonas abiertas se cierran de la forma normal y se acreditan con lo que aportaron; si espera su turno, se saca de la cola. Un programa desconocido no hace nada. Todo el riego se detiene con stop_watering.",
       "fields": {
         "program_id": {
           "name": "Programa",
@@ -784,7 +784,7 @@
         "step": {
           "confirm": {
             "title": "Su riego continúa como antes",
-            "description": "Smart Irrigation tiene ahora un solo ajuste para lo que hace: **Calcular y regar**, **Solo calcular** o **Detener todo**, en la pestaña Ajustes. Su instalación abría las válvulas por sí misma, así que pasó a **Calcular y regar**.\n\nSus zonas se riegan como antes, en el mismo momento: el disparador de inicio se convirtió en un horario del programa principal, en la nueva pestaña **Riego**. Elija **Solo calcular** si Smart Irrigation ya no debe abrir las válvulas."
+            "description": "Smart Irrigation tiene ahora un solo ajuste para lo que hace: **Calcular y regar**, **Solo calcular** o **Detener todo**, en la pestaña Ajustes. Su instalación abría las válvulas por sí misma, así que pasó a **Calcular y regar**.\n\nSus zonas se riegan como antes, en el mismo momento: el disparador de inicio se convirtió en un horario del programa **Riego**, en la nueva pestaña **Riego**. Elija **Solo calcular** si Smart Irrigation ya no debe abrir las válvulas."
           }
         }
       }

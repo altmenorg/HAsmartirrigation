@@ -34,6 +34,7 @@ async def test_only_the_group_that_reads_the_sensor_is_updated():
     coordinator = SmartIrrigationCoordinator.__new__(SmartIrrigationCoordinator)
     coordinator.hass = MagicMock()
     coordinator._debounced_update_cancel = {}
+    coordinator.async_request_live_refresh = MagicMock()
     coordinator.store = MagicMock()
     coordinator.store.async_get_config = AsyncMock(
         return_value={const.CONF_SENSOR_DEBOUNCE: 0}

@@ -12,11 +12,15 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 import {
   fetchConfig,
+  fetchIrrigationHistory,
+  fetchIrrigationInfo,
   fetchMappings,
   fetchZones,
+  IrrigationHistoryRecord,
   saveConfig,
   saveZone,
 } from "../../data/websockets";
+import { todayRuns } from "../../data/week";
 import { SubscribeMixin } from "../../subscribe-mixin";
 import { localize } from "../../../localize/localize";
 import {
@@ -35,14 +39,13 @@ import {
   navigate,
   readingUses,
   countLabel,
-  formatNumber,
   programCanRun,
 } from "../../helpers";
 import { loadHaForm, loadHaYamlEditor } from "../../load-ha-elements";
 import "./program-timeline";
 import "./week-view";
 import "./program-flow";
-import { programFlow } from "../../data/program-flow";
+import { programFlow, weatherVerdict } from "../../data/program-flow";
 import { Timeline } from "../../data/timeline";
 import { programFromYaml, programToYaml } from "../../data/program-yaml";
 import {
@@ -62,6 +65,7 @@ import {
   SmartIrrigationSupply,
   SmartIrrigationZone,
   IrrigationStartTrigger,
+  SkipEvaluation,
 } from "../../types";
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
@@ -129,12 +133,28 @@ const SKIP_CONDITION_IDS = [
   "soil_moisture",
 ];
 
+// The days the week view shows, kept by this browser across tabs and reloads
+// (#1051). Storage can be missing or refused (private window): then 7.
+const WEEK_DAYS_KEY = "smart_irrigation.week_days";
+function readWeekDays(): number {
+  try {
+    const days = Number(window.localStorage.getItem(WEEK_DAYS_KEY));
+    return [3, 7, 14].includes(days) ? days : 7;
+  } catch {
+    return 7;
+  }
+}
+function saveWeekDays(days: number): void {
+  try {
+    window.localStorage.setItem(WEEK_DAYS_KEY, String(days));
+  } catch {
+    // Not kept: the next visit shows 7 days.
+  }
+}
+
 const UNFOLDED = new Set<string>();
 // "More options" that hold a setting open by themselves; one closed by
 // hand stays closed.
-// Schedules set to "some conditions" whose list still holds them all: the
-// list shows until one is unticked (a full list is stored as no list).
-const PICKING_CONDITIONS = new Set<string>();
 const FOLDED_BY_HAND = new Set<string>();
 
 /** What is typed next to "Run now" and in the adjust block, by program id. */
@@ -205,11 +225,17 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   // What the programs are doing, and what they will do (full controller).
   @property({ attribute: false }) planning: any[] = [];
   @property({ attribute: false }) programsState?: any;
+  // What the skip checks say for the next start, for the flow's weather node
+  // (Programs page only, read with the planning).
+  private _skipPreview?: SkipEvaluation | null;
   private _liveTimer?: number;
   private _unfolded = UNFOLDED;
 
   // How many days the week view shows (3, 7 or 14).
-  private _weekDays = 7;
+  private _weekDays = readWeekDays();
+  // The last zone runs watered, for today's row of the week view.
+  private _history: IrrigationHistoryRecord[] = [];
+  private _wasWatering = false;
 
   private _isOpen(key: string): boolean {
     return this._unfolded.has(key);
@@ -757,7 +783,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // The checks that hold a run back on the weather, beside the sensors
       // they read.
       if (this.section === "skip") {
-        return this.renderSkipPage(r6);
+        return this.renderSkipPage(html`${r6}${r8}`);
       }
       if (this.section) {
         return this.renderWateringSection(r5);
@@ -791,7 +817,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // how often it is read are on the Weather tab, with the skip checks: a
       // card here said only that, and is gone (the tab is in plain sight).
       // The master switch stays above everything it switches.
-      const r = html`${r18} ${heading("calculation")}${r1}${r8}${r13}${r10}
+      // The days between irrigation are on the Weather tab's skip page, with
+      // every other check that holds a run back.
+      const r = html`${r18} ${heading("calculation")}${r1}${r13}${r10}
       ${
         // Observed watering is on the advanced panel, the start triggers are
         // for "Calculate only": with neither, the heading stood alone.
@@ -827,7 +855,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     return html`${this.renderProgramsCard()}`;
   }
 
-  /** Links to zones of the Zones page, each opening its zone (#969). */
+  /** Links to zones of the Zones page, each opening its zone (#969); the
+   * text may carry the zone's value ("Lawn 3"). */
   private _zoneLinks(zones: { zone_id: number; zone: string }[]) {
     return zones.map(
       (z, index) =>
@@ -843,9 +872,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   }
 
   /** What the programs are doing now, one line each, and the valves that are open. */
-  renderLiveState() {
+  /** What is watering now, or nothing (the card is only shown then). */
+  renderLiveState(): TemplateResult | undefined {
     const state = this.programsState;
-    if (!this.hass || !state) return html``;
+    if (!this.hass || !state) return undefined;
     const lang = this.hass.language;
     const t = (key: string) => localize(`planning.${key}`, lang);
     const live = state.live;
@@ -924,18 +954,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         `,
       ),
     ];
-    if (!rows.length) {
-      return html`<div class="setting-note">${t("nothing_now")}</div>`;
-    }
+    if (!rows.length) return undefined;
     return html`${rows}`;
   }
 
-  /**
-   * What the programs will water over the next days.
-   *
-   * Only in full controller mode. The weather is not known days ahead: a planned
-   * run is one that goes ahead if nothing holds it back.
-   */
   /** The next days at a glance: a row per day, each run a block (week-view.ts). */
   renderWeekCard() {
     if (!this.config || !this.hass || this.config.full_controller !== true) {
@@ -953,12 +975,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       <div class="card-content">
         <si-week-view
           .planning=${this.planning || []}
+          .today=${todayRuns(
+            this._history,
+            this.programsState?.programs || [],
+            new Date(),
+          )}
           .lang=${lang}
           .days=${this._weekDays}
           .programLabel=${(id: string, name: string) =>
             this._programLabel(id, name)}
           @days-changed=${(e: CustomEvent) => {
             this._weekDays = e.detail.days;
+            saveWeekDays(this._weekDays);
             this._fetchLive(true);
           }}
           @open-program=${(e: CustomEvent) => {
@@ -971,181 +999,17 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     </ha-card>`;
   }
 
+  /** What is watering now; the runs to come are in the week chart above. */
   renderPlanningCard() {
     if (!this.config || !this.hass || this.config.full_controller !== true) {
       return html``;
     }
+    const live = this.renderLiveState();
+    if (!live) return html``;
     const lang = this.hass.language;
-    const t = (key: string) => localize(`planning.${key}`, lang);
-    const dayTime = (iso: string) =>
-      new Intl.DateTimeFormat(lang, {
-        weekday: "short",
-        day: "numeric",
-        month: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(new Date(iso));
-    const clock = (iso: string) =>
-      new Intl.DateTimeFormat(lang, {
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(new Date(iso));
-    // The durations planned, in the form the rest of the panel uses: it said
-    // "62 min" where Start said "1 h 02 min".
-    const minutes = (seconds: number) => friendlyDuration(seconds);
-    // The list covers the days the week above shows (3, 7 or 14), and says so.
-    const days = this._weekDays;
-    const listUntil = Date.now() + days * 86400 * 1000;
-    const planning = (this.planning || []).filter(
-      (item: any) => new Date(item.start).getTime() < listUntil,
-    );
     return html`
-      <ha-card header="${t("title")}">
-        <div class="card-content">
-          ${t("description").replace("{days}", String(days))}
-          ${this.renderLiveState()}
-        </div>
-
-        ${planning.length
-          ? planning.map(
-              (item: any) => html`
-                <div class="card-content">
-                  <div class="setting-note">
-                    <strong>${dayTime(item.start)}</strong>
-                    ${this._programLabel(item.program_id, item.program)}
-                    (${clock(item.start)} - ${clock(item.end)})
-                  </div>
-                  ${item.after
-                    ? html`<div class="setting-note">
-                        ${(item.after.offset_minutes
-                          ? t("after_program_offset").replace(
-                              "{minutes}",
-                              String(item.after.offset_minutes),
-                            )
-                          : t("after_program")
-                        ).replace(
-                          "{program}",
-                          this._programLabel(
-                            item.after.program_id,
-                            item.after.program,
-                          ),
-                        )}
-                      </div>`
-                    : ""}
-                  ${item.waits_for
-                    ? html`<div class="setting-note">
-                        ${t("waits_for")
-                          .replace(
-                            "{program}",
-                            this._programLabel(
-                              item.waits_for.program_id,
-                              item.waits_for.program,
-                            ),
-                          )
-                          .replace("{start}", clock(item.expected_start))
-                          .replace("{end}", clock(item.expected_end))}
-                      </div>`
-                    : ""}
-                  ${this._wateredTwice(item.watered_twice, t("watered_twice"))}
-                  ${item.timeline?.segments?.length
-                    ? html`<si-program-timeline
-                        .timeline=${item.timeline}
-                        .lang=${lang}
-                        .start=${item.expected_start || item.start}
-                      ></si-program-timeline>`
-                    : ""}
-                  ${item.steps.map(
-                    (step: any, n: number) => html`
-                      <div class="setting-note">
-                        ${n + 1}.
-                        ${step.zones
-                          .map((z: any) => {
-                            // In passes, and up to a volume: "Hecken 2 min"
-                            // stood over an expected 19 min 45 s (Q9, Q24).
-                            let text = `${z.zone} ${minutes(z.expected_seconds ?? z.seconds)}`;
-                            if ((z.passes ?? 1) > 1) {
-                              text += ` ${t("in_passes").replace("{passes}", String(z.passes))}`;
-                            }
-                            if (z.max_litres) {
-                              text += ` ${t("at_most").replace(
-                                "{volume}",
-                                `${formatNumber(
-                                  displayVolume(z.max_litres, this.config),
-                                  1,
-                                  (this.hass as any)?.locale,
-                                  lang,
-                                )} ${unit_text(this.config, ZONE_WATER_VOLUME)}`,
-                              )}`;
-                            }
-                            return text;
-                          })
-                          .join(" + ")}
-                      </div>
-                    `,
-                  )}
-                  ${item.zones_without_valve?.length && !item.nothing_to_water
-                    ? html`<div class="setting-note planning-no-valve">
-                        ${t("no_valve")}
-                        ${this._zoneLinks(item.zones_without_valve)}
-                      </div>`
-                    : ""}
-                  ${item.nothing_to_water
-                    ? html`<div
-                        class="setting-note"
-                        style="opacity: 0.6; font-style: italic;"
-                      >
-                        ${item.zones_without_valve?.length
-                          ? html`${t("nothing_no_valve")}
-                            ${this._zoneLinks(item.zones_without_valve)}`
-                          : t("nothing_to_water")}
-                      </div>`
-                    : item.expected_seconds
-                      ? html`<div class="setting-note">
-                          ${t("expected")} ${minutes(item.expected_seconds)}
-                        </div>`
-                      : ""}
-                  ${item.skipped_reason
-                    ? html`<div
-                        class="setting-note"
-                        style="opacity: 0.6; font-style: italic;"
-                      >
-                        ${item.skipped_reason === "suspended"
-                          ? t("expected_skipped_suspended").replace(
-                              "{when}",
-                              momentLabel(item.suspended_until, lang, {
-                                tomorrow: localize("card.tomorrow", lang),
-                                yesterday: localize("card.yesterday", lang),
-                              }),
-                            )
-                          : t("expected_skipped_precipitation").replace(
-                              "{mm}",
-                              String(
-                                Math.round(
-                                  (item.forecast?.forecast_mm ?? 0) * 10,
-                                ) / 10,
-                              ),
-                            )}
-                      </div>`
-                    : ""}
-                  ${item.steps.some((s: any) =>
-                    s.zones.some((z: any) => (z.passes ?? 1) > 1),
-                  ) && item.soak_seconds
-                    ? html`<div class="setting-note">
-                        ${t("soak_between").replace(
-                          "{time}",
-                          minutes(item.soak_seconds),
-                        )}
-                      </div>`
-                    : ""}
-                  ${item.tours > 1
-                    ? html`<div class="setting-note">
-                        ${t("tours_each").replace("{n}", String(item.tours))}
-                      </div>`
-                    : ""}
-                </div>
-              `,
-            )
-          : html`<div class="card-content">${t("nothing_planned")}</div>`}
+      <ha-card header="${localize("planning.now", lang)}">
+        <div class="card-content">${live}</div>
       </ha-card>
     `;
   }
@@ -1168,7 +1032,35 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           type: DOMAIN + "/planning",
           days: Math.max(3, this._weekDays),
         });
+        // The flow's "Weather allows it?" answers with what the checks say.
+        if (this.section === "programs") {
+          try {
+            this._skipPreview =
+              (await fetchIrrigationInfo(this.hass))?.skip_preview ?? null;
+          } catch {
+            // The node stays neutral.
+            this._skipPreview = undefined;
+          }
+        }
       }
+      // What watered today, for the week view's first row: read with the
+      // live state while something waters (a zone just done shows at once),
+      // with the planning otherwise.
+      const watering = (this.programsState?.programs || []).some(
+        (p: any) => p.state === "running" || p.state === "paused",
+      );
+      if (
+        this.section === "planning" &&
+        (withPlanning || watering || this._wasWatering)
+      ) {
+        try {
+          this._history =
+            (await fetchIrrigationHistory(this.hass, 100)).records || [];
+        } catch {
+          // Today's row shows only what is planned.
+        }
+      }
+      this._wasWatering = watering;
       this._scheduleUpdate();
     } catch (error) {
       console.error("Error fetching the programs' state:", error);
@@ -1773,7 +1665,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 programZones(program),
               )}
               .schedules=${schedules.map((s) => scheduleText(s))}
-              .weather=${schedules.some((s) => s.weather !== false)}
+              .weather=${weatherVerdict(
+                schedules,
+                this._skipPreview,
+                (this.planning || []).find(
+                  (item: any) => item.program_id === program.id,
+                ),
+              )}
               .notify=${!!program.notify?.targets?.length}
               .lang=${lang}
               @open-zone=${(e: CustomEvent) =>
@@ -2253,14 +2151,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           p.id !== program.id &&
           !wouldLoop(programs, program.id ?? "", p.id),
       );
-      // All the conditions, some of them (the list), or no weather at all.
-      const weatherMode =
-        schedule.weather === false
-          ? "none"
-          : schedule.skip_conditions !== undefined ||
-              PICKING_CONDITIONS.has(schedule.id ?? "")
-            ? "some"
-            : "all";
       const toggle = (
         list: number[] | undefined,
         value: number,
@@ -2489,77 +2379,35 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}
             </div>
           </div>
-          ${this._selectRow(
-            html`${t("schedule_weather")}<si-info
-                >${t("schedule_weather_help")}
-                ${t("schedule_conditions_help")}</si-info
-              >`,
-            html`${(["all", "some", "none"] as const).map(
-              (mode) =>
-                html`<option value=${mode} ?selected=${mode === weatherMode}>
-                  ${t(`schedule_weather_${mode}`)}
-                </option>`,
-            )}`,
-            (e: Event) => {
-              const mode = (e.target as HTMLSelectElement).value;
-              const key = schedule.id ?? "";
-              if (mode === "some") PICKING_CONDITIONS.add(key);
-              else PICKING_CONDITIONS.delete(key);
-              patchSchedule(
-                mode === "none"
-                  ? { weather: false }
-                  : mode === "all"
-                    ? { weather: true, skip_conditions: undefined }
-                    : { weather: true },
-              );
-            },
-          )}
-          ${weatherMode === "some"
-            ? html`<div class="conditions">
-                ${SKIP_CONDITION_IDS.every(
-                  (id) => id === "postponed" || !this._conditionSetting(id),
-                )
-                  ? html`<div class="setting-hint row-hint">
-                      ${t("conditions_none")}
-                    </div>`
-                  : ""}
-                ${SKIP_CONDITION_IDS.map((id) => {
-                  const always = id === "postponed";
-                  const active = schedule.skip_conditions ?? SKIP_CONDITION_IDS;
-                  // Off in Settings: nothing to obey or ignore here. The
-                  // schedule's choice is kept for when it is turned on.
-                  const setting = always
-                    ? t("cond_postponed")
-                    : this._conditionSetting(id);
-                  return html`
-                    <div class=${setting ? "" : "cond-off"}>
-                      <label style="white-space: nowrap;">
-                        <input
-                          type="checkbox"
-                          .checked=${always || active.includes(id)}
-                          ?disabled=${always || !setting}
-                          @change=${(e: Event) => {
-                            const on = (e.target as HTMLInputElement).checked;
-                            const next = SKIP_CONDITION_IDS.filter((c) =>
-                              c === id ? on : active.includes(c),
-                            );
-                            // All of them is the default: stored as no field.
-                            patchSchedule({
-                              skip_conditions:
-                                next.length === SKIP_CONDITION_IDS.length
-                                  ? undefined
-                                  : next,
-                            });
-                          }}
-                        />
-                        ${t(`condition_${id}`)}
-                      </label>
-                      <span class="cond-setting">
-                        · ${setting || t("cond_off")}
-                      </span>
-                    </div>
-                  `;
-                })}
+          <div class="setting-row">
+            <div class="setting-label">
+              ${t("schedule_weather")}<si-info
+                >${t("schedule_weather_help")}</si-info
+              >
+            </div>
+            <ha-switch
+              .checked=${schedule.weather !== false}
+              @change=${(e: Event) =>
+                // A list of conditions set in YAML is kept: on again, it
+                // applies again, and shows below.
+                patchSchedule({ weather: (e.target as any).checked })}
+            ></ha-switch>
+          </div>
+          ${schedule.weather !== false &&
+          Array.isArray(schedule.skip_conditions)
+            ? // Some of the conditions only: chosen in YAML, shown here so
+              // that it never acts out of sight.
+              html`<div class="setting-hint row-hint">
+                ${t("schedule_conditions_only").replace(
+                  "{list}",
+                  SKIP_CONDITION_IDS.filter(
+                    (id) =>
+                      id === "postponed" ||
+                      schedule.skip_conditions!.includes(id),
+                  )
+                    .map((id) => t(`condition_${id}`))
+                    .join(", "),
+                )}<si-info>${t("schedule_conditions_yaml")}</si-info>
               </div>`
             : ""}
           ${more(
@@ -4101,32 +3949,36 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     `;
   }
 
-  /** The Weather tab's skip page: the forecast, then what is measured. */
+  /**
+   * The Weather tab's skip page, every check that holds a run back in one
+   * place: the forecast, what is measured, the days between irrigation, and
+   * what the zones set for themselves (edited on the zone, summed up here).
+   */
   renderSkipPage(cards: TemplateResult) {
     if (!this.hass) return html``;
     const lang = this.hass.language;
+    const soil = (this.zones || [])
+      .filter((zone) => !!zone.soil_moisture_sensor)
+      .map((zone) => ({
+        zone_id: zone.id ?? 0,
+        zone: `${zone.name} ${zone.soil_moisture_threshold ?? 50} %`,
+      }));
     return html`
-      <ha-card>
-        <h1 class="card-header">
-          <span
-            >${localize("panels.skip.title", lang)}<si-info
-              >${localize("panels.skip.description", lang)}</si-info
-            ></span
-          >
-        </h1>
-      </ha-card>
       ${cards}
       <ha-card>
         <div class="card-content skip-soil">
-          ${localize("panels.skip.soil-moisture", lang)}
-          <a
-            href="/${DOMAIN}/zones"
-            @click=${(e: Event) => {
-              e.preventDefault();
-              navigate(this, `/${DOMAIN}/zones`);
-            }}
-            >${localize("panels.skip.open-zones", lang)}</a
-          >
+          ${soil.length
+            ? html`${localize("panels.skip.soil-zones", lang)}
+              ${this._zoneLinks(soil)}`
+            : html`${localize("panels.skip.soil-moisture", lang)}
+                <a
+                  href="/${DOMAIN}/zones"
+                  @click=${(e: Event) => {
+                    e.preventDefault();
+                    navigate(this, `/${DOMAIN}/zones`);
+                  }}
+                  >${localize("panels.skip.open-zones", lang)}</a
+                >`}
         </div>
       </ha-card>
     `;
@@ -4691,6 +4543,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   renderDaysBetweenIrrigationCard() {
     if (!this.config || !this.data || !this.hass) return html``;
+    // The zones that count days of their own (0 included: no limit for them).
+    const own = (this.zones || [])
+      .filter((zone) => typeof zone.days_between_irrigation === "number")
+      .map((zone) => ({
+        zone_id: zone.id ?? 0,
+        zone: `${zone.name} ${zone.days_between_irrigation}`,
+      }));
 
     return html`
       <ha-card>
@@ -4719,6 +4578,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               }),
             1,
           )}
+          ${own.length
+            ? // Set on the zone, shown here so that none acts out of sight.
+              html`<div class="setting-hint row-hint skip-soil">
+                ${localize("days_between_irrigation.own", this.hass.language)}
+                ${this._zoneLinks(own)}
+              </div>`
+            : ""}
         </div>
       </ha-card>
     `;
@@ -4835,83 +4701,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         />
       </div>
     `;
-  }
-
-  /**
-   * What a skip condition is set to in Settings, General, in words, or "" when
-   * it is off there. Thresholds are stored metric and shown in the units of
-   * Home Assistant, as the Info page shows them.
-   */
-  private _conditionSetting(id: string): string {
-    const config = this.config;
-    if (!config || !this.hass) return "";
-    const lang = this.hass.language;
-    const t = (key: string, ...args: any[]) =>
-      localize(`programs.${key}`, lang, ...args);
-    const metric = (this.hass.config as any)?.unit_system?.temperature !== "°F";
-    const round = (value: number) => Math.round(value * 10) / 10;
-    switch (id) {
-      case "rain_sensor": {
-        if (!config.skip_on_rain_sensor || !config.rain_sensor) return "";
-        const state = (this.hass.states as any)?.[config.rain_sensor];
-        return state?.attributes?.friendly_name ?? config.rain_sensor;
-      }
-      case "freeze": {
-        if (!config.skip_on_freeze) return "";
-        const c = config.freeze_threshold ?? 2;
-        return t(
-          "cond_freeze",
-          "{value}",
-          metric ? `${round(c)} °C` : `${round((c * 9) / 5 + 32)} °F`,
-        );
-      }
-      case "wind": {
-        if (!config.skip_on_wind) return "";
-        const kmh = config.wind_threshold ?? 20;
-        return t(
-          "cond_wind",
-          "{value}",
-          metric ? `${round(kmh)} km/h` : `${round(kmh / 1.609344)} mph`,
-        );
-      }
-      case "precipitation": {
-        if (!config.skip_irrigation_on_precipitation) return "";
-        const mm = config.precipitation_threshold_mm ?? 2;
-        return t(
-          "cond_precipitation",
-          "{value}",
-          metric ? `${round(mm)} mm` : `${round(mm / 25.4)} in`,
-        );
-      }
-      case "days_between": {
-        // A zone's own days count as much as the general ones: the condition
-        // holds those zones back even when the general setting is 0.
-        const general = config.days_between_irrigation ?? 0;
-        const own = (this.zones || [])
-          .map((zone: any) => zone.days_between_irrigation)
-          .filter((d: any) => typeof d === "number" && d > 0);
-        const all = general > 0 ? [general, ...own] : own;
-        if (!all.length) return "";
-        const low = Math.min(...all);
-        const high = Math.max(...all);
-        return t(
-          "cond_days_between",
-          "{n}",
-          low === high ? String(low) : `${low}-${high}`,
-        );
-      }
-      case "soil_moisture": {
-        const count = (this.zones || []).filter(
-          (zone) => !!zone.soil_moisture_sensor,
-        ).length;
-        if (count <= 0) return "";
-        return count === 1
-          ? t("cond_soil_one", "{n}", String(count))
-          : t("cond_soil", "{n}", String(count));
-      }
-      default:
-        return "";
-    }
   }
 
   // A day of the year, stored "MM-DD", picked as a month and a day instead of
@@ -5082,33 +4871,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   // Action button: native ha-button, light "filled" appearance,
   // "danger" variant turns it red.
-  /**
-   * The zones a run waters again right after the run it waits behind, one
-   * line per program: they got their water twice that morning, and nothing
-   * said so (UX walk of 13 Nov., Q1).
-   */
-  private _wateredTwice(twice: any[] | undefined, text: string) {
-    if (!twice?.length) return html``;
-    const byProgram = new Map<string, { label: string; zones: string[] }>();
-    for (const entry of twice) {
-      const key = entry.by?.program_id ?? "";
-      const group = byProgram.get(key) ?? {
-        label: this._programLabel(entry.by?.program_id, entry.by?.program),
-        zones: [],
-      };
-      group.zones.push(entry.zone);
-      byProgram.set(key, group);
-    }
-    return html`${[...byProgram.values()].map(
-      (group) =>
-        html`<div class="setting-note warning-note">
-          ${text
-            .replace("{zones}", group.zones.join(", "))
-            .replace("{program}", group.label)}
-        </div>`,
-    )}`;
-  }
-
   private _programLabel(id: string | undefined, name: string | undefined) {
     return name || id || "";
   }
@@ -5186,8 +4948,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         display: flex;
         align-items: flex-start;
         gap: 12px;
-        margin: 32px 4px 8px;
-        padding-top: 16px;
+        /* The cards' 5 px margin and 16 px padding: the icon starts where
+           their content does (#1050), the line spans the cards' width. */
+        margin: 32px 5px 8px;
+        padding: 16px 16px 0;
         border-top: 1px solid var(--divider-color);
       }
       .settings-section ha-icon {
@@ -5296,13 +5060,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       }
       .combo-field .select-wrap.day-select {
         width: 90px;
-      }
-      .cond-off {
-        opacity: 0.55;
-      }
-      .cond-setting {
-        color: var(--secondary-text-color);
-        font-size: 0.9em;
       }
       @media (max-width: 600px) {
         .combo-field {

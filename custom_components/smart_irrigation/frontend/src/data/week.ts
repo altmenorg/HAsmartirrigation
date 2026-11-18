@@ -14,6 +14,9 @@ export interface WeekRun {
   expected_end?: string;
   skipped_reason?: string | null;
   nothing_to_water?: boolean;
+  /** Today's, from the history (todayRuns): going on, or over. */
+  running?: boolean;
+  done?: boolean;
   timeline?: {
     total: number;
     segments: { kind: string; start: number; end: number }[];
@@ -143,4 +146,98 @@ export const weekTicks = (
   const first = Math.ceil(layout.from / (step * HOUR)) * step * HOUR;
   for (let t = first; t <= layout.to; t += step * HOUR) ticks.push(t);
   return ticks;
+};
+
+/** A zone's run as the irrigation history records it, once it is over. */
+export interface TodayRecord {
+  start: string | null;
+  zone_name?: string | null;
+  duration: number;
+  program_id?: string | null;
+}
+
+/** A program as the programs' state lists it. */
+export interface TodayProgram {
+  program_id: string;
+  name: string;
+  state?: string;
+  last_run?: string | null;
+  live?: { remaining_seconds?: number | null } | null;
+}
+
+/**
+ * Today's runs under way and over, as runs of the week: the planning lists
+ * only the starts to come, and the "Today" row stayed empty under a run going
+ * on, or after the morning's. A program's zones that follow each other (a
+ * soak between them up to ``gap`` seconds) make one run; a run going on ends
+ * where its remaining time says. Runs not started by a program (by hand, from
+ * outside) are not a program's, and are left out.
+ */
+export const todayRuns = (
+  records: TodayRecord[],
+  programs: TodayProgram[],
+  now: Date,
+  gap = HOUR,
+): WeekRun[] => {
+  const names = new Map((programs || []).map((p) => [p.program_id, p.name]));
+  const dayStart = midnight(now).getTime();
+  const nowMs = now.getTime();
+  type Span = {
+    from: number;
+    to: number;
+    running: boolean;
+    zones: { zone: string; seconds: number }[];
+  };
+  const spans = new Map<string, Span[]>();
+  const add = (id: string, span: Span) => {
+    if (!spans.has(id)) spans.set(id, []);
+    spans.get(id)!.push(span);
+  };
+  for (const record of records || []) {
+    const id = record.program_id;
+    if (!id || !names.has(id) || !record.start) continue;
+    const from = Date.parse(record.start);
+    const seconds = Math.max(0, Number(record.duration) || 0);
+    const to = from + seconds * 1000;
+    if (isNaN(from) || to <= dayStart || from > nowMs) continue;
+    add(id, {
+      from,
+      to: Math.min(to, nowMs),
+      running: false,
+      zones: [{ zone: record.zone_name || "", seconds }],
+    });
+  }
+  for (const program of programs || []) {
+    if (program.state !== "running" && program.state !== "paused") continue;
+    const from = Date.parse(program.last_run || "");
+    if (isNaN(from) || from > nowMs) continue;
+    const to = nowMs + Math.max(0, program.live?.remaining_seconds ?? 0) * 1000;
+    if (to <= dayStart) continue;
+    add(program.program_id, { from, to, running: true, zones: [] });
+  }
+  const runs: WeekRun[] = [];
+  for (const [id, list] of spans) {
+    list.sort((a, b) => a.from - b.from);
+    const merged: Span[] = [];
+    for (const span of list) {
+      const last = merged[merged.length - 1];
+      if (last && span.from <= last.to + gap * 1000) {
+        last.to = Math.max(last.to, span.to);
+        last.running = last.running || span.running;
+        last.zones.push(...span.zones);
+      } else merged.push({ ...span, zones: [...span.zones] });
+    }
+    for (const span of merged) {
+      runs.push({
+        program_id: id,
+        program: names.get(id) || id,
+        start: new Date(span.from).toISOString(),
+        end: new Date(span.to).toISOString(),
+        steps: span.zones.length ? [{ zones: span.zones }] : [],
+        running: span.running,
+        done: !span.running,
+      });
+    }
+  }
+  return runs.sort((a, b) => a.start.localeCompare(b.start));
 };

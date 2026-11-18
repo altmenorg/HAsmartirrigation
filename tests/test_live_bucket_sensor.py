@@ -44,6 +44,22 @@ def _sensor(estimate=None, units=METRIC_SYSTEM, zone=None):
     hass.data = {const.DOMAIN: {"coordinator": coordinator}}
     tasks = []
     hass.async_create_task = lambda coro: tasks.append(coro)
+    sensors = []
+
+    async def _refresh():
+        # What the coordinator does (live_estimate.py), cut to one zone: the
+        # set of every zone's estimate, published to the entities.
+        try:
+            zone = coordinator.store.get_zone(1)
+            found = await coordinator.async_estimate_zone_now(zone)
+        except Exception:  # noqa: BLE001
+            found = None
+        for sensor in sensors:
+            sensor._async_estimates_published({"1": found} if found else {})
+
+    coordinator.async_request_live_refresh = MagicMock(
+        side_effect=lambda: tasks.append(_refresh())
+    )
 
     with patch(
         "custom_components.smart_irrigation.sensor.async_dispatcher_connect"
@@ -53,6 +69,7 @@ def _sensor(estimate=None, units=METRIC_SYSTEM, zone=None):
         )
     sensor.hass = hass
     sensor.async_schedule_update_ha_state = MagicMock()
+    sensors.append(sensor)
     return sensor, coordinator, tasks, clock, connect
 
 
@@ -137,12 +154,30 @@ async def test_another_zone_s_readings_are_not_ours():
 
 
 @pytest.mark.asyncio
-async def test_fast_sensors_cannot_make_it_spin():
-    """Continuous updates can land a reading every few seconds on every zone,
-    and each estimate re-aggregates the whole window."""
-    sensor, _coordinator, tasks, clock, _connect = _sensor(ESTIMATE)
+async def test_a_zone_asks_the_shared_refresh_rather_than_computing_its_own():
+    """The throttle is the coordinator's, for every zone at once (#1052)."""
+    sensor, coordinator, tasks, _clock, _connect = _sensor(ESTIMATE)
 
     sensor._async_zone_updated(1)
+
+    coordinator.async_request_live_refresh.assert_called_once_with()
+    await _run(tasks)
+    assert sensor.native_value == pytest.approx(-7.5)
+
+
+@pytest.mark.asyncio
+async def test_a_disabled_zone_is_estimated_on_its_own_and_cannot_spin():
+    """The Info page leaves a disabled zone out, so its entity computes its own
+    estimate, no more often than every thirty seconds."""
+    sensor, coordinator, tasks, clock, _connect = _sensor(
+        ESTIMATE, zone={**ZONE, const.ZONE_STATE: const.ZONE_STATE_DISABLED}
+    )
+
+    sensor._async_estimates_published({})
+    assert sensor.extra_state_attributes["live"] is False, "not in the shared set"
+
+    sensor._async_zone_updated(1)
+    coordinator.async_request_live_refresh.assert_not_called()
     assert len(tasks) == 1
     clock["t"] += 5
     sensor._async_zone_updated(1)
@@ -153,7 +188,21 @@ async def test_fast_sensors_cannot_make_it_spin():
     clock["t"] += 31
     sensor._async_zone_updated(1)
     assert len(tasks) == 2
-    _close(tasks)
+    await _run(tasks)
+    assert sensor.native_value == pytest.approx(-7.5)
+
+
+@pytest.mark.asyncio
+async def test_it_shows_exactly_the_value_the_info_page_shows():
+    """Home > Now said 5.9 mm while the entity still said 5.1 (#1052): both
+    now read the one published set."""
+    sensor, _coordinator, _tasks, _clock, _connect = _sensor(None)
+
+    sensor._async_estimates_published({"1": {**ESTIMATE, "bucket": 5.9}})
+
+    assert sensor.native_value == pytest.approx(5.9)
+    assert sensor.extra_state_attributes["live"] is True
+    sensor.async_schedule_update_ha_state.assert_called()
 
 
 @pytest.mark.asyncio
@@ -200,6 +249,31 @@ async def test_it_listens_to_the_signal_that_carries_new_readings():
     signals = [call.args[1] for call in connect.call_args_list]
     assert const.DOMAIN + "_config_updated" in signals
     sensor.async_on_remove.assert_called_once_with(connect.return_value)
+    _close(tasks)
+
+
+@pytest.mark.asyncio
+async def test_it_listens_to_the_published_estimates_and_asks_for_one():
+    from custom_components.smart_irrigation.live_estimate import (
+        SIGNAL_LIVE_ESTIMATES,
+    )
+
+    sensor, coordinator, tasks, _clock, _connect = _sensor(ESTIMATE)
+    sensor.async_on_remove = MagicMock()
+    sensor.async_get_last_state = AsyncMock(return_value=None)
+
+    with (
+        patch(
+            "custom_components.smart_irrigation.sensor.async_dispatcher_connect"
+        ) as connect,
+        patch.object(SensorEntity, "async_added_to_hass", AsyncMock()),
+    ):
+        await sensor.async_added_to_hass()
+
+    signals = [call.args[1] for call in connect.call_args_list]
+    assert SIGNAL_LIVE_ESTIMATES in signals
+    assert sensor.async_on_remove.call_count == len(signals)
+    coordinator.async_request_live_refresh.assert_called_once_with()
     _close(tasks)
 
 

@@ -139,10 +139,8 @@ export const modernStyle = css`
   .row-hint {
     margin: -6px 0 12px 0;
   }
-  /* A hint that says a setting will not do what it reads as, and a line
-     that warns: something will happen that was likely not meant. */
-  .setting-hint.warning-hint,
-  .setting-note.warning-note {
+  /* A hint that says a setting will not do what it reads as. */
+  .setting-hint.warning-hint {
     color: var(--warning-color, #ff9800);
   }
   /* Folded blocks of the Programs page: a program, a step, a schedule. */
@@ -232,6 +230,18 @@ export const modernStyle = css`
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+  }
+  /* The title wraps, the switch keeps its size and its line. */
+  .si-head > span:first-child,
+  .setting-row:has(> ha-switch) > .setting-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .si-head > ha-switch,
+  .setting-row > ha-switch,
+  .fold-head > ha-switch {
+    flex: 0 0 auto;
   }
   .setting-hint {
     font-size: 0.8rem;
@@ -407,6 +417,12 @@ export const modernStyle = css`
       flex-direction: column;
       align-items: stretch;
       gap: 6px;
+    }
+    /* A switch stays on the right of its title, never under it (#1049). */
+    .setting-row:has(> ha-switch) {
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
     }
     .field,
     .select-wrap,

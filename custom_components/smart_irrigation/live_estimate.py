@@ -30,6 +30,9 @@ import logging
 import time
 
 import homeassistant.util.dt as dt_util
+from homeassistant.core import callback
+from homeassistant.helpers.dispatcher import async_dispatcher_send
+from homeassistant.helpers.event import async_call_later
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
@@ -43,6 +46,16 @@ _LOGGER = logging.getLogger(__name__)
 # Several readers ask within one panel refresh (the start placement, the
 # planning, the Info page), each used to compute them again, seconds apiece.
 ESTIMATE_REUSE_SECONDS = 60
+
+# The shortest time between two refreshes asked for by new readings (#1052).
+# A group fed by fast sensors gets a reading every few seconds, and each
+# refresh re-aggregates every zone's window.
+LIVE_REFRESH_MIN_INTERVAL = 30.0
+
+# Sent with every fresh set of estimates, keyed by zone id as the Info page
+# gets them: the live bucket entities take their value from it, so the entity
+# and the page cannot show two numbers for the same thing (#1052).
+SIGNAL_LIVE_ESTIMATES = const.DOMAIN + "_live_estimates"
 
 
 def _aware_iso(moment):
@@ -182,7 +195,87 @@ class LiveEstimateMixin:
             if getattr(self, "_estimate_inflight", None) == (key, task):
                 self._estimate_inflight = None
         self._estimate_cache = (key, time.monotonic(), estimates)
+        self._publish_live_estimates(estimates)
         return dict(estimates)
+
+    def _publish_live_estimates(self, estimates) -> None:
+        """Hand a fresh set to the live bucket entities, whoever asked for it.
+
+        Whether the Info page, the planning or a new reading asked, the
+        entities follow the same computation, at no extra cost (#1052).
+        """
+        self._live_refresh_last = self._live_clock()
+        try:
+            async_dispatcher_send(self.hass, SIGNAL_LIVE_ESTIMATES, dict(estimates))
+        except Exception:  # noqa: BLE001 - display only, never the caller's fault
+            _LOGGER.debug("Live estimates not published", exc_info=True)
+
+    def _live_clock(self) -> float:
+        try:
+            return float(self.hass.loop.time())
+        except Exception:  # noqa: BLE001 - a hass without a running loop
+            return time.monotonic()
+
+    @callback
+    def async_request_live_refresh(self) -> None:
+        """New readings, or a zone that changed: refresh the estimates, soon.
+
+        At most once per ``LIVE_REFRESH_MIN_INTERVAL`` for the whole
+        integration, however many sensors and zones ask: a request runs at once
+        when the last refresh is old enough, and the ones within the interval
+        are folded into a single refresh at its end, so the last reading is
+        never left out (#1052: they used to be dropped). No weather service is
+        asked anything: the estimate uses the forecast in hand.
+        """
+        if getattr(self, "_live_refresh_cancel", None) is not None:
+            return  # one is planned already, and will see this reading too
+        if getattr(self, "_live_refresh_running", False):
+            self._live_refresh_again = True
+            return
+        last = getattr(self, "_live_refresh_last", None)
+        wait = 0.0
+        if last is not None:
+            wait = last + LIVE_REFRESH_MIN_INTERVAL - self._live_clock()
+        if wait <= 0:
+            self._live_refresh_start()
+            return
+        self._live_refresh_cancel = async_call_later(
+            self.hass, wait, self._live_refresh_due
+        )
+
+    @callback
+    def _live_refresh_due(self, _now=None) -> None:
+        self._live_refresh_cancel = None
+        self._live_refresh_start()
+
+    def _live_refresh_start(self) -> None:
+        self._live_refresh_running = True
+        self._live_refresh_again = False
+        self._live_refresh_last = self._live_clock()
+        self.hass.async_create_task(self._async_live_refresh())
+
+    async def _async_live_refresh(self) -> None:
+        try:
+            before = getattr(self, "_estimate_cache", None)
+            estimates = await self.async_estimate_all_zones_now()
+            if getattr(self, "_estimate_cache", None) is before:
+                # Reused rather than computed, so nothing was published: the
+                # entities that asked still get their answer.
+                self._publish_live_estimates(estimates)
+        except Exception:  # noqa: BLE001 - display only
+            _LOGGER.debug("Live estimates refresh failed", exc_info=True)
+        finally:
+            self._live_refresh_running = False
+        if getattr(self, "_live_refresh_again", False):
+            self._live_refresh_again = False
+            self.async_request_live_refresh()
+
+    def async_cancel_live_refresh(self) -> None:
+        """Drop a planned refresh: after an unload it would run on the old one."""
+        cancel = getattr(self, "_live_refresh_cancel", None)
+        if cancel is not None:
+            cancel()
+        self._live_refresh_cancel = None
 
     async def _estimate_key(self, zones) -> str | None:
         """What the estimates depend on, compared rather than watched."""

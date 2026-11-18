@@ -46,8 +46,6 @@ def test_a_manual_zone_says_it_waters_at_every_start(lang):
     [
         "panels.info.cards.next-run.sub-watering",
         "panels.info.cards.next-run.sub-watering-one",
-        "programs.cond_soil",
-        "programs.cond_soil_one",
         "panels.mappings.cards.mapping.et_ignored",
         "panels.mappings.cards.mapping.et_missing",
     ],

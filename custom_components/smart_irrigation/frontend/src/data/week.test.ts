@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { weekLayout, weekPercent, weekTicks, WeekRun } from "./week";
+import { todayRuns, weekLayout, weekPercent, weekTicks, WeekRun } from "./week";
 
 const at = (day: number, hour: number, minute = 0) =>
   new Date(2026, 10, day, hour, minute);
@@ -112,5 +112,84 @@ describe("the axis", () => {
     expect(weekTicks({ from: 0, to: 86400 })).toEqual(
       [0, 6, 12, 18, 24].map((h) => h * 3600),
     );
+  });
+});
+
+describe("todayRuns", () => {
+  // 10:00 local time; the morning's runs are before it.
+  const now = new Date(2026, 10, 17, 10, 0);
+  const at = (h: number, m = 0) => new Date(2026, 10, 17, h, m).toISOString();
+  const programs = [
+    { program_id: "p1", name: "Lawn", state: "idle" },
+    { program_id: "p2", name: "Beds", state: "idle" },
+  ];
+
+  it("makes one run of a program's zones that followed each other", () => {
+    const runs = todayRuns(
+      [
+        { start: at(6), zone_name: "A", duration: 600, program_id: "p1" },
+        // After a 20 min soak: the same run.
+        { start: at(6, 30), zone_name: "B", duration: 600, program_id: "p1" },
+      ],
+      programs,
+      now,
+    );
+    expect(runs).toHaveLength(1);
+    expect(runs[0].start).toBe(at(6));
+    expect(runs[0].end).toBe(at(6, 40));
+    expect(runs[0].done).toBe(true);
+    expect((runs[0].steps as any)[0].zones).toHaveLength(2);
+  });
+
+  it("keeps two runs of a day apart, and leaves out yesterday and the hand", () => {
+    const runs = todayRuns(
+      [
+        { start: at(5), duration: 300, program_id: "p1" },
+        { start: at(9), duration: 300, program_id: "p1" },
+        {
+          start: new Date(2026, 10, 16, 20, 0).toISOString(),
+          duration: 300,
+          program_id: "p2",
+        },
+        { start: at(7), duration: 300, program_id: "manual" },
+        { start: at(7), duration: 300, program_id: null },
+      ],
+      programs,
+      now,
+    );
+    expect(runs.map((r) => r.start)).toEqual([at(5), at(9)]);
+  });
+
+  it("shows a run going on until its remaining time ends", () => {
+    const runs = todayRuns(
+      [{ start: at(9, 30), zone_name: "A", duration: 600, program_id: "p2" }],
+      [
+        programs[0],
+        {
+          program_id: "p2",
+          name: "Beds",
+          state: "running",
+          last_run: at(9, 30),
+          live: { remaining_seconds: 1200 },
+        },
+      ],
+      now,
+    );
+    expect(runs).toHaveLength(1);
+    expect(runs[0].program).toBe("Beds");
+    expect(runs[0].running).toBe(true);
+    expect(runs[0].done).toBe(false);
+    expect(runs[0].end).toBe(at(10, 20));
+  });
+
+  it("lays out in today's row", () => {
+    const runs = todayRuns(
+      [{ start: at(6), duration: 600, program_id: "p1" }],
+      programs,
+      now,
+    );
+    const layout = weekLayout(runs, 3, now);
+    expect(layout.days[0].blocks).toHaveLength(1);
+    expect(layout.days[1].blocks).toHaveLength(0);
   });
 });

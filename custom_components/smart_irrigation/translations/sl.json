@@ -337,7 +337,7 @@
     },
     "stop_program": {
       "name": "Ustavi program",
-      "description": "Ustavi en program. Če teče, se njegove odprte cone zaprejo na običajen način in se jim prišteje dovedena voda; če čaka, da pride na vrsto, se odstrani iz vrste. Neznan program ne naredi ničesar. Glavni program ustaviš s stop_watering.",
+      "description": "Ustavi en program. Če teče, se njegove odprte cone zaprejo na običajen način in se jim prišteje dovedena voda; če čaka, da pride na vrsto, se odstrani iz vrste. Neznan program ne naredi ničesar. Vse zalivanje ustaviš s stop_watering.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -784,7 +784,7 @@
         "step": {
           "confirm": {
             "title": "Vaše zalivanje teče kot prej",
-            "description": "Smart Irrigation ima zdaj eno samo nastavitev za to, kar počne: **Računaj in zalivaj**, **Samo računaj** ali **Ustavi vse**, na zavihku Nastavitve. Vaša namestitev je sama odpirala ventile, zato je bila preklopljena na **Računaj in zalivaj**.\n\nVaša območja se zalivajo kot prej, ob istem času: sprožilec začetka je postal urnik glavnega programa na novem zavihku **Zalivanje**. Izberite **Samo računaj**, če Smart Irrigation ne sme več odpirati ventilov."
+            "description": "Smart Irrigation ima zdaj eno samo nastavitev za to, kar počne: **Računaj in zalivaj**, **Samo računaj** ali **Ustavi vse**, na zavihku Nastavitve. Vaša namestitev je sama odpirala ventile, zato je bila preklopljena na **Računaj in zalivaj**.\n\nVaša območja se zalivajo kot prej, ob istem času: sprožilec začetka je postal urnik programa **Zalivanje** na novem zavihku **Zalivanje**. Izberite **Samo računaj**, če Smart Irrigation ne sme več odpirati ventilov."
           }
         }
       }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { programFlow } from "./program-flow";
+import { programFlow, weatherVerdict } from "./program-flow";
 import { Timeline } from "./timeline";
 
 const seg = (
@@ -98,5 +98,115 @@ describe("programFlow", () => {
       ],
     );
     expect(flow.idle).toEqual([{ zoneId: 1, name: "Potager" }]);
+  });
+});
+
+describe("weatherVerdict", () => {
+  const check = (id: string, skip: boolean, extra: object = {}) => ({
+    id,
+    enabled: true,
+    available: true,
+    skip,
+    ...extra,
+  });
+  const on = [{ enabled: true, weather: true }];
+
+  it("is off when no schedule that is on takes the weather into account", () => {
+    expect(weatherVerdict([], null, null)).toEqual({ state: "off" });
+    expect(
+      weatherVerdict(
+        [{ weather: false }, { enabled: false, weather: true }],
+        { checks: [check("wind", true)] },
+        null,
+      ),
+    ).toEqual({ state: "off" });
+  });
+
+  it("is unknown with nothing from the backend", () => {
+    expect(weatherVerdict(on, null, null)).toEqual({ state: "unknown" });
+    expect(weatherVerdict(on, undefined, { forecast_known: false })).toEqual({
+      state: "unknown",
+    });
+  });
+
+  it("says yes when no check holds the run back", () => {
+    expect(
+      weatherVerdict(on, {
+        checks: [check("freeze", false), check("precipitation", false)],
+      }),
+    ).toEqual({ state: "yes" });
+    // A check turned off or that could not be read holds nothing back.
+    expect(
+      weatherVerdict(on, {
+        checks: [
+          check("wind", true, { enabled: false }),
+          check("freeze", true, { available: false }),
+        ],
+      }),
+    ).toEqual({ state: "yes" });
+  });
+
+  it("says no with the first check that holds it back", () => {
+    expect(
+      weatherVerdict(on, {
+        checks: [check("freeze", false), check("wind", true)],
+      }),
+    ).toEqual({ state: "no", reason: "wind" });
+    expect(
+      weatherVerdict(on, {
+        checks: [check("precipitation", true, { forecast_mm: 6.2 })],
+      }),
+    ).toEqual({ state: "no", reason: "precipitation", mm: 6.2 });
+  });
+
+  it("takes the planned run's forecast over the preview's", () => {
+    // The planned run read the forecast for its own start and it says go.
+    expect(
+      weatherVerdict(
+        on,
+        { checks: [check("precipitation", true, { forecast_mm: 9 })] },
+        { forecast_known: true, skipped_reason: null },
+      ),
+    ).toEqual({ state: "yes" });
+    expect(
+      weatherVerdict(on, null, {
+        forecast_known: true,
+        skipped_reason: "precipitation",
+        forecast: { forecast_mm: 4 },
+      }),
+    ).toEqual({ state: "no", reason: "precipitation", mm: 4 });
+    // A suspension is not the weather.
+    expect(
+      weatherVerdict(on, null, {
+        forecast_known: true,
+        skipped_reason: "suspended",
+      }),
+    ).toEqual({ state: "yes" });
+  });
+
+  it("applies only the conditions the schedules chose", () => {
+    const some = [{ weather: true, skip_conditions: ["freeze"] }];
+    expect(
+      weatherVerdict(some, {
+        checks: [check("wind", true), check("freeze", false)],
+      }),
+    ).toEqual({ state: "yes" });
+    // The postponement always applies.
+    expect(
+      weatherVerdict(some, { checks: [check("postponed", true)] }),
+    ).toEqual({ state: "no", reason: "postponed" });
+    // A schedule with every condition makes them all count.
+    expect(
+      weatherVerdict([...some, { weather: true }], {
+        checks: [check("wind", true)],
+      }),
+    ).toEqual({ state: "no", reason: "wind" });
+    // Left out by the schedules, the planned rain does not hold it back.
+    expect(
+      weatherVerdict(some, null, {
+        forecast_known: true,
+        skipped_reason: "precipitation",
+      }),
+    ).toEqual({ state: "yes" });
   });
 });

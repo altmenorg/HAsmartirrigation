@@ -337,7 +337,7 @@
     },
     "stop_program": {
       "name": "Zastavit program",
-      "description": "Zastavit jeden program. Pokud běží, jeho otevřené zóny se zavřou běžným způsobem a připíše se jim, co dodaly; pokud čeká na svou řadu, vyřadí se z fronty. Neznámý program nedělá nic. Hlavní program se zastavuje pomocí stop_watering.",
+      "description": "Zastavit jeden program. Pokud běží, jeho otevřené zóny se zavřou běžným způsobem a připíše se jim, co dodaly; pokud čeká na svou řadu, vyřadí se z fronty. Neznámý program nedělá nic. Celé zavlažování zastaví stop_watering.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -784,7 +784,7 @@
         "step": {
           "confirm": {
             "title": "Vaše zavlažování pokračuje jako dřív",
-            "description": "Smart Irrigation má nyní jediné nastavení toho, co dělá: **Počítat a zavlažovat**, **Jen počítat** nebo **Vše zastavit**, na kartě Nastavení. Vaše instalace sama otevírala ventily, proto byla převedena na **Počítat a zavlažovat**.\n\nVaše zóny se zavlažují jako dřív, ve stejnou dobu: spouštěč startu se stal plánem hlavního programu na nové kartě **Zavlažování**. Zvolte **Jen počítat**, pokud už Smart Irrigation nemá otevírat ventily."
+            "description": "Smart Irrigation má nyní jediné nastavení toho, co dělá: **Počítat a zavlažovat**, **Jen počítat** nebo **Vše zastavit**, na kartě Nastavení. Vaše instalace sama otevírala ventily, proto byla převedena na **Počítat a zavlažovat**.\n\nVaše zóny se zavlažují jako dřív, ve stejnou dobu: spouštěč startu se stal plánem programu **Zavlažování** na nové kartě **Zavlažování**. Zvolte **Jen počítat**, pokud už Smart Irrigation nemá otevírat ventily."
           }
         }
       }

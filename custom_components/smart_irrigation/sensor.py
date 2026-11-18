@@ -21,7 +21,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .entity import zone_device_info
-from .live_estimate import _aware_iso
+from .live_estimate import SIGNAL_LIVE_ESTIMATES, _aware_iso
 from .performance import async_timer
 from .program_sensor import async_setup_program_sensors
 from .units import depth_to_display, zone_to_display
@@ -693,9 +693,17 @@ class SmartIrrigationZoneLiveBucketSensor(
     plotted, compared between configurations and used in an automation, which
     is what it was asked for (#853).
 
-    It recomputes when the zone's readings change, which is where the
-    information actually changes, and no faster than ``MIN_INTERVAL`` so a group
-    fed by fast sensors cannot make it spin. Between two recomputations the
+    Its value is the one the Info page shows as "Now": both come from the
+    coordinator's set of estimates for every zone (live_estimate.py), which
+    publishes each fresh set to these entities, whoever asked for it. The
+    entity asks for one when its zone changes and the coordinator asks when a
+    sensor reading is collected, at most once every thirty seconds for the
+    whole integration, so a group fed by fast sensors cannot make it spin. It
+    used to recompute on its own, only when the zone changed, and a reading of
+    a local rain gauge does not change the zone: it followed the hourly weather
+    fetch while the page showed the gauge (#1052). A disabled zone, which the
+    page leaves out, is still estimated on its own, no faster than
+    ``MIN_INTERVAL``. Between two recomputations the
     value stands; when there is nothing to estimate from -- right after a
     calculation, the window being empty -- it is the committed bucket, and the
     ``live`` attribute says which of the two you are looking at.
@@ -749,10 +757,32 @@ class SmartIrrigationZoneLiveBucketSensor(
             return None
         return depth_to_display(bucket, self._hass.config.units is METRIC_SYSTEM)
 
+    def _coordinator(self):
+        return ((self._hass.data or {}).get(const.DOMAIN) or {}).get("coordinator")
+
+    def _zone(self):
+        coordinator = self._coordinator()
+        return coordinator.store.get_zone(self._zone_id) if coordinator else None
+
+    @staticmethod
+    def _on_its_own(zone) -> bool:
+        """A disabled zone is not in the set the Info page shows."""
+        return bool(zone) and zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED
+
     @callback
     def _async_zone_updated(self, zone_id=None):
-        """New readings for this zone: estimate again, within reason."""
+        """The zone changed (new group readings, a calculation): estimate again."""
         if zone_id != self._zone_id or not (self.hass and self.hass.data):
+            return
+        try:
+            zone = self._zone()
+            if not self._on_its_own(zone):
+                # Throttled and shared by every zone, see live_estimate.py:
+                # the answer arrives through _async_estimates_published.
+                self._coordinator().async_request_live_refresh()
+                return
+        except Exception as e:  # noqa: BLE001 - a display sensor must not fail
+            _LOGGER.debug("Live bucket refresh for zone %s: %s", self._zone_id, e)
             return
         now = self._hass.loop.time()
         if self._last_run is not None and now - self._last_run < self.MIN_INTERVAL:
@@ -760,8 +790,23 @@ class SmartIrrigationZoneLiveBucketSensor(
         self._last_run = now
         self._hass.async_create_task(self._async_estimate())
 
+    @callback
+    def _async_estimates_published(self, estimates=None):
+        """A fresh set of estimates, the one the Info page shows (#1052)."""
+        if not (self.hass and self.hass.data):
+            return
+        try:
+            zone = self._zone()
+        except Exception as e:  # noqa: BLE001 - a display sensor must not fail
+            _LOGGER.debug("Live bucket unavailable for zone %s: %s", self._zone_id, e)
+            return
+        if self._on_its_own(zone):
+            return
+        estimate = (estimates or {}).get(str(self._zone_id))
+        self._apply(estimate, zone)
+
     async def _async_estimate(self) -> None:
-        """Recompute the estimate, falling back to the committed bucket."""
+        """Recompute the estimate of this zone alone (a disabled one)."""
         zone = None
         try:
             coordinator = self._hass.data[const.DOMAIN]["coordinator"]
@@ -770,6 +815,10 @@ class SmartIrrigationZoneLiveBucketSensor(
         except Exception as e:  # noqa: BLE001 - a display sensor must not fail
             _LOGGER.debug("Live bucket unavailable for zone %s: %s", self._zone_id, e)
             estimate = None
+        self._apply(estimate, zone)
+
+    def _apply(self, estimate, zone) -> None:
+        """Show ``estimate``, falling back to the committed bucket."""
         if estimate and isinstance(estimate.get("bucket"), (int, float)):
             self._value = estimate["bucket"]
             self._live = True
@@ -794,9 +843,7 @@ class SmartIrrigationZoneLiveBucketSensor(
             self._as_of = None
             self._duration = None
             self._window_of_estimate = None
-        if zone := self._hass.data[const.DOMAIN]["coordinator"].store.get_zone(
-            self._zone_id
-        ):
+        if zone:
             self._zone_name = zone.get(const.ZONE_NAME, self._zone_name)
         self.async_schedule_update_ha_state()
 
@@ -824,8 +871,12 @@ class SmartIrrigationZoneLiveBucketSensor(
         """Estimate once on startup, so the entity is not a day behind."""
         await self._async_restore_estimate()
         await super().async_added_to_hass()
-        self._last_run = self._hass.loop.time()
-        self._hass.async_create_task(self._async_estimate())
+        self.async_on_remove(
+            async_dispatcher_connect(
+                self._hass, SIGNAL_LIVE_ESTIMATES, self._async_estimates_published
+            )
+        )
+        self._async_zone_updated(self._zone_id)
 
     async def _async_restore_estimate(self) -> None:
         """Take back the estimate shown before a restart, if it still applies.

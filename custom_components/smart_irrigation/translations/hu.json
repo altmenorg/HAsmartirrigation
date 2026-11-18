@@ -337,7 +337,7 @@
     },
     "stop_program": {
       "name": "Program leállítása",
-      "description": "Egy program leállítása. Ha fut, a nyitott zónái a szokásos módon bezárulnak, és jóváíródik nekik a kijuttatott víz; ha a sorára vár, kikerül a sorból. Ismeretlen program esetén nem történik semmi. A főprogramot a stop_watering állítja le.",
+      "description": "Egy program leállítása. Ha fut, a nyitott zónái a szokásos módon bezárulnak, és jóváíródik nekik a kijuttatott víz; ha a sorára vár, kikerül a sorból. Ismeretlen program esetén nem történik semmi. A teljes öntözést a stop_watering állítja le.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -784,7 +784,7 @@
         "step": {
           "confirm": {
             "title": "Az öntözés ugyanúgy folytatódik",
-            "description": "A Smart Irrigationnek most egyetlen beállítása van arra, amit csinál: **Számol és öntöz**, **Csak számol** vagy **Minden leállítása**, a Beállítások lapon. A telepítésed maga nyitotta a szelepeket, ezért átkerült a **Számol és öntöz** módba.\n\nA zónák ugyanúgy, ugyanabban az időpontban öntöződnek: az indító eseményből a főprogram ütemezése lett az új **Öntözés** lapon. Válaszd a **Csak számol** lehetőséget, ha a Smart Irrigation többé ne nyissa a szelepeket."
+            "description": "A Smart Irrigationnek most egyetlen beállítása van arra, amit csinál: **Számol és öntöz**, **Csak számol** vagy **Minden leállítása**, a Beállítások lapon. A telepítésed maga nyitotta a szelepeket, ezért átkerült a **Számol és öntöz** módba.\n\nA zónák ugyanúgy, ugyanabban az időpontban öntöződnek: az indító eseményből az **Öntözés** program ütemezése lett az új **Öntözés** lapon. Válaszd a **Csak számol** lehetőséget, ha a Smart Irrigation többé ne nyissa a szelepeket."
           }
         }
       }

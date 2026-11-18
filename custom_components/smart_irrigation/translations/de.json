@@ -337,7 +337,7 @@
     },
     "stop_program": {
       "name": "Programm stoppen",
-      "description": "Stoppt ein Programm. Läuft es, werden seine offenen Zonen regulär geschlossen und bekommen gutgeschrieben, was sie gebracht haben; wartet es auf seine Reihe, wird es aus der Warteschlange genommen. Ein unbekanntes Programm bewirkt nichts. Das Hauptprogramm wird mit stop_watering gestoppt.",
+      "description": "Stoppt ein Programm. Läuft es, werden seine offenen Zonen regulär geschlossen und bekommen gutgeschrieben, was sie gebracht haben; wartet es auf seine Reihe, wird es aus der Warteschlange genommen. Ein unbekanntes Programm bewirkt nichts. Die gesamte Bewässerung wird mit stop_watering gestoppt.",
       "fields": {
         "program_id": {
           "name": "Programm",
@@ -789,8 +789,8 @@
       "fix_flow": {
         "step": {
           "confirm": {
-            "title": "Ihre Bewässerung läuft wie bisher",
-            "description": "Smart Irrigation hat jetzt eine einzige Einstellung für das, was es tut: **Berechnen und bewässern**, **Nur berechnen** oder **Alles anhalten**, im Tab Einstellungen. Ihre Installation hat die Ventile selbst geöffnet und wurde daher auf **Berechnen und bewässern** umgestellt.\n\nIhre Zonen werden wie bisher zur selben Zeit bewässert: Der Start-Auslöser wurde zu einem Zeitplan des Hauptprogramms im neuen Tab **Bewässerung**. Wählen Sie **Nur berechnen**, wenn Smart Irrigation die Ventile nicht mehr öffnen soll."
+            "title": "Deine Bewässerung läuft wie bisher",
+            "description": "Smart Irrigation hat jetzt eine einzige Einstellung für das, was es tut: **Berechnen und bewässern**, **Nur berechnen** oder **Alles anhalten**, im Tab Einstellungen. Deine Installation hat die Ventile selbst geöffnet und wurde daher auf **Berechnen und bewässern** umgestellt.\n\nDeine Zonen werden wie bisher zur selben Zeit bewässert: Der Start-Auslöser wurde zu einem Zeitplan des Programms **Bewässerung** im neuen Tab **Bewässerung**. Wähle **Nur berechnen**, wenn Smart Irrigation die Ventile nicht mehr öffnen soll."
           }
         }
       }

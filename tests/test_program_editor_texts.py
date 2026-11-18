@@ -68,12 +68,6 @@ def test_the_sequencing_help_says_what_the_setting_does():
     )
 
 
-def test_the_planning_no_longer_says_the_weather_is_unknown():
-    assert "not known" not in _texts("en")["planning"]["description"]
-    assert "nicht bekannt" not in _texts("de")["planning"]["description"]
-    assert "Vorhersage" in _texts("de")["planning"]["description"]
-
-
 @pytest.mark.parametrize("lang", ["en", "de"])
 def test_the_old_adjustment_sentence_is_gone(lang):
     programs = _texts(lang)["programs"]

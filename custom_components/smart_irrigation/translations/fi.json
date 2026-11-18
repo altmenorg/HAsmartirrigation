@@ -337,7 +337,7 @@
     },
     "stop_program": {
       "name": "Pysäytä ohjelma",
-      "description": "Pysäytä yksi ohjelma. Jos se on käynnissä, sen avoimet vyöhykkeet suljetaan normaalisti ja niille hyvitetään niiden antama vesi; jos se odottaa vuoroaan, se poistetaan jonosta. Tuntematon ohjelma ei tee mitään. Pääohjelma pysäytetään toiminnolla stop_watering.",
+      "description": "Pysäytä yksi ohjelma. Jos se on käynnissä, sen avoimet vyöhykkeet suljetaan normaalisti ja niille hyvitetään niiden antama vesi; jos se odottaa vuoroaan, se poistetaan jonosta. Tuntematon ohjelma ei tee mitään. Kaikki kastelu pysäytetään toiminnolla stop_watering.",
       "fields": {
         "program_id": {
           "name": "Ohjelma",
@@ -784,7 +784,7 @@
         "step": {
           "confirm": {
             "title": "Kastelusi jatkuu kuten ennen",
-            "description": "Smart Irrigationilla on nyt yksi asetus sille, mitä se tekee: **Laske ja kastele**, **Vain laskenta** tai **Pysäytä kaikki**, Asetukset-välilehdellä. Asennuksesi avasi venttiilit itse, joten se siirrettiin tilaan **Laske ja kastele**.\n\nVyöhykkeesi kastellaan kuten ennen, samaan aikaan: aloituslaukaisimesta tuli pääohjelman aikataulu uudella **Kastelu**-välilehdellä. Valitse **Vain laskenta**, jos Smart Irrigationin ei enää pidä avata venttiileitä."
+            "description": "Smart Irrigationilla on nyt yksi asetus sille, mitä se tekee: **Laske ja kastele**, **Vain laskenta** tai **Pysäytä kaikki**, Asetukset-välilehdellä. Asennuksesi avasi venttiilit itse, joten se siirrettiin tilaan **Laske ja kastele**.\n\nVyöhykkeesi kastellaan kuten ennen, samaan aikaan: aloituslaukaisimesta tuli **Kastelu**-ohjelman aikataulu uudella **Kastelu**-välilehdellä. Valitse **Vain laskenta**, jos Smart Irrigationin ei enää pidä avata venttiileitä."
           }
         }
       }

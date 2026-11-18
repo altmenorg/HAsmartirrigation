@@ -16,6 +16,8 @@ FRONTEND = (
 )
 LANGUAGES = FRONTEND / "localize" / "languages"
 VIEW = FRONTEND / "src" / "views" / "general" / "view-general.ts"
+# The held run's reason is in the week chart's tooltip since the list went.
+WEEK = FRONTEND / "src" / "views" / "general" / "week-view.ts"
 
 TEXTS = {
     ("planning", "expected_skipped_suspended"): {"{when}"},
@@ -39,7 +41,11 @@ def test_each_text_is_there_with_its_placeholders(lang, key, placeholders):
 
 def test_the_panel_uses_them():
     source = VIEW.read_text(encoding="utf-8")
-    for _, key in TEXTS:
-        assert f't("{key}")' in source, key
+    week = WEEK.read_text(encoding="utf-8")
+    for section, key in TEXTS:
+        if section == "planning":
+            assert f'p("{key}")' in week, key
+        else:
+            assert f't("{key}")' in source, key
     # The lift goes through the suspend action with no hours.
     assert '"suspend"' in source and "hours: 0" in source

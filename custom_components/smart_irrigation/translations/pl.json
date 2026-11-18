@@ -337,7 +337,7 @@
     },
     "stop_program": {
       "name": "Zatrzymaj program",
-      "description": "Zatrzymaj jeden program. Jeśli działa, jego otwarte strefy zostają zamknięte w zwykły sposób i zaliczone za to, co dostarczyły; jeśli czeka na swoją kolej, zostaje usunięty z kolejki. Nieznany program nic nie robi. Program główny zatrzymuje się przez stop_watering.",
+      "description": "Zatrzymaj jeden program. Jeśli działa, jego otwarte strefy zostają zamknięte w zwykły sposób i zaliczone za to, co dostarczyły; jeśli czeka na swoją kolej, zostaje usunięty z kolejki. Nieznany program nic nie robi. Całe podlewanie zatrzymuje się przez stop_watering.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -784,7 +784,7 @@
         "step": {
           "confirm": {
             "title": "Twoje podlewanie działa jak dotąd",
-            "description": "Smart Irrigation ma teraz jedno ustawienie określające, co robi: **Obliczaj i podlewaj**, **Tylko obliczaj** lub **Zatrzymaj wszystko**, na karcie Ustawienia. Twoja instalacja sama otwierała zawory, więc przełączono ją na **Obliczaj i podlewaj**.\n\nTwoje strefy są podlewane jak dotąd, o tej samej porze: wyzwalacz startu stał się harmonogramem programu głównego na nowej karcie **Podlewanie**. Wybierz **Tylko obliczaj**, jeśli Smart Irrigation nie ma już otwierać zaworów."
+            "description": "Smart Irrigation ma teraz jedno ustawienie określające, co robi: **Obliczaj i podlewaj**, **Tylko obliczaj** lub **Zatrzymaj wszystko**, na karcie Ustawienia. Twoja instalacja sama otwierała zawory, więc przełączono ją na **Obliczaj i podlewaj**.\n\nTwoje strefy są podlewane jak dotąd, o tej samej porze: wyzwalacz startu stał się harmonogramem programu **Podlewanie** na nowej karcie **Podlewanie**. Wybierz **Tylko obliczaj**, jeśli Smart Irrigation nie ma już otwierać zaworów."
           }
         }
       }

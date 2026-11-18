@@ -337,7 +337,7 @@
     },
     "stop_program": {
       "name": "Stopp program",
-      "description": "Stopp ett program. Hvis det kjører, lukkes de åpne sonene på vanlig måte og godskrives for det de ga; hvis det venter på tur, tas det ut av køen. Et ukjent program gjør ingenting. Hovedprogrammet stoppes med stop_watering.",
+      "description": "Stopp ett program. Hvis det kjører, lukkes de åpne sonene på vanlig måte og godskrives for det de ga; hvis det venter på tur, tas det ut av køen. Et ukjent program gjør ingenting. All vanning stoppes med stop_watering.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -784,7 +784,7 @@
         "step": {
           "confirm": {
             "title": "Vanningen fortsetter som før",
-            "description": "Smart Irrigation har nå én innstilling for hva det gjør: **Beregn og vann**, **Bare beregn** eller **Stopp alt**, i fanen Innstillinger. Installasjonen din åpnet ventilene selv og er derfor flyttet til **Beregn og vann**.\n\nSonene vannes som før, på samme tidspunkt: starttriggeren er blitt en tidsplan for hovedprogrammet i den nye fanen **Vanning**. Velg **Bare beregn** hvis Smart Irrigation ikke lenger skal åpne ventilene."
+            "description": "Smart Irrigation har nå én innstilling for hva det gjør: **Beregn og vann**, **Bare beregn** eller **Stopp alt**, i fanen Innstillinger. Installasjonen din åpnet ventilene selv og er derfor flyttet til **Beregn og vann**.\n\nSonene vannes som før, på samme tidspunkt: starttriggeren er blitt en tidsplan for programmet **Vanning** i den nye fanen **Vanning**. Velg **Bare beregn** hvis Smart Irrigation ikke lenger skal åpne ventilene."
           }
         }
       }

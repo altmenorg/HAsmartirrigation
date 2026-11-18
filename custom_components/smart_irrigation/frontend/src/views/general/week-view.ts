@@ -2,7 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { localize } from "../../../localize/localize";
-import { friendlyDuration } from "../../card/format";
+import { friendlyDuration, momentLabel } from "../../card/format";
 import {
   weekLayout,
   weekPercent,
@@ -26,12 +26,15 @@ const COLOURS = [
 /**
  * What the programs will water over the next days, a row per day: each run a
  * block on an hour axis, its colour its program's, the soaks hatched, a run
- * the weather may hold back greyed. The list under it says the same in words;
- * this is for seeing a week at a glance.
+ * the weather may hold back greyed. A block's tooltip says the rest: its
+ * zones, why it may be held back, what it waits for or starts after.
  */
 @customElement("si-week-view")
 export class SmartIrrigationWeekView extends LitElement {
   @property({ attribute: false }) planning: WeekRun[] = [];
+  // Today's runs under way and over (todayRuns): the planning lists only the
+  // starts to come.
+  @property({ attribute: false }) today: WeekRun[] = [];
   @property() lang = "en";
   @property({ type: Number }) days = 7;
   // Names as the panel shows them.
@@ -86,7 +89,66 @@ export class SmartIrrigationWeekView extends LitElement {
           .join(" + "),
       );
     }
-    if (run.nothing_to_water) lines.push(this._t("nothing"));
+    // What the list under the chart said, and nothing else says.
+    const p = (key: string) => localize(`planning.${key}`, this.lang);
+    const label = (ref: any) =>
+      this.programLabel(ref?.program_id, ref?.program) || "";
+    const names = (zones: any[] | undefined) =>
+      (zones || []).map((z: any) => z.zone).join(", ");
+    if (run.after) {
+      lines.push(
+        (run.after.offset_minutes
+          ? p("after_program_offset").replace(
+              "{minutes}",
+              String(run.after.offset_minutes),
+            )
+          : p("after_program")
+        ).replace("{program}", label(run.after)),
+      );
+    }
+    if (run.waits_for) {
+      lines.push(
+        p("waits_for")
+          .replace("{program}", label(run.waits_for))
+          .replace("{start}", time.format(start))
+          .replace("{end}", time.format(end)),
+      );
+    }
+    for (const entry of run.watered_twice || []) {
+      lines.push(
+        p("watered_twice")
+          .replace("{zones}", entry.zone)
+          .replace("{program}", label(entry.by)),
+      );
+    }
+    if (run.zones_without_valve?.length && !run.nothing_to_water) {
+      lines.push(`${p("no_valve")} ${names(run.zones_without_valve)}`);
+    }
+    if (run.running) lines.push(this._t("running"));
+    else if (run.done) lines.push(this._t("done"));
+    else if (run.nothing_to_water)
+      lines.push(
+        run.zones_without_valve?.length
+          ? `${p("nothing_no_valve")} ${names(run.zones_without_valve)}`
+          : this._t("nothing"),
+      );
+    else if (run.skipped_reason === "suspended")
+      lines.push(
+        p("expected_skipped_suspended").replace(
+          "{when}",
+          momentLabel(run.suspended_until, this.lang, {
+            tomorrow: localize("card.tomorrow", this.lang),
+            yesterday: localize("card.yesterday", this.lang),
+          }),
+        ),
+      );
+    else if (run.skipped_reason === "precipitation")
+      lines.push(
+        p("expected_skipped_precipitation").replace(
+          "{mm}",
+          String(Math.round((run.forecast?.forecast_mm ?? 0) * 10) / 10),
+        ),
+      );
     else if (run.skipped_reason) lines.push(this._t("held"));
     return lines.filter(Boolean).join("\n");
   }
@@ -113,14 +175,15 @@ export class SmartIrrigationWeekView extends LitElement {
 
   render() {
     const now = new Date();
-    const layout = weekLayout(this.planning, this.days, now);
+    const runs = [...(this.today || []), ...(this.planning || [])];
+    const layout = weekLayout(runs, this.days, now);
     const ticks = weekTicks(layout);
     const colour = (id: string) =>
       COLOURS[Math.max(0, layout.programs.indexOf(id)) % COLOURS.length];
     const nowSeconds =
       (now.getTime() - new Date(now.toDateString()).getTime()) / 1000;
     const names = new Map(
-      (this.planning || []).map((r) => [
+      runs.map((r) => [
         r.program_id,
         this.programLabel(r.program_id, r.program),
       ]),
@@ -173,7 +236,11 @@ export class SmartIrrigationWeekView extends LitElement {
                 ${day.blocks.map(
                   (block) => html`
                     <button
-                      class="run ${block.held ? "held" : ""} ${block.cutBefore
+                      class="run ${block.held ? "held" : ""} ${block.run.done
+                        ? "done"
+                        : ""} ${block.run.running
+                        ? "running"
+                        : ""} ${block.cutBefore
                         ? "cut-before"
                         : ""} ${block.cutAfter ? "cut-after" : ""}"
                       style="left: ${weekPercent(
@@ -335,6 +402,13 @@ export class SmartIrrigationWeekView extends LitElement {
         var(--run) 0 4px,
         transparent 4px 7px
       );
+    }
+    /* Over today: plain, fainter; going on: outlined. */
+    .run.done {
+      opacity: 0.55;
+    }
+    .run.running {
+      box-shadow: 0 0 0 2px var(--primary-text-color);
     }
     .run.cut-before {
       border-top-left-radius: 0;

@@ -337,7 +337,7 @@
     },
     "stop_program": {
       "name": "Programma stoppen",
-      "description": "Stop één programma. Als het loopt, worden de open zones op de normale manier gesloten en wordt bijgeschreven wat ze gaven; als het op zijn beurt wacht, wordt het uit de wachtrij gehaald. Een onbekend programma doet niets. Het hoofdprogramma stop je met stop_watering.",
+      "description": "Stop één programma. Als het loopt, worden de open zones op de normale manier gesloten en wordt bijgeschreven wat ze gaven; als het op zijn beurt wacht, wordt het uit de wachtrij gehaald. Een onbekend programma doet niets. Alle beregening stop je met stop_watering.",
       "fields": {
         "program_id": {
           "name": "Programma",
@@ -784,7 +784,7 @@
         "step": {
           "confirm": {
             "title": "Uw beregening gaat door zoals voorheen",
-            "description": "Smart Irrigation heeft nu één instelling voor wat het doet: **Berekenen en beregenen**, **Alleen berekenen** of **Alles stoppen**, op het tabblad Instellingen. Uw installatie opende de kleppen zelf en is daarom overgezet naar **Berekenen en beregenen**.\n\nUw zones worden beregend zoals voorheen, op hetzelfde moment: de starttrigger is een schema van het hoofdprogramma geworden, op het nieuwe tabblad **Bewatering**. Kies **Alleen berekenen** als Smart Irrigation de kleppen niet meer moet openen."
+            "description": "Smart Irrigation heeft nu één instelling voor wat het doet: **Berekenen en beregenen**, **Alleen berekenen** of **Alles stoppen**, op het tabblad Instellingen. Uw installatie opende de kleppen zelf en is daarom overgezet naar **Berekenen en beregenen**.\n\nUw zones worden beregend zoals voorheen, op hetzelfde moment: de starttrigger is een schema van het programma **Bewatering** geworden, op het nieuwe tabblad **Bewatering**. Kies **Alleen berekenen** als Smart Irrigation de kleppen niet meer moet openen."
           }
         }
       }

@@ -337,7 +337,7 @@
     },
     "stop_program": {
       "name": "Stoppa program",
-      "description": "Stoppar det valda programmet. Om det körs stängs ventilerna som vanligt och det vatten varje zon har fått räknas in i vattenbalansen. Om programmet väntar i kön tas det bort ur kön. Ett okänt program-id har ingen effekt. Använd stop_watering för att stoppa huvudprogrammet.",
+      "description": "Stoppar det valda programmet. Om det körs stängs ventilerna som vanligt och det vatten varje zon har fått räknas in i vattenbalansen. Om programmet väntar i kön tas det bort ur kön. Ett okänt program-id har ingen effekt. Använd stop_watering för att stoppa all bevattning.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -784,7 +784,7 @@
         "step": {
           "confirm": {
             "title": "Din bevattning fortsätter som förut",
-            "description": "Smart Irrigation har nu en enda inställning för vad det gör: **Beräkna och vattna**, **Bara beräkna** eller **Stoppa allt**, på fliken Inställningar. Din installation öppnade ventilerna själv och har därför flyttats till **Beräkna och vattna**.\n\nDina zoner vattnas som förut, vid samma tidpunkt: startutlösaren har blivit ett schema för huvudprogrammet på den nya fliken **Bevattning**. Välj **Bara beräkna** om Smart Irrigation inte längre ska öppna ventilerna."
+            "description": "Smart Irrigation har nu en enda inställning för vad det gör: **Beräkna och vattna**, **Bara beräkna** eller **Stoppa allt**, på fliken Inställningar. Din installation öppnade ventilerna själv och har därför flyttats till **Beräkna och vattna**.\n\nDina zoner vattnas som förut, vid samma tidpunkt: startutlösaren har blivit ett schema för programmet **Bevattning** på den nya fliken **Bevattning**. Välj **Bara beräkna** om Smart Irrigation inte längre ska öppna ventilerna."
           }
         }
       }

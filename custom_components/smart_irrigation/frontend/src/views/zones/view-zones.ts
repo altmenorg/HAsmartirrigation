@@ -2671,7 +2671,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     const label = localize("panels.zones.labels.duration", lang);
     if (readonly) {
       return html`
-        <div class="setting-row">
+        <div class="setting-row value-row">
           <div class="setting-label">${label}</div>
           <div class="value-field">
             <span class="value-text"
@@ -3673,6 +3673,32 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           flex-direction: column;
           align-items: stretch;
           gap: 6px;
+        }
+        /* A switch stays on the right of its title (#1049), and a value
+           sits right after its label, not on a line of its own (#1048). */
+        .setting-row:has(> ha-switch) {
+          flex-direction: row;
+          align-items: center;
+          gap: 12px;
+        }
+        .setting-row > ha-switch {
+          flex: 0 0 auto;
+        }
+        .setting-row:has(> ha-switch) > .setting-label {
+          flex: 1 1 auto;
+          min-width: 0;
+        }
+        .setting-row.value-row {
+          flex-direction: row;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 0 12px;
+          min-height: 44px;
+        }
+        .value-row .value-field {
+          justify-content: flex-start;
+          min-height: 0;
         }
         .field,
         .select-wrap,

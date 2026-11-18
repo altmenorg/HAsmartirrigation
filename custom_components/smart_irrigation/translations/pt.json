@@ -337,7 +337,7 @@
     },
     "stop_program": {
       "name": "Parar programa",
-      "description": "Parar um programa. Se estiver em execução, as zonas abertas são fechadas da forma normal e creditadas pelo que forneceram; se estiver à espera da sua vez, é retirado da fila. Um programa desconhecido não faz nada. O programa principal é parado com stop_watering.",
+      "description": "Parar um programa. Se estiver em execução, as zonas abertas são fechadas da forma normal e creditadas pelo que forneceram; se estiver à espera da sua vez, é retirado da fila. Um programa desconhecido não faz nada. Toda a rega é parada com stop_watering.",
       "fields": {
         "program_id": {
           "name": "Programa",
@@ -784,7 +784,7 @@
         "step": {
           "confirm": {
             "title": "A sua rega continua como antes",
-            "description": "O Smart Irrigation tem agora uma única definição para o que faz: **Calcular e regar**, **Só calcular** ou **Parar tudo**, no separador Definições. A sua instalação abria as válvulas por si, por isso passou para **Calcular e regar**.\n\nAs suas zonas são regadas como antes, no mesmo momento: o acionador de início tornou-se um horário do programa principal, no novo separador **Rega**. Escolha **Só calcular** se o Smart Irrigation já não deve abrir as válvulas."
+            "description": "O Smart Irrigation tem agora uma única definição para o que faz: **Calcular e regar**, **Só calcular** ou **Parar tudo**, no separador Definições. A sua instalação abria as válvulas por si, por isso passou para **Calcular e regar**.\n\nAs suas zonas são regadas como antes, no mesmo momento: o acionador de início tornou-se um horário do programa **Rega**, no novo separador **Rega**. Escolha **Só calcular** se o Smart Irrigation já não deve abrir as válvulas."
           }
         }
       }

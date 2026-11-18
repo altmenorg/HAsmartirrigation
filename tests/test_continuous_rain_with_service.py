@@ -37,6 +37,7 @@ def _coordinator():
     coordinator = SmartIrrigationCoordinator.__new__(SmartIrrigationCoordinator)
     coordinator.hass = MagicMock()
     coordinator._debounced_update_cancel = {}
+    coordinator.async_request_live_refresh = MagicMock()
     coordinator.store = MagicMock()
     coordinator.store.get_mapping = MagicMock(return_value=_group())
     coordinator.store.async_get_mappings = AsyncMock(return_value=[_group()])

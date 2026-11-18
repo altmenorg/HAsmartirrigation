@@ -337,7 +337,7 @@
     },
     "stop_program": {
       "name": "Ferma programma",
-      "description": "Ferma un programma. Se è in corso, le sue zone aperte vengono chiuse nel modo normale e accreditate di quanto hanno erogato; se attende il suo turno, viene tolto dalla coda. Un programma sconosciuto non fa nulla. Il programma principale si ferma con stop_watering.",
+      "description": "Ferma un programma. Se è in corso, le sue zone aperte vengono chiuse nel modo normale e accreditate di quanto hanno erogato; se attende il suo turno, viene tolto dalla coda. Un programma sconosciuto non fa nulla. Tutta l'irrigazione si ferma con stop_watering.",
       "fields": {
         "program_id": {
           "name": "Programma",
@@ -784,7 +784,7 @@
         "step": {
           "confirm": {
             "title": "La tua irrigazione continua come prima",
-            "description": "Smart Irrigation ora ha un'unica impostazione per ciò che fa: **Calcola e irriga**, **Solo calcolo** o **Ferma tutto**, nella scheda Impostazioni. La tua installazione apriva da sola le valvole, quindi è passata a **Calcola e irriga**.\n\nLe tue zone vengono irrigate come prima, nello stesso momento: il trigger di avvio è diventato una pianificazione del programma principale, nella nuova scheda **Irrigazione**. Scegli **Solo calcolo** se Smart Irrigation non deve più aprire le valvole."
+            "description": "Smart Irrigation ora ha un'unica impostazione per ciò che fa: **Calcola e irriga**, **Solo calcolo** o **Ferma tutto**, nella scheda Impostazioni. La tua installazione apriva da sola le valvole, quindi è passata a **Calcola e irriga**.\n\nLe tue zone vengono irrigate come prima, nello stesso momento: il trigger di avvio è diventato una pianificazione del programma **Irrigazione**, nella nuova scheda **Irrigazione**. Scegli **Solo calcolo** se Smart Irrigation non deve più aprire le valvole."
           }
         }
       }

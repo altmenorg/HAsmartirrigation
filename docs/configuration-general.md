@@ -10,11 +10,11 @@ title: "Configuration: General"
 
 **Settings > General** holds the global settings. Under the master switch, they come in three sections:
 
-* **Calculation**: when the durations are worked out and how, the days between irrigations, the seasonal adjustments and the calculation log.
+* **Calculation**: when the durations are worked out and how, the seasonal adjustments and the calculation log.
 * **Control**: the [full controller](usage-full-controller.md), [observed watering](configuration-closed-loop.md) and, when the full controller is off, the start trigger.
 * **System**: the panel mode, the blueprints, the [setup assistant](configuration-setup.md) and the [import from Irrigation Unlimited](usage-from-irrigation-unlimited.md).
 
-The weather service, the location, how often the weather is read and the checks that skip a run are on the **Weather** tab: see [Weather configuration](configuration-weather.md).
+The weather service, the location, how often the weather is read and the checks that skip a run, the days between irrigation included, are on the **Weather** tab: see [Weather configuration](configuration-weather.md).
 
 ### Calculate and water, calculate only, or stop everything
 The first card, **Smart Irrigation**, has one list, **What Smart Irrigation does**:
@@ -91,32 +91,7 @@ The calculation at a fixed time prices the evapotranspiration, the temperature a
 
 ### Count only rain that reaches the roots
 
-On a new installation, and in the advanced mode of the **Calculating the watering duration** card. A shower smaller than a fifth of the evapotranspiration of the period wets the leaves and evaporates before the soil sees it, so it is not counted as water for the roots. It acts on the rain that fell, in every calculation, and has nothing to do with the rain forecast options of the [Skip on weather](configuration-weather.md#skipping-a-run) page. It is judged on the whole period between two calculations, not day by day, so a period of several days ignores less than a day-by-day reading would. It does not model runoff on heavy rain; the maximum water balance still caps what the soil keeps. An installation that already existed keeps its setting as it was, and the switch is shown when it is off.
-
-### Days between irrigation events
-Configure the minimum number of days that must pass between irrigation events. This setting allows you to control how frequently irrigation can occur, which is useful for:
-* **Water conservation**: Ensure adequate time between watering sessions
-* **Plant health**: Allow soil to partially dry between irrigations
-* **Local restrictions**: Comply with watering schedules or restrictions
-
-**How it works:**
-* **Default value**: 0 (no restriction - maintains current behavior)
-* **Range**: 0-365 days
-* When set to 0: Irrigation events can fire daily if conditions are met (default behavior)
-* When set to a value > 0: Irrigation events will only fire if the specified number of days have passed since the last irrigation event
-
-The value is the length of the watering cycle in calendar days: set to *N*, irrigation happens every *N* days.
-
-**Different days for one zone:** a zone can have its own number of days, in the **Days between irrigation** field of the [zone settings](configuration-zones.md) (advanced mode). That number *replaces* this general setting for that zone alone, so a lawn can wait three days while the flower beds are watered every day. Leave the zone's field empty to follow this setting. The general counter only restarts when a zone that follows it is watered, so a zone with days of its own, watered every day, does not keep the others from ever being due. The day is only skipped as a whole when every zone is still within its days; otherwise the run goes ahead for the zones that are due and the others sit it out.
-
-**Example scenarios:**
-* Set to 1: Allow irrigation every day (one calendar day between events)
-* Set to 3: Allow irrigation every 3 days
-* Set to 7: Weekly irrigation
-
-The system automatically tracks the number of days since the last irrigation event. The counter is incremented once per calendar day, at midnight, whether or not irrigation happened that day. If an irrigation trigger occurs but insufficient days have passed, the event is skipped and the counter simply keeps running. When enough days have passed, the next trigger will fire the irrigation event and reset the counter to 0.
-
-This feature works alongside existing precipitation forecasting - if both restrictions apply, both must be satisfied for irrigation to occur.
+On a new installation, and in the advanced mode of the **Calculating the watering duration** card. A shower smaller than a fifth of the evapotranspiration of the period wets the leaves and evaporates before the soil sees it, so it is not counted as water for the roots. It acts on the rain that fell, in every calculation, and has nothing to do with the rain forecast options of the [Skip watering](configuration-weather.md#skipping-a-run) page. It is judged on the whole period between two calculations, not day by day, so a period of several days ignores less than a day-by-day reading would. It does not model runoff on heavy rain; the maximum water balance still caps what the soil keeps. An installation that already existed keeps its setting as it was, and the switch is shown when it is off.
 
 ### Seasonal adjustments
 In advanced mode, the general settings have a **Seasonal adjustments** card. An adjustment covers a range of months (November to February is a range, and so is March to September) and some zones (`all`, or their numbers separated by commas), and does two things: its **crop factor multiplier** scales the crop factor of those zones for those months (1 changes nothing, 0.5 halves the water use), and its **threshold offset** is added to their irrigation threshold. Several adjustments that cover the same month multiply. They apply to the evapotranspiration, not to the duration, so the water balance follows the season.

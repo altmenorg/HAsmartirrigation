@@ -1538,6 +1538,7 @@ class SmartIrrigationCoordinator(
 
         # get the mapping that uses this sensor
         mappings = await self.store.async_get_mappings()
+        recorded = False
         for mapping in mappings:
             if not mapping.get(const.MAPPING_MAPPINGS):
                 continue
@@ -1577,6 +1578,7 @@ class SmartIrrigationCoordinator(
                 await self.store.async_update_mapping(
                     mapping.get(const.MAPPING_ID), changes
                 )
+                recorded = True
                 _LOGGER.debug(
                     "[async_sensor_state_changed]: updated sensor group %s %s",
                     mapping.get(const.MAPPING_ID),
@@ -1626,6 +1628,12 @@ class SmartIrrigationCoordinator(
                     mapping_id,
                 )
                 await self.async_continuous_update_for_mapping(mapping_id)
+
+        if recorded:
+            # The Info page reads this reading at its next refresh, the live
+            # bucket entities only heard of it at the next group update, often
+            # the hourly weather fetch (#1052). Throttled, see live_estimate.py.
+            self.async_request_live_refresh()
 
     async def async_continuous_update_for_mapping(self, mapping_id):
         """Perform a continuous update for a specific mapping if it does not use a weather service.
@@ -2876,6 +2884,8 @@ class SmartIrrigationCoordinator(
         while self._debounced_update_cancel:
             _, cancel = self._debounced_update_cancel.popitem()
             cancel()
+        # and a planned refresh of the live estimates (#1052)
+        self.async_cancel_live_refresh()
 
         # stop watching linked valves (closed-loop bucket)
         self.async_teardown_observed_watering()
