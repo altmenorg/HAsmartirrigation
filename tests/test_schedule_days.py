@@ -5,10 +5,11 @@ never run is the loop around them over many days: arm, reach the moment, record
 it, arm the next one. Here the clock is moved from one armed moment to the next
 for weeks, across the end of daylight saving time and across New Year, and each
 program the scheduler starts is written down with its local day and time.
+The last one chains a program after another over a week with frosty days.
 """
 
 import asyncio
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 import homeassistant.util.dt as dt_util
 import pytest
@@ -31,8 +32,12 @@ def _program(program_id, schedules):
     }
 
 
-async def _days(freezer, scheduler, until, armed):
-    """Run the scheduler up to ``until``: {local date: [(program, "HH:MM")]}."""
+async def _days(freezer, scheduler, until, armed, run_seconds=None):
+    """Run the scheduler up to ``until``: {local date: [(program, "HH:MM")]}.
+
+    ``run_seconds``: each run lasts that long and, as the runner does when a
+    run really watered, then starts the programs that come after it.
+    """
     started: dict = {}
 
     async def _run(program_id, *args, **kwargs):
@@ -40,6 +45,10 @@ async def _days(freezer, scheduler, until, armed):
         started.setdefault(local.date(), []).append(
             (program_id, local.strftime("%H:%M"))
         )
+        if run_seconds is not None:
+            await scheduler.async_start_programs_after(
+                program_id, dt_util.utcnow() + timedelta(seconds=run_seconds)
+            )
         return True
 
     scheduler.async_run_program.side_effect = _run
@@ -162,3 +171,43 @@ async def test_an_occurrence_that_ran_is_not_run_again_after_a_restart(freezer, 
     started = await _days(freezer, again, date(2026, 6, 2), armed)
 
     assert list(started) == [date(2026, 6, 2)]
+
+
+async def test_a_greenhouse_after_the_lawn_waters_every_day_frost_or_not(
+    freezer, armed
+):
+    """The lawn at 06:00 takes the weather into account; the greenhouse drip
+    line comes 15 min after it and does not. On the two frosty days the lawn is
+    held back, and the greenhouse starts at the lawn's moment plus its 15 min;
+    on the others it starts 15 min after the lawn's 10-minute run (#1045)."""
+    freezer.move_to("2026-05-04 02:00:00+00:00")
+    frost = {date(2026, 5, 6), date(2026, 5, 8)}
+    scheduler = Scheduler(
+        [
+            _program("lawn", [{"time": "06:00"}]),
+            _program(
+                "greenhouse",
+                [
+                    {
+                        "type": "after",
+                        "after_program": "lawn",
+                        "offset_minutes": 15,
+                        "weather": False,
+                    }
+                ],
+            ),
+        ]
+    )
+    scheduler._prepare_watering_for_today.side_effect = lambda *a, **k: (
+        dt_util.now().astimezone(PARIS).date() not in frost,
+        set(),
+    )
+
+    started = await _days(freezer, scheduler, date(2026, 5, 10), armed, 600)
+
+    assert sorted(started) == [date(2026, 5, d) for d in range(4, 11)]
+    for day, runs in started.items():
+        if day in frost:
+            assert runs == [("greenhouse", "06:15")]
+        else:
+            assert runs == [("lawn", "06:00"), ("greenhouse", "06:25")]
