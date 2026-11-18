@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Plošča",
           "labels": {
             "advanced": "Napredne nastavitve",
             "advanced-hint": "Prikaže nastavitve za fino nastavljanje modela: drenaža, pragovi, množitelj, kako daleč naprej cona gleda. Imajo smiselne privzete vrednosti; pusti to izklopljeno, razen če veš, da jih potrebuješ. Tvoje vrednosti se ohranijo v vsakem primeru."

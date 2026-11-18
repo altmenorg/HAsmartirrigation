@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Panel",
           "labels": {
             "advanced": "Ustawienia zaawansowane",
             "advanced-hint": "Pokazuje ustawienia, które dostrajają model: drenaż, progi, mnożnik, jak daleko w przód patrzy strefa. Mają sensowne wartości domyślne; zostaw to wyłączone, jeśli nie wiesz, że ich potrzebujesz. Twoje wartości są w obu przypadkach zachowane."

@@ -2551,8 +2551,13 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                                 lang,
                               )}</si-info
                             >`,
+                          // The attribute is the water the soil lost, so it is
+                          // negative (the `et_deficiency` attribute keeps that
+                          // sign); shown here as the need it is labelled, a
+                          // positive amount, like the deficit (#1055). "+ 0"
+                          // keeps a day with no loss from reading "-0".
                           zone.et_deficiency != null
-                            ? `${this._n(Number(zone.et_deficiency), 2)} ${unit_text(
+                            ? `${this._n(-Number(zone.et_deficiency) + 0, 2)} ${unit_text(
                                 this.config,
                                 ZONE_BUCKET,
                               )}`
@@ -2752,8 +2757,11 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     key?: string,
     lang?: string,
   ): TemplateResult {
+    // A value-row: on a phone the value follows its label on the same line
+    // (#1048). Only the duration had it; the water balance and the daily need
+    // still put theirs on a line of their own, under a tall empty gap.
     return html`
-      <div class="setting-row">
+      <div class="setting-row value-row">
         <div class="setting-label">${label}</div>
         <div class="value-field">
           <span class="value-text">${text}</span>
@@ -3670,7 +3678,10 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         padding: 6px 0 10px 0;
         border-bottom: 1px solid var(--divider-color);
       }
-      .setting-row:last-child {
+      .setting-row:last-child,
+      /* A hint closing its block: the actions below draw their own line, and
+         the two lines 16 px apart framed an empty strip (#1048). */
+      .setting-help:last-child {
         border-bottom: 0;
       }
       .setting-label {
@@ -3917,6 +3928,10 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           justify-content: flex-start;
           gap: 0 12px;
           min-height: 44px;
+        }
+        .zone-actions {
+          margin-top: 8px;
+          padding-top: 12px;
         }
         .value-row .value-field {
           justify-content: flex-start;

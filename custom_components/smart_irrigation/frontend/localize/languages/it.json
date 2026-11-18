@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Pannello",
           "labels": {
             "advanced": "Impostazioni avanzate",
             "advanced-hint": "Mostra le impostazioni che regolano il modello: drenaggio, soglie, moltiplicatore, quanto avanti guarda una zona. Hanno valori predefiniti sensati; lascia disattivato se non sai di averne bisogno. I tuoi valori vengono conservati in entrambi i casi."

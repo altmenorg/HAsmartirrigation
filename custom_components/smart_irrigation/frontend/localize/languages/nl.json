@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Paneel",
           "labels": {
             "advanced": "Geavanceerde instellingen",
             "advanced-hint": "Toont de instellingen die het model fijnregelen: drainage, drempels, factor, hoe ver een zone vooruitkijkt. Ze hebben degelijke standaardwaarden; laat dit uit tenzij je weet dat je ze nodig hebt. Je waarden blijven in beide gevallen bewaard."

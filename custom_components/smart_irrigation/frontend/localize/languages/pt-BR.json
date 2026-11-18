@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Painel",
           "labels": {
             "advanced": "Configurações avançadas",
             "advanced-hint": "Mostra as configurações que ajustam o modelo: drenagem, limites, multiplicador, até onde uma zona olha para a frente. Elas têm padrões sensatos; deixe isso desligado se não souber que precisa delas. Seus valores são mantidos de qualquer forma."

@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Panneau",
           "labels": {
             "advanced": "Réglages avancés",
             "advanced-hint": "Affiche les réglages qui ajustent le modèle : drainage, seuils, multiplicateur, anticipation des jours à venir. Leurs valeurs par défaut sont saines, laisse éteint tant que tu n'en as pas besoin. Tes valeurs sont conservées dans tous les cas."

@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Panel",
           "labels": {
             "advanced": "Avancerade inställningar",
             "advanced-hint": "Visar inställningar för att finjustera modellen, till exempel dränering, tröskelvärden, multiplikator och hur långt framåt zonen tar hänsyn till prognosen. Standardvärdena passar i de flesta fall. Dina värden sparas även om du döljer inställningarna."

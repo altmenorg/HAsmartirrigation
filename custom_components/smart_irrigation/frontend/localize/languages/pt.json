@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Painel",
           "labels": {
             "advanced": "Definições avançadas",
             "advanced-hint": "Mostra as definições que afinam o modelo: drenagem, limites, multiplicador, até onde uma zona olha para a frente. Têm valores por omissão sensatos; deixe isto desligado se não souber que precisa delas. Os seus valores são mantidos em qualquer dos casos."

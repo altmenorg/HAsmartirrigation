@@ -611,9 +611,24 @@ export class SmartIrrigationPanel extends LitElement {
           display: flex;
           flex-direction: column;
           /* Home Assistant gives a custom panel no height of its own, so the
-             screen height is used (dvh follows the mobile address bar). */
-          height: 100vh;
-          height: 100dvh;
+             screen height is used (dvh follows the mobile address bar). Since
+             mid-2026 it pads the panel's container with the status bar and
+             navigation bar insets (home-assistant/frontend#53127): a full
+             screen height plus that padding overshot the screen again, and
+             the two scrollers were back on a phone (#1054). The insets are
+             taken off; they are 0 where there are none. */
+          height: calc(
+            100vh - var(--safe-area-inset-top, 0px) - var(
+                --safe-area-inset-bottom,
+                0px
+              )
+          );
+          height: calc(
+            100dvh - var(--safe-area-inset-top, 0px) - var(
+                --safe-area-inset-bottom,
+                0px
+              )
+          );
         }
         .header {
           flex: none;

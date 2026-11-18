@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Panel",
           "labels": {
             "advanced": "Speciális beállítások",
             "advanced-hint": "Megjeleníti azokat a beállításokat, amelyek a modellt finomítják: vízelvezetés, küszöbök, szorzó, mennyire néz előre egy zóna. Értelmes alapértékeik vannak; hagyd kikapcsolva, ha nem tudod, hogy szükséged van rájuk. Az értékeid mindkét esetben megmaradnak."

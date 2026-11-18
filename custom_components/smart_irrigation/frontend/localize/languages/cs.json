@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Panel",
           "labels": {
             "advanced": "Pokročilá nastavení",
             "advanced-hint": "Zobrazí nastavení, která ladí model: drenáž, prahy, násobitel, jak daleko dopředu se zóna dívá. Mají rozumné výchozí hodnoty; nechte to vypnuté, pokud nevíte, že je potřebujete. Vaše hodnoty se v obou případech zachovají."

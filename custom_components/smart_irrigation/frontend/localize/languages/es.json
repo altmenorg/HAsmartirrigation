@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Panel",
           "labels": {
             "advanced": "Ajustes avanzados",
             "advanced-hint": "Muestra los ajustes que afinan el modelo: drenaje, umbrales, multiplicador, hasta dónde mira una zona hacia delante. Tienen valores predeterminados razonables; déjalo desactivado si no sabes que los necesitas. Tus valores se conservan en cualquier caso."

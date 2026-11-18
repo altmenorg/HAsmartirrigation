@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Oberfläche",
           "labels": {
             "advanced": "Erweiterte Einstellungen",
             "advanced-hint": "Zeigt die Einstellungen, die das Modell justieren: Drainage, Schwellwerte, Faktor, wie weit eine Zone vorausschaut. Sie haben sinnvolle Voreinstellungen; lass das aus, wenn du sie nicht brauchst. Deine Werte bleiben in beiden Fällen erhalten."

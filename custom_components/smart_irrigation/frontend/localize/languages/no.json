@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Panel",
           "labels": {
             "advanced": "Avanserte innstillinger",
             "advanced-hint": "Viser innstillingene som finjusterer modellen: drenering, grenser, faktor, hvor langt fram en sone ser. De har fornuftige standardverdier; la dette være av med mindre du vet at du trenger dem. Verdiene dine beholdes uansett."

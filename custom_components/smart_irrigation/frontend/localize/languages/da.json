@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Panel",
           "labels": {
             "advanced": "Avancerede indstillinger",
             "advanced-hint": "Viser de indstillinger der finjusterer modellen: dræning, grænser, faktor, hvor langt frem en zone ser. De har fornuftige standardværdier; lad dette være slået fra, medmindre du ved at du har brug for dem. Dine værdier bevares under alle omstændigheder."

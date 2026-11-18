@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Paneeli",
           "labels": {
             "advanced": "Lisäasetukset",
             "advanced-hint": "Näyttää asetukset, jotka hienosäätävät mallia: kuivatus, rajat, kerroin, kuinka pitkälle alue katsoo eteenpäin. Niillä on järkevät oletusarvot; jätä tämä pois päältä, ellet tiedä tarvitsevasi niitä. Arvosi säilyvät kummassakin tapauksessa."

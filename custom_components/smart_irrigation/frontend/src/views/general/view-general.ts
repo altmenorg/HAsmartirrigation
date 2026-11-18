@@ -533,6 +533,37 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 </div>`
               : ""
           }
+          ${
+            // The calculation audit log, for chasing a calculation down: a
+            // row of this card rather than a card of its own (#1056). The
+            // advanced mode only, unless it is on (it writes a file).
+            this.config.ui_mode === "advanced" || this.config.calc_log_enabled
+              ? html`<div class="setting-row">
+                  <div class="setting-label">
+                    ${localize(
+                      "calculation_log.title",
+                      this.hass.language,
+                    )}<si-info
+                      >${localize(
+                        "calculation_log.description",
+                        this.hass.language,
+                      )}
+                      ${localize(
+                        "calculation_log.file_hint",
+                        this.hass.language,
+                      )}</si-info
+                    >
+                  </div>
+                  <ha-switch
+                    .checked=${!!this.config.calc_log_enabled}
+                    @change=${(e: Event) =>
+                      this.handleConfigChange({
+                        calc_log_enabled: (e.target as any).checked,
+                      })}
+                  ></ha-switch>
+                </div>`
+              : ""
+          }
         </div>`;
       r1 = html`<ha-card
         ><h1 class="card-header">
@@ -768,21 +799,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Observed Watering (closed-loop bucket) Card
       const r9 = this.renderObservedWateringCard();
 
-      // Calculation audit log Card: for chasing a calculation down, the
-      // advanced mode only, unless it is on (it writes a file).
-      const r10 =
-        advanced || this.config.calc_log_enabled
-          ? this.renderCalculationLogCard()
-          : html``;
-
-      // Whether the bundled blueprints are copied (#930): on out of the box,
-      // the advanced mode only, unless it was turned off.
-      const r16 =
-        advanced || this.config.install_blueprints === false
-          ? this.renderBlueprintsCard()
-          : html``;
-
-      // How much of the panel to show.
+      // How much of the panel to show, and whether the bundled blueprints
+      // are copied (#930): one card of two rows (#1056).
       const r11 = this.renderPanelModeCard();
 
       // Seasonal adjustments (advanced).
@@ -851,7 +869,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // The master switch stays above everything it switches.
       // The days between irrigation are on the Weather tab's skip page, with
       // every other check that holds a run back.
-      const r = html`${r18} ${heading("calculation")}${r1}${r13}${r10}
+      const r = html`${r18} ${heading("calculation")}${r1}${r13}
       ${
         // Observed watering is on the advanced panel, the start triggers are
         // for "Calculate only": with neither, the heading stood alone.
@@ -859,7 +877,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ? html`${heading("control")}${r9}${full ? "" : r5}`
           : ""
       }
-      ${heading("system")}${r11}${r16}${r12}${r17}`;
+      ${heading("system")}${r11}${r12}${r17}`;
 
       return r;
     }
@@ -3134,7 +3152,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const lang = this.hass.language;
     return html`
       <ha-card>
-        <h1 class="card-header">
+        <h1 class="card-header header-action">
           <span
             >${localize("panels.setup.title", lang)}<si-info
               >${localize(
@@ -3143,8 +3161,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}</si-info
             ></span
           >
-        </h1>
-        <div class="card-actions">
           <ha-button
             @click=${() => {
               window.history.pushState(
@@ -3157,7 +3173,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           >
             ${localize("panels.general.cards.setup-assistant.open", lang)}
           </ha-button>
-        </div>
+        </h1>
       </ha-card>
     `;
   }
@@ -3171,7 +3187,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const lang = this.hass.language;
     return html`
       <ha-card>
-        <h1 class="card-header">
+        <h1 class="card-header header-action">
           <span
             >${localize("panels.iu_import.title", lang)}<si-info
               >${localize(
@@ -3180,8 +3196,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}</si-info
             ></span
           >
-        </h1>
-        <div class="card-actions">
           <ha-button
             @click=${() => {
               window.history.pushState(
@@ -3194,7 +3208,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           >
             ${localize("panels.general.cards.iu-import.open", lang)}
           </ha-button>
-        </div>
+        </h1>
       </ha-card>
     `;
   }
@@ -4159,26 +4173,28 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
    * sound defaults, and meeting them by accident is how a working
    * installation gets broken, so the standard panel leaves them out. Nothing
    * is lost by switching: the values are kept either way.
+   *
+   * One card of two rows with whether Smart Irrigation lays its example
+   * blueprints down (#930, #1056). The System heading above names it, so it
+   * has no title of its own.
    */
   renderPanelModeCard() {
     if (!this.hass || !this.config) return html``;
+    const lang = this.hass.language;
     const advanced = this.config.ui_mode === "advanced";
-    return html`<ha-card
-      header="${localize(
-        "panels.general.cards.panel-mode.header",
-        this.hass.language,
-      )}"
-    >
+    // On out of the box: the advanced mode only, unless it was turned off.
+    const blueprints = advanced || this.config.install_blueprints === false;
+    return html`<ha-card>
       <div class="card-content">
         <div class="setting-row">
           <div class="setting-label">
             ${localize(
               "panels.general.cards.panel-mode.labels.advanced",
-              this.hass.language,
+              lang,
             )}<si-info
               >${localize(
                 "panels.general.cards.panel-mode.labels.advanced-hint",
-                this.hass.language,
+                lang,
               )}</si-info
             >
           </div>
@@ -4190,11 +4206,27 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               })}
           ></ha-switch>
         </div>
+        ${blueprints
+          ? html`<div class="setting-row">
+              <div class="setting-label">
+                ${localize("blueprints.title", lang)}<si-info
+                  >${localize("blueprints.install_label", lang)}.
+                  ${localize("blueprints.install_help", lang)}</si-info
+                >
+              </div>
+              <ha-switch
+                .checked=${this.config.install_blueprints !== false}
+                @change=${(e: Event) =>
+                  this.handleConfigChange({
+                    install_blueprints: (e.target as any).checked,
+                  })}
+              ></ha-switch>
+            </div>`
+          : ""}
       </div>
     </ha-card>`;
   }
 
-  /** Whether Smart Irrigation lays its example blueprints down (#930). */
   /** A card's title with the switch that turns it on: no "Enabled" row. */
   private _switchHeader(
     title: unknown,
@@ -4223,41 +4255,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         @change=${(e: Event) => onChange((e.target as any).checked)}
       ></ha-switch>
     </div>`;
-  }
-
-  renderBlueprintsCard() {
-    if (!this.config || !this.hass) return html``;
-    const lang = this.hass.language;
-    return html`
-      <ha-card>
-        ${this._switchHeader(
-          html`${localize("blueprints.title", lang)}<si-info
-              >${localize("blueprints.install_label", lang)}.
-              ${localize("blueprints.install_help", lang)}</si-info
-            >`,
-          this.config.install_blueprints !== false,
-          (on) => this.handleConfigChange({ install_blueprints: on }),
-        )}
-      </ha-card>
-    `;
-  }
-
-  renderCalculationLogCard() {
-    if (!this.config || !this.data || !this.hass) return html``;
-    const lang = this.hass.language;
-
-    return html`
-      <ha-card>
-        ${this._switchHeader(
-          html`${localize("calculation_log.title", lang)}<si-info
-              >${localize("calculation_log.description", lang)}
-              ${localize("calculation_log.file_hint", lang)}</si-info
-            >`,
-          !!this.config.calc_log_enabled,
-          (on) => this.handleConfigChange({ calc_log_enabled: on }),
-        )}
-      </ha-card>
-    `;
   }
 
   renderCoordinateCard() {
@@ -4811,15 +4808,47 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         padding: 16px 16px 0;
         border-top: 1px solid var(--divider-color);
       }
+      /* The icon on the title's middle (#1056): both on one 28 px line,
+         the icon centred in it. It hung 2 px under the line's top, and the
+         heading's line was taller than the icon, so it sat low. */
       .settings-section ha-icon {
         color: var(--primary-color);
-        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        height: 28px;
       }
       .settings-section h2 {
         margin: 0;
         font-size: 1.3em;
+        line-height: 28px;
         font-weight: 500;
         color: var(--primary-text-color);
+      }
+      /* A card that is only a way somewhere (the setup assistant, the
+         Irrigation Unlimited import): the button on the title's line, not on
+         a row of its own under a divider (#1056). */
+      .card-header.header-action {
+        align-items: center;
+        gap: 12px;
+        padding-bottom: 12px;
+      }
+      .card-header.header-action > span {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow-wrap: anywhere;
+        line-height: 1.3;
+      }
+      /* A button's own size, not the title's 24 px. */
+      .card-header.header-action > ha-button {
+        flex: 0 0 auto;
+        font-size: var(--ha-font-size-m, 14px);
+        letter-spacing: normal;
+        line-height: normal;
+      }
+      /* A seasonal adjustment: its own padding, since .si-subgroup sets the
+         card content's to 0 on the sides. */
+      .card-content.si-subgroup {
+        padding: 12px 16px;
       }
       .settings-section-sub {
         margin-top: 2px;
