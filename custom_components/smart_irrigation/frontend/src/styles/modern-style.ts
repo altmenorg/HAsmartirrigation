@@ -454,12 +454,6 @@ export const modernStyle = css`
     .card-content > .si-subgroup:last-child {
       padding-bottom: 0;
     }
-    /* Home Assistant's card title keeps 16 px under itself, made for a card
-       that starts with a paragraph: above a row that has its own padding it
-       read as an empty line (#1048). */
-    .card-header {
-      padding-bottom: 8px;
-    }
     .field,
     .select-wrap,
     .num-field {
