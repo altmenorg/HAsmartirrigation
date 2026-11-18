@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "En sone som er slått av, vannes aldri, så den har ingen vanningstid.",
         "et-deficiency-help": "Hva denne sonen trenger per dag: ETc, referansefordampingen ganger vekstfaktoren, sesongjustering inkludert. Før skaleringen til intervallet og før regnet, og det er det som gjør tallet sammenlignbart fra ett oppsett til et annet. Sonesensoren bærer også referansetallet for seg, som attributtet `eto`, til å holde mot det en værtjeneste publiserer.",
         "safety-off-entity": "Ventilens egen varighet",
-        "safety-off-entity-help": "For en ventil som lukker av seg selv etter en egen varighet, som Gardena (tallet \"vanningsvarighet\", 1 min med mindre det er endret): velg det tallet her. Før hver åpning skriver Smart Irrigation omgangens lengde pluss 30 s til det, slik at ventilen holder seg åpen hele omgangen og likevel lukker av seg selv hvis Home Assistant stopper. Uten det lukker en slik ventil etter den forhåndsinnstilte tiden."
+        "safety-off-entity-help": "For en ventil som lukker av seg selv etter en egen varighet, som Gardena (tallet \"vanningsvarighet\", 1 min med mindre det er endret): velg det tallet her. Før hver åpning skriver Smart Irrigation omgangens lengde pluss 30 s til det, slik at ventilen holder seg åpen hele omgangen og likevel lukker av seg selv hvis Home Assistant stopper. Uten det lukker en slik ventil etter den forhåndsinnstilte tiden.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Det er ingen definerte soner ennå.",
       "title": "Soner",
@@ -869,7 +870,7 @@
         "status": "Hvor den står"
       },
       "yaml": {
-        "only_help": "Denne sonen bruker innstillinger som den visuelle editoren ikke viser. De beholdes når sonen redigeres her, og endres med Rediger i YAML.",
+        "only_help": "Innstillinger som den visuelle redigereren ikke viser. De beholdes når du redigerer her.",
         "help": "Sonens innstillinger som tekst, i panelets enheter. En valgfri innstilling som utelates, tømmes; en påkrevd (navn, areal...) beholdes. Ingenting lagres før du bruker endringen.",
         "not_a_zone": "Dette er ikke en sone: en sone er et sett med nøkler (name, size, throughput...).",
         "not_settings": "Ikke innstillinger for en sone, eller kan ikke settes her: {keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "Tilbake til redigeringen",
     "yaml_edit": "Rediger i YAML",
     "yaml_only_title": "Stilt inn i YAML (kan ikke redigeres her)",
-    "yaml_only_help": "Dette programmet bruker innstillinger som den visuelle editoren ikke viser. De beholdes når programmet redigeres her, og endres med Rediger i YAML.",
+    "yaml_only_help": "Innstillinger som den visuelle redigereren ikke viser. De beholdes når du redigerer her.",
     "yaml_help": "Programmet som tekst. Et trinn angir sonene sine med navn eller nummer, og det som utelates får standardverdien. Ingenting lagres før du bruker endringen: tidslinjen nedenfor viser hva programmet ville gjort.",
     "yaml_apply": "Bruk",
     "yaml_invalid": "Dette er ikke gyldig YAML.",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "Solens asimut",
     "schedule_azimuth_help": "Grader med klokken fra nord: 90 øst, 180 sør, 270 vest. For et bed som skyggen av en mur eller et tre forlater i det øyeblikket.",
     "view_flow": "Diagram",
-    "view_timeline": "Tidslinje"
+    "view_timeline": "Tidslinje",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Pumper og hovedventiler",

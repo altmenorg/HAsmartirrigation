@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "Une zone désactivée n'est jamais arrosée, elle n'a donc pas de durée d'arrosage.",
         "et-deficiency-help": "Ce dont cette zone a besoin par jour : ETc, l'évapotranspiration de référence multipliée par le facteur de culture, ajustement saisonnier inclus. Avant la mise à l'échelle de l'intervalle et avant la pluie, ce qui la rend comparable d'une configuration à l'autre. Le capteur de la zone porte aussi la valeur de référence seule, dans l'attribut `eto`, à confronter à ce que publie un service météo.",
         "safety-off-entity": "Durée propre de la vanne",
-        "safety-off-entity-help": "Pour une vanne qui se ferme d'elle-même au bout d'une durée qui lui est propre, comme Gardena (son nombre « durée d'arrosage », 1 min sauf si tu l'as changé) : choisis ce nombre ici. Avant chaque ouverture, Smart Irrigation y écrit la durée de la passe plus 30 s, pour que la vanne reste ouverte pendant toute la passe et se ferme quand même d'elle-même si Home Assistant s'arrête. Sans cela, une telle vanne se ferme au bout de sa durée préréglée."
+        "safety-off-entity-help": "Pour une vanne qui se ferme d'elle-même au bout d'une durée qui lui est propre, comme Gardena (son nombre « durée d'arrosage », 1 min sauf si tu l'as changé) : choisis ce nombre ici. Avant chaque ouverture, Smart Irrigation y écrit la durée de la passe plus 30 s, pour que la vanne reste ouverte pendant toute la passe et se ferme quand même d'elle-même si Home Assistant s'arrête. Sans cela, une telle vanne se ferme au bout de sa durée préréglée.",
+        "yaml_only_item": "{label} : {value}"
       },
       "no_items": "Il n'y a pas encore de zone définie.",
       "title": "Zones",
@@ -869,7 +870,7 @@
         "status": "Où elle en est"
       },
       "yaml": {
-        "only_help": "Cette zone utilise des réglages que l'éditeur visuel n'affiche pas. Ils sont conservés quand tu modifies la zone ici ; pour les changer, utilise Modifier en YAML.",
+        "only_help": "Des réglages que l'éditeur visuel n'affiche pas. Ils sont conservés quand tu modifies ici.",
         "help": "Les réglages de la zone en texte, dans les unités du panneau. Un réglage facultatif retiré est effacé ; un réglage obligatoire (nom, surface...) est conservé. Rien n'est enregistré avant que tu appliques.",
         "not_a_zone": "Ce n'est pas une zone : une zone est un ensemble de clés (name, size, throughput...).",
         "not_settings": "Pas des réglages d'une zone, ou pas modifiables ici : {keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "Revenir à l'éditeur",
     "yaml_edit": "Modifier en YAML",
     "yaml_only_title": "Réglé en YAML (non modifiable ici)",
-    "yaml_only_help": "Ce programme utilise des réglages que l'éditeur visuel n'affiche pas. Ils sont conservés quand tu modifies le programme ici ; pour les changer, utilise Modifier en YAML.",
+    "yaml_only_help": "Des réglages que l'éditeur visuel n'affiche pas. Ils sont conservés quand tu modifies ici.",
     "yaml_help": "Le programme sous forme de texte. Une étape désigne ses zones par leur nom ou leur numéro, et ce qui est omis prend sa valeur par défaut. Rien n'est enregistré avant d'appliquer : la frise ci-dessous montre ce que ferait le programme.",
     "yaml_apply": "Appliquer",
     "yaml_invalid": "Ce n'est pas du YAML valide.",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "Azimut du soleil",
     "schedule_azimuth_help": "Degrés depuis le nord dans le sens horaire : 90 est, 180 sud, 270 ouest. Pour un massif que l'ombre d'un mur ou d'un arbre quitte à ce moment-là.",
     "view_flow": "Schéma",
-    "view_timeline": "Frise"
+    "view_timeline": "Frise",
+    "yaml_only_item": "{label} : {value}"
   },
   "supplies": {
     "title": "Pompes et vannes générales",

@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "Een uitgeschakelde zone wordt nooit bewaterd, dus ze heeft geen looptijd.",
         "et-deficiency-help": "Wat deze zone per dag nodig heeft: ETc, de referentieverdamping maal de gewasfactor, seizoenscorrectie inbegrepen. Vóór het schalen naar het interval en vóór de regen, en dat maakt het vergelijkbaar van de ene configuratie naar de andere. De zonesensor draagt het referentiegetal ook op zichzelf, als attribuut `eto`, om te vergelijken met wat een weerdienst publiceert.",
         "safety-off-entity": "Eigen duur van het ventiel",
-        "safety-off-entity-help": "Voor een ventiel dat na een eigen duur vanzelf sluit, zoals Gardena (zijn getal \"bewateringsduur\", 1 min tenzij gewijzigd): kies dat getal hier. Voor elke opening schrijft Smart Irrigation er de lengte van de beurt plus 30 s in, zodat het ventiel de hele beurt open blijft en toch vanzelf sluit als Home Assistant stopt. Zonder dit sluit zo'n ventiel na zijn vooraf ingestelde tijd."
+        "safety-off-entity-help": "Voor een ventiel dat na een eigen duur vanzelf sluit, zoals Gardena (zijn getal \"bewateringsduur\", 1 min tenzij gewijzigd): kies dat getal hier. Voor elke opening schrijft Smart Irrigation er de lengte van de beurt plus 30 s in, zodat het ventiel de hele beurt open blijft en toch vanzelf sluit als Home Assistant stopt. Zonder dit sluit zo'n ventiel na zijn vooraf ingestelde tijd.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Er zijn nog geen zones.",
       "title": "Zones",
@@ -869,7 +870,7 @@
         "status": "Waar ze staat"
       },
       "yaml": {
-        "only_help": "Deze zone gebruikt instellingen die de visuele editor niet toont. Ze blijven behouden als de zone hier wordt bewerkt, en worden gewijzigd met Bewerken in YAML.",
+        "only_help": "Instellingen die de visuele editor niet toont. Bij bewerken hier blijven ze behouden.",
         "help": "De instellingen van de zone als tekst, in de eenheden van het paneel. Een weggelaten optionele instelling wordt gewist, een verplichte (naam, oppervlakte...) blijft. Er wordt niets opgeslagen tot je toepast.",
         "not_a_zone": "Dit is geen zone: een zone is een verzameling sleutels (name, size, throughput...).",
         "not_settings": "Geen instellingen van een zone, of hier niet in te stellen: {keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "Terug naar de editor",
     "yaml_edit": "Bewerken in YAML",
     "yaml_only_title": "Ingesteld in YAML (hier niet te bewerken)",
-    "yaml_only_help": "Dit programma gebruikt instellingen die de visuele editor niet toont. Ze blijven behouden als het programma hier wordt bewerkt, en worden gewijzigd met Bewerken in YAML.",
+    "yaml_only_help": "Instellingen die de visuele editor niet toont. Bij bewerken hier blijven ze behouden.",
     "yaml_help": "Het programma als tekst. Een stap noemt zijn zones bij naam of nummer, en wat wordt weggelaten krijgt de standaardwaarde. Er wordt niets opgeslagen tot je toepast: de tijdlijn hieronder toont wat het programma zou doen.",
     "yaml_apply": "Toepassen",
     "yaml_invalid": "Dit is geen geldige YAML.",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "Azimut van de zon",
     "schedule_azimuth_help": "Graden met de klok mee vanaf het noorden: 90 oost, 180 zuid, 270 west. Voor een perk dat de schaduw van een muur of boom op dat moment verlaat.",
     "view_flow": "Schema",
-    "view_timeline": "Tijdlijn"
+    "view_timeline": "Tijdlijn",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Pompen en hoofdventielen",

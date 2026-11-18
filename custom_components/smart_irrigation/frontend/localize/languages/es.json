@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "Una zona desactivada nunca se riega, así que no tiene tiempo de riego.",
         "et-deficiency-help": "Lo que esta zona necesita al día: ETc, la evapotranspiración de referencia por el factor de cultivo, ajuste estacional incluido. Antes de escalarlo al intervalo y antes de la lluvia, que es lo que lo hace comparable de una configuración a otra. El sensor de la zona también lleva la cifra de referencia por separado, en el atributo `eto`, para contrastarla con lo que publica un servicio meteorológico.",
         "safety-off-entity": "Duración propia de la válvula",
-        "safety-off-entity-help": "Para una válvula que se cierra sola tras una duración propia, como Gardena (su número \"duración de riego\", 1 min si no se ha cambiado): elige ese número aquí. Antes de cada apertura, Smart Irrigation escribe en él la duración de la pasada más 30 s, para que la válvula siga abierta durante toda la pasada y aun así se cierre sola si Home Assistant se detiene. Sin él, una válvula así se cierra tras su tiempo preajustado."
+        "safety-off-entity-help": "Para una válvula que se cierra sola tras una duración propia, como Gardena (su número \"duración de riego\", 1 min si no se ha cambiado): elige ese número aquí. Antes de cada apertura, Smart Irrigation escribe en él la duración de la pasada más 30 s, para que la válvula siga abierta durante toda la pasada y aun así se cierre sola si Home Assistant se detiene. Sin él, una válvula así se cierra tras su tiempo preajustado.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Aún no hay zonas definidas.",
       "title": "Zonas",
@@ -869,7 +870,7 @@
         "status": "Cómo está"
       },
       "yaml": {
-        "only_help": "Esta zona usa ajustes que el editor visual no muestra. Se conservan al editar la zona aquí, y se cambian con Editar en YAML.",
+        "only_help": "Ajustes que el editor visual no muestra. Se conservan al editar aquí.",
         "help": "Los ajustes de la zona como texto, en las unidades del panel. Un ajuste opcional que se quita se borra; uno obligatorio (nombre, superficie...) se conserva. No se guarda nada hasta aplicar.",
         "not_a_zone": "Esto no es una zona: una zona es un conjunto de claves (name, size, throughput...).",
         "not_settings": "No son ajustes de una zona, o no se fijan aquí: {keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "Volver al editor",
     "yaml_edit": "Editar en YAML",
     "yaml_only_title": "Configurado en YAML (no editable aquí)",
-    "yaml_only_help": "Este programa usa ajustes que el editor visual no muestra. Se conservan al editar el programa aquí, y se cambian con Editar en YAML.",
+    "yaml_only_help": "Ajustes que el editor visual no muestra. Se conservan al editar aquí.",
     "yaml_help": "El programa como texto. Un paso nombra sus zonas por nombre o por número, y lo que se omite toma su valor por defecto. No se guarda nada hasta aplicar: la línea de tiempo de abajo muestra lo que haría el programa.",
     "yaml_apply": "Aplicar",
     "yaml_invalid": "Esto no es YAML válido.",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "Azimut del sol",
     "schedule_azimuth_help": "Grados en sentido horario desde el norte: 90 este, 180 sur, 270 oeste. Para un macizo que la sombra de un muro o un árbol deja en ese momento.",
     "view_flow": "Esquema",
-    "view_timeline": "Cronología"
+    "view_timeline": "Cronología",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Bombas y válvulas principales",

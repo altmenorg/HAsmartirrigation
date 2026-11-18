@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "Izklopljena cona se nikoli ne zaliva, zato nima časa delovanja.",
         "et-deficiency-help": "Kaj ta cona potrebuje na dan: ETc, referenčna evapotranspiracija krat faktor rastline, vključno s sezonsko prilagoditvijo. Pred prilagoditvijo na interval in pred dežjem, kar omogoča primerjavo med različnimi nastavitvami. Senzor cone ima tudi samo referenčno vrednost, kot atribut `eto`, za primerjavo s tem, kar objavlja vremenska storitev.",
         "safety-off-entity": "Lastno trajanje ventila",
-        "safety-off-entity-help": "Za ventil, ki se sam zapre po lastnem trajanju, npr. Gardena (njegovo število „trajanje zalivanja“, 1 min, če ga nisi spremenil): tukaj izberi to število. Pred vsakim odprtjem Smart Irrigation vanj zapiše dolžino prehoda in 30 s, tako da ventil ostane odprt ves prehod in se kljub temu sam zapre, če se Home Assistant ustavi. Brez tega se tak ventil zapre po svojem prednastavljenem času."
+        "safety-off-entity-help": "Za ventil, ki se sam zapre po lastnem trajanju, npr. Gardena (njegovo število „trajanje zalivanja“, 1 min, če ga nisi spremenil): tukaj izberi to število. Pred vsakim odprtjem Smart Irrigation vanj zapiše dolžino prehoda in 30 s, tako da ventil ostane odprt ves prehod in se kljub temu sam zapre, če se Home Assistant ustavi. Brez tega se tak ventil zapre po svojem prednastavljenem času.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Nobena cona še ni določena.",
       "title": "Cone",
@@ -869,7 +870,7 @@
         "status": "Kako je z njo"
       },
       "yaml": {
-        "only_help": "Ta cona uporablja nastavitve, ki jih vizualni urejevalnik ne prikaže. Pri urejanju cone tukaj ostanejo ohranjene, spremenijo pa se z Uredi v YAML.",
+        "only_help": "Nastavitve, ki jih vizualni urejevalnik ne prikaže. Pri urejanju tukaj se ohranijo.",
         "help": "Nastavitve cone kot besedilo, v enotah plošče. Izpuščena izbirna nastavitev se počisti, obvezna (ime, površina...) ostane. Nič se ne shrani, dokler ne uveljavite.",
         "not_a_zone": "To ni cona: cona je nabor ključev (name, size, throughput...).",
         "not_settings": "To niso nastavitve cone ali se jih tu ne nastavlja: {keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "Nazaj v urejevalnik",
     "yaml_edit": "Uredi v YAML",
     "yaml_only_title": "Nastavljeno v YAML (tukaj ni mogoče urejati)",
-    "yaml_only_help": "Ta program uporablja nastavitve, ki jih vizualni urejevalnik ne prikaže. Pri urejanju programa tukaj ostanejo ohranjene, spremenijo pa se z Uredi v YAML.",
+    "yaml_only_help": "Nastavitve, ki jih vizualni urejevalnik ne prikaže. Pri urejanju tukaj se ohranijo.",
     "yaml_help": "Program kot besedilo. Korak navede svoje cone z imenom ali številko, kar je izpuščeno, pa dobi privzeto vrednost. Nič se ne shrani, dokler ne uveljavite: časovnica spodaj kaže, kaj bi naredil program.",
     "yaml_apply": "Uveljavi",
     "yaml_invalid": "To ni veljaven YAML.",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "Azimut sonca",
     "schedule_azimuth_help": "Stopinje v smeri urinega kazalca od severa: 90 vzhod, 180 jug, 270 zahod. Za gredo, ki jo senca zidu ali drevesa v tistem trenutku zapusti.",
     "view_flow": "Shema",
-    "view_timeline": "Časovnica"
+    "view_timeline": "Časovnica",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Črpalke in glavni ventili",

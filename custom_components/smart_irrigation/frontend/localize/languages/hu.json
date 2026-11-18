@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "A kikapcsolt zóna soha nem kap vizet, így nincs öntözési ideje.",
         "et-deficiency-help": "Amire ennek a zónának naponta szüksége van: ETc, a referencia-evapotranszpiráció szorozva a növénytényezővel, a szezonális igazítással együtt. Az intervallumra való átszámítás előtt és az eső előtt, és épp ez teszi összehasonlíthatóvá egyik beállítástól a másikig. A zóna érzékelője a referenciaszámot magában is viszi, `eto` attribútumként, hogy össze lehessen vetni azzal, amit egy időjárás-szolgáltatás közöl.",
         "safety-off-entity": "A szelep saját időtartama",
-        "safety-off-entity-help": "Olyan szelephez, amely saját időtartam után magától bezár, például Gardena (az „öntözési időtartam” nevű szám, 1 perc, ha nem változtattad meg): itt válaszd ki azt a számot. Minden nyitás előtt a Smart Irrigation beleírja a szakasz hosszát plusz 30 s-ot, így a szelep a teljes szakasz alatt nyitva marad, és mégis magától bezár, ha a Home Assistant leáll. Enélkül egy ilyen szelep az előre beállított ideje után bezár."
+        "safety-off-entity-help": "Olyan szelephez, amely saját időtartam után magától bezár, például Gardena (az „öntözési időtartam” nevű szám, 1 perc, ha nem változtattad meg): itt válaszd ki azt a számot. Minden nyitás előtt a Smart Irrigation beleírja a szakasz hosszát plusz 30 s-ot, így a szelep a teljes szakasz alatt nyitva marad, és mégis magától bezár, ha a Home Assistant leáll. Enélkül egy ilyen szelep az előre beállított ideje után bezár.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Még nincs definiált zóna.",
       "title": "Zónák",
@@ -869,7 +870,7 @@
         "status": "Állapota"
       },
       "yaml": {
-        "only_help": "Ez a zóna olyan beállításokat használ, amelyeket a vizuális szerkesztő nem mutat. A zóna itteni szerkesztése megtartja őket, módosítani a Szerkesztés YAML-ben lehet.",
+        "only_help": "A vizuális szerkesztő által nem mutatott beállítások. Az itteni szerkesztés megtartja őket.",
         "help": "A zóna beállításai szövegként, a panel mértékegységeiben. A kihagyott opcionális beállítás törlődik, a kötelező (név, terület...) megmarad. Alkalmazásig semmi sem mentődik.",
         "not_a_zone": "Ez nem zóna: a zóna kulcsok halmaza (name, size, throughput...).",
         "not_settings": "Nem zónabeállítások, vagy itt nem állíthatók: {keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "Vissza a szerkesztőhöz",
     "yaml_edit": "Szerkesztés YAML-ben",
     "yaml_only_title": "YAML-ben beállítva (itt nem szerkeszthető)",
-    "yaml_only_help": "Ez a program olyan beállításokat használ, amelyeket a vizuális szerkesztő nem mutat. A program itteni szerkesztése megtartja őket, módosítani a Szerkesztés YAML-ben lehet.",
+    "yaml_only_help": "A vizuális szerkesztő által nem mutatott beállítások. Az itteni szerkesztés megtartja őket.",
     "yaml_help": "A program szövegként. Egy lépés névvel vagy számmal adja meg a zónáit, a kihagyott értékek az alapértelmezést kapják. Semmi sem mentődik az alkalmazásig: az alábbi idővonal mutatja, mit tenne a program.",
     "yaml_apply": "Alkalmaz",
     "yaml_invalid": "Ez nem érvényes YAML.",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "A nap azimutja",
     "schedule_azimuth_help": "Fok az óramutató járásával északtól: 90 kelet, 180 dél, 270 nyugat. Olyan ágyáshoz, amelyről egy fal vagy fa árnyéka abban a pillanatban lehúzódik.",
     "view_flow": "Ábra",
-    "view_timeline": "Idővonal"
+    "view_timeline": "Idővonal",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Szivattyúk és főszelepek",

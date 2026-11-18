@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "En zone der er slået fra, vandes aldrig, så den har ingen vandingstid.",
         "et-deficiency-help": "Hvad denne zone har brug for pr. dag: ETc, referencefordampningen gange afgrødefaktoren, sæsonjustering inkluderet. Før skaleringen til intervallet og før regnen, og det er det, der gør tallet sammenligneligt fra en opsætning til en anden. Zonesensoren bærer også referencetallet for sig selv, som attributten `eto`, til at holde op mod hvad en vejrtjeneste offentliggør.",
         "safety-off-entity": "Ventilens egen varighed",
-        "safety-off-entity-help": "Til en ventil, der lukker af sig selv efter sin egen varighed, som Gardena (dens tal \"vandingsvarighed\", 1 min medmindre det er ændret): vælg det tal her. Før hver åbning skriver Smart Irrigation omgangens længde plus 30 s til det, så ventilen bliver åben hele omgangen og alligevel lukker af sig selv, hvis Home Assistant stopper. Uden det lukker sådan en ventil efter sin forudindstillede tid."
+        "safety-off-entity-help": "Til en ventil, der lukker af sig selv efter sin egen varighed, som Gardena (dens tal \"vandingsvarighed\", 1 min medmindre det er ændret): vælg det tal her. Før hver åbning skriver Smart Irrigation omgangens længde plus 30 s til det, så ventilen bliver åben hele omgangen og alligevel lukker af sig selv, hvis Home Assistant stopper. Uden det lukker sådan en ventil efter sin forudindstillede tid.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Der er endnu ikke defineret nogen zoner.",
       "title": "Zoner",
@@ -869,7 +870,7 @@
         "status": "Hvor den står"
       },
       "yaml": {
-        "only_help": "Denne zone bruger indstillinger, som den visuelle editor ikke viser. De bevares, når zonen redigeres her, og ændres med Rediger i YAML.",
+        "only_help": "Indstillinger, som den visuelle editor ikke viser. De bevares, når du redigerer her.",
         "help": "Zonens indstillinger som tekst, i panelets enheder. En valgfri indstilling, der udelades, ryddes; en påkrævet (navn, areal...) bevares. Intet gemmes, før du anvender.",
         "not_a_zone": "Dette er ikke en zone: en zone er et sæt nøgler (name, size, throughput...).",
         "not_settings": "Ikke indstillinger for en zone, eller kan ikke sættes her: {keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "Tilbage til editoren",
     "yaml_edit": "Rediger i YAML",
     "yaml_only_title": "Indstillet i YAML (kan ikke redigeres her)",
-    "yaml_only_help": "Dette program bruger indstillinger, som den visuelle editor ikke viser. De bevares, når programmet redigeres her, og ændres med Rediger i YAML.",
+    "yaml_only_help": "Indstillinger, som den visuelle editor ikke viser. De bevares, når du redigerer her.",
     "yaml_help": "Programmet som tekst. Et trin angiver sine zoner med navn eller nummer, og det udeladte får sin standardværdi. Intet gemmes, før du anvender: tidslinjen nedenfor viser, hvad programmet ville gøre.",
     "yaml_apply": "Anvend",
     "yaml_invalid": "Dette er ikke gyldig YAML.",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "Solens azimut",
     "schedule_azimuth_help": "Grader med uret fra nord: 90 øst, 180 syd, 270 vest. Til et bed, som skyggen fra en mur eller et træ forlader i det øjeblik.",
     "view_flow": "Diagram",
-    "view_timeline": "Tidslinje"
+    "view_timeline": "Tidslinje",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Pumper og hovedventiler",

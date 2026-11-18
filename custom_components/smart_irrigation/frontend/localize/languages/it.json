@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "Una zona disattivata non viene mai irrigata, quindi non ha un tempo di irrigazione.",
         "et-deficiency-help": "Quello che serve a questa zona al giorno: ETc, l'evapotraspirazione di riferimento per il fattore colturale, regolazione stagionale compresa. Prima del ridimensionamento sull'intervallo e prima della pioggia, ed è questo che lo rende confrontabile da una configurazione all'altra. Il sensore della zona porta anche il valore di riferimento da solo, come attributo `eto`, da confrontare con quello che pubblica un servizio meteo.",
         "safety-off-entity": "Durata propria della valvola",
-        "safety-off-entity-help": "Per una valvola che si chiude da sola dopo una durata propria, come Gardena (il suo numero \"durata di irrigazione\", 1 min se non modificato): scegli qui quel numero. Prima di ogni apertura, Smart Irrigation vi scrive la durata del passaggio più 30 s, così la valvola resta aperta per tutto il passaggio e si chiude comunque da sola se Home Assistant si ferma. Senza, una valvola del genere si chiude dopo il suo tempo preimpostato."
+        "safety-off-entity-help": "Per una valvola che si chiude da sola dopo una durata propria, come Gardena (il suo numero \"durata di irrigazione\", 1 min se non modificato): scegli qui quel numero. Prima di ogni apertura, Smart Irrigation vi scrive la durata del passaggio più 30 s, così la valvola resta aperta per tutto il passaggio e si chiude comunque da sola se Home Assistant si ferma. Senza, una valvola del genere si chiude dopo il suo tempo preimpostato.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Non ci sono ancora zone definite.",
       "title": "Zone",
@@ -869,7 +870,7 @@
         "status": "A che punto è"
       },
       "yaml": {
-        "only_help": "Questa zona usa impostazioni che l'editor visivo non mostra. Vengono conservate quando la zona si modifica qui, e si cambiano con Modifica in YAML.",
+        "only_help": "Impostazioni che l'editor visuale non mostra. Vengono mantenute modificando qui.",
         "help": "Le impostazioni della zona come testo, nelle unità del pannello. Un'impostazione facoltativa tolta viene cancellata; una obbligatoria (nome, superficie...) resta. Nulla è salvato finché non applichi.",
         "not_a_zone": "Questa non è una zona: una zona è un insieme di chiavi (name, size, throughput...).",
         "not_settings": "Non sono impostazioni di una zona, o non si impostano qui: {keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "Torna all'editor",
     "yaml_edit": "Modifica in YAML",
     "yaml_only_title": "Impostato in YAML (non modificabile qui)",
-    "yaml_only_help": "Questo programma usa impostazioni che l'editor visivo non mostra. Vengono conservate quando il programma si modifica qui, e si cambiano con Modifica in YAML.",
+    "yaml_only_help": "Impostazioni che l'editor visuale non mostra. Vengono mantenute modificando qui.",
     "yaml_help": "Il programma come testo. Un passo indica le sue zone per nome o per numero, e ciò che manca prende il valore predefinito. Nulla viene salvato prima di applicare: la linea temporale qui sotto mostra cosa farebbe il programma.",
     "yaml_apply": "Applica",
     "yaml_invalid": "Questo non è YAML valido.",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "Azimut del sole",
     "schedule_azimuth_help": "Gradi in senso orario dal nord: 90 est, 180 sud, 270 ovest. Per un'aiuola che l'ombra di un muro o di un albero lascia in quel momento.",
     "view_flow": "Schema",
-    "view_timeline": "Cronologia"
+    "view_timeline": "Cronologia",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Pompe e valvole principali",

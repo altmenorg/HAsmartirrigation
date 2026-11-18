@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "A disabled zone is never watered, so it has no run time.",
         "et-deficiency-help": "What this zone needs per day: ETc, ET0 times the crop factor with the seasonal adjustment, before rain and before scaling to the interval, so it compares across setups. ET0 alone is the zone sensor's `eto` attribute, to check against a weather service.",
         "safety-off-entity": "Valve's own duration",
-        "safety-off-entity-help": "For a valve that closes by itself after a duration of its own, such as Gardena (its \"watering duration\" number, 1 min unless changed): pick that number here. Before each open, Smart Irrigation writes the pass's length plus 30 s to it, so the valve stays open for the whole pass and still closes by itself if Home Assistant stops. Without it, such a valve closes after its preset time."
+        "safety-off-entity-help": "For a valve that closes by itself after a duration of its own, such as Gardena (its \"watering duration\" number, 1 min unless changed): pick that number here. Before each open, Smart Irrigation writes the pass's length plus 30 s to it, so the valve stays open for the whole pass and still closes by itself if Home Assistant stops. Without it, such a valve closes after its preset time.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "There are no zones defined yet.",
       "title": "Zones",
@@ -869,7 +870,7 @@
         "status": "Where it stands"
       },
       "yaml": {
-        "only_help": "This zone uses settings the visual editor does not show. They are kept when the zone is edited here, and changed with Edit in YAML.",
+        "only_help": "Settings the visual editor does not show. Editing here keeps them.",
         "help": "The zone's settings as text, in the units the panel shows. An optional setting left out is cleared; a required one (name, size...) is kept. Nothing is saved until you apply.",
         "not_a_zone": "This is not a zone: a zone is a set of keys (name, size, throughput...).",
         "not_settings": "Not settings of a zone, or not set here: {keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "Back to the editor",
     "yaml_edit": "Edit in YAML",
     "yaml_only_title": "Set in YAML (not editable here)",
-    "yaml_only_help": "This program uses settings the visual editor does not show. They are kept when the program is edited here, and changed with Edit in YAML.",
+    "yaml_only_help": "Settings the visual editor does not show. Editing here keeps them.",
     "yaml_help": "The program as text. A step names its zones by name or by number, and what is left out takes its default. Nothing is saved until you apply: the timeline below shows what the program would do.",
     "yaml_apply": "Apply",
     "yaml_invalid": "This is not valid YAML.",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "Sun's bearing",
     "schedule_azimuth_help": "Degrees clockwise from north: 90 east, 180 south, 270 west. For a bed that the shade of a wall or a tree leaves at that moment.",
     "view_flow": "Diagram",
-    "view_timeline": "Timeline"
+    "view_timeline": "Timeline",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Pumps and main valves",

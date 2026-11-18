@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "Pois päältä olevaa aluetta ei koskaan kastella, joten sillä ei ole kasteluaikaa.",
         "et-deficiency-help": "Mitä tämä alue tarvitsee päivässä: ETc, referenssihaihdunta kertaa kasvikerroin, kausisäätö mukaan lukien. Ennen jaksolle skaalausta ja ennen sadetta, mikä tekee siitä vertailukelpoisen määrityksestä toiseen. Alueen anturi kantaa myös referenssiluvun omanaan, attribuuttina `eto`, jota voi verrata siihen mitä sääpalvelu julkaisee.",
         "safety-off-entity": "Venttiilin oma kesto",
-        "safety-off-entity-help": "Venttiilille, joka sulkeutuu itsestään oman kestonsa jälkeen, kuten Gardena (sen numero \"kastelun kesto\", 1 min ellei muutettu): valitse se numero tähän. Ennen jokaista avausta Smart Irrigation kirjoittaa siihen erän pituuden plus 30 s, jotta venttiili pysyy auki koko erän ajan ja sulkeutuu silti itsestään, jos Home Assistant pysähtyy. Ilman sitä tällainen venttiili sulkeutuu esiasetetun aikansa jälkeen."
+        "safety-off-entity-help": "Venttiilille, joka sulkeutuu itsestään oman kestonsa jälkeen, kuten Gardena (sen numero \"kastelun kesto\", 1 min ellei muutettu): valitse se numero tähän. Ennen jokaista avausta Smart Irrigation kirjoittaa siihen erän pituuden plus 30 s, jotta venttiili pysyy auki koko erän ajan ja sulkeutuu silti itsestään, jos Home Assistant pysähtyy. Ilman sitä tällainen venttiili sulkeutuu esiasetetun aikansa jälkeen.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Vyöhykkeitä ei ole vielä määritetty.",
       "title": "Vyöhykkeet",
@@ -869,7 +870,7 @@
         "status": "Tilanne"
       },
       "yaml": {
-        "only_help": "Tämä vyöhyke käyttää asetuksia, joita visuaalinen editori ei näytä. Ne säilyvät, kun vyöhykettä muokataan tässä, ja niitä muutetaan kohdasta Muokkaa YAML-muodossa.",
+        "only_help": "Asetuksia, joita visuaalinen editori ei näytä. Ne säilyvät, kun muokkaat tässä.",
         "help": "Vyöhykkeen asetukset tekstinä, paneelin yksiköissä. Pois jätetty valinnainen asetus tyhjennetään, pakollinen (nimi, pinta-ala...) säilyy. Mitään ei tallenneta ennen käyttöönottoa.",
         "not_a_zone": "Tämä ei ole vyöhyke: vyöhyke on joukko avaimia (name, size, throughput...).",
         "not_settings": "Eivät ole vyöhykkeen asetuksia, tai niitä ei voi asettaa tässä: {keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "Takaisin editoriin",
     "yaml_edit": "Muokkaa YAML-muodossa",
     "yaml_only_title": "Asetettu YAML-muodossa (ei muokattavissa tässä)",
-    "yaml_only_help": "Tämä ohjelma käyttää asetuksia, joita visuaalinen editori ei näytä. Ne säilyvät, kun ohjelmaa muokataan tässä, ja niitä muutetaan kohdasta Muokkaa YAML-muodossa.",
+    "yaml_only_help": "Asetuksia, joita visuaalinen editori ei näytä. Ne säilyvät, kun muokkaat tässä.",
     "yaml_help": "Ohjelma tekstinä. Vaihe nimeää vyöhykkeensä nimellä tai numerolla, ja pois jätetty saa oletusarvonsa. Mitään ei tallenneta ennen käyttöönottoa: alla oleva aikajana näyttää, mitä ohjelma tekisi.",
     "yaml_apply": "Ota käyttöön",
     "yaml_invalid": "Tämä ei ole kelvollista YAMLia.",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "Auringon atsimuutti",
     "schedule_azimuth_help": "Asteet myötäpäivään pohjoisesta: 90 itä, 180 etelä, 270 länsi. Penkille, jolta muurin tai puun varjo väistyy sillä hetkellä.",
     "view_flow": "Kaavio",
-    "view_timeline": "Aikajana"
+    "view_timeline": "Aikajana",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Pumput ja pääventtiilit",

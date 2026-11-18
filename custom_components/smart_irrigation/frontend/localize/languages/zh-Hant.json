@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "已停用的區域永遠不會澆水，因此沒有運作時間。",
         "et-deficiency-help": "此區域每天所需的水量：ETc，即 ET0 乘以作物係數並套用季節性調整，在計入降雨之前、換算為間隔之前，因此可在不同設定間比較。單獨的 ET0 為區域感測器的 `eto` 屬性，可用來與氣象服務對照。",
         "safety-off-entity": "閥門自身的時間長度",
-        "safety-off-entity-help": "適用於會依自身時間長度自動關閉的閥門，例如 Gardena（其「澆水時間長度」數值，除非更改，預設為 1 分鐘）：請在此選擇該數值。每次開啟前，Smart Irrigation 會將該輪的長度加上 30 秒寫入其中，使閥門在整輪期間保持開啟，且即使 Home Assistant 停止，閥門仍會自行關閉。若沒有此設定，此類閥門會在其預設時間後關閉。"
+        "safety-off-entity-help": "適用於會依自身時間長度自動關閉的閥門，例如 Gardena（其「澆水時間長度」數值，除非更改，預設為 1 分鐘）：請在此選擇該數值。每次開啟前，Smart Irrigation 會將該輪的長度加上 30 秒寫入其中，使閥門在整輪期間保持開啟，且即使 Home Assistant 停止，閥門仍會自行關閉。若沒有此設定，此類閥門會在其預設時間後關閉。",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "尚未定義任何區域。",
       "title": "區域",
@@ -869,7 +870,7 @@
         "status": "目前狀況"
       },
       "yaml": {
-        "only_help": "此區域使用了視覺化編輯器不顯示的設定。在此編輯區域時會保留它們，可透過「以 YAML 編輯」變更。",
+        "only_help": "視覺化編輯器不顯示的設定。在此編輯時會保留它們。",
         "help": "區域設定的文字形式，使用面板顯示的單位。省略的選用設定會被清除；必要的設定（名稱、面積等）會保留。套用之前不會儲存任何內容。",
         "not_a_zone": "這不是區域：區域是一組鍵（name、size、throughput 等）。",
         "not_settings": "不是區域的設定，或不能在此設定：{keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "返回編輯器",
     "yaml_edit": "以 YAML 編輯",
     "yaml_only_title": "在 YAML 中設定（此處不可編輯）",
-    "yaml_only_help": "此程式使用了視覺化編輯器不顯示的設定。在此編輯程式時會保留它們，可透過「以 YAML 編輯」變更。",
+    "yaml_only_help": "視覺化編輯器不顯示的設定。在此編輯時會保留它們。",
     "yaml_help": "以文字呈現的程式。步驟可用名稱或編號指定區域，省略的內容會採用預設值。在你套用之前不會儲存任何內容：下方的時間軸會顯示程式將會做什麼。",
     "yaml_apply": "套用",
     "yaml_invalid": "這不是有效的 YAML。",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "太陽方位角",
     "schedule_azimuth_help": "從正北順時針計的度數：90 為東，180 為南，270 為西。適用於牆或樹的陰影在那一刻離開的花圃。",
     "view_flow": "示意圖",
-    "view_timeline": "時間軸"
+    "view_timeline": "時間軸",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "水泵與主閥",

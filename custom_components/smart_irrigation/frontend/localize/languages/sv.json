@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "En inaktiverad zon vattnas aldrig och har därför ingen bevattningstid.",
         "et-deficiency-help": "Zonens vattenbehov per dygn (ETc) beräknas genom att multiplicera referensevapotranspirationen med grödkoefficienten och ta hänsyn till säsongsjusteringen. Värdet visas före omräkning till beräkningsintervallet och före avdrag för nederbörd, så att du kan jämföra olika inställningar. Zonsensorns attribut `eto` visar referensevapotranspirationen separat för jämförelse med uppgifter från en vädertjänst.",
         "safety-off-entity": "Ventilens egen bevattningstid",
-        "safety-off-entity-help": "För en ventil som stänger av sig själv efter en egen tid, till exempel Gardena (dess nummer \"bevattningstid\", 1 min om det inte ändrats): välj det numret här. Före varje öppning skriver Smart Irrigation passets längd plus 30 s till det, så att ventilen hålls öppen hela passet och ändå stänger av sig själv om Home Assistant stannar. Utan det stänger en sådan ventil efter sin förinställda tid."
+        "safety-off-entity-help": "För en ventil som stänger av sig själv efter en egen tid, till exempel Gardena (dess nummer \"bevattningstid\", 1 min om det inte ändrats): välj det numret här. Före varje öppning skriver Smart Irrigation passets längd plus 30 s till det, så att ventilen hålls öppen hela passet och ändå stänger av sig själv om Home Assistant stannar. Utan det stänger en sådan ventil efter sin förinställda tid.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Det finns inga zoner definierade ännu.",
       "title": "Zoner",
@@ -869,7 +870,7 @@
         "status": "Zonens status"
       },
       "yaml": {
-        "only_help": "Den här zonen använder inställningar som den visuella redigeraren inte visar. De behålls när zonen redigeras här, och ändras med Redigera i YAML.",
+        "only_help": "Inställningar som den visuella redigeraren inte visar. De behålls när du redigerar här.",
         "help": "Zonens inställningar som text, i panelens enheter. En valfri inställning som utelämnas rensas; en obligatorisk (namn, yta...) behålls. Inget sparas förrän du tillämpar.",
         "not_a_zone": "Det här är inte en zon: en zon är en uppsättning nycklar (name, size, throughput...).",
         "not_settings": "Inte inställningar för en zon, eller kan inte anges här: {keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "Tillbaka till redigeraren",
     "yaml_edit": "Redigera i YAML",
     "yaml_only_title": "Inställt i YAML (kan inte redigeras här)",
-    "yaml_only_help": "Det här programmet använder inställningar som den visuella redigeraren inte visar. De behålls när programmet redigeras här, och ändras med Redigera i YAML.",
+    "yaml_only_help": "Inställningar som den visuella redigeraren inte visar. De behålls när du redigerar här.",
     "yaml_help": "Programmet som text. Ett steg anger sina zoner med namn eller nummer, och det som utelämnas får sitt standardvärde. Inget sparas förrän du tillämpar: tidslinjen nedan visar vad programmet skulle göra.",
     "yaml_apply": "Tillämpa",
     "yaml_invalid": "Det här är inte giltig YAML.",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "Solens azimut",
     "schedule_azimuth_help": "Grader medurs från norr: 90 öst, 180 syd, 270 väst. För en rabatt som skuggan från en mur eller ett träd lämnar i det ögonblicket.",
     "view_flow": "Schema",
-    "view_timeline": "Tidslinje"
+    "view_timeline": "Tidslinje",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Pumpar och huvudventiler",

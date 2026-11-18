@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "Vypnutá zóna se nikdy nezalévá, takže nemá dobu zavlažování.",
         "et-deficiency-help": "Co tato zóna potřebuje za den: ETc, referenční evapotranspirace krát plodinový faktor, včetně sezónní úpravy. Před přepočtem na interval a před deštěm, což je právě to, co ji činí porovnatelnou mezi konfiguracemi. Senzor zóny nese i samotnou referenční hodnotu, jako atribut `eto`, k porovnání s tím, co zveřejňuje meteoslužba.",
         "safety-off-entity": "Vlastní doba ventilu",
-        "safety-off-entity-help": "Pro ventil, který se sám zavře po vlastní době, například Gardena (jeho číslo „doba zavlažování“, 1 min, pokud nebylo změněno): vyberte zde toto číslo. Před každým otevřením do něj Smart Irrigation zapíše délku dávky plus 30 s, takže ventil zůstane otevřený po celou dávku a přesto se sám zavře, pokud se Home Assistant zastaví. Bez toho se takový ventil zavře po své přednastavené době."
+        "safety-off-entity-help": "Pro ventil, který se sám zavře po vlastní době, například Gardena (jeho číslo „doba zavlažování“, 1 min, pokud nebylo změněno): vyberte zde toto číslo. Před každým otevřením do něj Smart Irrigation zapíše délku dávky plus 30 s, takže ventil zůstane otevřený po celou dávku a přesto se sám zavře, pokud se Home Assistant zastaví. Bez toho se takový ventil zavře po své přednastavené době.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Zatím nejsou definovány žádné zóny.",
       "title": "Zóny",
@@ -869,7 +870,7 @@
         "status": "Jak si stojí"
       },
       "yaml": {
-        "only_help": "Tato zóna používá nastavení, která vizuální editor nezobrazuje. Při úpravě zóny zde zůstanou zachována a mění se přes Upravit v YAML.",
+        "only_help": "Nastavení, která vizuální editor nezobrazuje. Při úpravách zde zůstanou zachována.",
         "help": "Nastavení zóny jako text, v jednotkách panelu. Vynechané volitelné nastavení se vymaže, povinné (název, plocha...) zůstane. Nic se neuloží, dokud nepoužijete.",
         "not_a_zone": "Toto není zóna: zóna je sada klíčů (name, size, throughput...).",
         "not_settings": "Nejsou to nastavení zóny, nebo je zde nelze nastavit: {keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "Zpět do editoru",
     "yaml_edit": "Upravit v YAML",
     "yaml_only_title": "Nastaveno v YAML (zde nelze upravit)",
-    "yaml_only_help": "Tento program používá nastavení, která vizuální editor nezobrazuje. Při úpravě programu zde zůstanou zachována a mění se přes Upravit v YAML.",
+    "yaml_only_help": "Nastavení, která vizuální editor nezobrazuje. Při úpravách zde zůstanou zachována.",
     "yaml_help": "Program jako text. Krok uvádí své zóny jménem nebo číslem a co chybí, má výchozí hodnotu. Nic se neuloží, dokud nepoužijete: časová osa níže ukazuje, co by program udělal.",
     "yaml_apply": "Použít",
     "yaml_invalid": "Toto není platný YAML.",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "Azimut slunce",
     "schedule_azimuth_help": "Stupně po směru hodin od severu: 90 východ, 180 jih, 270 západ. Pro záhon, který stín zdi nebo stromu v tu chvíli opouští.",
     "view_flow": "Schéma",
-    "view_timeline": "Časová osa"
+    "view_timeline": "Časová osa",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Čerpadla a hlavní ventily",

@@ -44,7 +44,16 @@ export interface YamlOnlyText {
   monthName: (month: number) => string;
 }
 
-const item = (label: string, value: string) => `${label}: ${value}`;
+/**
+ * "Label: value", in the language's own way: French puts a (non-breaking)
+ * space before the colon. The pattern is a text of its own, {label} and
+ * {value} in it; a language without one gets the English form.
+ */
+const item = (t: (key: string) => string, label: string, value: string) => {
+  const pattern = t("yaml_only_item");
+  const form = pattern.includes("{label}") ? pattern : "{label}: {value}";
+  return form.replace("{label}", label).replace("{value}", value);
+};
 
 // 5, 6, 7, 8, 9 -> "May–Sep"; runs of three months or more are a range.
 function monthList(months: number[], monthName: (m: number) => string) {
@@ -72,7 +81,7 @@ export function programYamlOnly(
 ): string[] {
   const items: string[] = [];
   if ((program.tours ?? 1) > 1)
-    items.push(item(t("tours"), `${program.tours}`));
+    items.push(item(t, t("tours"), `${program.tours}`));
   return items;
 }
 
@@ -85,10 +94,10 @@ export function stepYamlOnly(
   const adjust = step.adjust_seconds ?? 0;
   if (adjust !== 0)
     items.push(
-      item(t("adjust_seconds"), `${adjust > 0 ? "+" : ""}${adjust} s`),
+      item(t, t("adjust_seconds"), `${adjust > 0 ? "+" : ""}${adjust} s`),
     );
   if ((step.min_deficit_mm ?? 0) > 0)
-    items.push(item(t("min_deficit_mm"), `${step.min_deficit_mm} mm`));
+    items.push(item(t, t("min_deficit_mm"), `${step.min_deficit_mm} mm`));
   return items;
 }
 
@@ -101,15 +110,17 @@ export function scheduleYamlOnly(
   if ((schedule.every_offset ?? 0) > 0)
     items.push(
       item(
+        t,
         t("schedule_every_offset"),
         `${schedule.every_offset} ${t("schedule_days")}`,
       ),
     );
   if (schedule.parity === "even" || schedule.parity === "odd")
-    items.push(item(t("schedule_parity"), t(`parity_${schedule.parity}`)));
+    items.push(item(t, t("schedule_parity"), t(`parity_${schedule.parity}`)));
   if ((schedule.days_of_month || []).length)
     items.push(
       item(
+        t,
         t("schedule_days_of_month"),
         (schedule.days_of_month || [])
           .map((day) => (day === "last" ? t("last_word") : `${day}`))
@@ -118,11 +129,12 @@ export function scheduleYamlOnly(
     );
   if ((schedule.months || []).length)
     items.push(
-      item(t("schedule_months"), monthList(schedule.months, monthName)),
+      item(t, t("schedule_months"), monthList(schedule.months, monthName)),
     );
   if (schedule.fallback_time)
     items.push(
       item(
+        t,
         t("schedule_fallback_time"),
         schedule.fallback_time === "previous"
           ? t("schedule_fallback_previous")
@@ -136,6 +148,7 @@ export function scheduleYamlOnly(
     );
     items.push(
       item(
+        t,
         t("conditions_subset"),
         only.map((id) => t(`condition_${id}`)).join(", "),
       ),
@@ -223,8 +236,8 @@ export type ZoneText = (key: string) => string;
 export function zoneYamlOnly(zone: SmartIrrigationZone, t: ZoneText): string[] {
   const items: string[] = [];
   const key = (zone.safety_off_state_key ?? "").trim();
-  if (key) items.push(item(t("safety-off-state-key"), key));
+  if (key) items.push(item(t, t("safety-off-state-key"), key));
   if (typeof zone.open_resends === "number")
-    items.push(item(t("open-resends"), `${zone.open_resends}`));
+    items.push(item(t, t("open-resends"), `${zone.open_resends}`));
   return items;
 }

@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "已停用的区域永远不会浇水，所以没有浇水时长。",
         "et-deficiency-help": "该区域每天需要的量：ETc，即参考蒸散量乘以作物系数，已包含季节性调整。它在按时间间隔换算之前、在扣除降雨之前，正因如此不同配置之间才可以互相比较。区域传感器还单独带有参考值，作为 `eto` 属性，便于和天气服务公布的数值对照。",
         "safety-off-entity": "阀门自身的时长",
-        "safety-off-entity-help": "适用于按自身时长到点自动关闭的阀门，例如 Gardena（它的“浇水时长”数值实体，未修改时为 1 分钟）：在此选择该数值实体。每次打开前，Smart Irrigation 会把该段时长加 30 秒写入其中，使阀门在整段期间保持打开，而 Home Assistant 停止时仍会自行关闭。不设置时，这类阀门会在其预设时间后关闭。"
+        "safety-off-entity-help": "适用于按自身时长到点自动关闭的阀门，例如 Gardena（它的“浇水时长”数值实体，未修改时为 1 分钟）：在此选择该数值实体。每次打开前，Smart Irrigation 会把该段时长加 30 秒写入其中，使阀门在整段期间保持打开，而 Home Assistant 停止时仍会自行关闭。不设置时，这类阀门会在其预设时间后关闭。",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "尚未定义任何区域。",
       "title": "区域",
@@ -869,7 +870,7 @@
         "status": "当前状态"
       },
       "yaml": {
-        "only_help": "此区域使用了可视化编辑器不显示的设置。在此编辑区域时会保留它们，可通过“以 YAML 编辑”更改。",
+        "only_help": "可视化编辑器不显示的设置。在此编辑时会保留它们。",
         "help": "区域设置的文本形式，使用面板显示的单位。省略的可选设置会被清除；必需的设置（名称、面积等）会保留。应用之前不会保存任何内容。",
         "not_a_zone": "这不是区域：区域是一组键（name、size、throughput 等）。",
         "not_settings": "不是区域的设置，或不能在此设置：{keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "返回编辑器",
     "yaml_edit": "以 YAML 编辑",
     "yaml_only_title": "在 YAML 中设置（此处不可编辑）",
-    "yaml_only_help": "此程序使用了可视化编辑器不显示的设置。在此编辑程序时会保留它们，可通过“以 YAML 编辑”更改。",
+    "yaml_only_help": "可视化编辑器不显示的设置。在此编辑时会保留它们。",
     "yaml_help": "以文本表示的程序。步骤可用名称或编号指定区域，省略的项使用默认值。应用之前不会保存任何内容：下方的时间线显示程序会做什么。",
     "yaml_apply": "应用",
     "yaml_invalid": "这不是有效的 YAML。",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "太阳方位角",
     "schedule_azimuth_help": "从正北顺时针计的度数：90 为东，180 为南，270 为西。适用于墙或树的阴影在那一刻离开的花圃。",
     "view_flow": "示意图",
-    "view_timeline": "时间轴"
+    "view_timeline": "时间轴",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "水泵和总阀",

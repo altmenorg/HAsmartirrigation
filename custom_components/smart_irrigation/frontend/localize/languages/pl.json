@@ -812,7 +812,8 @@
         "duration-readonly-disabled": "Wyłączona strefa nigdy nie jest podlewana, więc nie ma czasu nawadniania.",
         "et-deficiency-help": "Czego ta strefa potrzebuje na dobę: ETc, evapotranspiracja odniesienia razy współczynnik roślinny, z korektą sezonową. Przed przeliczeniem na interwał i przed deszczem, i właśnie to czyni ją porównywalną między konfiguracjami. Czujnik strefy nosi też samą wartość odniesienia, jako atrybut `eto`, do porównania z tym, co publikuje serwis pogodowy.",
         "safety-off-entity": "Własny czas zaworu",
-        "safety-off-entity-help": "Dla zaworu, który sam się zamyka po własnym czasie, np. Gardena (jego liczba „czas podlewania”, 1 min, jeśli jej nie zmieniono): wybierz tu tę liczbę. Przed każdym otwarciem Smart Irrigation wpisuje do niej długość przejścia plus 30 s, więc zawór pozostaje otwarty przez całe przejście, a mimo to sam się zamknie, jeśli Home Assistant przestanie działać. Bez tego taki zawór zamyka się po swoim ustawionym czasie."
+        "safety-off-entity-help": "Dla zaworu, który sam się zamyka po własnym czasie, np. Gardena (jego liczba „czas podlewania”, 1 min, jeśli jej nie zmieniono): wybierz tu tę liczbę. Przed każdym otwarciem Smart Irrigation wpisuje do niej długość przejścia plus 30 s, więc zawór pozostaje otwarty przez całe przejście, a mimo to sam się zamknie, jeśli Home Assistant przestanie działać. Bez tego taki zawór zamyka się po swoim ustawionym czasie.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Nie zdefiniowano jeszcze żadnych stref.",
       "title": "Strefy",
@@ -869,7 +870,7 @@
         "status": "Na jakim jest etapie"
       },
       "yaml": {
-        "only_help": "Ta strefa używa ustawień, których edytor wizualny nie pokazuje. Są zachowywane przy edycji strefy tutaj, a zmienia się je przez Edytuj w YAML.",
+        "only_help": "Ustawienia, których edytor wizualny nie pokazuje. Edycja tutaj ich nie usuwa.",
         "help": "Ustawienia strefy jako tekst, w jednostkach panelu. Pominięte ustawienie opcjonalne jest czyszczone, wymagane (nazwa, powierzchnia...) zostaje. Nic nie jest zapisywane przed zastosowaniem.",
         "not_a_zone": "To nie jest strefa: strefa to zestaw kluczy (name, size, throughput...).",
         "not_settings": "To nie są ustawienia strefy albo nie ustawia się ich tutaj: {keys}",
@@ -1464,7 +1465,7 @@
     "yaml_back": "Wróć do edytora",
     "yaml_edit": "Edytuj w YAML",
     "yaml_only_title": "Ustawione w YAML (nie do edycji tutaj)",
-    "yaml_only_help": "Ten program używa ustawień, których edytor wizualny nie pokazuje. Są zachowywane przy edycji programu tutaj, a zmienia się je przez Edytuj w YAML.",
+    "yaml_only_help": "Ustawienia, których edytor wizualny nie pokazuje. Edycja tutaj ich nie usuwa.",
     "yaml_help": "Program jako tekst. Krok wskazuje swoje strefy nazwą lub numerem, a to, co pominięte, przyjmuje wartość domyślną. Nic nie jest zapisywane przed zastosowaniem: oś czasu poniżej pokazuje, co zrobiłby program.",
     "yaml_apply": "Zastosuj",
     "yaml_invalid": "To nie jest poprawny YAML.",
@@ -1483,7 +1484,8 @@
     "schedule_azimuth": "Azymut słońca",
     "schedule_azimuth_help": "Stopnie zgodnie z ruchem wskazówek zegara od północy: 90 wschód, 180 południe, 270 zachód. Dla grządki, z której cień muru lub drzewa schodzi w tej chwili.",
     "view_flow": "Schemat",
-    "view_timeline": "Oś czasu"
+    "view_timeline": "Oś czasu",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Pompy i zawory główne",
