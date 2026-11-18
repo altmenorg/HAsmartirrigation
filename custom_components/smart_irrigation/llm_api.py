@@ -12,7 +12,7 @@ It reads the zones and where they stand, the next run and why a zone is held
 back, the programs and the planning, the settings and sensor groups, the
 entities of Home Assistant a setup is made of, and dry-runs a program as
 written (the YAML editor's ``program_preview``), and lists every field it can
-write, YAML-only options included (config_reference.py).
+write, advanced-mode and YAML-only options included (config_reference.py).
 
 It also configures Smart Irrigation: zones, sensor groups, settings and
 programs, through the paths the panel saves with (llm_config_tools.py). No
@@ -82,9 +82,9 @@ what you change. Use FindEntities to find the user's valves, switches and \
 sensors, ask the user what you cannot tell (soil, plants, sprinklers, a \
 pump), and say what you are about to change before you change it. \
 GetConfigReference lists every field of a program, its steps and schedules, \
-and of a zone, with its values, range and default, including the options set \
-only in YAML (yaml_only: the panel's form has no field for them, but you can \
-set them). Check a program with PreviewProgram before SaveProgram. Zone figures are metric (m2, \
+and of a zone, with its values, range and default, including the options the \
+panel shows in its advanced mode only (advanced: true) and the two set only in \
+YAML (yaml_only: no field in the panel); you can set them all. Check a program with PreviewProgram before SaveProgram. Zone figures are metric (m2, \
 l/min, mm); settings are in the unit system of Home Assistant, as GetSettings \
 returns them."""
 
@@ -346,9 +346,10 @@ class GetConfigReferenceTool(_ReadOnlyTool):
     description = (
         "Every field that can be written: of a program, its steps, its "
         "schedules (time, sun, after) and its notify, and of a zone. For each: "
-        "type, allowed values or min/max, unit, default and meaning, and "
-        "yaml_only: true for the options the panel sets only in YAML, which "
-        "you can still set. `section`: program or zone (default: all)."
+        "type, allowed values or min/max, unit, default and meaning; "
+        "advanced: true for the options the panel shows in its advanced mode "
+        "only, yaml_only: true for the ones it sets only in YAML. You can set "
+        "them all. `section`: program or zone (default: all)."
     )
     parameters = _parameters(
         {vol.Optional("section"): vol.In(("program", "zone", "all"))}

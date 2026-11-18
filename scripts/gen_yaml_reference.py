@@ -60,6 +60,8 @@ def _table(fields: dict, skip: set, types: bool = False) -> str:
             meaning += f" *({', '.join(f['schedule_types'])} only)*"
         if f.get("yaml_only"):
             meaning = "**YAML only.** " + meaning
+        elif f.get("advanced"):
+            meaning = "**Advanced mode.** " + meaning
         rows.append(f"| `{key}` | {_range(f)} | {_default(f)} | {meaning} |")
     return head + "\n".join(rows) + "\n"
 

@@ -1,8 +1,10 @@
 """Every field an assistant can write, in one place (GetConfigReference).
 
 A program is written in the shape of the program YAML the panel's YAML editor
-edits, and some of its options exist only there: the panel's form has no
-field for them (``yaml_only``). An assistant learns a key from what it reads
+edits. The panel's standard form leaves out the options few need: they are
+fields of its advanced mode (``advanced``). Two technical ones have no field
+in any mode and exist only in YAML (``yaml_only``). An assistant learns a key
+from what it reads
 only when that key is set somewhere, so this reference lists them all: for a
 program, its steps, its schedules and its notifications, and for a zone, the
 fields SaveZone takes. Each with its type, its allowed values or range, its
@@ -33,6 +35,7 @@ def _field(
     low: Any = None,
     high: Any = None,
     unit: str | None = None,
+    advanced: bool = False,
     yaml_only: bool = False,
     types: tuple | None = None,
 ) -> dict:
@@ -51,7 +54,11 @@ def _field(
     if types is not None:
         # The schedule types the field means something for.
         entry["schedule_types"] = list(types)
+    if advanced:
+        # A field of the panel's advanced mode only.
+        entry["advanced"] = True
     if yaml_only:
+        # No field in the panel, in any mode.
         entry["yaml_only"] = True
     entry["meaning"] = meaning
     return entry
@@ -82,7 +89,7 @@ PROGRAM_FIELDS: dict[str, dict] = {
         default=1,
         low=1,
         high=p.MAX_TOURS,
-        yaml_only=True,
+        advanced=True,
     ),
     const.PROGRAM_NOTIFY: _field(
         "notify",
@@ -182,7 +189,7 @@ STEP_FIELDS: dict[str, dict] = {
         low=-p.MAX_ADJUST_SECONDS,
         high=p.MAX_ADJUST_SECONDS,
         unit="s",
-        yaml_only=True,
+        advanced=True,
     ),
     const.STEP_MIN_DEFICIT_MM: _field(
         "number",
@@ -192,7 +199,7 @@ STEP_FIELDS: dict[str, dict] = {
         low=0,
         high=p.MAX_MIN_DEFICIT_MM,
         unit="mm",
-        yaml_only=True,
+        advanced=True,
     ),
 }
 
@@ -286,14 +293,14 @@ SCHEDULE_FIELDS: dict[str, dict] = {
         low=0,
         high=s.MAX_EVERY_N_DAYS - 1,
         unit="days",
-        yaml_only=True,
+        advanced=True,
     ),
     const.SCHEDULE_PARITY: _field(
         "string",
         "Even or odd days of the month only.",
         values=s.PARITIES,
         default=s.PARITY_ANY,
-        yaml_only=True,
+        advanced=True,
     ),
     const.SCHEDULE_DAYS_OF_MONTH: _field(
         "list of integer or 'last'",
@@ -301,7 +308,7 @@ SCHEDULE_FIELDS: dict[str, dict] = {
         default=[],
         low=1,
         high=31,
-        yaml_only=True,
+        advanced=True,
     ),
     const.SCHEDULE_MONTHS: _field(
         "list of integer",
@@ -309,7 +316,7 @@ SCHEDULE_FIELDS: dict[str, dict] = {
         default=[],
         low=1,
         high=12,
-        yaml_only=True,
+        advanced=True,
     ),
     const.SCHEDULE_FROM: _field(
         "string MM-DD or null",
@@ -338,7 +345,7 @@ SCHEDULE_FIELDS: dict[str, dict] = {
         "With weather on: only these skip conditions apply (absent: all; "
         "postponed always applies).",
         values=const.SKIP_CONDITION_IDS,
-        yaml_only=True,
+        advanced=True,
     ),
 }
 
@@ -559,7 +566,7 @@ ZONE_FIELDS: dict[str, dict] = {
         "How often the open is sent again in that time (null: default).",
         low=0,
         high=const.OPEN_RESENDS_MAX,
-        yaml_only=True,
+        advanced=True,
     ),
 }
 
@@ -592,9 +599,10 @@ GROUPS: dict[str, tuple] = {
 }
 
 NOTE = (
-    "Every field that can be written, including the ones set only in YAML "
-    "(yaml_only: true, the panel's form has no field for them). Send only the "
-    "fields you change; a value out of range is brought within it on save."
+    "Every field that can be written, including the ones the panel shows in "
+    "its advanced mode only (advanced: true) and the ones set only in YAML "
+    "(yaml_only: true, no field in the panel). Send only the fields you "
+    "change; a value out of range is brought within it on save."
 )
 
 

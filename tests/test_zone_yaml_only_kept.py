@@ -1,8 +1,8 @@
-"""A zone's YAML-only options survive the panel's form edits.
+"""A zone's options the form does not show survive the panel's form edits.
 
-``safety_off_state_key`` (the MQTT state key) and ``open_resends`` (the open
-sent again) have no field in the panel's form: they are set with Edit in YAML.
-The form sends only what an edit changed, so a save that does not carry them,
+``safety_off_state_key`` (the MQTT state key, YAML only) and ``open_resends``
+(the open sent again, a field of the advanced mode only) are set with Edit in
+YAML otherwise. The form sends only what an edit changed, so a save that does not carry them,
 or carries them unchanged (the YAML editor applied as it opened), must keep
 them as they are.
 """

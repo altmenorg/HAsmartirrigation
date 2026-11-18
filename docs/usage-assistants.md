@@ -27,7 +27,7 @@ Untick it there and the assistant no longer reaches Smart Irrigation.
 | `GetSettings` | The general settings, in the unit system of Home Assistant, with `mode` first. |
 | `FindEntities` | The valves, switches, sensors and weather entities of Home Assistant, with their unit, device class and the make and model of their device: what the assistant needs to ask you the right questions. |
 | `PreviewProgram` | A program as the assistant wrote it, cleaned the way a save cleans it and dry-run on the zones as they are now: each zone's start, end and water, the total, and the zones it could not find. Nothing is saved. |
-| `GetConfigReference` | Every field the assistant can write, for a program, its steps, schedules and notifications, and for a zone: type, allowed values or range, unit, default and meaning. The options set [only in YAML](usage-full-controller.md#yaml-only-options) are flagged `yaml_only`. |
+| `GetConfigReference` | Every field the assistant can write, for a program, its steps, schedules and notifications, and for a zone: type, allowed values or range, unit, default and meaning. The options the panel shows in its [advanced mode](usage-full-controller.md#yaml-only-options) only are flagged `advanced`, the two set only in YAML `yaml_only`. |
 
 ## What it can change
 
@@ -44,7 +44,7 @@ Every change goes through the path the panel saves with, so the same checks appl
 
 Ask for the program you want ("water the vegetable garden and the greenhouse together every other evening, then the hedges"). The assistant writes it in the [YAML shape of the program editor](usage-full-controller.md#a-program-in-yaml), checks it with `PreviewProgram` and gives it to you. Paste it under **Watering › Programs**, with **Edit in YAML** on a **New program** or on an existing one: the timeline shows what it would do before you apply it.
 
-The assistant does not have to guess the fields: `GetConfigReference` lists every one a program, a step, a schedule and a zone can be written with, the [YAML-only options](usage-full-controller.md#yaml-only-options) included (a step's `adjust_seconds`, a schedule's `months` or `fallback_time`...), with their range and default. So it can set an option the panel's form has no field for, and that no program of yours uses yet.
+The assistant does not have to guess the fields: `GetConfigReference` lists every one a program, a step, a schedule and a zone can be written with, the [advanced and YAML-only options](usage-full-controller.md#yaml-only-options) included (a step's `adjust_seconds`, a schedule's `months` or `fallback_time`...), with their range and default. So it can set an option the standard form does not show, or has no field for, and that no program of yours uses yet.
 
 ## Privacy
 

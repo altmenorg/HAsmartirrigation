@@ -45,12 +45,12 @@ An installation that already had zones when the two depths arrived is on the adv
 
 ## Set in YAML
 
-A few options for power users have no field in the panel at all. Programs and zones have **Edit in YAML**, which shows them as text, and these options are written there. These pages mark them like this:
+Programs and zones have **Edit in YAML**, which shows every option as text. A program's power-user options (rounds, time added, days of the month, months, some of the weather checks...) and a zone's resends of the open are fields of the advanced mode only: in the standard mode, a program or a zone that uses one lists it in a **Shown in the advanced mode or in YAML** box, with **Edit in YAML** at hand. Two technical options have no field in any mode and are written in YAML only. These pages mark them like this:
 
 !!! yaml-only
 
-    An option with no field in the form. Editing in the form keeps it, and a program or a zone that uses one lists it in a **Set in YAML (not editable here)** box, with **Edit in YAML** at hand.
+    An option with no field in the form, in any mode. Editing in the form keeps it, and a program or a zone that uses one lists it in a **Set in YAML (not editable here)** box, with **Edit in YAML** at hand.
 
-The list is under [YAML-only options](usage-full-controller.md#yaml-only-options), and every key of a program is in its [reference](usage-full-controller.md#a-program-in-yaml).
+The tiers are under [advanced and YAML-only options](usage-full-controller.md#yaml-only-options), and every key of a program is in its [reference](usage-full-controller.md#a-program-in-yaml).
 
 See also: [Closed-loop watering](configuration-closed-loop.md), which credits the water balance from real watering and covers what happens at the valve.

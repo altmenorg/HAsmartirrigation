@@ -2,7 +2,9 @@
 # Build locally: pip install -r requirements-docs.txt && mkdocs serve
 site_name: Smart Irrigation
 site_description: A Home Assistant integration that waters your garden for what it actually lost to the weather.
-site_url: https://altmenorg.github.io/HAsmartirrigation/
+# Where the docs are served; a preview build elsewhere sets DOCS_SITE_URL, so
+# its canonical links and 404 page point to the right place.
+site_url: !ENV [DOCS_SITE_URL, "https://altmenorg.github.io/HAsmartirrigation/"]
 repo_url: https://github.com/altmenorg/HAsmartirrigation
 repo_name: altmenorg/HAsmartirrigation
 edit_uri: edit/dev/docs/
@@ -119,19 +121,20 @@ nav:
       - Manual coordinates: MANUAL_COORDINATES.md
       - "Options: the Configure button": installation-options.md
       - Updating: installation-updating.md
-      - Migrating from V1 to V2: installation-migration.md
       - Uninstalling: installation-uninstalling.md
+      - Older versions:
+          - Migrating from V1 to V2: installation-migration.md
   - Configuration:
       - configuration.md
       - Setup assistant: configuration-setup.md
       - General: configuration-general.md
       - Weather: configuration-weather.md
       - Zones: configuration-zones.md
-      - Modules: configuration-modules.md
       - Sensor groups: configuration-sensor-groups.md
       - Closed-loop watering: configuration-closed-loop.md
   - How it works:
       - how-it-works.md
+      - Calculation modules: configuration-modules.md
       - Glossary: glossary.md
   - Usage:
       - usage.md

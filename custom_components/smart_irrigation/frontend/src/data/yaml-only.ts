@@ -1,16 +1,20 @@
 /**
- * The options of a program that are set in YAML only (Edit in YAML).
+ * The options of a program or a zone that the form does not show, and why.
  *
- * Like Home Assistant's own visual editors, the form has no field for them,
- * even when they are set: it keeps them untouched (every patch spreads the
- * object it changes) and says, read-only, which ones the program uses. This
- * module lists them, in words, for that notice.
+ * Three tiers, as Home Assistant's own visual editors have:
+ * - the standard form shows what nearly everybody needs;
+ * - the advanced mode (Settings, General, Advanced settings) shows the rest
+ *   of the options as fields: the program's `tours`; a step's
+ *   `adjust_seconds` and `min_deficit_mm`; a schedule's `every_offset`,
+ *   `parity`, `days_of_month`, `months` and `skip_conditions`; a zone's
+ *   `open_resends`;
+ * - two technical options have no field in any mode, set in YAML only: a
+ *   schedule's `fallback_time` (polar day or night) and a zone's
+ *   `safety_off_state_key` (the MQTT state key).
  *
- * YAML only: the program's `tours`; a step's `adjust_seconds` and
- * `min_deficit_mm`; a schedule's `every_offset`, `parity`, `days_of_month`,
- * `months`, `fallback_time` and `skip_conditions` (the weather on/off switch
- * stays in the form). A zone's `safety_off_state_key` (the MQTT state key)
- * and `open_resends` (the open sent again) are YAML only too.
+ * The form keeps what it does not show untouched (every patch spreads the
+ * object it changes) and says, read-only, which of those hidden options are
+ * set. This module lists them, in words, for that notice.
  */
 import type {
   SmartIrrigationProgram,
@@ -30,18 +34,34 @@ export const SKIP_CONDITION_IDS = [
   "soil_moisture",
 ];
 
-/** What owns some YAML-only options, and those options in words. */
-export interface YamlOnlyGroup {
-  /** "" for the program itself, "Step 2", "Schedule 1"... */
-  owner: string;
-  items: string[];
+/** The panel's mode (config.ui_mode): "advanced", or the standard one. */
+export type PanelMode = string | null | undefined;
+
+export const isAdvanced = (mode: PanelMode): boolean => mode === "advanced";
+
+/** An option the form does not show, in words. */
+interface Hidden {
+  text: string;
+  /** No field in any mode; otherwise a field of the advanced mode. */
+  yamlOnly: boolean;
 }
 
-export interface YamlOnlyText {
+/** What owns some hidden options, and those options in words. */
+export interface HiddenGroup {
+  /** "" for the program (or the zone) itself, "Step 2", "Schedule 1"... */
+  owner: string;
+  items: string[];
+  /** Some of the items are fields of the advanced mode. */
+  advanced: boolean;
+}
+
+export interface HiddenText {
   /** A key of the programs texts, in the panel's language. */
   t: (key: string) => string;
   /** The short name of a month, January being 0. */
   monthName: (month: number) => string;
+  /** A count of days, singular or plural as the language has it. */
+  days: (count: number) => string;
 }
 
 /**
@@ -54,6 +74,9 @@ const item = (t: (key: string) => string, label: string, value: string) => {
   const form = pattern.includes("{label}") ? pattern : "{label}: {value}";
   return form.replace("{label}", label).replace("{value}", value);
 };
+
+const advancedItem = (text: string): Hidden => ({ text, yamlOnly: false });
+const yamlOnlyItem = (text: string): Hidden => ({ text, yamlOnly: true });
 
 // 5, 6, 7, 8, 9 -> "May–Sep"; runs of three months or more are a range.
 function monthList(months: number[], monthName: (m: number) => string) {
@@ -74,71 +97,77 @@ function monthList(months: number[], monthName: (m: number) => string) {
   return parts.join(", ");
 }
 
-/** A program's own YAML-only options, in words. */
-export function programYamlOnly(
+/** A program's own options the standard form does not show, when set. */
+function programHidden(
   program: SmartIrrigationProgram,
-  { t }: YamlOnlyText,
-): string[] {
-  const items: string[] = [];
+  { t }: HiddenText,
+): Hidden[] {
+  const items: Hidden[] = [];
   if ((program.tours ?? 1) > 1)
-    items.push(item(t, t("tours"), `${program.tours}`));
+    items.push(advancedItem(item(t, t("tours"), `${program.tours}`)));
   return items;
 }
 
-/** A step's YAML-only options, in words. */
-export function stepYamlOnly(
-  step: SmartIrrigationStep,
-  { t }: YamlOnlyText,
-): string[] {
-  const items: string[] = [];
+/** A step's options the standard form does not show, when set. */
+function stepHidden(step: SmartIrrigationStep, { t }: HiddenText): Hidden[] {
+  const items: Hidden[] = [];
   const adjust = step.adjust_seconds ?? 0;
   if (adjust !== 0)
     items.push(
-      item(t, t("adjust_seconds"), `${adjust > 0 ? "+" : ""}${adjust} s`),
+      advancedItem(
+        item(t, t("adjust_seconds"), `${adjust > 0 ? "+" : ""}${adjust} s`),
+      ),
     );
   if ((step.min_deficit_mm ?? 0) > 0)
-    items.push(item(t, t("min_deficit_mm"), `${step.min_deficit_mm} mm`));
+    items.push(
+      advancedItem(item(t, t("min_deficit_mm"), `${step.min_deficit_mm} mm`)),
+    );
   return items;
 }
 
-/** A schedule's YAML-only options, in words. */
-export function scheduleYamlOnly(
+/** A schedule's options the standard form does not show, when set. */
+function scheduleHidden(
   schedule: SmartIrrigationSchedule,
-  { t, monthName }: YamlOnlyText,
-): string[] {
-  const items: string[] = [];
-  if ((schedule.every_offset ?? 0) > 0)
+  { t, monthName, days }: HiddenText,
+): Hidden[] {
+  const items: Hidden[] = [];
+  const offset = schedule.every_offset ?? 0;
+  if (offset > 0)
+    items.push(advancedItem(item(t, t("schedule_every_offset"), days(offset))));
+  if (schedule.parity === "even" || schedule.parity === "odd")
     items.push(
-      item(
-        t,
-        t("schedule_every_offset"),
-        `${schedule.every_offset} ${t("schedule_days")}`,
+      advancedItem(
+        item(t, t("schedule_parity"), t(`parity_${schedule.parity}`)),
       ),
     );
-  if (schedule.parity === "even" || schedule.parity === "odd")
-    items.push(item(t, t("schedule_parity"), t(`parity_${schedule.parity}`)));
   if ((schedule.days_of_month || []).length)
     items.push(
-      item(
-        t,
-        t("schedule_days_of_month"),
-        (schedule.days_of_month || [])
-          .map((day) => (day === "last" ? t("last_word") : `${day}`))
-          .join(", "),
+      advancedItem(
+        item(
+          t,
+          t("schedule_days_of_month"),
+          (schedule.days_of_month || [])
+            .map((day) => (day === "last" ? t("last_word") : `${day}`))
+            .join(", "),
+        ),
       ),
     );
   if ((schedule.months || []).length)
     items.push(
-      item(t, t("schedule_months"), monthList(schedule.months, monthName)),
+      advancedItem(
+        item(t, t("schedule_months"), monthList(schedule.months, monthName)),
+      ),
     );
   if (schedule.fallback_time)
     items.push(
-      item(
-        t,
-        t("schedule_fallback_time"),
-        schedule.fallback_time === "previous"
-          ? t("schedule_fallback_previous")
-          : schedule.fallback_time,
+      yamlOnlyItem(
+        item(
+          t,
+          t("schedule_fallback_time"),
+          schedule.fallback_time === "previous"
+            ? t("schedule_fallback_previous")
+            : schedule.fallback_time,
+        ),
       ),
     );
   if (Array.isArray(schedule.skip_conditions)) {
@@ -147,10 +176,12 @@ export function scheduleYamlOnly(
       (id) => id === "postponed" || schedule.skip_conditions!.includes(id),
     );
     items.push(
-      item(
-        t,
-        t("conditions_subset"),
-        only.map((id) => t(`condition_${id}`)).join(", "),
+      advancedItem(
+        item(
+          t,
+          t("conditions_subset"),
+          only.map((id) => t(`condition_${id}`)).join(", "),
+        ),
       ),
     );
   }
@@ -158,38 +189,66 @@ export function scheduleYamlOnly(
 }
 
 /**
- * Every YAML-only option a program uses, grouped by what owns it: the
- * program first, then its steps and its schedules, named by their place
- * ("Step 2", "Schedule 1") as their folds are. Nothing when all are at their
- * defaults.
+ * The hidden options of the mode, as a group: in the advanced mode, the
+ * YAML-only ones alone (the others are fields there); in the standard mode,
+ * every one that is set. Null when none.
  */
-export function yamlOnlyOptions(
+function group(
+  owner: string,
+  hidden: Hidden[],
+  mode: PanelMode,
+): HiddenGroup | null {
+  const shown = isAdvanced(mode) ? hidden.filter((h) => h.yamlOnly) : hidden;
+  if (!shown.length) return null;
+  return {
+    owner,
+    items: shown.map((h) => h.text),
+    advanced: shown.some((h) => !h.yamlOnly),
+  };
+}
+
+/**
+ * Every option a program uses that the form of this mode does not show,
+ * grouped by what owns it: the program first, then its steps and its
+ * schedules, named by their place ("Step 2", "Schedule 1") as their folds
+ * are. Nothing when all are at their defaults.
+ */
+export function hiddenOptions(
   program: SmartIrrigationProgram,
-  text: YamlOnlyText,
-): YamlOnlyGroup[] {
-  const groups: YamlOnlyGroup[] = [];
-  const own = programYamlOnly(program, text);
-  if (own.length) groups.push({ owner: "", items: own });
-  (program.steps || []).forEach((step, n) => {
-    const items = stepYamlOnly(step, text);
-    if (items.length)
-      groups.push({ owner: `${text.t("step")} ${n + 1}`, items });
-  });
-  (program.schedules || []).forEach((schedule, n) => {
-    const items = scheduleYamlOnly(schedule, text);
-    if (items.length)
-      groups.push({ owner: `${text.t("schedule")} ${n + 1}`, items });
-  });
-  return groups;
+  mode: PanelMode,
+  text: HiddenText,
+): HiddenGroup[] {
+  const groups: (HiddenGroup | null)[] = [
+    group("", programHidden(program, text), mode),
+    ...(program.steps || []).map((step, n) =>
+      group(`${text.t("step")} ${n + 1}`, stepHidden(step, text), mode),
+    ),
+    ...(program.schedules || []).map((schedule, n) =>
+      group(
+        `${text.t("schedule")} ${n + 1}`,
+        scheduleHidden(schedule, text),
+        mode,
+      ),
+    ),
+  ];
+  return groups.filter((g): g is HiddenGroup => g !== null);
+}
+
+/**
+ * Whether the notice is about the advanced mode (some of what it lists is a
+ * field there) or about YAML alone.
+ */
+export function hiddenInAdvanced(groups: HiddenGroup[]): boolean {
+  return groups.some((g) => g.advanced);
 }
 
 /** One group on one line: "Step 2 · Time added: +30 s · ...". */
-export function yamlOnlyLine(group: YamlOnlyGroup): string {
+export function hiddenLine(group: HiddenGroup): string {
   return [group.owner, ...group.items].filter((s) => s).join(" · ");
 }
 
 /**
- * A step changed by the form: the other keys of the step, the YAML-only ones
+ * A step changed by the form: the other keys of the step, the hidden ones
  * among them, are kept as they are.
  */
 export function withStep(
@@ -229,15 +288,22 @@ export function withProgram(
 export type ZoneText = (key: string) => string;
 
 /**
- * A zone's YAML-only options that are set, in words: the MQTT state key (a
- * value of its own; empty or unset, the default "state" applies) and how
- * often the open is sent again (any count, 0 included, is a choice).
+ * A zone's options that the form of this mode does not show, when set: the
+ * MQTT state key (YAML only; empty or unset, the default "state" applies)
+ * and how often the open is sent again (a field of the advanced mode; any
+ * count, 0 included, is a choice). Null when none.
  */
-export function zoneYamlOnly(zone: SmartIrrigationZone, t: ZoneText): string[] {
-  const items: string[] = [];
+export function zoneHiddenOptions(
+  zone: SmartIrrigationZone,
+  mode: PanelMode,
+  t: ZoneText,
+): HiddenGroup | null {
+  const hidden: Hidden[] = [];
   const key = (zone.safety_off_state_key ?? "").trim();
-  if (key) items.push(item(t, t("safety-off-state-key"), key));
+  if (key) hidden.push(yamlOnlyItem(item(t, t("safety-off-state-key"), key)));
   if (typeof zone.open_resends === "number")
-    items.push(item(t, t("open-resends"), `${zone.open_resends}`));
-  return items;
+    hidden.push(
+      advancedItem(item(t, t("open-resends"), `${zone.open_resends}`)),
+    );
+  return group("", hidden, mode);
 }

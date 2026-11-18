@@ -1,7 +1,8 @@
-"""The options set in YAML only are kept by the store.
+"""The options a form does not show are kept by the store.
 
-The panel's form has no field for them (as in Home Assistant's own visual
-editors): it sends the program back with every key it was given, and the store
+The standard form has no field for the advanced-mode options, and no form for
+the YAML-only ones (as in Home Assistant's own visual editors): it sends the
+program back with every key it was given, and the store
 must keep them through ``normalize_programs``, saved again and again.
 """
 

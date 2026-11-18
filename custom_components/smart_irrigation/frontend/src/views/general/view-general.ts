@@ -55,11 +55,13 @@ import {
 } from "../../data/program-chain";
 import { notifyTargets } from "../../data/notify-targets";
 import {
+  hiddenInAdvanced,
+  hiddenLine,
+  hiddenOptions,
+  SKIP_CONDITION_IDS,
   withProgram,
   withSchedule,
   withStep,
-  yamlOnlyLine,
-  yamlOnlyOptions,
 } from "../../data/yaml-only";
 import "../../dialogs/trigger-dialog";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
@@ -1208,7 +1210,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       this._scheduleUpdate();
     };
     const patch = (index: number, changes: Partial<SmartIrrigationProgram>) =>
-      // Every key the form has no field for (the YAML-only options) is kept.
+      // Every key the form does not show (in this mode) is kept.
       save(programs.map((p, n) => (n === index ? withProgram(p, changes) : p)));
     const num = (v: string, fallback = 0) => {
       const n = parseFloat(v);
@@ -1915,17 +1917,29 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       </span>`;
     };
 
-    // As Home Assistant's own visual editors do: the options set in YAML only
-    // have no field in the form, even when set. The form keeps them as they
-    // are, and the program says, once and read-only, which ones it uses, with
-    // Edit in YAML at hand to change them.
-    const yamlOnlyNotice = (program: SmartIrrigationProgram) => {
-      const groups = yamlOnlyOptions(program, { t, monthName });
+    // As Home Assistant's own visual editors do: what the form does not show
+    // is kept as it is, and the program says, once and read-only, which of
+    // those options it uses, with Edit in YAML at hand to change them. The
+    // standard form leaves out the options few need (fields of the advanced
+    // mode); no form has a field for the two YAML-only ones.
+    const hiddenNotice = (program: SmartIrrigationProgram) => {
+      const groups = hiddenOptions(program, this.config?.ui_mode, {
+        t,
+        monthName,
+        days: (count) =>
+          localize("programs.days_count", lang, "{count}", count),
+      });
       if (!groups.length) return "";
       const id = program.id ?? "";
-      return html`<ha-alert alert-type="info" .title=${t("yaml_only_title")}>
-        ${t("yaml_only_help")}
-        ${groups.map((group) => html`<div>${yamlOnlyLine(group)}</div>`)}
+      const advanced = hiddenInAdvanced(groups);
+      return html`<ha-alert
+        alert-type="info"
+        .title=${t(advanced ? "hidden_title" : "yaml_only_title")}
+      >
+        ${advanced
+          ? t("hidden_help").replace("{where}", this._advancedPath(lang))
+          : t("yaml_only_help")}
+        ${groups.map((group) => html`<div>${hiddenLine(group)}</div>`)}
         <ha-button
           slot="action"
           appearance="plain"
@@ -1935,6 +1949,109 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         >
       </ha-alert>`;
     };
+
+    // The options few need are fields of the advanced mode only.
+    const advanced = this.config?.ui_mode === "advanced";
+
+    // A schedule's day options of the advanced mode, under its More options:
+    // the shift of "every N days" (programs taking turns), even or odd days,
+    // days of the month and months.
+    const advancedDays = (
+      schedule: SmartIrrigationSchedule,
+      patchSchedule: (changes: Partial<SmartIrrigationSchedule>) => void,
+      toggle: (
+        list: number[] | undefined,
+        value: number,
+        on: boolean,
+      ) => number[],
+    ) => html`
+      ${(schedule.every_n_days ?? 1) > 1 || (schedule.every_offset ?? 0) > 0
+        ? this._numRow(
+            t("schedule_every_offset"),
+            t("schedule_days"),
+            schedule.every_offset ?? 0,
+            (v) =>
+              patchSchedule({
+                every_offset: Math.max(0, Math.round(num(v))),
+              }),
+          )
+        : ""}
+      ${this._selectRow(
+        t("schedule_parity"),
+        html`
+          <option
+            value="any"
+            ?selected=${schedule.parity !== "even" && schedule.parity !== "odd"}
+          >
+            ${t("parity_any")}
+          </option>
+          <option value="even" ?selected=${schedule.parity === "even"}>
+            ${t("parity_even")}
+          </option>
+          <option value="odd" ?selected=${schedule.parity === "odd"}>
+            ${t("parity_odd")}
+          </option>
+        `,
+        (e: Event) =>
+          patchSchedule({
+            parity: (e.target as HTMLSelectElement)
+              .value as SmartIrrigationSchedule["parity"],
+          }),
+      )}
+      ${this._textRow(
+        html`${t("schedule_days_of_month")}<si-info
+            >${t("schedule_days_of_month_help")}</si-info
+          >`,
+        `1, 15, ${t("last_word")}`,
+        (schedule.days_of_month || [])
+          .map((day) => (day === "last" ? t("last_word") : day))
+          .join(", "),
+        (v) =>
+          patchSchedule({
+            days_of_month: v
+              .split(/[,;\s]+/)
+              .map((part) => part.trim().toLowerCase())
+              // The word of the panel's language, or "last" as stored.
+              .map((part) =>
+                part === t("last_word").toLowerCase() ? "last" : part,
+              )
+              .filter(
+                (part) =>
+                  part === "last" ||
+                  (/^\d+$/.test(part) &&
+                    Number(part) >= 1 &&
+                    Number(part) <= 31),
+              )
+              .map((part) => (part === "last" ? part : Number(part))),
+          }),
+      )}
+      <div class="setting-row">
+        <div class="setting-label">
+          ${t("schedule_months")}<si-info>${t("schedule_months_help")}</si-info>
+        </div>
+        <div>
+          ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(
+            (month) => html`
+              <label style="margin-right: 10px; white-space: nowrap;">
+                <input
+                  type="checkbox"
+                  .checked=${(schedule.months || []).includes(month + 1)}
+                  @change=${(e: Event) =>
+                    patchSchedule({
+                      months: toggle(
+                        schedule.months,
+                        month + 1,
+                        (e.target as HTMLInputElement).checked,
+                      ),
+                    })}
+                />
+                ${monthName(month)}
+              </label>
+            `,
+          )}
+        </div>
+      </div>
+    `;
 
     const renderStep = (
       program: SmartIrrigationProgram,
@@ -2096,6 +2213,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             (step.max_litres ?? 0) > 0 ||
               (step.min_seconds ?? 0) > 0 ||
               (step.max_seconds ?? 0) > 0 ||
+              (advanced &&
+                ((step.adjust_seconds ?? 0) !== 0 ||
+                  (step.min_deficit_mm ?? 0) > 0)) ||
               (step.delay !== null && step.delay !== undefined),
             html`
               ${this._numRow(
@@ -2143,6 +2263,38 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     )}
                   </div>`
                 : ""}
+              ${
+                // The time added or removed and the deficit a step waits for:
+                // the advanced mode (the standard one lists them, once set,
+                // in the program's notice).
+                advanced
+                  ? html`${this._numRow(
+                      html`${t("adjust_seconds")}<si-info
+                          >${t("step_bounds_help")}</si-info
+                        >`,
+                      localize("common.units.seconds", lang),
+                      step.adjust_seconds ?? 0,
+                      (v) =>
+                        patchStep({
+                          adjust_seconds: Math.max(
+                            -21600,
+                            Math.min(21600, Math.round(num(v))),
+                          ),
+                        }),
+                    )}
+                    ${this._numRow(
+                      html`${t("min_deficit_mm")}<si-info
+                          >${t("min_deficit_mm_help")}</si-info
+                        >`,
+                      "mm",
+                      step.min_deficit_mm ?? 0,
+                      (v) => patchStep({ min_deficit_mm: Math.max(0, num(v)) }),
+                      1,
+                      false,
+                      0,
+                    )}`
+                  : ""
+              }
               ${this._textRow(
                 html`${t("step_delay")}<si-info
                     >${t("step_delay_help")}</si-info
@@ -2421,21 +2573,74 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           <div class="setting-row">
             <div class="setting-label">
               ${t("schedule_weather")}<si-info
-                >${t("schedule_weather_help")}</si-info
+                >${t("schedule_weather_help")}
+                ${advanced ? t("conditions_pick") : ""}</si-info
               >
             </div>
             <ha-switch
               .checked=${schedule.weather !== false}
               @change=${(e: Event) =>
-                // A list of conditions set in YAML is kept: on again, it
-                // applies again (the program's "Set in YAML" notice says so).
+                // A list of conditions is kept: on again, it applies again.
                 patchSchedule({ weather: (e.target as any).checked })}
             ></ha-switch>
           </div>
+          ${
+            // Some of the conditions only (a greenhouse ignores the rain): the
+            // advanced mode, under the switch; the standard one lists such a
+            // list, once set, in the program's notice. All of them ticked is
+            // the default, stored as no list.
+            advanced && schedule.weather !== false
+              ? html`<div class="conditions">
+                  ${SKIP_CONDITION_IDS.map((id) => {
+                    const always = id === "postponed";
+                    const active =
+                      schedule.skip_conditions ?? SKIP_CONDITION_IDS;
+                    // Off under Skip watering: nothing to obey or ignore
+                    // here. The schedule's choice is kept for when it is on.
+                    const setting = always
+                      ? t("cond_postponed")
+                      : this._conditionSetting(id);
+                    return html`
+                      <div class=${setting ? "" : "cond-off"}>
+                        <label style="white-space: nowrap;">
+                          <input
+                            type="checkbox"
+                            .checked=${always || active.includes(id)}
+                            ?disabled=${always || !setting}
+                            @change=${(e: Event) => {
+                              const on = (e.target as HTMLInputElement).checked;
+                              const next = SKIP_CONDITION_IDS.filter((c) =>
+                                c === id ? on : active.includes(c),
+                              );
+                              patchSchedule({
+                                skip_conditions:
+                                  next.length === SKIP_CONDITION_IDS.length
+                                    ? undefined
+                                    : next,
+                              });
+                            }}
+                          />
+                          ${t(`condition_${id}`)}
+                        </label>
+                        <span class="cond-setting">
+                          · ${setting || t("cond_off")}
+                        </span>
+                      </div>
+                    `;
+                  })}
+                </div>`
+              : ""
+          }
           ${more(
             `more:schedule:${schedule.id}`,
             schedule.hard_deadline === true ||
               (schedule.every_n_days ?? 1) > 1 ||
+              (advanced &&
+                ((schedule.every_offset ?? 0) > 0 ||
+                  schedule.parity === "even" ||
+                  schedule.parity === "odd" ||
+                  (schedule.days_of_month || []).length > 0 ||
+                  (schedule.months || []).length > 0)) ||
               !!schedule.from_date ||
               !!schedule.until_date,
             html`
@@ -2450,6 +2655,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     every_n_days: Math.max(1, Math.round(num(v, 1))),
                   }),
               )}
+              ${advanced ? advancedDays(schedule, patchSchedule, toggle) : ""}
               ${this._monthDayRow(
                 t("schedule_from"),
                 schedule.from_date,
@@ -2684,7 +2890,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   ? html`${runHead(program)}
                     ${yamlBlock(program.id ?? "", index)}`
                   : html`
-                      ${yamlOnlyNotice(program)} ${runHead(program)}
+                      ${hiddenNotice(program)} ${runHead(program)}
                       ${this._textRow(t("name"), "", program.name, (v) =>
                         patch(index, { name: v }),
                       )}
@@ -2718,6 +2924,26 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       </div>
                       <div class="fold-section">${t("schedules_title")}</div>
                       ${renderSchedules(program, index)}
+                      ${
+                        // Rounds: the advanced mode (the standard one lists
+                        // them, once set, in the program's notice).
+                        advanced
+                          ? this._numRow(
+                              html`${t("tours")}<si-info
+                                  >${t("tours_help")}</si-info
+                                >`,
+                              "",
+                              program.tours ?? 1,
+                              (v) =>
+                                patch(index, {
+                                  tours: Math.max(1, Math.round(num(v, 1))),
+                                }),
+                              1,
+                              false,
+                              1,
+                            )
+                          : ""
+                      }
                       ${renderNotify(program, index)} ${adjustBlock(program)}
                       ${
                         // The last program cannot be deleted (the backend
@@ -4525,6 +4751,92 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     `;
   }
 
+  /**
+   * What a skip condition is set to under Skip watering, in words, or ""
+   * when it is off there. Thresholds are stored metric and shown in the units of
+   * Home Assistant, as the Info page shows them.
+   */
+  private _conditionSetting(id: string): string {
+    const config = this.config;
+    if (!config || !this.hass) return "";
+    const lang = this.hass.language;
+    const t = (key: string, ...args: any[]) =>
+      localize(`programs.${key}`, lang, ...args);
+    const metric = (this.hass.config as any)?.unit_system?.temperature !== "°F";
+    const round = (value: number) => Math.round(value * 10) / 10;
+    switch (id) {
+      case "rain_sensor": {
+        if (!config.skip_on_rain_sensor || !config.rain_sensor) return "";
+        const state = (this.hass.states as any)?.[config.rain_sensor];
+        return state?.attributes?.friendly_name ?? config.rain_sensor;
+      }
+      case "freeze": {
+        if (!config.skip_on_freeze) return "";
+        const c = config.freeze_threshold ?? 2;
+        return t(
+          "cond_freeze",
+          "{value}",
+          metric ? `${round(c)} °C` : `${round((c * 9) / 5 + 32)} °F`,
+        );
+      }
+      case "wind": {
+        if (!config.skip_on_wind) return "";
+        const kmh = config.wind_threshold ?? 20;
+        return t(
+          "cond_wind",
+          "{value}",
+          metric ? `${round(kmh)} km/h` : `${round(kmh / 1.609344)} mph`,
+        );
+      }
+      case "precipitation": {
+        if (!config.skip_irrigation_on_precipitation) return "";
+        const mm = config.precipitation_threshold_mm ?? 2;
+        return t(
+          "cond_precipitation",
+          "{value}",
+          metric ? `${round(mm)} mm` : `${round(mm / 25.4)} in`,
+        );
+      }
+      case "days_between": {
+        // A zone's own days count as much as the general ones: the condition
+        // holds those zones back even when the general setting is 0.
+        const general = config.days_between_irrigation ?? 0;
+        const own = (this.zones || [])
+          .map((zone: any) => zone.days_between_irrigation)
+          .filter((d: any) => typeof d === "number" && d > 0);
+        const all = general > 0 ? [general, ...own] : own;
+        if (!all.length) return "";
+        const low = Math.min(...all);
+        const high = Math.max(...all);
+        return t(
+          "cond_days_between",
+          "{n}",
+          low === high ? String(low) : `${low}-${high}`,
+        );
+      }
+      case "soil_moisture": {
+        const count = (this.zones || []).filter(
+          (zone) => !!zone.soil_moisture_sensor,
+        ).length;
+        if (count <= 0) return "";
+        return count === 1
+          ? t("cond_soil_one", "{n}", String(count))
+          : t("cond_soil", "{n}", String(count));
+      }
+      default:
+        return "";
+    }
+  }
+
+  /** Where the advanced mode is turned on: "Settings › General › Advanced settings". */
+  private _advancedPath(lang: string): string {
+    return [
+      localize("panels.groups.settings", lang),
+      localize("panels.general.title", lang),
+      localize("panels.general.cards.panel-mode.labels.advanced", lang),
+    ].join(" › ");
+  }
+
   // A day of the year, stored "MM-DD", picked as a month and a day instead of
   // typed. No month: none (the whole year). A day past the end of the month
   // picked is brought back to its last day; 29 February is a real day.
@@ -4946,6 +5258,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       }
       .combo-field .select-wrap.day-select {
         width: 90px;
+      }
+      .cond-off {
+        opacity: 0.55;
+      }
+      .cond-setting {
+        color: var(--secondary-text-color);
+        font-size: 0.9em;
       }
       @media (max-width: 600px) {
         .combo-field {

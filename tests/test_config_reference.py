@@ -22,6 +22,15 @@ from custom_components.smart_irrigation.websockets import (
 ZONE_READ_ONLY = {const.ZONE_BUCKET, const.ZONE_DURATION}
 
 YAML_ONLY = {
+    "program": set(),
+    "step": set(),
+    "schedule": {const.SCHEDULE_FALLBACK_TIME},
+    "notify": set(),
+    "zone": {const.ZONE_SAFETY_OFF_STATE_KEY},
+}
+
+# The options the panel's form shows in its advanced mode only.
+ADVANCED = {
     "program": {const.PROGRAM_TOURS},
     "step": {const.STEP_ADJUST_SECONDS, const.STEP_MIN_DEFICIT_MM},
     "schedule": {
@@ -29,11 +38,10 @@ YAML_ONLY = {
         const.SCHEDULE_PARITY,
         const.SCHEDULE_DAYS_OF_MONTH,
         const.SCHEDULE_MONTHS,
-        const.SCHEDULE_FALLBACK_TIME,
         const.SCHEDULE_SKIP_CONDITIONS,
     },
     "notify": set(),
-    "zone": {const.ZONE_SAFETY_OFF_STATE_KEY, const.ZONE_OPEN_RESENDS},
+    "zone": {const.ZONE_OPEN_RESENDS},
 }
 
 
@@ -141,6 +149,14 @@ def test_the_yaml_only_options_are_flagged():
         assert flagged == YAML_ONLY[section], section
 
 
+def test_the_advanced_mode_options_are_flagged():
+    for section, (fields, _about) in ref.SECTIONS.items():
+        flagged = {k for k, f in fields.items() if f.get("advanced")}
+        assert flagged == ADVANCED[section], section
+        # Never both: a YAML-only option has no field in any mode.
+        assert not flagged & YAML_ONLY[section], section
+
+
 def test_every_field_is_described():
     for fields, _about in ref.SECTIONS.values():
         for key, field in fields.items():
@@ -161,7 +177,9 @@ async def test_the_tool_returns_the_sections():
 
     everything = await answer()
     assert set(everything) == {"note", *ref.SECTIONS}
-    assert everything["step"]["fields"]["adjust_seconds"]["yaml_only"] is True
+    assert everything["step"]["fields"]["adjust_seconds"]["advanced"] is True
+    assert "yaml_only" not in everything["step"]["fields"]["adjust_seconds"]
+    assert everything["schedule"]["fields"]["fallback_time"]["yaml_only"] is True
     assert everything["step"]["fields"]["adjust_seconds"]["min"] == -6 * 3600
 
     program = await answer(section="program")

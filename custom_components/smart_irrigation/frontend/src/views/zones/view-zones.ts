@@ -51,7 +51,7 @@ import {
 } from "../../data/websockets";
 import { SubscribeMixin } from "../../subscribe-mixin";
 import { zoneFromYaml, zoneToYaml } from "../../data/zone-yaml";
-import { zoneYamlOnly } from "../../data/yaml-only";
+import { hiddenInAdvanced, zoneHiddenOptions } from "../../data/yaml-only";
 
 import {
   SmartIrrigationConfig,
@@ -113,6 +113,7 @@ import {
   ZONE_SAFETY_OFF_MODE,
   ZONE_SAFETY_OFF_REQUIRED,
   ZONE_CONFIRM_TIMEOUT,
+  ZONE_OPEN_RESENDS,
   ZONE_MAPPING,
   ZONE_ALLOWED_DEPLETION,
   ZONE_AVAILABLE_WATER,
@@ -1712,7 +1713,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
               ${zone.id != undefined && this._yamlEdits.has(zone.id)
                 ? this._zoneYamlBlock(zone, lang)
                 : html`<div class="settings">
-                    ${this._zoneYamlOnlyNotice(zone, lang)}
+                    ${this._zoneHiddenNotice(zone, lang)}
                     <div class="zone-section">
                       ${localize("panels.zones.sections.zone", lang)}
                     </div>
@@ -1944,10 +1945,25 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                             },
                             1,
                           )}
+                          ${this._numRow(
+                            localize("panels.zones.labels.open-resends", lang),
+                            "",
+                            zone.open_resends,
+                            (v) => {
+                              // Empty keeps the default; 0 never sends it again.
+                              const times = parseInt(v, 10);
+                              this.handleEditZone(index, {
+                                ...zone,
+                                [ZONE_OPEN_RESENDS]: isNaN(times)
+                                  ? null
+                                  : Math.min(10, Math.max(0, times)),
+                              });
+                            },
+                            1,
+                          )}
                           ${
-                            // How often the open is sent again in that wait is
-                            // YAML only (open_resends): the zone's "Set in YAML"
-                            // notice says when it is set.
+                            // The valve's own duration: a cloud valve (Gardena)
+                            // wants a long wait above and no resend.
                             this._entityRow(
                               html`${localize(
                                   "panels.zones.labels.safety-off-entity",
@@ -3048,25 +3064,37 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
   }
 
   /**
-   * As Home Assistant's own visual editors do: the zone options set in YAML
-   * only have no field in the form, even when set. The form keeps them (it
-   * sends only what an edit changed), and the zone says, read-only, which
-   * ones it uses, with Edit in YAML at hand to change them.
+   * As Home Assistant's own visual editors do: what the form does not show is
+   * kept (an edit sends only what it changed), and the zone says, read-only,
+   * which of those options it uses, with Edit in YAML at hand to change them.
+   * The standard form leaves out the resends of the open (a field of the
+   * advanced mode); no form has a field for the MQTT state key (YAML only).
    */
-  private _zoneYamlOnlyNotice(
+  private _zoneHiddenNotice(
     zone: SmartIrrigationZone,
     lang: string,
   ): TemplateResult | string {
-    const items = zoneYamlOnly(zone, (key) =>
+    const group = zoneHiddenOptions(zone, this.config?.ui_mode, (key) =>
       localize(`panels.zones.labels.${key}`, lang),
     );
-    if (!items.length) return "";
+    if (!group) return "";
+    const advanced = hiddenInAdvanced([group]);
+    const where = [
+      localize("panels.groups.settings", lang),
+      localize("panels.general.title", lang),
+      localize("panels.general.cards.panel-mode.labels.advanced", lang),
+    ].join(" › ");
     return html`<ha-alert
       alert-type="info"
-      .title=${localize("programs.yaml_only_title", lang)}
+      .title=${localize(
+        advanced ? "programs.hidden_title" : "programs.yaml_only_title",
+        lang,
+      )}
     >
-      ${localize("panels.zones.yaml.only_help", lang)}
-      <div>${items.join(" · ")}</div>
+      ${advanced
+        ? localize("programs.hidden_help", lang).replace("{where}", where)
+        : localize("panels.zones.yaml.only_help", lang)}
+      <div>${group.items.join(" · ")}</div>
       <ha-button
         slot="action"
         appearance="plain"

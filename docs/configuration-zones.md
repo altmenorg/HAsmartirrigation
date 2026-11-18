@@ -125,9 +125,10 @@ open_resends: 0
 
 <a id="zone-yaml-only-options"></a>
 
-!!! yaml-only "YAML only: two zone options"
+!!! yaml-only "YAML only: the safety off state key"
 
-    These have no field in the form, even when they are set. Editing the zone in the form keeps them, and a zone that uses one says so in a **Set in YAML (not editable here)** box, with **Edit in YAML** at hand:
+    `safety_off_state_key: state_l1`, the [safety off state key](configuration-closed-loop.md#hardware-auto-off-mqtt-on_time-dead-man) (empty is `state`), has no field in the form, in any mode. Editing the zone in the form keeps it, and a zone that uses it says so in a **Set in YAML (not editable here)** box, with **Edit in YAML** at hand.
 
-    - `safety_off_state_key: state_l1`, the [safety off state key](configuration-closed-loop.md#hardware-auto-off-mqtt-on_time-dead-man) (empty is `state`);
-    - `open_resends: 0`, how often [the open is sent again](configuration-closed-loop.md#when-smart-irrigation-runs-the-valves) while the valve has not confirmed (0 to 10; empty is the default).
+!!! advanced "Advanced mode: the resends of the open"
+
+    `open_resends: 0`, how often [the open is sent again](configuration-closed-loop.md#when-smart-irrigation-runs-the-valves) while the valve has not confirmed (0 to 10; empty is the default), is a field of the advanced mode, next to **Wait for the valve to confirm**. In the standard mode, a zone that uses it lists it in a **Shown in the advanced mode or in YAML** box.

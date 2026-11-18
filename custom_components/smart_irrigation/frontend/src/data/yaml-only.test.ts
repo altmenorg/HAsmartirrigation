@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  hiddenInAdvanced,
+  hiddenLine,
+  hiddenOptions,
   withProgram,
   withSchedule,
   withStep,
-  yamlOnlyLine,
-  yamlOnlyOptions,
-  zoneYamlOnly,
+  zoneHiddenOptions,
 } from "./yaml-only";
 
 const texts: Record<string, string> = {
@@ -13,7 +14,6 @@ const texts: Record<string, string> = {
   adjust_seconds: "Time added",
   min_deficit_mm: "Minimum deficit",
   schedule_every_offset: "Shifted by",
-  schedule_days: "days",
   schedule_parity: "Days of the month",
   parity_even: "Even days",
   parity_odd: "Odd days",
@@ -31,7 +31,13 @@ const texts: Record<string, string> = {
 };
 const t = (key: string) => texts[key] ?? `?${key}`;
 const MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
-const text = { t, monthName: (m: number) => MONTHS[m] };
+const text = {
+  t,
+  monthName: (m: number) => MONTHS[m],
+  days: (n: number) => `${n} ${n === 1 ? "day" : "days"}`,
+};
+const STD = "standard";
+const ADV = "advanced";
 
 const step = (extra: any = {}): any => ({
   id: "s",
@@ -76,26 +82,27 @@ const program = (extra: any = {}): any => ({
   ...extra,
 });
 
-describe("yamlOnlyOptions", () => {
+describe("hiddenOptions, standard mode", () => {
   it("says nothing when every option is at its default", () => {
-    expect(yamlOnlyOptions(program(), text)).toEqual([]);
-    // Absent keys are defaults too.
+    expect(hiddenOptions(program(), STD, text)).toEqual([]);
+    // Absent keys are defaults too, and no mode is the standard one.
     expect(
-      yamlOnlyOptions(
+      hiddenOptions(
         { name: "Bare", steps: [{ zones: [] } as any], schedules: [{} as any] },
+        undefined,
         text,
       ),
     ).toEqual([]);
   });
 
   it("lists the program's rounds", () => {
-    expect(yamlOnlyOptions(program({ tours: 2 }), text)).toEqual([
-      { owner: "", items: ["Rounds: 2"] },
+    expect(hiddenOptions(program({ tours: 2 }), STD, text)).toEqual([
+      { owner: "", items: ["Rounds: 2"], advanced: true },
     ]);
   });
 
   it("lists a step's options, named by its place", () => {
-    const groups = yamlOnlyOptions(
+    const groups = hiddenOptions(
       program({
         steps: [
           step(),
@@ -103,25 +110,27 @@ describe("yamlOnlyOptions", () => {
           step({ adjust_seconds: -15 }),
         ],
       }),
+      STD,
       text,
     );
     expect(groups).toEqual([
       {
         owner: "Step 2",
         items: ["Time added: +30 s", "Minimum deficit: 4 mm"],
+        advanced: true,
       },
-      { owner: "Step 3", items: ["Time added: -15 s"] },
+      { owner: "Step 3", items: ["Time added: -15 s"], advanced: true },
     ]);
   });
 
   it("lists each of a schedule's options, named by its place", () => {
-    const groups = yamlOnlyOptions(
+    const groups = hiddenOptions(
       program({
         schedules: [
           schedule(),
           schedule({
-            every_n_days: 2,
-            every_offset: 1,
+            every_n_days: 3,
+            every_offset: 2,
             parity: "odd",
             days_of_month: [1, 15, "last"],
             months: [5, 6, 7, 8, 9, 11],
@@ -131,28 +140,40 @@ describe("yamlOnlyOptions", () => {
           }),
         ],
       }),
+      STD,
       text,
     );
     expect(groups).toEqual([
       {
         owner: "Schedule 2",
         items: [
-          "Shifted by: 1 days",
+          "Shifted by: 2 days",
           "Days of the month: Odd days",
           "Specific days: 1, 15, last",
           "Months: May–Sep, Nov",
           "No sunrise: Last one seen",
           "Only these checks: Postponed, Frost, Wind",
         ],
+        advanced: true,
       },
     ]);
   });
 
+  it("counts one day in the singular", () => {
+    const [group] = hiddenOptions(
+      program({ schedules: [schedule({ every_n_days: 2, every_offset: 1 })] }),
+      STD,
+      text,
+    );
+    expect(group.items).toEqual(["Shifted by: 1 day"]);
+  });
+
   it("gives a fixed fallback time as it is, even days as such", () => {
-    const [group] = yamlOnlyOptions(
+    const [group] = hiddenOptions(
       program({
         schedules: [schedule({ fallback_time: "05:30", parity: "even" })],
       }),
+      STD,
       text,
     );
     expect(group.items).toEqual([
@@ -162,31 +183,86 @@ describe("yamlOnlyOptions", () => {
   });
 
   it("lists an empty list of checks: only the postponed days apply", () => {
-    const [group] = yamlOnlyOptions(
+    const [group] = hiddenOptions(
       program({ schedules: [schedule({ skip_conditions: [] })] }),
+      STD,
       text,
     );
     expect(group.items).toEqual(["Only these checks: Postponed"]);
   });
 
   it("puts the program first, then the steps, then the schedules", () => {
-    const groups = yamlOnlyOptions(
+    const groups = hiddenOptions(
       program({
         tours: 3,
         steps: [step({ min_deficit_mm: 2 })],
         schedules: [schedule({ months: [1] })],
       }),
+      STD,
       text,
     );
-    expect(groups.map(yamlOnlyLine)).toEqual([
+    expect(groups.map(hiddenLine)).toEqual([
       "Rounds: 3",
       "Step 1 · Minimum deficit: 2 mm",
       "Schedule 1 · Months: Jan",
     ]);
+    expect(hiddenInAdvanced(groups)).toBe(true);
+  });
+
+  it("is about YAML alone when only a YAML-only option is set", () => {
+    const groups = hiddenOptions(
+      program({ schedules: [schedule({ fallback_time: "previous" })] }),
+      STD,
+      text,
+    );
+    expect(groups).toEqual([
+      {
+        owner: "Schedule 1",
+        items: ["No sunrise: Last one seen"],
+        advanced: false,
+      },
+    ]);
+    expect(hiddenInAdvanced(groups)).toBe(false);
   });
 });
 
-describe("the form's patches keep the YAML-only options", () => {
+describe("hiddenOptions, advanced mode", () => {
+  const full = program({
+    tours: 2,
+    steps: [step({ adjust_seconds: 30, min_deficit_mm: 4 })],
+    schedules: [
+      schedule({
+        every_n_days: 2,
+        every_offset: 1,
+        parity: "even",
+        days_of_month: ["last"],
+        months: [6],
+        skip_conditions: ["wind"],
+      }),
+    ],
+  });
+
+  it("lists nothing the advanced form shows as a field", () => {
+    expect(hiddenOptions(full, ADV, text)).toEqual([]);
+  });
+
+  it("lists the YAML-only options only", () => {
+    const groups = hiddenOptions(
+      withProgram(
+        full,
+        withSchedule(full, 0, { type: "sun", fallback_time: "05:30" }),
+      ),
+      ADV,
+      text,
+    );
+    expect(groups).toEqual([
+      { owner: "Schedule 1", items: ["No sunrise: 05:30"], advanced: false },
+    ]);
+    expect(hiddenInAdvanced(groups)).toBe(false);
+  });
+});
+
+describe("the form's patches keep the options it does not show", () => {
   const full = program({
     tours: 2,
     steps: [step({ adjust_seconds: 30, min_deficit_mm: 4 })],
@@ -231,11 +307,13 @@ describe("the form's patches keep the YAML-only options", () => {
       fallback_time: "previous",
       skip_conditions: ["wind"],
     });
-    expect(yamlOnlyOptions(after, text)).toEqual(yamlOnlyOptions(full, text));
+    expect(hiddenOptions(after, STD, text)).toEqual(
+      hiddenOptions(full, STD, text),
+    );
   });
 });
 
-describe("zoneYamlOnly", () => {
+describe("zoneHiddenOptions", () => {
   const labels: Record<string, string> = {
     "safety-off-state-key": "Safety off state key",
     "open-resends": "Send the open again",
@@ -244,18 +322,42 @@ describe("zoneYamlOnly", () => {
   const zone = (extra: any = {}): any => ({ id: 1, name: "Lawn", ...extra });
 
   it("lists nothing for a zone at its defaults", () => {
-    expect(zoneYamlOnly(zone(), zt)).toEqual([]);
+    expect(zoneHiddenOptions(zone(), STD, zt)).toBeNull();
     expect(
-      zoneYamlOnly(zone({ safety_off_state_key: " ", open_resends: null }), zt),
-    ).toEqual([]);
-  });
-
-  it("lists the state key and the resends, 0 included", () => {
-    expect(
-      zoneYamlOnly(
-        zone({ safety_off_state_key: "state_l2", open_resends: 0 }),
+      zoneHiddenOptions(
+        zone({ safety_off_state_key: " ", open_resends: null }),
+        STD,
         zt,
       ),
-    ).toEqual(["Safety off state key: state_l2", "Send the open again: 0"]);
+    ).toBeNull();
+  });
+
+  it("lists the state key and the resends, 0 included, in standard mode", () => {
+    expect(
+      zoneHiddenOptions(
+        zone({ safety_off_state_key: "state_l2", open_resends: 0 }),
+        STD,
+        zt,
+      ),
+    ).toEqual({
+      owner: "",
+      items: ["Safety off state key: state_l2", "Send the open again: 0"],
+      advanced: true,
+    });
+  });
+
+  it("lists the state key alone in advanced mode", () => {
+    expect(
+      zoneHiddenOptions(
+        zone({ safety_off_state_key: "state_l2", open_resends: 0 }),
+        ADV,
+        zt,
+      ),
+    ).toEqual({
+      owner: "",
+      items: ["Safety off state key: state_l2"],
+      advanced: false,
+    });
+    expect(zoneHiddenOptions(zone({ open_resends: 2 }), ADV, zt)).toBeNull();
   });
 });
