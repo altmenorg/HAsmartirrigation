@@ -1692,6 +1692,7 @@
     "weather": "Wetter passt?",
     "weather_sub": "Regen, Frost, Wind…",
     "weather_yes": "Ja",
+    "weather_yes_unread": "Ja, aber {reason} war nicht lesbar",
     "weather_no": "Nein: {reason}",
     "otherwise": "Sonst: an diesem Tag nichts",
     "supply_on": "{name} an",

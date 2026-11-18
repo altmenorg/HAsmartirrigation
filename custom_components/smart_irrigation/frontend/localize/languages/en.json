@@ -1692,6 +1692,7 @@
     "weather": "Weather allows it?",
     "weather_sub": "Rain, frost, wind…",
     "weather_yes": "Yes",
+    "weather_yes_unread": "Yes, but {reason} could not be read",
     "weather_no": "No: {reason}",
     "otherwise": "Otherwise: nothing that day",
     "supply_on": "{name} on",

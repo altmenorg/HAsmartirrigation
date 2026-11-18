@@ -30,7 +30,15 @@ export class SmartIrrigationProgramFlow extends LitElement {
 
   /** "Yes", "No: Wind", "No: Rain forecast 6 mm", or what is asked. */
   private _verdict(verdict: WeatherVerdict): string {
-    if (verdict.state === "yes") return this._t("weather_yes");
+    if (verdict.state === "yes") {
+      if (!verdict.unread) return this._t("weather_yes");
+      return this._t("weather_yes_unread", {
+        reason: localize(
+          `panels.info.cards.decision.check-${verdict.unread}`,
+          this.lang,
+        ),
+      });
+    }
     if (verdict.state !== "no") return this._t("weather_sub");
     let reason = localize(
       `panels.info.cards.decision.check-${verdict.reason}`,
@@ -75,7 +83,12 @@ export class SmartIrrigationProgramFlow extends LitElement {
         ${this.weather.state !== "off"
           ? html`${this._arrow()}
               <div class="branch">
-                <div class="node weather ${this.weather.state}">
+                <div
+                  class="node weather ${this.weather.state} ${this.weather
+                    .state === "yes" && this.weather.unread
+                    ? "unread"
+                    : ""}"
+                >
                   <div class="title">${this._t("weather")}</div>
                   <div class="sub">${this._verdict(this.weather)}</div>
                 </div>
@@ -243,6 +256,12 @@ export class SmartIrrigationProgramFlow extends LitElement {
     }
     .weather.yes .sub {
       color: var(--success-color, #43a047);
+    }
+    .weather.yes.unread {
+      border-color: var(--warning-color, #ffa600);
+    }
+    .weather.yes.unread .sub {
+      color: var(--warning-color, #ffa600);
     }
     .weather.no {
       border-color: var(--error-color, #db4437);
