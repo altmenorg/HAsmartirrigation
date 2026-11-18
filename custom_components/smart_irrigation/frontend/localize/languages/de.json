@@ -1242,6 +1242,8 @@
     "effective_rain_description": "Einen Schauer ignorieren, der kleiner ist als ein Fünftel der Verdunstung des Zeitraums: Er benetzt die Blätter und verdunstet. Beurteilt wird über den gesamten Zeitraum zwischen zwei Berechnungen.",
     "forecast_label": "Vorhergesagten Regen berücksichtigen",
     "forecast_description": "Unter der Schwelle bekommt jede Zone ihr Defizit abzüglich des für 24 Stunden vorhergesagten Regens, gewichtet mit seiner Wahrscheinlichkeit: 4 mm Vorhersage bei 10 mm Defizit ergeben 6 mm. Ab der Schwelle setzen Zonen im Freien aus. Zonen im Gewächshaus sind nicht betroffen.",
+    "forecast_no_service": "Braucht einen Wetterdienst: Die Vorhersage kommt von ihm.",
+    "forecast_no_service_on": "Kein Wetterdienst: Es gibt keine Vorhersage, also hält dies nichts zurück.",
     "forecast_set_up_service": "Wetterdienst einrichten"
   },
   "coordinate_config": {
