@@ -93,6 +93,11 @@ class ProgramRun:
         self.seconds = None
         self.requested: str | None = None
         self.queued = False
+        # A scheduled run's planned moment: when it finds nothing to water, the
+        # programs that come after it start from there. None for a manual run.
+        self.chain_moment = None
+        # Set when the run's turn came and its plan had nothing to water.
+        self.nothing_to_water = False
 
     def really_ran(self) -> bool:
         """Whether the run counts as having watered, for what starts after it.
@@ -101,8 +106,10 @@ class ProgramRun:
         its hard deadline (the time it had was used). Stopped any other way (by
         hand, by stop_watering, replaced by another run, or its program deleted,
         suspended or switched off while it ran), it does not: whoever stopped
-        the watering did not want the next program either. A run skipped by the
-        weather, suspended or with nothing to water never got here.
+        the watering did not want the next program either. Nor does a run whose
+        zones all failed to open. A scheduled run held back by the weather,
+        suspended or with nothing to water never got here: it starts what
+        comes after it from its planned moment instead (program_scheduler.py).
         """
         if self.stop.is_set() and not self.cut:
             return False
@@ -320,6 +327,7 @@ class ProgramRunnerMixin:
         seconds=None,
         mode=const.RUN_MODE_QUEUE,
         deadline=None,
+        chain_moment=None,
     ) -> bool:
         """Run a program now, or as soon as it is its turn. False if not started.
 
@@ -333,11 +341,14 @@ class ProgramRunnerMixin:
         proportion to their planned durations; without it the planned durations.
         ``mode`` is ``queue`` (take the turn behind what runs) or ``replace``
         (stop what runs and waits, cleanly, then run this one).
+        ``chain_moment`` is a scheduled run's planned moment: if the run finds
+        nothing to water, the programs that come after it start from there.
         """
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
             _LOGGER.warning(
-                "Program %s not run: the full controller is off", program_id
+                "Program %s not run: Smart Irrigation is not set to Calculate and water",
+                program_id,
             )
             return False
         if watering_off(config):
@@ -365,6 +376,7 @@ class ProgramRunnerMixin:
             note_day,
         )
         run.deadline = deadline
+        run.chain_moment = chain_moment
         run.seconds = seconds
         run.requested = dt_util.utcnow().isoformat()
         if manual and self._turns().would_wait(self.program_turn_keys(program_id)):
@@ -419,6 +431,7 @@ class ProgramRunnerMixin:
                 plan, tour, step = await make_plan()
                 if not plan:
                     _LOGGER.info("Program %s has nothing to water", run.program_id)
+                    run.nothing_to_water = True
                     return
                 if run.deadline is not None and dt_util.utcnow() >= run.deadline:
                     # No time left at all: nothing opens, and the record says why.
@@ -474,16 +487,28 @@ class ProgramRunnerMixin:
                 # "after"), once its turn is given back: a chained run on the
                 # same supply takes it next. Manual runs count as much as
                 # scheduled ones.
+                # A scheduled run that found nothing to water starts them too,
+                # from its planned moment.
                 start_after = getattr(self, "async_start_programs_after", None)
-                if finished_plan and start_after is not None and run.really_ran():
-                    try:
+                try:
+                    if start_after is None:
+                        pass
+                    elif finished_plan and run.really_ran():
                         await start_after(run.program_id, dt_util.utcnow())
-                    except Exception as e:  # noqa: BLE001 - the run is over
-                        _LOGGER.error(
-                            "Program %s: could not start what comes after it: %s",
-                            run.program_id,
-                            e,
+                    elif (
+                        run.nothing_to_water
+                        and run.chain_moment is not None
+                        and not run.stop.is_set()
+                    ):
+                        await start_after(
+                            run.program_id, run.chain_moment, held_back=True
                         )
+                except Exception as e:  # noqa: BLE001 - the run is over
+                    _LOGGER.error(
+                        "Program %s: could not start what comes after it: %s",
+                        run.program_id,
+                        e,
+                    )
 
     # --- the hard deadline ---------------------------------------------------
 

@@ -136,18 +136,20 @@ async def test_the_tools_are_described():
     instance = await api.async_get_api_instance(_context())
 
     names = [tool.name for tool in instance.tools]
-    assert names[:9] == [
+    assert names[:10] == [
         "GetZones",
         "GetIrrigationInfo",
         "GetPrograms",
         "GetPlanning",
         "PreviewProgram",
+        "GetConfigReference",
         "GetZoneSettings",
         "GetSensorGroups",
         "GetSettings",
         "FindEntities",
     ]
     assert "No tool here runs a watering" in instance.api_prompt
+    assert "GetConfigReference" in instance.api_prompt
     # Installed with Home Assistant's conversation, not always in the tests.
     voluptuous_openapi = pytest.importorskip("voluptuous_openapi")
     for tool in instance.tools:

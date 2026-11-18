@@ -1,13 +1,9 @@
 ---
-layout: default
-title: "Usage: The output contract"
+title: "The output contract"
 ---
 # The output contract
 
-> Main page: [Usage](usage.md)<br/>
-> See also: [Entities](usage-entities.md), [Events](usage-events.md), [Automations](usage-automations.md)
-
-This page is for anybody who drives the water themselves: your own automation, a controller integration, or another integration that wants to consume what Smart Irrigation decides. It is one page on purpose, so it can be read without reading the rest, and it says what is promised and what is not.
+This page is for anybody who drives the water themselves, with **Calculate only**: your own automation, a controller integration, or another integration that wants to consume what Smart Irrigation decides. It is one page on purpose, so it can be read without reading the rest, and it says what is promised and what is not. See also [entities](usage-entities.md), [events](usage-events.md) and [automations](usage-automations.md).
 
 Smart Irrigation calculates. Something else opens a valve. This is the interface between the two.
 
@@ -15,7 +11,7 @@ Smart Irrigation calculates. Something else opens a valve. This is the interface
 
 Per zone, one sensor carries the answer:
 
-```
+```text
 sensor.smart_irrigation_<zone name>
 ```
 
@@ -43,17 +39,17 @@ If you want a value that moves with the weather through the day, that is the **L
 | --- | --- | --- |
 | `smart_irrigation_start_irrigation_all_zones` | A start trigger is reached and today is a watering day | The trigger's identity |
 | `smart_irrigation_irrigation_skipped` | A start trigger is reached and today is not | The trigger's identity, `reason`, and `checks`, the same detail the Home page shows |
-| `smart_irrigation_irrigation_started` | Smart Irrigation begins a run | `sequencing`, and `zones`: `{zone_id, zone, seconds}` |
-| `smart_irrigation_irrigation_finished` | Smart Irrigation finishes a run | `zones`: `{zone_id, zone, seconds, volume_l, bucket}`, and `problems`: `{zone_id, zone, reason}` |
-| `smart_irrigation_zone_problem` | A valve did not open, did not close, or opened with no water flowing | `zone_id`, `zone`, `entity_id`, `reason` (`valve_did_not_open`, `valve_did_not_close`, `no_flow`, and, in the full controller, `valve_closed_early` and `supply_did_not_turn_on`) |
-| `smart_irrigation_program_started` | Full controller: a program run begins | `program_id`, `program`, `manual`, `tours`, `zones` (first round only: `{zone_id, zone, seconds}`), and `resumed` after a restart |
-| `smart_irrigation_program_finished` | Full controller: a program run ends | `program_id`, `program`, `manual`, `zones`, `problems`, `stopped`, and `cut` and `reason` (`deadline`) when the run was cut |
-| `smart_irrigation_valve_on` / `smart_irrigation_valve_off` | Full controller: a zone valve or a supply is switched | `entity_id`, `kind` (`zone` or `supply`), `zone_id` and `zone` or `supply_id` and `supply`; the off of a zone valve adds `closed` |
-| `smart_irrigation_supply_problem` | Full controller: a pump or main valve did not come on or go off | `supply_id`, `supply`, `entity_id`, `reason` (`supply_did_not_turn_on`, `supply_did_not_turn_off`) |
-| `smart_irrigation_valve_out_of_sync` | Full controller: a valve held open reads closed (checked every 60 seconds); it is not opened again | `zone_id`, `zone`, `entity_id`, `expected` (`open`), `actual` (`off`, `closed`...), `reason` (`closed_early`) |
+| `smart_irrigation_irrigation_started` | Smart Irrigation begins a run (Calculate and water) | `sequencing`, and `zones`: `{zone_id, zone, seconds}` |
+| `smart_irrigation_irrigation_finished` | Smart Irrigation finishes a run (Calculate and water) | `zones`: `{zone_id, zone, seconds, volume_l, bucket}`, and `problems`: `{zone_id, zone, reason}` |
+| `smart_irrigation_zone_problem` | A valve Smart Irrigation drives did not open, did not close, or opened with no water flowing | `zone_id`, `zone`, `entity_id`, `reason` (`valve_did_not_open`, `valve_did_not_close`, `no_flow`, `valve_closed_early`, `supply_did_not_turn_on`, `valve_timer_not_set`) |
+| `smart_irrigation_program_started` | Calculate and water: a program run begins | `program_id`, `program`, `manual`, `tours`, `zones` (first round only: `{zone_id, zone, seconds}`), and `resumed` after a restart |
+| `smart_irrigation_program_finished` | Calculate and water: a program run ends | `program_id`, `program`, `manual`, `zones`, `problems`, `stopped`, and `cut` and `reason` (`deadline`) when the run was cut |
+| `smart_irrigation_valve_on` / `smart_irrigation_valve_off` | Calculate and water: a zone valve or a supply is switched | `entity_id`, `kind` (`zone` or `supply`), `zone_id` and `zone` or `supply_id` and `supply`; the off of a zone valve adds `closed` |
+| `smart_irrigation_supply_problem` | Calculate and water: a pump or main valve did not come on or go off | `supply_id`, `supply`, `entity_id`, `reason` (`supply_did_not_turn_on`, `supply_did_not_turn_off`) |
+| `smart_irrigation_valve_out_of_sync` | Calculate and water: a valve held open reads closed (checked every 60 seconds); it is not opened again | `zone_id`, `zone`, `entity_id`, `expected` (`open`), `actual` (`off`, `closed`...), `reason` (`closed_early`) |
 | `smart_irrigation_weather_stale` | A temperature, humidity, dew point, wind speed or pressure source of a sensor group has not reported for 6 hours; fired once per silence | `mapping_id`, `mapping`, `fields` (the fields that just went silent), `since` (ISO time of the last report) |
 | `smart_irrigation_weather_recovered` | Fields that were silent report again, or the outage stops being watched | `mapping_id`, `mapping`, `fields`, `reason` (`unloaded` or `unwatched`, absent on a real recovery) |
-| `smart_irrigation_zone_unwatered` | Full controller: a zone has been dry for over 3 days and no program will water it; fired once, with a repair notice | `zone_id`, `zone`, `days`, `deficit_mm` |
+| `smart_irrigation_zone_unwatered` | Calculate and water: a zone has been dry for over 3 days and no program will water it; fired once, with a repair notice | `zone_id`, `zone`, `days`, `deficit_mm` |
 
 The skip event exists because the absence of an event is not something an automation can listen for.
 
@@ -96,8 +92,8 @@ Never both, and never a blueprint that resets the water balance on top of a clos
 - Depths in the entities follow Home Assistant's unit system; internally everything is metric and converted at the edges only.
 - The start event fires once per trigger, and either it or the skip event fires when a trigger is reached.
 - The duration published when the start event fires already accounts for rain since the calculation.
-- The zone sensors never carry a runtime adjustment. With the optional [full controller](usage-full-controller.md), `smart_irrigation.adjust_program` changes how long a program's steps water (a percentage and/or seconds, for a while); it is applied by the controller to the runs it starts, and shown in the `adjustment` attribute of the program's sensor, not in the zone's number.
-- The same controller's run services leave the zone's number alone too: `run_program` and `water_zone` take an optional `seconds` and a `mode` (`queue`, the default, or `replace`), `stop_program` ends one program, and `set_step_enabled` and `set_schedule_enabled` switch a step or a schedule on or off (`set_program_enabled` is deprecated, see [the full controller](usage-full-controller.md#no-main-program)). See [driving the watering](usage-full-controller.md#driving-the-watering).
+- The zone sensors never carry a runtime adjustment. With [Calculate and water](usage-full-controller.md), `smart_irrigation.adjust_program` changes how long a program's steps water (a percentage and/or seconds, for a while); it is applied by the controller to the runs it starts, and shown in the `adjustment` attribute of the program's sensor, not in the zone's number.
+- Its run actions leave the zone's number alone too: `run_program` and `water_zone` take an optional `seconds` and a `mode` (`queue`, the default, or `replace`), `stop_program` ends one program, and `set_step_enabled` and `set_schedule_enabled` switch a step or a schedule on or off (`set_program_enabled` is deprecated, see [no main program](usage-full-controller.md#no-main-program)). See [driving the watering](usage-full-controller.md#driving-the-watering).
 
 **Not promised.**
 

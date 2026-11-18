@@ -1,29 +1,28 @@
 ---
-layout: default
 title: "Installation"
 ---
 # Installation
 
-> Starting with nothing at all, not even Home Assistant? [From nothing to a watered garden](getting-started-from-scratch.md) walks the whole path in half an hour, hardware included, and comes back here for this part.
+!!! tip "Starting with nothing at all?"
+
+    Not even Home Assistant? [From nothing to a watered garden](getting-started-from-scratch.md) walks the whole path in half an hour, hardware included, and comes back here for this part.
 
 Smart Irrigation needs Home Assistant 2026.3 or later.
 
-Installing the Smart Irrigation integration consists of a few steps:
+Four steps:
 
-1. [Downloading the integration](installation-download.md).
-2. Adding it in Home Assistant. Setup is a single step that asks nothing: the weather service, the sensor groups and the zones are set up afterwards in the panel, by its setup assistant.
+1. **[Download the integration](installation-download.md)** from HACS (one click) or by hand, and restart Home Assistant.
+2. **Add it** in Settings › Devices & services › Add integration › Smart Irrigation. Setup asks nothing: a new **Smart Irrigation** panel appears in the sidebar.
 
-![](assets/images/installation-1.png)
+    ![Adding Smart Irrigation in Home Assistant](assets/images/installation-1.png)
 
-After the integration has been installed, you will find a new panel named 'Smart Irrigation' in your side bar. [Use it to configure your set up](configuration.md).
-
-Then choose where your weather data comes from:
-
-3. [Configuring the weather service](installation-weatherservice.md) (done from the panel, on the fly).
+3. **Turn on a [weather service](installation-weatherservice.md)** if you want one, under **Weather › Weather service** in the panel: Open-Meteo is the default and needs no key. Skip this if all your weather comes from your own sensors.
+4. **Run the setup assistant** (**Settings › General**, **Open the assistant**): it asks what Smart Irrigation should do and creates your first zone with its sensor group. From there, [configure the rest](configuration.md).
 
 Also in this section:
 
-4. [Options: the Configure button](installation-options.md)
-5. [Updating to the latest or specific version](installation-updating.md)
-6. [Migration from V1 (v0.0.X) to V2 (202X.X.X)](installation-migration.md)
-7. [Uninstalling the integration](installation-uninstalling.md)
+- [Which weather service](weather-services.md) to pick, and [manual coordinates](MANUAL_COORDINATES.md) when the weather should be read somewhere else than your Home Assistant location.
+- [Updating](installation-updating.md) to the latest or a specific version.
+- [The Configure button](installation-options.md) on the integration's page, which only points to the panel.
+- [Migrating from V1](installation-migration.md) (v0.0.X), for very old installations.
+- [Uninstalling](installation-uninstalling.md) the integration.

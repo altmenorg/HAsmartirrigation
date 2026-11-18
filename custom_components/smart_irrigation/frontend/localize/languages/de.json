@@ -212,7 +212,7 @@
         "open-sensor-groups": "Sensorgruppen öffnen"
       },
       "messages": {
-        "no-service": "Es wird kein Wetterdienst verwendet — die Wetterdaten stammen ausschließlich von deinen eigenen Sensoren.",
+        "no-service": "Es wird kein Wetterdienst verwendet: die Wetterdaten stammen ausschließlich von deinen eigenen Sensoren.",
         "saved": "Wetterdienst aktualisiert und angewendet.",
         "reload-note": "Beim Speichern wird der API-Schlüssel mit dem Dienst validiert und die Änderung sofort angewendet.",
         "owm-onecall-hint": "OpenWeatherMap benötigt den Tarif One Call API 3.0 (One Call by Call). Er ist bis 1000 Aufrufe/Tag kostenlos, muss aber mit einer Karte aktiviert werden, und ein neuer Schlüssel kann ein paar Stunden brauchen, bis er funktioniert. Ein einfacher Standardschlüssel wird abgelehnt.",
@@ -243,7 +243,7 @@
       },
       "messages": {
         "exported": "Sicherungsdatei heruntergeladen.",
-        "restored": "Konfiguration wiederhergestellt — Integration wird neu geladen.",
+        "restored": "Konfiguration wiederhergestellt: Integration wird neu geladen.",
         "invalid-file": "Diese Datei ist keine gültige Smart Irrigation-Sicherung.",
         "confirm-title": "Gesamte Konfiguration ersetzen?",
         "summary": "Diese Sicherung enthält",
@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Oberfläche",
           "labels": {
             "advanced": "Erweiterte Einstellungen",
             "advanced-hint": "Zeigt die Einstellungen, die das Modell justieren: Drainage, Schwellwerte, Faktor, wie weit eine Zone vorausschaut. Sie haben sinnvolle Voreinstellungen; lass das aus, wenn du sie nicht brauchst. Deine Werte bleiben in beiden Fällen erhalten."
@@ -500,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "Hier öffnet nichts ein Ventil",
-          "body": "Smart Irrigation berechnet, wie lange bewässert wird; etwas muss danach handeln. Schalte unter Einstellungen die direkte Ventilsteuerung ein und verknüpfe dann je Zone ein Ventil, oder reagiere per Automatisierung auf das Startereignis (die Blueprints tun das). Tut das schon eine Automatisierung, bleibt alles.",
+          "body": "Smart Irrigation berechnet, wie lange bewässert wird; etwas muss danach handeln. Wähle unter Einstellungen „Berechnen und bewässern“ und verknüpfe jede Zone mit einem Ventil, oder schreibe eine Automatisierung auf das Start-Ereignis (die Blueprints erledigen das für dich). Wenn eine Automatisierung das schon tut, ist nichts zu ändern.",
           "action": "Zur Ventilsteuerung"
         }
       }
@@ -711,7 +710,7 @@
         "data-number-of-data-points": "Anzahl der Messungen",
         "drainage_rate": "Entwässerungsrate",
         "linked-entity": "Verknüpftes Ventil/Schalter",
-        "linked-entity-hint": "Das Ventil oder der Schalter dieser Zone. Mit direkter Ventilsteuerung öffnet und schließt Smart Irrigation es. Mit beobachteter Bewässerung schreibt jeder Lauf (von Hand, per Automatisierung oder durch Smart Irrigation) der Wasserbilanz Laufzeit mal Durchfluss gut.",
+        "linked-entity-hint": "Das Ventil oder der Schalter, der diese Zone bewässert. Mit „Berechnen und bewässern“ öffnet und schließt Smart Irrigation es. Mit beobachteter Bewässerung schreibt jeder Lauf (von Hand, per Automatisierung oder durch Smart Irrigation) der Wasserbilanz Laufzeit mal Durchfluss gut.",
         "valve-off": "Ein Ventil kann verknüpft werden, sobald Smart Irrigation bewässert (Berechnen und bewässern) oder die beobachtete Bewässerung aktiv ist.",
         "valve-off-link": "Einschalten",
         "supply": "Pumpe oder Hauptventil",
@@ -726,7 +725,7 @@
         "observed-ignore-seconds-help": "Ein so kurzer oder kürzerer Lauf des Ventils wird nicht gutgeschrieben: ein paar Minuten zum Kühlen der Blätter an einem heißen Nachmittag verdunsten größtenteils. Ein längerer Lauf zählt vollständig. Leer: jeder Lauf wird gutgeschrieben.",
         "confirm-timeout": "Warten auf Bestätigung des Ventils",
         "open-resends": "Öffnen erneut senden",
-        "confirm-timeout-help": "Wie lange das Ventil Zeit hat, Öffnen oder Schließen zu melden, und wie oft das Öffnen neu gesendet wird. Leer: 8 s, keine Wiederholung (volle Steuerung: 30 s, zwei); Schließen 5 s, immer zweimal. Cloud-Ventile wie Gardena: länger warten, 0 Wiederholungen, jeder Befehl zählt gegen ein Kontingent.",
+        "confirm-timeout-help": "Wie lange das Ventil Zeit hat, Öffnen oder Schließen zu melden, und wie oft das Öffnen neu gesendet wird. Leer: 30 s, zwei Wiederholungen; Schließen 5 s, immer zweimal. Cloud-Ventile wie Gardena: länger warten, 0 Wiederholungen, jeder Befehl zählt gegen ein Kontingent.",
         "safety-off-topic": "MQTT-Topic für Sicherheitsabschaltung",
         "safety-off-state-key": "Zustandsschlüssel für Sicherheitsabschaltung",
         "safety-off-mode": "Sicherheitsabschaltung",
@@ -812,7 +811,8 @@
         "duration-readonly-disabled": "Eine deaktivierte Zone wird nie bewässert, sie hat also keine Laufzeit.",
         "et-deficiency-help": "Was diese Zone pro Tag braucht: ETc, ET0 mal Pflanzenfaktor mit saisonaler Anpassung, vor Regen und vor der Skalierung aufs Intervall, also vergleichbar. ET0 allein steht im Attribut `eto` des Zonensensors, zum Abgleich mit einem Wetterdienst.",
         "safety-off-entity": "Eigene Dauer des Ventils",
-        "safety-off-entity-help": "Für ein Ventil, das nach einer eigenen Dauer selbst schließt, etwa Gardena (seine Zahl „Bewässerungsdauer“, ohne Änderung 1 min): diese Zahl hier wählen. Vor jedem Öffnen schreibt Smart Irrigation die Länge des Durchgangs plus 30 s hinein, damit das Ventil den ganzen Durchgang offen bleibt und trotzdem selbst schließt, falls Home Assistant ausfällt. Ohne sie schließt ein solches Ventil nach seiner voreingestellten Zeit."
+        "safety-off-entity-help": "Für ein Ventil, das nach einer eigenen Dauer selbst schließt, etwa Gardena (seine Zahl „Bewässerungsdauer“, ohne Änderung 1 min): diese Zahl hier wählen. Vor jedem Öffnen schreibt Smart Irrigation die Länge des Durchgangs plus 30 s hinein, damit das Ventil den ganzen Durchgang offen bleibt und trotzdem selbst schließt, falls Home Assistant ausfällt. Ohne sie schließt ein solches Ventil nach seiner voreingestellten Zeit.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Es ist noch keine Zone vorhanden.",
       "title": "Zonen",
@@ -867,11 +867,18 @@
         "zone": "Zone und Ventil",
         "need": "Was sie braucht",
         "status": "Wo sie steht"
+      },
+      "yaml": {
+        "only_help": "Einstellungen, die der visuelle Editor nicht anzeigt. Beim Bearbeiten hier bleiben sie erhalten.",
+        "help": "Die Einstellungen der Zone als Text, in den Einheiten des Panels. Eine weggelassene optionale Einstellung wird gelöscht, eine erforderliche (Name, Fläche...) bleibt erhalten. Gespeichert wird erst beim Übernehmen.",
+        "not_a_zone": "Das ist keine Zone: Eine Zone ist eine Menge von Schlüsseln (name, size, throughput...).",
+        "not_settings": "Keine Einstellungen einer Zone oder hier nicht setzbar: {keys}",
+        "applied": "Zone gespeichert"
       }
     },
     "history": {
       "title": "Verlauf",
-      "description": "Jeder Bewässerungsdurchlauf, den Smart Irrigation einer Zone angerechnet hat: wann er begann, wie lange bewässert wurde und wie viel Wasser dabei verbraucht wurde. Durchläufe werden von der direkten Ventilsteuerung und von der beobachteten Bewässerung aufgezeichnet und 90 Tage aufbewahrt.",
+      "description": "Jeder Bewässerungsdurchlauf, den Smart Irrigation einer Zone angerechnet hat: wann er begann, wie lange bewässert wurde und wie viel Wasser dabei verbraucht wurde. Durchläufe werden aufgezeichnet, wenn Smart Irrigation bewässert, und von der beobachteten Bewässerung und 90 Tage aufbewahrt.",
       "refresh": "Aktualisieren",
       "no-data": "Es wurden noch keine Bewässerungsdurchläufe aufgezeichnet.",
       "table": {
@@ -1002,7 +1009,7 @@
         },
         "nothing-waters": "Die Übernahme bewässert nichts. Irrigation Unlimited bewässert weiter, bis du es ausschaltest und diese Zeitpläne einschaltest.",
         "blocked": "Löse zuerst, was rot markiert ist; bis dahin lässt sich nichts übernehmen.",
-        "full-controller-off": "Der vollständige Controller ist aus: Die Programme werden übernommen, bewässern aber erst, wenn er an ist.",
+        "full-controller-off": "Smart Irrigation steht nicht auf „Berechnen und bewässern“: Die Programme werden übernommen, bewässern aber erst, wenn es gewählt ist.",
         "nothing-waters-iu-off": "Die Übernahme bewässert nichts, und Irrigation Unlimited läuft nicht: Home Assistant hat es nicht eingerichtet (siehe sein Protokoll). Es bewässert nichts, bis du diese Zeitpläne einschaltest."
       },
       "errors": {
@@ -1026,16 +1033,16 @@
         "programs": "{count, plural, one {# Programm} other {# Programme}}",
         "next": "Die Zeitpläne neuer Programme sind aus, es bewässert also weiter Irrigation Unlimited. Sieh dir die Programme an und steig dann oben auf dieser Seite um.",
         "open-programs": "Zu den Programmen",
-        "next-off": "Der vollständige Controller ist aus, diese Programme bewässern also noch nicht, und Irrigation Unlimited bewässert weiter. Schalte den vollständigen Controller in den Einstellungen ein und steig dann oben auf dieser Seite um.",
+        "next-off": "Smart Irrigation steht nicht auf „Berechnen und bewässern“, daher bewässern diese Programme noch nicht, und Irrigation Unlimited bewässert weiter. Wähle in den Einstellungen „Berechnen und bewässern“ und wechsle dann oben auf dieser Seite.",
         "open-settings": "Zu den Einstellungen",
         "next-iu-off": "Die Zeitpläne neuer Programme sind aus, und Irrigation Unlimited läuft nicht: Im Moment bewässert nichts. Sieh dir die Programme an und schalte dann ihre Zeitpläne ein.",
-        "next-off-iu-off": "Der vollständige Controller ist aus, diese Programme bewässern also noch nicht, und Irrigation Unlimited läuft nicht: Im Moment bewässert nichts. Schalte in den Einstellungen den vollständigen Controller ein, dann die Zeitpläne der Programme."
+        "next-off-iu-off": "Smart Irrigation steht nicht auf „Berechnen und bewässern“, daher bewässern diese Programme noch nicht, und Irrigation Unlimited läuft nicht: Im Moment bewässert nichts. Wähle in den Einstellungen „Berechnen und bewässern“ und schalte dann die Zeitpläne der Programme ein."
       },
       "conflicts": {
         "zone_twice": "{zone} und {other} würden beide zu {target}. Wähle für eine der beiden eine andere Zone.",
         "calculated_needs_zone": "{zone} wird heute von Smart Irrigation berechnet, aus der Zone, aus der eine Automatisierung zur Laufzeitanpassung sie versorgt. Wähle diese oder eine andere bestehende Zone.",
-        "program_exists": "Ein Programm „{name}“ ({id}) ist im Weg: Keine Übernahme hat es angelegt. Benenne es zuerst unter Bewässerung, Programme um oder lösche es (mit eingeschaltetem vollständigem Controller).",
-        "supply_exists": "Eine Pumpe „{name}“ ({id}) ist im Weg: Keine Übernahme hat sie angelegt. Benenne sie zuerst unter Bewässerung, „Pumpen und Ventile“ um oder lösche sie (mit eingeschaltetem vollständigem Controller)."
+        "program_exists": "Ein Programm „{name}“ ({id}) ist im Weg: Keine Übernahme hat es angelegt. Benenne es zuerst unter Bewässerung, Programme um oder lösche es (sobald „Berechnen und bewässern“ gewählt ist).",
+        "supply_exists": "Eine Pumpe „{name}“ ({id}) ist im Weg: Keine Übernahme hat sie angelegt. Benenne sie zuerst unter Bewässerung, „Pumpen und Ventile“ um oder lösche sie (sobald „Berechnen und bewässern“ gewählt ist)."
       },
       "confirm_remove": "Diese Übernahme löscht, was eine frühere Übernahme angelegt hat und Irrigation Unlimited nicht mehr hat: {names}. Fortfahren?",
       "cutover": {
@@ -1045,7 +1052,7 @@
         "si-waters-now": "Smart Irrigation bewässert: Übernommene Zeitpläne sind an, und die Controller von Irrigation Unlimited sind aus.",
         "nobody-waters": "Es bewässert nichts: Die Controller von Irrigation Unlimited sind aus, die übernommenen Zeitpläne auch.",
         "both-on": "Beide würden bewässern: Irrigation Unlimited hat einen Controller an, und übernommene Zeitpläne sind auch an. Schalte Irrigation Unlimited aus oder die Zeitpläne.",
-        "full-controller-off": "Der vollständige Controller ist aus: Schalte ihn zuerst in den Einstellungen ein, sonst bewässern die übernommenen Programme nicht.",
+        "full-controller-off": "Smart Irrigation steht nicht auf „Berechnen und bewässern“: Wähle es zuerst in den Einstellungen, sonst bewässern die übernommenen Programme nicht.",
         "programs": "Die übernommenen Programme",
         "schedules-on": "{on} von {count} Zeitplänen an",
         "open-programs": "Sieh sie dir auf der Seite Programme an, bevor du umsteigst",
@@ -1064,7 +1071,7 @@
         "confirm-back": "Die übernommenen Zeitpläne werden ausgeschaltet und die Controller von Irrigation Unlimited wieder eingeschaltet. Dann bewässert wieder Irrigation Unlimited.",
         "errors": {
           "generic": "Das hat nicht geklappt.",
-          "full_controller_off": "Schalte zuerst den vollständigen Controller ein: Ohne ihn bewässert nichts.",
+          "full_controller_off": "Wähle zuerst „Berechnen und bewässern“: Ohne das bewässert nichts.",
           "not_imported": "Es wurde noch nichts übernommen.",
           "iu_failed": "Irrigation Unlimited hat das Umschalten nicht angenommen. Was dieser Schritt schon geändert hatte, ist zurückgenommen: Oben steht, wer bewässert.",
           "not_switched": "Die Bewässerung wurde nicht an Smart Irrigation übergeben, es gibt also nichts zurückzuschalten.",
@@ -1098,7 +1105,7 @@
         "every_limit": "alle {every, number} Tage: Smart Irrigation geht bis {max, number}",
         "every_not_number": "{value} ist keine Zahl von Tagen",
         "feeds_other_zone": "eine Automatisierung versorgt sie aus Zone {from}, zugeordnet ist sie aber Zone {to}: Berechnet wird sie dann wie diese Zone",
-        "full_controller_off": "der vollständige Controller ist aus: Die Programme werden übernommen, bewässern aber erst, wenn er an ist",
+        "full_controller_off": "Smart Irrigation steht nicht auf „Berechnen und bewässern“: Die Programme werden übernommen, bewässern aber erst, wenn es gewählt ist",
         "held_to_limit": "{seconds, number} s werden auf {limit, number} s begrenzt, mehr erlaubt Smart Irrigation nicht",
         "lead_kept": "{time} bleibt: Um den Vorlauf der Versorgung von {lead, number} s früher läge es an einem anderen Tag",
         "lead_time": "Zone „{zone}“ hat eine Vorlaufzeit von {lead, number} s, die Smart Irrigation zu jedem festen Lauf addiert: Sie bewässert so viel länger als in IU, außer die Vorlaufzeit wird auf 0 gesetzt oder der Schritt gekürzt",
@@ -1112,7 +1119,7 @@
         "offset_limit": "ein Versatz von {offset, number} min: Smart Irrigation erlaubt {max, number}",
         "offset_rounded": "der Versatz von {seconds, number} s wird auf {minutes, number} min gerundet: Smart Irrigation rechnet dort in Minuten",
         "shared_queue": "{count} Controller ohne Master: Ihre Programme laufen nacheinander, da Zonen ohne Versorgung eine gemeinsame Warteschlange haben",
-        "overlap": "{count} Zonen und Sequenzen haben Zeitpläne: Wo sich ihre Läufe überschneiden, bewässert IU sie gleichzeitig, der vollständige Controller nacheinander",
+        "overlap": "{count} Zonen und Sequenzen haben Zeitpläne: Wo sich ihre Läufe überschneiden, bewässert IU sie gleichzeitig, Smart Irrigation nacheinander",
         "passes_held": "{repeats, number} Wiederholungen werden auf {max, number} Durchgänge begrenzt",
         "period_needs_both": "der Zeitraum {from} bis {until} braucht beide Tage: Der Zeitplan gilt das ganze Jahr",
         "program_per_duration": "{count} Programme, eines je Dauer der Zeitpläne",
@@ -1156,7 +1163,7 @@
     "active_default": "Standard: fertig bis Sonnenaufgang",
     "active_hint": "Nur der gewählte Auslöser startet die Bewässerung, einmal am Tag. Standard startet so, dass alle Zonen bis Sonnenaufgang fertig sind; mit Keiner startet Smart Irrigation nichts.",
     "usage_before": "Wenn ein Auslöser ausgelöst wird, sendet Smart Irrigation das Ereignis ",
-    "usage_after": " — reagiere darauf in einer Automatisierung, um die Bewässerung zu starten. Die Daten enthalten trigger_name, trigger_type und offset_minutes, um die Auslöser zu unterscheiden. An einem Tag, der wegen Regen oder der Tage zwischen Bewässerungen aussetzt, kommt kein Ereignis.",
+    "usage_after": ". Reagiere darauf in einer Automatisierung, um die Bewässerung zu starten. Die Daten enthalten trigger_name, trigger_type und offset_minutes, um die Auslöser zu unterscheiden. An einem Tag, der wegen Regen oder der Tage zwischen Bewässerungen aussetzt, kommt kein Ereignis.",
     "add_trigger": "Auslöser hinzufügen",
     "edit_trigger": "Auslöser bearbeiten",
     "delete_trigger": "Auslöser löschen",
@@ -1201,7 +1208,7 @@
       "cancel": "Abbrechen",
       "save": "Speichern",
       "delete": "Löschen",
-      "help": "Wenn dieser Auslöser ausgelöst wird, sendet Smart Irrigation das folgende Ereignis — verwende es in einer Automatisierung, um die Bewässerung zu starten. Die Ereignisdaten enthalten den Namen dieses Auslösers (sowie Typ/Versatz), sodass du gezielt darauf reagieren kannst:"
+      "help": "Wenn dieser Auslöser ausgelöst wird, sendet Smart Irrigation das folgende Ereignis. Verwende es in einer Automatisierung, um die Bewässerung zu starten. Die Ereignisdaten enthalten den Namen dieses Auslösers (sowie Typ/Versatz), sodass du gezielt darauf reagieren kannst:"
     },
     "offset_auto": "Automatisch (aus der Gesamtdauer der Zonen berechnet)",
     "confirm_delete": "Möchtest du den Auslöser \"{name}\" wirklich löschen?",
@@ -1242,6 +1249,8 @@
     "effective_rain_description": "Einen Schauer ignorieren, der kleiner ist als ein Fünftel der Verdunstung des Zeitraums: Er benetzt die Blätter und verdunstet. Beurteilt wird über den gesamten Zeitraum zwischen zwei Berechnungen.",
     "forecast_label": "Vorhergesagten Regen berücksichtigen",
     "forecast_description": "Unter der Schwelle bekommt jede Zone ihr Defizit abzüglich des für 24 Stunden vorhergesagten Regens, gewichtet mit seiner Wahrscheinlichkeit: 4 mm Vorhersage bei 10 mm Defizit ergeben 6 mm. Ab der Schwelle setzen Zonen im Freien aus. Zonen im Gewächshaus sind nicht betroffen.",
+    "forecast_no_service": "Braucht einen Wetterdienst: Die Vorhersage kommt von ihm.",
+    "forecast_no_service_on": "Kein Wetterdienst: Es gibt keine Vorhersage, also hält dies nichts zurück.",
     "forecast_set_up_service": "Wetterdienst einrichten"
   },
   "coordinate_config": {
@@ -1317,7 +1326,6 @@
     "step_delay": "Wartezeit nach diesem Schritt",
     "step_delay_help": "Negativ: Der nächste Schritt startet so lange vor dem Ende dieses Schritts.",
     "tours": "Runden",
-    "tours_help": "Die ganze Liste der Schritte wird so oft bewässert, jede Runde mit ihrem Anteil am Wasser. Anders als Durchgänge, die einen Schritt wiederholen, bevor es weitergeht, lässt eine Runde jede Zone einsickern, während die anderen bewässern.",
     "enabled": "Aktiviert",
     "add_step": "Schritt hinzufügen",
     "delete_step": "Schritt löschen",
@@ -1359,17 +1367,11 @@
     "schedule_every_offset": "Verschoben um",
     "schedule_every_help": "Alle 3 Tage mit einer Verschiebung von 0, 1 oder 2 lässt drei Programme sich abwechseln, eines an jedem dritten Tag, nie am selben Tag.",
     "schedule_parity": "Tage des Monats",
-    "parity_any": "Alle",
     "parity_even": "Gerade Tage",
     "parity_odd": "Ungerade Tage",
     "schedule_days_of_month": "Bestimmte Tage des Monats",
-    "schedule_days_of_month_help": "Tagesnummern durch Kommas getrennt, und „letzter“ für den letzten Tag des Monats (zum Beispiel 1, 15, letzter). Ist ein Monat für einen Tag zu kurz, wird er übersprungen. Leer: jeder Tag. Es kommt zu den anderen Filtern hinzu.",
     "schedule_fallback_time": "Wenn es keinen Sonnenaufgang oder -untergang gibt",
-    "schedule_fallback_time_help": "Für einen Tag ohne Sonnenaufgang oder -untergang (Polartag oder -nacht).",
     "schedule_months": "Monate",
-    "schedule_months_help": "Keiner angehakt: jeder Monat.",
-    "schedule_yaml_only": "Wird in YAML eingestellt (In YAML bearbeiten, oben im Programm): hier angezeigt, weil dieser Zeitplan es nutzt.",
-    "yaml_only_set": "Wird in YAML eingestellt (In YAML bearbeiten, oben im Programm): hier angezeigt, weil es gesetzt ist.",
     "schedule_from": "Von",
     "schedule_until": "Bis",
     "schedule_period_help": "Ein Zeitraum im Jahr, der über Neujahr gehen kann (von November bis März). Leer: das ganze Jahr.",
@@ -1383,9 +1385,8 @@
     "condition_precipitation": "Regenvorhersage",
     "condition_days_between": "Tage seit der letzten Bewässerung",
     "condition_soil_moisture": "Bodenfeuchte",
+    "conditions_subset": "Nur diese Wetterprüfungen",
     "schedule_weather_help": "Ein: die Prüfungen unter Wetter, Bewässerung aussetzen können den Lauf zurückhalten oder kürzen: Regen, Frost, Wind, die Tage zwischen Bewässerungen, nasser Boden und zurückgestellte Tage. Aus für eine Tropfleitung im Gewächshaus, die das Wetter nicht betrifft.",
-    "schedule_conditions_only": "Nur: {list}",
-    "schedule_conditions_yaml": "Dieser Zeitplan wendet nur diese Prüfungen an, eine in YAML gesetzte Liste (skip_conditions). Im YAML des Programms ändern oder entfernen: ohne sie gelten alle.",
     "pause": "Pause",
     "resume": "Fortsetzen",
     "next_step": "Nächster Schritt",
@@ -1412,7 +1413,6 @@
     "adjust_seconds": "Zeit hinzu (+) oder weg (-)",
     "step_bounds_help": "Reihenfolge: der Prozentsatz von „Dauern anpassen“ des Programms, falls einer gilt (er wird am Programm eingestellt), dann die hinzugefügte oder abgezogene Zeit, dann Minimum und Maximum (0: keines). Ein Schritt ohne Wasserbedarf bleibt bei null; das Minimum startet ihn nie.",
     "min_deficit_mm": "Nur bewässern, wenn das Defizit mindestens",
-    "min_deficit_mm_help": "In mm, 0 bewässert immer. Gesetzt, ersetzt er für diesen Schritt die eigene Schwelle der Zone. Schritte mit fester Dauer werden immer bewässert.",
     "adjust_title": "Dauern anpassen",
     "adjust_none": "Keine Anpassung aktiv.",
     "adjust_percent": "Prozent",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "Anwenden",
     "adjust_reset": "Zurücksetzen",
     "confirm_reset_adjustment": "Die Anpassung dieses Programms entfernen?",
-    "mode_off": "Die volle Steuerung ist aus. Schalte sie unter Einstellungen, Allgemein ein.",
+    "mode_off": "Kein Programm bewässert: Smart Irrigation steht nicht auf „Berechnen und bewässern“. Wähle es unter Einstellungen, Allgemein, bei „Was Smart Irrigation tut“.",
     "no_zone": "keine Zone",
     "mode_calculated_short": "berechnet",
     "every_day": "jeden Tag",
@@ -1437,9 +1437,7 @@
     "steps_title": "Schritte",
     "schedules_title": "Zeitpläne",
     "passes_help": "In Durchgängen bewässern, für diesen Schritt: sein Wasser auf so viele Durchgänge verteilt, jede Zone sickert zwischen zwei Durchgängen ein. 1: in einem Zug.",
-    "schedule_fallback_skip": "Diesen Tag auslassen",
     "schedule_fallback_previous": "Die Zeit des zuletzt gesehenen nehmen",
-    "schedule_fallback_at": "Zu einer festen Zeit starten",
     "summary_start_sunrise": "startet bei Sonnenaufgang",
     "summary_start_sunset": "startet bei Sonnenuntergang",
     "summary_start_azimuth": "startet, wenn die Sonne bei {deg}° steht",
@@ -1467,6 +1465,8 @@
     "preview_help": "Jede Zone in einer eigenen Zeile, mit den Dauern, die Smart Irrigation jetzt bewässern würde. Sie folgen dem Wetter, daher kann ein Lauf beim Start abweichen.",
     "yaml_back": "Zurück zum Editor",
     "yaml_edit": "In YAML bearbeiten",
+    "yaml_only_title": "In YAML eingestellt (hier nicht bearbeitbar)",
+    "yaml_only_help": "Einstellungen, die der visuelle Editor nicht anzeigt. Beim Bearbeiten hier bleiben sie erhalten.",
     "yaml_help": "Das Programm als Text. Ein Schritt nennt seine Zonen mit Namen oder Nummer, und was fehlt, nimmt seinen Standardwert. Gespeichert wird erst beim Übernehmen: Die Zeitleiste darunter zeigt, was das Programm tun würde.",
     "yaml_apply": "Übernehmen",
     "yaml_invalid": "Das ist kein gültiges YAML.",
@@ -1485,7 +1485,8 @@
     "schedule_azimuth": "Azimut der Sonne",
     "schedule_azimuth_help": "Grad im Uhrzeigersinn ab Norden: 90 Ost, 180 Süd, 270 West. Für ein Beet, das der Schatten einer Mauer oder eines Baums in diesem Moment verlässt.",
     "view_flow": "Schema",
-    "view_timeline": "Zeitleiste"
+    "view_timeline": "Zeitleiste",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Pumpen und Hauptventile",
@@ -1507,7 +1508,7 @@
     "title": "Beobachtete Bewässerung",
     "description": "Schreibt der Wasserbilanz jeder Zone die echte Bewässerung gut, statt Zurücksetzen per Automatisierung. Wähle unter Zonen je Zone Ventil oder Schalter: solange offen, zählt Laufzeit mal Durchfluss oder die Menge eines Zählers. Entferne set_bucket- und reset_bucket-Aufrufe aus Automatisierungen, sonst zählt es doppelt.",
     "enabled_label": "Beobachtete Bewässerung aktivieren",
-    "confirm_full_controller": "Volle Steuerung einschalten? Smart Irrigation steuert dann die Ventile und startet die Bewässerung selbst. Ein beim Start offen gefundenes Ventil, das keinem unserer Läufe gehört, wird geschlossen.",
+    "confirm_full_controller": "Berechnen und bewässern? Smart Irrigation öffnet dann selbst die Ventile und startet die Bewässerung mit seinen Programmen. Ein beim Start offen gefundenes Ventil, das keinem unserer Läufe gehört, wird geschlossen.",
     "sequencing_label": "Zonenabfolge",
     "sequencing": {
       "sequential": "Sequenziell (eine Zone nach der anderen)",
@@ -1631,7 +1632,7 @@
       "zones": "Zonen (alle, wenn leer)",
       "show_next_start": "Nächsten Start anzeigen",
       "compact": "Nur Zonen, die bewässern würden",
-      "show_programs": "Die Programme anzeigen (volle Steuerung)"
+      "show_programs": "Die Programme anzeigen"
     },
     "no_valve": "kein Ventil verknüpft, wird nicht bewässert",
     "no_trigger": "Kein Startauslöser",
@@ -1690,6 +1691,7 @@
     "weather": "Wetter passt?",
     "weather_sub": "Regen, Frost, Wind…",
     "weather_yes": "Ja",
+    "weather_yes_unread": "Ja, aber {reason} war nicht lesbar",
     "weather_no": "Nein: {reason}",
     "otherwise": "Sonst: an diesem Tag nichts",
     "supply_on": "{name} an",

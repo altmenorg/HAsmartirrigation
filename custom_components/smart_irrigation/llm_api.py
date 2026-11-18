@@ -11,7 +11,8 @@ authentication and the transport.
 It reads the zones and where they stand, the next run and why a zone is held
 back, the programs and the planning, the settings and sensor groups, the
 entities of Home Assistant a setup is made of, and dry-runs a program as
-written (the YAML editor's ``program_preview``).
+written (the YAML editor's ``program_preview``), and lists every field it can
+write, YAML-only options included (config_reference.py).
 
 It also configures Smart Irrigation: zones, sensor groups, settings and
 programs, through the paths the panel saves with (llm_config_tools.py). No
@@ -48,7 +49,10 @@ How it reasons: each zone has a water balance (its bucket, in mm). Evaporation \
 takes water out, rain and watering put it back. Below zero the zone has a \
 deficit and is watered for the time that brings it back to zero (its \
 duration, in seconds). A zone can be held back by skip conditions (rain \
-forecast, frost, wind, a moist soil, days between waterings).
+forecast, frost, wind, a moist soil, days between waterings). What is \
+measured (frost, wind, the rain sensor, a postponement) is judged at each \
+program start; the rain forecast and the days between waterings are decided \
+once a day, at the day's first start.
 
 Programs (mode `water`): a program is an ordered list of steps; a step is \
 one zone, or several watered together. A step takes the duration Smart \
@@ -57,9 +61,11 @@ seconds. Schedules say when a program starts (or must be done); a program \
 whose schedules are all off starts only when run by hand. A schedule of the \
 type `after` (with `after_program`, the id of another program, and \
 `offset_minutes`, 0 or more) starts its program that many minutes after the \
-other program has really watered and finished, by hand or scheduled; not when \
-that one was held back by the weather, suspended, had nothing to water or was \
-stopped. Its days and weather still apply. Programs cannot start after each \
+other program has really watered and finished, by hand or scheduled. When a \
+scheduled run of the other program does not water (held back by the weather, \
+suspended, nothing to water), it still starts, that many minutes after that \
+run's planned moment. When the other program was stopped by hand or its run \
+failed, it does not start. Its own days and weather setting still apply. Programs cannot start after each \
 other in a loop, and a program another one starts after cannot be deleted. \
 All programs are equal: a zone is watered only by the programs whose steps \
 name it.
@@ -74,8 +80,11 @@ DeleteProgram. Read before you write (GetZoneSettings, GetSensorGroups, \
 GetSettings, GetPrograms) and send only the fields you change, with the id of \
 what you change. Use FindEntities to find the user's valves, switches and \
 sensors, ask the user what you cannot tell (soil, plants, sprinklers, a \
-pump), and say what you are about to change before you change it. Check a \
-program with PreviewProgram before SaveProgram. Zone figures are metric (m2, \
+pump), and say what you are about to change before you change it. \
+GetConfigReference lists every field of a program, its steps and schedules, \
+and of a zone, with its values, range and default, including the options set \
+only in YAML (yaml_only: the panel's form has no field for them, but you can \
+set them). Check a program with PreviewProgram before SaveProgram. Zone figures are metric (m2, \
 l/min, mm); settings are in the unit system of Home Assistant, as GetSettings \
 returns them."""
 
@@ -216,8 +225,10 @@ class GetProgramsTool(_ReadOnlyTool):
     description = (
         "The watering programs of Smart Irrigation, with their steps (zones "
         "by id, and their names in zone_names) and their schedules, and the "
-        "mode (they water only in mode `water`). Also the shape to write a "
-        "program in for PreviewProgram."
+        "mode (they water only in mode `water`). A program is written for "
+        "PreviewProgram and SaveProgram in the shape it is read in; "
+        "GetConfigReference lists every field, including those only set in "
+        "YAML."
     )
 
     async def async_call(
@@ -272,7 +283,8 @@ class GetPlanningTool(_ReadOnlyTool):
     name = "GetPlanning"
     description = (
         "What Smart Irrigation's programs will water over the next days "
-        "(full controller): each run's start and end, its program, the zones "
+        '(with "Calculate and water"): '
+        "each run's start and end, its program, the zones "
         "and seconds of each step, and whether the weather or a suspension is "
         "expected to hold it back."
     )
@@ -311,7 +323,7 @@ class PreviewProgramTool(_ReadOnlyTool):
         "zone, and zones the run leaves out (no valve, or disabled). Nothing is "
         "saved and no valve opens. A step names its zones by name or id; an "
         "`after` schedule names the program it follows in after_program, by id "
-        "or name."
+        "or name. GetConfigReference lists every field a program takes."
     )
     parameters = _parameters({vol.Required("program"): dict})
 
@@ -325,6 +337,29 @@ class PreviewProgramTool(_ReadOnlyTool):
         preview["total_seconds"] = timeline.get("total")
         preview["zones_in_order"] = _timeline_summary(timeline)
         return _result(preview)
+
+
+class GetConfigReferenceTool(_ReadOnlyTool):
+    """Every field a program, a step, a schedule or a zone can be written with."""
+
+    name = "GetConfigReference"
+    description = (
+        "Every field that can be written: of a program, its steps, its "
+        "schedules (time, sun, after) and its notify, and of a zone. For each: "
+        "type, allowed values or min/max, unit, default and meaning, and "
+        "yaml_only: true for the options the panel sets only in YAML, which "
+        "you can still set. `section`: program or zone (default: all)."
+    )
+    parameters = _parameters(
+        {vol.Optional("section"): vol.In(("program", "zone", "all"))}
+    )
+
+    async def async_call(
+        self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
+    ) -> Any:
+        from .config_reference import config_reference
+
+        return _result(config_reference(tool_input.tool_args.get("section")))
 
 
 # --- the API --------------------------------------------------------------------
@@ -344,6 +379,7 @@ class SmartIrrigationAPI(llm.API):
             GetProgramsTool(),
             GetPlanningTool(),
             PreviewProgramTool(),
+            GetConfigReferenceTool(),
             *reading_tools(),
         ]
         tools += writing_tools()

@@ -12,7 +12,7 @@ import { query } from "lit/decorators.js";
 import { property, customElement, state } from "lit/decorators.js";
 import { HomeAssistant, fireEvent } from "custom-card-helpers";
 import { Path } from "../../common/navigation";
-import { loadHaForm } from "../../load-ha-elements";
+import { loadHaForm, loadHaYamlEditor } from "../../load-ha-elements";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   mdiInformationOutline,
@@ -27,6 +27,9 @@ import {
   mdiPlus,
   mdiMinus,
   mdiWater,
+  mdiCodeBraces,
+  mdiFormSelect,
+  mdiCheck,
 } from "@mdi/js";
 import {
   deleteZone,
@@ -47,6 +50,8 @@ import {
   putBackZone,
 } from "../../data/websockets";
 import { SubscribeMixin } from "../../subscribe-mixin";
+import { zoneFromYaml, zoneToYaml } from "../../data/zone-yaml";
+import { zoneYamlOnly } from "../../data/yaml-only";
 
 import {
   SmartIrrigationConfig,
@@ -105,11 +110,9 @@ import {
   ZONE_SAFETY_OFF_ENTITY,
   ZONE_SUPPLY_ID,
   ZONE_EXTRA_ENTITIES,
-  ZONE_SAFETY_OFF_STATE_KEY,
   ZONE_SAFETY_OFF_MODE,
   ZONE_SAFETY_OFF_REQUIRED,
   ZONE_CONFIRM_TIMEOUT,
-  ZONE_OPEN_RESENDS,
   ZONE_MAPPING,
   ZONE_ALLOWED_DEPLETION,
   ZONE_AVAILABLE_WATER,
@@ -243,6 +246,19 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
   @state() private _addOpen = false;
   // Values opened for editing with "Change" ("bucket-<zone id>").
   private _editing: Set<string> = new Set();
+  // A zone edited as YAML, by zone id: what the editor opened on (kept, so a
+  // render does not put it back over what is typed), what is typed, whether
+  // it reads as YAML, why the last apply was refused, and a save under way.
+  private _yamlEdits = new Map<
+    number,
+    {
+      initial: unknown;
+      value: unknown;
+      valid: boolean;
+      error?: string;
+      saving?: boolean;
+    }
+  >();
   private _toggleZone(id?: number): void {
     if (id == undefined) {
       return;
@@ -1644,6 +1660,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
               ? html`<div class="zone-sub">${durationText}</div>`
               : ""}
           </div>
+          ${this._zoneYamlToggle(zone, lang)}
           <ha-svg-icon
             class="zone-chevron ${expanded ? "open" : ""}"
             .path=${mdiChevronDown}
@@ -1692,319 +1709,496 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 </div>
               </div>
 
-              <div class="settings">
-                <div class="zone-section">
-                  ${localize("panels.zones.sections.zone", lang)}
-                </div>
-                ${this._textRow(
-                  localize("panels.zones.labels.name", lang),
-                  "",
-                  zone.name,
-                  (v) =>
-                    this.handleEditZone(index, { ...zone, [ZONE_NAME]: v }),
-                )}
-                ${this._selectRow(
-                  this._labelWithHint("input-method", lang),
-                  html`
-                    <option
-                      value="${ZONE_INPUT_METHOD_THROUGHPUT}"
-                      ?selected=${(zone.input_method ??
-                        ZONE_INPUT_METHOD_THROUGHPUT) ===
-                      ZONE_INPUT_METHOD_THROUGHPUT}
-                    >
-                      ${localize(
-                        "panels.zones.labels.input-methods.throughput",
-                        lang,
-                      )}
-                    </option>
-                    <option
-                      value="${ZONE_INPUT_METHOD_PRECIPITATION_RATE}"
-                      ?selected=${zone.input_method ===
-                      ZONE_INPUT_METHOD_PRECIPITATION_RATE}
-                    >
-                      ${localize(
-                        "panels.zones.labels.input-methods.direct",
-                        lang,
-                      )}
-                    </option>
-                  `,
-                  (e: Event) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      [ZONE_INPUT_METHOD]: (e.target as HTMLSelectElement)
-                        .value,
-                    }),
-                )}
-                ${zone.input_method === ZONE_INPUT_METHOD_PRECIPITATION_RATE
-                  ? this._numRow(
-                      localize("panels.zones.labels.precipitation-rate", lang),
-                      output_unit(this.config, ZONE_PRECIPITATION_RATE),
-                      zone.precipitation_rate,
+              ${zone.id != undefined && this._yamlEdits.has(zone.id)
+                ? this._zoneYamlBlock(zone, lang)
+                : html`<div class="settings">
+                    ${this._zoneYamlOnlyNotice(zone, lang)}
+                    <div class="zone-section">
+                      ${localize("panels.zones.sections.zone", lang)}
+                    </div>
+                    ${this._textRow(
+                      localize("panels.zones.labels.name", lang),
+                      "",
+                      zone.name,
                       (v) =>
-                        this.handleEditZone(index, {
-                          ...zone,
-                          [ZONE_PRECIPITATION_RATE]: parseFloat(v),
-                        }),
-                      0.1,
-                    )
-                  : html`
-                      ${this._numRow(
-                        localize("panels.zones.labels.size", lang),
-                        output_unit(this.config, ZONE_SIZE),
-                        zone.size,
-                        (v) =>
-                          this.handleEditZone(index, {
-                            ...zone,
-                            [ZONE_SIZE]: parseFloat(v),
-                          }),
-                        0.1,
-                      )}
-                      ${this._numRow(
-                        localize("panels.zones.labels.throughput", lang),
-                        output_unit(this.config, ZONE_THROUGHPUT),
-                        zone.throughput,
-                        (v) =>
-                          this.handleEditZone(index, {
-                            ...zone,
-                            [ZONE_THROUGHPUT]: parseFloat(v),
-                          }),
-                        0.1,
-                      )}
-                      ${zone.measured_throughput &&
-                      (zone.measured_throughput_samples || 0) >= 3
-                        ? html`
-                            <div class="setting-help">
-                              ${localize(
-                                "panels.zones.labels.measured-flow-help",
-                                lang,
-                              )}
-                              <ha-button
-                                appearance="filled"
-                                @click=${() =>
-                                  this.hass?.callService(
-                                    DOMAIN,
-                                    "use_measured_throughput",
-                                    { zone_id: zone.id },
-                                  )}
-                              >
-                                ${localize(
-                                  "panels.zones.labels.use-measured-flow",
-                                  lang,
-                                )}
-                              </ha-button>
-                            </div>
-                          `
-                        : ""}
-                    `}
-                ${this.config?.observed_watering_enabled ||
-                this.config?.direct_valve_control_enabled
-                  ? html`<div id="zone-${zone.id}-valve"></div>
-                      ${this._entityRow(
-                        localize("panels.zones.labels.linked-entity", lang),
-                        localize("panels.zones.labels.optional", lang),
-                        zone.linked_entity,
-                        linkedValveDomains(this.config),
-                        (v) =>
-                          this.handleEditZone(index, {
-                            ...zone,
-                            [ZONE_LINKED_ENTITY]: v || undefined,
-                          }),
-                        localize(
-                          "panels.zones.labels.linked-entity-hint",
-                          lang,
-                        ),
-                      )}`
-                  : html`<div class="setting-row" id="zone-${zone.id}-valve">
-                      <div class="setting-label">
-                        ${localize(
-                          "panels.zones.labels.linked-entity",
-                          lang,
-                        )}<si-info
-                          >${localize(
-                            "panels.zones.labels.valve-off",
-                            lang,
-                          )}</si-info
-                        >
-                      </div>
-                      <a
-                        class="valve-off-link"
-                        href="/${DOMAIN}/general"
-                        @click=${(e: Event) => {
-                          e.preventDefault();
-                          navigate(this, `/${DOMAIN}/general`);
-                        }}
-                        >${localize(
-                          "panels.zones.labels.valve-off-link",
-                          lang,
-                        )}</a
-                      >
-                    </div>`}
-                ${this.config?.full_controller && zone.linked_entity
-                  ? this._entitiesRows(
-                      localize("panels.zones.labels.extra-valves", lang),
-                      localize("panels.zones.labels.extra-valves-hint", lang),
-                      zone.extra_entities || [],
-                      ["switch", "valve", "input_boolean", "light", "cover"],
-                      (entities) =>
-                        this.handleEditZone(index, {
-                          ...zone,
-                          [ZONE_EXTRA_ENTITIES]: entities,
-                        }),
-                    )
-                  : ""}
-                ${this.config?.full_controller &&
-                (this.config?.supplies || []).length
-                  ? this._selectRow(
-                      localize("panels.zones.labels.supply", lang),
+                        this.handleEditZone(index, { ...zone, [ZONE_NAME]: v }),
+                    )}
+                    ${this._selectRow(
+                      this._labelWithHint("input-method", lang),
                       html`
-                        <option value="" ?selected=${!zone.supply_id}>
-                          ${localize("panels.zones.labels.supply-none", lang)}
+                        <option
+                          value="${ZONE_INPUT_METHOD_THROUGHPUT}"
+                          ?selected=${(zone.input_method ??
+                            ZONE_INPUT_METHOD_THROUGHPUT) ===
+                          ZONE_INPUT_METHOD_THROUGHPUT}
+                        >
+                          ${localize(
+                            "panels.zones.labels.input-methods.throughput",
+                            lang,
+                          )}
                         </option>
-                        ${(this.config?.supplies || []).map(
-                          (supply) => html`
-                            <option
-                              value=${supply.id || ""}
-                              ?selected=${zone.supply_id === supply.id}
-                            >
-                              ${supply.name}
-                            </option>
-                          `,
-                        )}
+                        <option
+                          value="${ZONE_INPUT_METHOD_PRECIPITATION_RATE}"
+                          ?selected=${zone.input_method ===
+                          ZONE_INPUT_METHOD_PRECIPITATION_RATE}
+                        >
+                          ${localize(
+                            "panels.zones.labels.input-methods.direct",
+                            lang,
+                          )}
+                        </option>
                       `,
                       (e: Event) =>
                         this.handleEditZone(index, {
                           ...zone,
-                          [ZONE_SUPPLY_ID]:
-                            (e.target as HTMLSelectElement).value || null,
+                          [ZONE_INPUT_METHOD]: (e.target as HTMLSelectElement)
+                            .value,
                         }),
-                    )
-                  : ""}
-                ${this.config?.direct_valve_control_enabled &&
-                zone.linked_entity
-                  ? this._adv(html`
-                      ${this._numRow(
-                        html`${localize(
-                            "panels.zones.labels.confirm-timeout",
+                    )}
+                    ${zone.input_method === ZONE_INPUT_METHOD_PRECIPITATION_RATE
+                      ? this._numRow(
+                          localize(
+                            "panels.zones.labels.precipitation-rate",
                             lang,
-                          )}<si-info
-                            >${localize(
-                              "panels.zones.labels.confirm-timeout-help",
-                              lang,
-                            )}</si-info
-                          >`,
-                        "s",
-                        zone.confirm_timeout,
-                        (v) => {
-                          // Empty keeps the default wait.
-                          const seconds = parseFloat(v);
-                          this.handleEditZone(index, {
-                            ...zone,
-                            [ZONE_CONFIRM_TIMEOUT]: isNaN(seconds)
-                              ? null
-                              : Math.min(600, Math.max(1, seconds)),
-                          });
-                        },
-                        1,
-                      )}
-                      ${
-                        // The wait is the one setting a slow valve needs, and
-                        // its help covers the resends too. The resends come
-                        // next to it once the wait is set (a cloud valve such
-                        // as Gardena wants a long wait and none), or when a
-                        // count of its own is set, so it never acts out of
-                        // sight; empty goes back to the default.
-                        typeof zone.open_resends === "number" ||
-                        typeof zone.confirm_timeout === "number"
-                          ? this._numRow(
-                              localize(
-                                "panels.zones.labels.open-resends",
-                                lang,
-                              ),
-                              "",
-                              zone.open_resends,
-                              (v) => {
-                                // Empty keeps the default; 0 never sends it again.
-                                const times = parseInt(v, 10);
-                                this.handleEditZone(index, {
-                                  ...zone,
-                                  [ZONE_OPEN_RESENDS]: isNaN(times)
-                                    ? null
-                                    : Math.min(10, Math.max(0, times)),
-                                });
-                              },
-                              1,
-                            )
-                          : ""
-                      }
-                      ${this._entityRow(
-                        html`${localize(
-                            "panels.zones.labels.safety-off-entity",
-                            lang,
-                          )}<si-info
-                            >${localize(
-                              "panels.zones.labels.safety-off-entity-help",
-                              lang,
-                            )}</si-info
-                          >`,
-                        localize("panels.zones.labels.optional", lang),
-                        zone.safety_off_entity ?? undefined,
-                        ["number", "input_number"],
-                        (v) =>
-                          this.handleEditZone(index, {
-                            ...zone,
-                            [ZONE_SAFETY_OFF_ENTITY]: v || null,
-                          }),
-                      )}
-                      ${this._textRow(
-                        localize("panels.zones.labels.safety-off-topic", lang),
-                        localize("panels.zones.labels.optional", lang),
-                        zone.safety_off_topic,
-                        (v) =>
-                          this.handleEditZone(index, {
-                            ...zone,
-                            [ZONE_SAFETY_OFF_TOPIC]: v || undefined,
-                          }),
-                      )}
-                      ${zone.safety_off_topic
-                        ? this._textRow(
-                            localize(
-                              "panels.zones.labels.safety-off-state-key",
-                              lang,
-                            ),
-                            "",
-                            zone.safety_off_state_key,
+                          ),
+                          output_unit(this.config, ZONE_PRECIPITATION_RATE),
+                          zone.precipitation_rate,
+                          (v) =>
+                            this.handleEditZone(index, {
+                              ...zone,
+                              [ZONE_PRECIPITATION_RATE]: parseFloat(v),
+                            }),
+                          0.1,
+                        )
+                      : html`
+                          ${this._numRow(
+                            localize("panels.zones.labels.size", lang),
+                            output_unit(this.config, ZONE_SIZE),
+                            zone.size,
                             (v) =>
                               this.handleEditZone(index, {
                                 ...zone,
-                                [ZONE_SAFETY_OFF_STATE_KEY]: v || undefined,
+                                [ZONE_SIZE]: parseFloat(v),
                               }),
-                          )
-                        : ""}
-                      ${this._selectRow(
-                        html`${html`${localize(
-                              "panels.zones.labels.safety-off-mode",
+                            0.1,
+                          )}
+                          ${this._numRow(
+                            localize("panels.zones.labels.throughput", lang),
+                            output_unit(this.config, ZONE_THROUGHPUT),
+                            zone.throughput,
+                            (v) =>
+                              this.handleEditZone(index, {
+                                ...zone,
+                                [ZONE_THROUGHPUT]: parseFloat(v),
+                              }),
+                            0.1,
+                          )}
+                          ${zone.measured_throughput &&
+                          (zone.measured_throughput_samples || 0) >= 3
+                            ? html`
+                                <div class="setting-help">
+                                  ${localize(
+                                    "panels.zones.labels.measured-flow-help",
+                                    lang,
+                                  )}
+                                  <ha-button
+                                    appearance="filled"
+                                    @click=${() =>
+                                      this.hass?.callService(
+                                        DOMAIN,
+                                        "use_measured_throughput",
+                                        { zone_id: zone.id },
+                                      )}
+                                  >
+                                    ${localize(
+                                      "panels.zones.labels.use-measured-flow",
+                                      lang,
+                                    )}
+                                  </ha-button>
+                                </div>
+                              `
+                            : ""}
+                        `}
+                    ${this.config?.observed_watering_enabled ||
+                    this.config?.direct_valve_control_enabled
+                      ? html`<div id="zone-${zone.id}-valve"></div>
+                          ${this._entityRow(
+                            localize("panels.zones.labels.linked-entity", lang),
+                            localize("panels.zones.labels.optional", lang),
+                            zone.linked_entity,
+                            linkedValveDomains(this.config),
+                            (v) =>
+                              this.handleEditZone(index, {
+                                ...zone,
+                                [ZONE_LINKED_ENTITY]: v || undefined,
+                              }),
+                            localize(
+                              "panels.zones.labels.linked-entity-hint",
+                              lang,
+                            ),
+                          )}`
+                      : html`<div
+                          class="setting-row"
+                          id="zone-${zone.id}-valve"
+                        >
+                          <div class="setting-label">
+                            ${localize(
+                              "panels.zones.labels.linked-entity",
                               lang,
                             )}<si-info
                               >${localize(
-                                "panels.zones.labels.safety-off-topic-help",
+                                "panels.zones.labels.valve-off",
                                 lang,
                               )}</si-info
-                            >`}<si-info
+                            >
+                          </div>
+                          <a
+                            class="valve-off-link"
+                            href="/${DOMAIN}/general"
+                            @click=${(e: Event) => {
+                              e.preventDefault();
+                              navigate(this, `/${DOMAIN}/general`);
+                            }}
                             >${localize(
-                              "panels.zones.labels.safety-off-mode-help",
+                              "panels.zones.labels.valve-off-link",
                               lang,
-                            )}</si-info
-                          >`,
+                            )}</a
+                          >
+                        </div>`}
+                    ${this.config?.full_controller && zone.linked_entity
+                      ? this._entitiesRows(
+                          localize("panels.zones.labels.extra-valves", lang),
+                          localize(
+                            "panels.zones.labels.extra-valves-hint",
+                            lang,
+                          ),
+                          zone.extra_entities || [],
+                          [
+                            "switch",
+                            "valve",
+                            "input_boolean",
+                            "light",
+                            "cover",
+                          ],
+                          (entities) =>
+                            this.handleEditZone(index, {
+                              ...zone,
+                              [ZONE_EXTRA_ENTITIES]: entities,
+                            }),
+                        )
+                      : ""}
+                    ${this.config?.full_controller &&
+                    (this.config?.supplies || []).length
+                      ? this._selectRow(
+                          localize("panels.zones.labels.supply", lang),
+                          html`
+                            <option value="" ?selected=${!zone.supply_id}>
+                              ${localize(
+                                "panels.zones.labels.supply-none",
+                                lang,
+                              )}
+                            </option>
+                            ${(this.config?.supplies || []).map(
+                              (supply) => html`
+                                <option
+                                  value=${supply.id || ""}
+                                  ?selected=${zone.supply_id === supply.id}
+                                >
+                                  ${supply.name}
+                                </option>
+                              `,
+                            )}
+                          `,
+                          (e: Event) =>
+                            this.handleEditZone(index, {
+                              ...zone,
+                              [ZONE_SUPPLY_ID]:
+                                (e.target as HTMLSelectElement).value || null,
+                            }),
+                        )
+                      : ""}
+                    ${this.config?.direct_valve_control_enabled &&
+                    zone.linked_entity
+                      ? this._adv(html`
+                          ${this._numRow(
+                            html`${localize(
+                                "panels.zones.labels.confirm-timeout",
+                                lang,
+                              )}<si-info
+                                >${localize(
+                                  "panels.zones.labels.confirm-timeout-help",
+                                  lang,
+                                )}</si-info
+                              >`,
+                            "s",
+                            zone.confirm_timeout,
+                            (v) => {
+                              // Empty keeps the default wait.
+                              const seconds = parseFloat(v);
+                              this.handleEditZone(index, {
+                                ...zone,
+                                [ZONE_CONFIRM_TIMEOUT]: isNaN(seconds)
+                                  ? null
+                                  : Math.min(600, Math.max(1, seconds)),
+                              });
+                            },
+                            1,
+                          )}
+                          ${
+                            // How often the open is sent again in that wait is
+                            // YAML only (open_resends): the zone's "Set in YAML"
+                            // notice says when it is set.
+                            this._entityRow(
+                              html`${localize(
+                                  "panels.zones.labels.safety-off-entity",
+                                  lang,
+                                )}<si-info
+                                  >${localize(
+                                    "panels.zones.labels.safety-off-entity-help",
+                                    lang,
+                                  )}</si-info
+                                >`,
+                              localize("panels.zones.labels.optional", lang),
+                              zone.safety_off_entity ?? undefined,
+                              ["number", "input_number"],
+                              (v) =>
+                                this.handleEditZone(index, {
+                                  ...zone,
+                                  [ZONE_SAFETY_OFF_ENTITY]: v || null,
+                                }),
+                            )
+                          }
+                          ${this._textRow(
+                            localize(
+                              "panels.zones.labels.safety-off-topic",
+                              lang,
+                            ),
+                            localize("panels.zones.labels.optional", lang),
+                            zone.safety_off_topic,
+                            (v) =>
+                              this.handleEditZone(index, {
+                                ...zone,
+                                [ZONE_SAFETY_OFF_TOPIC]: v || undefined,
+                              }),
+                          )}
+                          ${this._selectRow(
+                            html`${html`${localize(
+                                  "panels.zones.labels.safety-off-mode",
+                                  lang,
+                                )}<si-info
+                                  >${localize(
+                                    "panels.zones.labels.safety-off-topic-help",
+                                    lang,
+                                  )}</si-info
+                                >`}<si-info
+                                >${localize(
+                                  "panels.zones.labels.safety-off-mode-help",
+                                  lang,
+                                )}</si-info
+                              >`,
+                            html`
+                              ${["auto", "zha", "off"].map(
+                                (m) => html`
+                                  <option
+                                    value=${m}
+                                    ?selected=${(zone.safety_off_mode ||
+                                      "auto") === m}
+                                  >
+                                    ${localize(
+                                      `panels.zones.labels.safety-off-mode-${m}`,
+                                      lang,
+                                    )}
+                                  </option>
+                                `,
+                              )}
+                            `,
+                            (e: Event) =>
+                              this.handleEditZone(index, {
+                                ...zone,
+                                [ZONE_SAFETY_OFF_MODE]: (
+                                  e.target as HTMLSelectElement
+                                ).value,
+                              }),
+                          )}
+                          ${this._canSetValveTimer(zone)
+                            ? html`
+                                ${this._selectRow(
+                                  html`${localize(
+                                      "panels.zones.labels.safety-off-required",
+                                      lang,
+                                    )}<si-info
+                                      >${localize(
+                                        "panels.zones.labels.safety-off-required-help",
+                                        lang,
+                                      )}</si-info
+                                    >`,
+                                  html`
+                                    ${["open", "skip"].map(
+                                      (m) => html`
+                                        <option
+                                          value=${m}
+                                          ?selected=${(zone.safety_off_required
+                                            ? "skip"
+                                            : "open") === m}
+                                        >
+                                          ${localize(
+                                            `panels.zones.labels.safety-off-required-${m}`,
+                                            lang,
+                                          )}
+                                        </option>
+                                      `,
+                                    )}
+                                  `,
+                                  (e: Event) =>
+                                    this.handleEditZone(index, {
+                                      ...zone,
+                                      [ZONE_SAFETY_OFF_REQUIRED]:
+                                        (e.target as HTMLSelectElement)
+                                          .value === "skip",
+                                    }),
+                                )}
+                              `
+                            : ""}
+                        `)
+                      : ""}
+                    ${this._adv(
+                      // A flow meter is for crediting what actually came out, which
+                      // is observed watering's business, not the runner's.
+                      this.config?.observed_watering_enabled &&
+                        zone.linked_entity
+                        ? this._entityRow(
+                            localize("panels.zones.labels.flow-sensor", lang),
+                            localize("panels.zones.labels.optional", lang),
+                            zone.flow_sensor,
+                            ["sensor"],
+                            (v) =>
+                              this.handleEditZone(index, {
+                                ...zone,
+                                [ZONE_FLOW_SENSOR]: v || undefined,
+                              }),
+                            localize(
+                              "panels.zones.labels.flow-sensor-hint",
+                              lang,
+                            ),
+                          )
+                        : "",
+                    )}
+                    ${this._adv(
+                      this.config?.observed_watering_enabled &&
+                        zone.linked_entity
+                        ? html`
+                            ${this._numRow(
+                              html`${localize(
+                                  "panels.zones.labels.observed-ignore-seconds",
+                                  lang,
+                                )}<si-info
+                                  >${localize(
+                                    "panels.zones.labels.observed-ignore-seconds-help",
+                                    lang,
+                                  )}</si-info
+                                >`,
+                              "s",
+                              zone.observed_ignore_seconds,
+                              (v) => {
+                                // Empty credits every run.
+                                const seconds = parseFloat(v);
+                                this.handleEditZone(index, {
+                                  ...zone,
+                                  [ZONE_OBSERVED_IGNORE_SECONDS]:
+                                    isNaN(seconds) || seconds <= 0
+                                      ? null
+                                      : Math.min(3600, seconds),
+                                });
+                              },
+                              1,
+                            )}
+                          `
+                        : "",
+                    )}
+                    ${this._adv(
+                      this._numRow(
+                        localize("panels.zones.labels.lead-time", lang),
+                        "s",
+                        zone.lead_time,
+                        (v) =>
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_LEAD_TIME]: parseInt(v, 10),
+                          }),
+                        1,
+                      ),
+                    )}
+                    ${this._adv(
+                      this._numRow(
+                        localize("panels.zones.labels.maximum-duration", lang),
+                        "s",
+                        zone.maximum_duration,
+                        (v) =>
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_MAXIMUM_DURATION]: parseInt(v, 10),
+                          }),
+                        1,
+                      ),
+                    )}
+                    <div class="zone-section">
+                      ${localize("panels.zones.sections.need", lang)}
+                    </div>
+                    ${this._selectRow(
+                      this._labelWithHint("state", lang),
+                      html`
+                        <option
+                          value="${SmartIrrigationZoneState.Automatic}"
+                          ?selected=${zone.state ===
+                          SmartIrrigationZoneState.Automatic}
+                        >
+                          ${localize(
+                            "panels.zones.labels.states.automatic",
+                            lang,
+                          )}
+                        </option>
+                        <option
+                          value="${SmartIrrigationZoneState.Disabled}"
+                          ?selected=${zone.state ===
+                          SmartIrrigationZoneState.Disabled}
+                        >
+                          ${localize(
+                            "panels.zones.labels.states.disabled",
+                            lang,
+                          )}
+                        </option>
+                        <option
+                          value="${SmartIrrigationZoneState.Manual}"
+                          ?selected=${zone.state ===
+                          SmartIrrigationZoneState.Manual}
+                        >
+                          ${localize("panels.zones.labels.states.manual", lang)}
+                        </option>
+                      `,
+                      (e: Event) =>
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_STATE]: (e.target as HTMLSelectElement)
+                            .value as SmartIrrigationZoneState,
+                          [ZONE_DURATION]: 0,
+                        }),
+                    )}
+                    ${this._adv(
+                      this._selectRow(
+                        localize(
+                          "panels.zones.labels.calculation-method",
+                          lang,
+                        ),
                         html`
-                          ${["auto", "zha", "off"].map(
-                            (m) => html`
+                          ${["from_weather", "provided", "fixed"].map(
+                            (method) => html`
                               <option
-                                value=${m}
-                                ?selected=${(zone.safety_off_mode || "auto") ===
-                                m}
+                                value="${method}"
+                                ?selected=${(zone.calculation_method ??
+                                  "from_weather") === method}
                               >
                                 ${localize(
-                                  `panels.zones.labels.safety-off-mode-${m}`,
+                                  `panels.zones.labels.calculation-methods.${method}`,
                                   lang,
                                 )}
                               </option>
@@ -2014,541 +2208,375 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                         (e: Event) =>
                           this.handleEditZone(index, {
                             ...zone,
-                            [ZONE_SAFETY_OFF_MODE]: (
-                              e.target as HTMLSelectElement
-                            ).value,
+                            calculation_method: (e.target as HTMLSelectElement)
+                              .value,
                           }),
-                      )}
-                      ${this._canSetValveTimer(zone)
-                        ? html`
-                            ${this._selectRow(
-                              html`${localize(
-                                  "panels.zones.labels.safety-off-required",
-                                  lang,
-                                )}<si-info
-                                  >${localize(
-                                    "panels.zones.labels.safety-off-required-help",
+                      ),
+                    )}
+                    ${this._adv(
+                      html`<div class="setting-help">
+                        ${localize(
+                          `panels.zones.labels.calculation-method-help.${
+                            zone.calculation_method ?? "from_weather"
+                          }`,
+                          lang,
+                        )}
+                      </div>`,
+                    )}
+                    ${this._engineOptions(index, zone, lang)}
+                    ${this._selectRow(
+                      this._labelWithHint("mapping", lang),
+                      this.renderTheOptions(this.mappings, zone.mapping),
+                      (e: Event) => {
+                        const v = (e.target as HTMLSelectElement).value;
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_MAPPING]: v === "" ? undefined : parseInt(v),
+                        });
+                      },
+                    )}
+                    ${this._selectRow(
+                      localize("panels.zones.labels.soil-type", lang),
+                      html`
+                        ${SOIL_TYPES.map(
+                          (soil) => html`
+                            <option
+                              value="${soil}"
+                              ?selected=${(zone.soil_type ?? "custom") === soil}
+                            >
+                              ${soil === "default"
+                                ? localize(
+                                    "panels.zones.labels.soil-types.default",
                                     lang,
-                                  )}</si-info
-                                >`,
-                              html`
-                                ${["open", "skip"].map(
-                                  (m) => html`
-                                    <option
-                                      value=${m}
-                                      ?selected=${(zone.safety_off_required
-                                        ? "skip"
-                                        : "open") === m}
-                                    >
-                                      ${localize(
-                                        `panels.zones.labels.safety-off-required-${m}`,
-                                        lang,
-                                      )}
-                                    </option>
-                                  `,
-                                )}
-                              `,
-                              (e: Event) =>
-                                this.handleEditZone(index, {
-                                  ...zone,
-                                  [ZONE_SAFETY_OFF_REQUIRED]:
-                                    (e.target as HTMLSelectElement).value ===
-                                    "skip",
-                                }),
-                            )}
-                          `
-                        : ""}
-                    `)
-                  : ""}
-                ${this._adv(
-                  // A flow meter is for crediting what actually came out, which
-                  // is observed watering's business, not the runner's.
-                  this.config?.observed_watering_enabled && zone.linked_entity
-                    ? this._entityRow(
-                        localize("panels.zones.labels.flow-sensor", lang),
+                                    "{value}",
+                                    `${this._n(
+                                      // The value choosing it gives: the zone's
+                                      // own while nobody chose, else the default
+                                      // it goes back to (#1011).
+                                      zone.soil_type === "default"
+                                        ? Number(zone.drainage_rate) || 0
+                                        : this.config?.units === CONF_METRIC
+                                          ? DEFAULT_DRAINAGE_RATE_MM_H
+                                          : DEFAULT_DRAINAGE_RATE_MM_H / 25.4,
+                                      this.config?.units === CONF_METRIC
+                                        ? 1
+                                        : 2,
+                                    )} ${unit_text(this.config, ZONE_DRAINAGE_RATE)}`,
+                                  )
+                                : soil in SOIL_DRAINAGE_MM_H
+                                  ? `${localize(
+                                      `panels.zones.labels.soil-types.${soil}`,
+                                      lang,
+                                    )} (${this._n(
+                                      this.config?.units === CONF_METRIC
+                                        ? SOIL_DRAINAGE_MM_H[soil]
+                                        : SOIL_DRAINAGE_MM_H[soil] / 25.4,
+                                      this.config?.units === CONF_METRIC
+                                        ? 0
+                                        : 2,
+                                    )} ${unit_text(this.config, ZONE_DRAINAGE_RATE)})`
+                                  : localize(
+                                      `panels.zones.labels.soil-types.${soil}`,
+                                      lang,
+                                    )}
+                            </option>
+                          `,
+                        )}
+                      `,
+                      (e: Event) =>
+                        this.handleEditZone(index, {
+                          ...zone,
+                          // The number the choice stands for is written server
+                          // side, and comes back on the next read.
+                          soil_type: (e.target as HTMLSelectElement).value,
+                        } as SmartIrrigationZone),
+                    )}
+                    ${
+                      // A soil picked by name already stands for a drainage rate.
+                      // The number is asked only when the soil is "set myself", in
+                      // either mode: that is the one case where it is the answer.
+                      (zone.soil_type ?? "custom") === "custom"
+                        ? this._numRow(
+                            this._labelWithHint("drainage_rate", lang),
+                            output_unit(this.config, ZONE_DRAINAGE_RATE),
+                            zone.drainage_rate,
+                            (v) =>
+                              this.handleEditZone(index, {
+                                ...zone,
+                                [ZONE_DRAINAGE_RATE]: parseFloat(v),
+                              }),
+                            0.1,
+                          )
+                        : ""
+                    }
+                    ${this._selectRow(
+                      localize("panels.zones.labels.plant-type", lang),
+                      html`
+                        ${PLANT_TYPES.map(
+                          (plant) => html`
+                            <option
+                              value="${plant}"
+                              ?selected=${(zone.plant_type ?? "custom") ===
+                              plant}
+                            >
+                              ${plant === "default"
+                                ? localize(
+                                    "panels.zones.labels.plant-types.default",
+                                    lang,
+                                    "{value}",
+                                    this._n(
+                                      zone.plant_type === "default"
+                                        ? Number(zone.multiplier) || 0
+                                        : DEFAULT_CROP_FACTOR,
+                                      1,
+                                    ),
+                                  )
+                                : localize(
+                                    `panels.zones.labels.plant-types.${plant}`,
+                                    lang,
+                                  )}
+                            </option>
+                          `,
+                        )}
+                      `,
+                      (e: Event) =>
+                        this.handleEditZone(index, {
+                          ...zone,
+                          plant_type: (e.target as HTMLSelectElement).value,
+                        } as SmartIrrigationZone),
+                    )}
+                    ${
+                      // Same for the crop: a planting picked by name stands for its
+                      // crop factor, which is asked only when it is "set myself".
+                      (zone.plant_type ?? "custom") === "custom"
+                        ? this._numRow(
+                            localize("panels.zones.labels.multiplier", lang),
+                            "",
+                            zone.multiplier,
+                            (v) =>
+                              this.handleEditZone(index, {
+                                ...zone,
+                                [ZONE_MULTIPLIER]: parseFloat(v),
+                              }),
+                            0.1,
+                          )
+                        : // In the advanced mode it is still shown, read-only: the
+                          // crop factor by month falls back on it (#905).
+                          this._adv(
+                            this._numRow(
+                              localize("panels.zones.labels.multiplier", lang),
+                              "",
+                              zone.multiplier,
+                              () => {},
+                              0.1,
+                              true,
+                            ),
+                          )
+                    }
+                    ${this._adv(this._cropFactorByMonth(zone, index, lang))}
+                    ${this._adv(
+                      html`${this._numRow(
+                        localize("panels.zones.labels.available-water", lang),
+                        output_unit(this.config, ZONE_BUCKET),
+                        zone.available_water != null
+                          ? Number(zone.available_water).toFixed(1)
+                          : "",
+                        (v) => {
+                          const mm = parseFloat(v);
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_AVAILABLE_WATER]:
+                              isNaN(mm) || mm <= 0 ? null : mm,
+                          });
+                        },
+                        1,
+                      )}
+                      ${this._numRow(
+                        html`${localize(
+                            "panels.zones.labels.allowed-depletion",
+                            lang,
+                          )}<si-info
+                            >${localize(
+                              "panels.zones.labels.available-water-help",
+                              lang,
+                            )}</si-info
+                          >`,
+                        "%",
+                        zone.allowed_depletion != null
+                          ? Number(zone.allowed_depletion).toFixed(0)
+                          : "",
+                        (v) => {
+                          const pct = parseFloat(v);
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_ALLOWED_DEPLETION]: isNaN(pct)
+                              ? null
+                              : Math.min(95, Math.max(5, pct)),
+                          });
+                        },
+                        5,
+                      )}`,
+                    )}
+                    ${this._adv(
+                      html`${this._numRow(
+                        html`${localize(
+                            "panels.zones.labels.distribution-efficiency",
+                            lang,
+                          )}<si-info
+                            >${localize(
+                              "panels.zones.labels.distribution-efficiency-help",
+                              lang,
+                            )}</si-info
+                          >`,
+                        "%",
+                        zone.distribution_efficiency != null
+                          ? Number(zone.distribution_efficiency).toFixed(0)
+                          : "",
+                        (v) => {
+                          const pct = parseFloat(v);
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_DISTRIBUTION_EFFICIENCY]: isNaN(pct)
+                              ? null
+                              : Math.min(100, Math.max(5, pct)),
+                          });
+                        },
+                        5,
+                      )}`,
+                    )}
+                    ${this._adv(
+                      this._numRow(
+                        this._labelWithHint("irrigation-threshold", lang),
+                        output_unit(this.config, ZONE_BUCKET),
+                        Number(zone.irrigation_threshold ?? 0).toFixed(1),
+                        (v) =>
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_IRRIGATION_THRESHOLD]: parseFloat(v),
+                          }),
+                        0.1,
+                      ),
+                    )}
+                    ${this._adv(
+                      this._numRow(
+                        this._labelWithHint("maximum-bucket", lang),
+                        output_unit(this.config, ZONE_BUCKET),
+                        Number(zone.maximum_bucket).toFixed(1),
+                        (v) =>
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_MAXIMUM_BUCKET]: parseFloat(v),
+                          }),
+                        0.1,
+                      ),
+                    )}
+                    ${this._adv(
+                      html`${this._numRow(
+                        html`${localize(
+                            "panels.zones.labels.days-between-irrigation",
+                            lang,
+                          )}<si-info
+                            >${localize(
+                              "panels.zones.labels.days-between-irrigation-help",
+                              lang,
+                            )}</si-info
+                          >`,
+                        localize("panels.zones.labels.days", lang),
+                        zone.days_between_irrigation,
+                        (v) => {
+                          // Empty means "follow the general setting".
+                          const days = parseInt(v, 10);
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_DAYS_BETWEEN_IRRIGATION]: isNaN(days)
+                              ? null
+                              : Math.max(0, days),
+                          });
+                        },
+                        1,
+                      )}`,
+                      typeof zone.days_between_irrigation === "number",
+                    )}
+                    ${this._adv(
+                      this._entityRow(
+                        localize(
+                          "panels.zones.labels.soil-moisture-sensor",
+                          lang,
+                        ),
                         localize("panels.zones.labels.optional", lang),
-                        zone.flow_sensor,
+                        zone.soil_moisture_sensor,
                         ["sensor"],
                         (v) =>
                           this.handleEditZone(index, {
                             ...zone,
-                            [ZONE_FLOW_SENSOR]: v || undefined,
+                            [ZONE_SOIL_MOISTURE_SENSOR]: v || undefined,
                           }),
-                        localize("panels.zones.labels.flow-sensor-hint", lang),
-                      )
-                    : "",
-                )}
-                ${this._adv(
-                  this.config?.observed_watering_enabled && zone.linked_entity
-                    ? html`
-                        ${this._numRow(
-                          html`${localize(
-                              "panels.zones.labels.observed-ignore-seconds",
+                        localize(
+                          "panels.zones.labels.soil-moisture-sensor-hint",
+                          lang,
+                        ),
+                      ),
+                      Boolean(zone.soil_moisture_sensor),
+                    )}
+                    ${zone.soil_moisture_sensor
+                      ? this._numRow(
+                          localize(
+                            "panels.zones.labels.soil-moisture-threshold",
+                            lang,
+                          ),
+                          "%",
+                          zone.soil_moisture_threshold ?? 50,
+                          (v) =>
+                            this.handleEditZone(index, {
+                              ...zone,
+                              [ZONE_SOIL_MOISTURE_THRESHOLD]: parseFloat(v),
+                            }),
+                          1,
+                        )
+                      : ""}
+                    <div class="zone-section">
+                      ${localize("panels.zones.sections.status", lang)}
+                    </div>
+                    ${this._bucketRow(zone, index, lang)}
+                    ${
+                      // A figure to compare setups by: the advanced panel's.
+                      this._adv(html`
+                        ${this._valueRow(
+                          html`${html`${localize(
+                              "panels.zones.labels.et-deficiency",
                               lang,
-                            )}<si-info
+                            )}`}<si-info
                               >${localize(
-                                "panels.zones.labels.observed-ignore-seconds-help",
+                                "panels.zones.labels.et-deficiency-help",
                                 lang,
                               )}</si-info
                             >`,
-                          "s",
-                          zone.observed_ignore_seconds,
-                          (v) => {
-                            // Empty credits every run.
-                            const seconds = parseFloat(v);
-                            this.handleEditZone(index, {
-                              ...zone,
-                              [ZONE_OBSERVED_IGNORE_SECONDS]:
-                                isNaN(seconds) || seconds <= 0
-                                  ? null
-                                  : Math.min(3600, seconds),
-                            });
-                          },
-                          1,
+                          // The attribute is the water the soil lost, so it is
+                          // negative (the `et_deficiency` attribute keeps that
+                          // sign); shown here as the need it is labelled, a
+                          // positive amount, like the deficit (#1055). "+ 0"
+                          // keeps a day with no loss from reading "-0".
+                          zone.et_deficiency != null
+                            ? `${this._n(-Number(zone.et_deficiency) + 0, 2)} ${unit_text(
+                                this.config,
+                                ZONE_BUCKET,
+                              )}`
+                            : "—",
                         )}
-                      `
-                    : "",
-                )}
-                ${this._adv(
-                  this._numRow(
-                    localize("panels.zones.labels.lead-time", lang),
-                    "s",
-                    zone.lead_time,
-                    (v) =>
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_LEAD_TIME]: parseInt(v, 10),
-                      }),
-                    1,
-                  ),
-                )}
-                ${this._adv(
-                  this._numRow(
-                    localize("panels.zones.labels.maximum-duration", lang),
-                    "s",
-                    zone.maximum_duration,
-                    (v) =>
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_MAXIMUM_DURATION]: parseInt(v, 10),
-                      }),
-                    1,
-                  ),
-                )}
-                <div class="zone-section">
-                  ${localize("panels.zones.sections.need", lang)}
-                </div>
-                ${this._selectRow(
-                  this._labelWithHint("state", lang),
-                  html`
-                    <option
-                      value="${SmartIrrigationZoneState.Automatic}"
-                      ?selected=${zone.state ===
-                      SmartIrrigationZoneState.Automatic}
-                    >
-                      ${localize("panels.zones.labels.states.automatic", lang)}
-                    </option>
-                    <option
-                      value="${SmartIrrigationZoneState.Disabled}"
-                      ?selected=${zone.state ===
-                      SmartIrrigationZoneState.Disabled}
-                    >
-                      ${localize("panels.zones.labels.states.disabled", lang)}
-                    </option>
-                    <option
-                      value="${SmartIrrigationZoneState.Manual}"
-                      ?selected=${zone.state ===
-                      SmartIrrigationZoneState.Manual}
-                    >
-                      ${localize("panels.zones.labels.states.manual", lang)}
-                    </option>
-                  `,
-                  (e: Event) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      [ZONE_STATE]: (e.target as HTMLSelectElement)
-                        .value as SmartIrrigationZoneState,
-                      [ZONE_DURATION]: 0,
-                    }),
-                )}
-                ${this._adv(
-                  this._selectRow(
-                    localize("panels.zones.labels.calculation-method", lang),
-                    html`
-                      ${["from_weather", "provided", "fixed"].map(
-                        (method) => html`
-                          <option
-                            value="${method}"
-                            ?selected=${(zone.calculation_method ??
-                              "from_weather") === method}
-                          >
-                            ${localize(
-                              `panels.zones.labels.calculation-methods.${method}`,
-                              lang,
-                            )}
-                          </option>
-                        `,
-                      )}
-                    `,
-                    (e: Event) =>
-                      this.handleEditZone(index, {
-                        ...zone,
-                        calculation_method: (e.target as HTMLSelectElement)
-                          .value,
-                      }),
-                  ),
-                )}
-                ${this._adv(
-                  html`<div class="setting-help">
-                    ${localize(
-                      `panels.zones.labels.calculation-method-help.${
-                        zone.calculation_method ?? "from_weather"
-                      }`,
-                      lang,
-                    )}
-                  </div>`,
-                )}
-                ${this._engineOptions(index, zone, lang)}
-                ${this._selectRow(
-                  this._labelWithHint("mapping", lang),
-                  this.renderTheOptions(this.mappings, zone.mapping),
-                  (e: Event) => {
-                    const v = (e.target as HTMLSelectElement).value;
-                    this.handleEditZone(index, {
-                      ...zone,
-                      [ZONE_MAPPING]: v === "" ? undefined : parseInt(v),
-                    });
-                  },
-                )}
-                ${this._selectRow(
-                  localize("panels.zones.labels.soil-type", lang),
-                  html`
-                    ${SOIL_TYPES.map(
-                      (soil) => html`
-                        <option
-                          value="${soil}"
-                          ?selected=${(zone.soil_type ?? "custom") === soil}
-                        >
-                          ${soil === "default"
-                            ? localize(
-                                "panels.zones.labels.soil-types.default",
-                                lang,
-                                "{value}",
-                                `${this._n(
-                                  // The value choosing it gives: the zone's
-                                  // own while nobody chose, else the default
-                                  // it goes back to (#1011).
-                                  zone.soil_type === "default"
-                                    ? Number(zone.drainage_rate) || 0
-                                    : this.config?.units === CONF_METRIC
-                                      ? DEFAULT_DRAINAGE_RATE_MM_H
-                                      : DEFAULT_DRAINAGE_RATE_MM_H / 25.4,
-                                  this.config?.units === CONF_METRIC ? 1 : 2,
-                                )} ${unit_text(this.config, ZONE_DRAINAGE_RATE)}`,
-                              )
-                            : soil in SOIL_DRAINAGE_MM_H
-                              ? `${localize(
-                                  `panels.zones.labels.soil-types.${soil}`,
-                                  lang,
-                                )} (${this._n(
-                                  this.config?.units === CONF_METRIC
-                                    ? SOIL_DRAINAGE_MM_H[soil]
-                                    : SOIL_DRAINAGE_MM_H[soil] / 25.4,
-                                  this.config?.units === CONF_METRIC ? 0 : 2,
-                                )} ${unit_text(this.config, ZONE_DRAINAGE_RATE)})`
-                              : localize(
-                                  `panels.zones.labels.soil-types.${soil}`,
-                                  lang,
-                                )}
-                        </option>
-                      `,
-                    )}
-                  `,
-                  (e: Event) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      // The number the choice stands for is written server
-                      // side, and comes back on the next read.
-                      soil_type: (e.target as HTMLSelectElement).value,
-                    } as SmartIrrigationZone),
-                )}
-                ${
-                  // A soil picked by name already stands for a drainage rate.
-                  // The number is asked only when the soil is "set myself", in
-                  // either mode: that is the one case where it is the answer.
-                  (zone.soil_type ?? "custom") === "custom"
-                    ? this._numRow(
-                        this._labelWithHint("drainage_rate", lang),
-                        output_unit(this.config, ZONE_DRAINAGE_RATE),
-                        zone.drainage_rate,
-                        (v) =>
-                          this.handleEditZone(index, {
-                            ...zone,
-                            [ZONE_DRAINAGE_RATE]: parseFloat(v),
-                          }),
-                        0.1,
-                      )
-                    : ""
-                }
-                ${this._selectRow(
-                  localize("panels.zones.labels.plant-type", lang),
-                  html`
-                    ${PLANT_TYPES.map(
-                      (plant) => html`
-                        <option
-                          value="${plant}"
-                          ?selected=${(zone.plant_type ?? "custom") === plant}
-                        >
-                          ${plant === "default"
-                            ? localize(
-                                "panels.zones.labels.plant-types.default",
-                                lang,
-                                "{value}",
-                                this._n(
-                                  zone.plant_type === "default"
-                                    ? Number(zone.multiplier) || 0
-                                    : DEFAULT_CROP_FACTOR,
-                                  1,
-                                ),
-                              )
-                            : localize(
-                                `panels.zones.labels.plant-types.${plant}`,
-                                lang,
-                              )}
-                        </option>
-                      `,
-                    )}
-                  `,
-                  (e: Event) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      plant_type: (e.target as HTMLSelectElement).value,
-                    } as SmartIrrigationZone),
-                )}
-                ${
-                  // Same for the crop: a planting picked by name stands for its
-                  // crop factor, which is asked only when it is "set myself".
-                  (zone.plant_type ?? "custom") === "custom"
-                    ? this._numRow(
-                        localize("panels.zones.labels.multiplier", lang),
-                        "",
-                        zone.multiplier,
-                        (v) =>
-                          this.handleEditZone(index, {
-                            ...zone,
-                            [ZONE_MULTIPLIER]: parseFloat(v),
-                          }),
-                        0.1,
-                      )
-                    : // In the advanced mode it is still shown, read-only: the
-                      // crop factor by month falls back on it (#905).
-                      this._adv(
-                        this._numRow(
-                          localize("panels.zones.labels.multiplier", lang),
-                          "",
-                          zone.multiplier,
-                          () => {},
-                          0.1,
-                          true,
-                        ),
-                      )
-                }
-                ${this._adv(this._cropFactorByMonth(zone, index, lang))}
-                ${this._adv(
-                  html`${this._numRow(
-                    localize("panels.zones.labels.available-water", lang),
-                    output_unit(this.config, ZONE_BUCKET),
-                    zone.available_water != null
-                      ? Number(zone.available_water).toFixed(1)
-                      : "",
-                    (v) => {
-                      const mm = parseFloat(v);
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_AVAILABLE_WATER]:
-                          isNaN(mm) || mm <= 0 ? null : mm,
-                      });
-                    },
-                    1,
-                  )}
-                  ${this._numRow(
-                    html`${localize(
-                        "panels.zones.labels.allowed-depletion",
-                        lang,
-                      )}<si-info
-                        >${localize(
-                          "panels.zones.labels.available-water-help",
-                          lang,
-                        )}</si-info
-                      >`,
-                    "%",
-                    zone.allowed_depletion != null
-                      ? Number(zone.allowed_depletion).toFixed(0)
-                      : "",
-                    (v) => {
-                      const pct = parseFloat(v);
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_ALLOWED_DEPLETION]: isNaN(pct)
-                          ? null
-                          : Math.min(95, Math.max(5, pct)),
-                      });
-                    },
-                    5,
-                  )}`,
-                )}
-                ${this._adv(
-                  html`${this._numRow(
-                    html`${localize(
-                        "panels.zones.labels.distribution-efficiency",
-                        lang,
-                      )}<si-info
-                        >${localize(
-                          "panels.zones.labels.distribution-efficiency-help",
-                          lang,
-                        )}</si-info
-                      >`,
-                    "%",
-                    zone.distribution_efficiency != null
-                      ? Number(zone.distribution_efficiency).toFixed(0)
-                      : "",
-                    (v) => {
-                      const pct = parseFloat(v);
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_DISTRIBUTION_EFFICIENCY]: isNaN(pct)
-                          ? null
-                          : Math.min(100, Math.max(5, pct)),
-                      });
-                    },
-                    5,
-                  )}`,
-                )}
-                ${this._adv(
-                  this._numRow(
-                    this._labelWithHint("irrigation-threshold", lang),
-                    output_unit(this.config, ZONE_BUCKET),
-                    Number(zone.irrigation_threshold ?? 0).toFixed(1),
-                    (v) =>
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_IRRIGATION_THRESHOLD]: parseFloat(v),
-                      }),
-                    0.1,
-                  ),
-                )}
-                ${this._adv(
-                  this._numRow(
-                    this._labelWithHint("maximum-bucket", lang),
-                    output_unit(this.config, ZONE_BUCKET),
-                    Number(zone.maximum_bucket).toFixed(1),
-                    (v) =>
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_MAXIMUM_BUCKET]: parseFloat(v),
-                      }),
-                    0.1,
-                  ),
-                )}
-                ${this._adv(
-                  html`${this._numRow(
-                    html`${localize(
-                        "panels.zones.labels.days-between-irrigation",
-                        lang,
-                      )}<si-info
-                        >${localize(
-                          "panels.zones.labels.days-between-irrigation-help",
-                          lang,
-                        )}</si-info
-                      >`,
-                    localize("panels.zones.labels.days", lang),
-                    zone.days_between_irrigation,
-                    (v) => {
-                      // Empty means "follow the general setting".
-                      const days = parseInt(v, 10);
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_DAYS_BETWEEN_IRRIGATION]: isNaN(days)
-                          ? null
-                          : Math.max(0, days),
-                      });
-                    },
-                    1,
-                  )}`,
-                  typeof zone.days_between_irrigation === "number",
-                )}
-                ${this._adv(
-                  this._entityRow(
-                    localize("panels.zones.labels.soil-moisture-sensor", lang),
-                    localize("panels.zones.labels.optional", lang),
-                    zone.soil_moisture_sensor,
-                    ["sensor"],
-                    (v) =>
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_SOIL_MOISTURE_SENSOR]: v || undefined,
-                      }),
-                    localize(
-                      "panels.zones.labels.soil-moisture-sensor-hint",
-                      lang,
-                    ),
-                  ),
-                  Boolean(zone.soil_moisture_sensor),
-                )}
-                ${zone.soil_moisture_sensor
-                  ? this._numRow(
-                      localize(
-                        "panels.zones.labels.soil-moisture-threshold",
-                        lang,
-                      ),
-                      "%",
-                      zone.soil_moisture_threshold ?? 50,
-                      (v) =>
-                        this.handleEditZone(index, {
-                          ...zone,
-                          [ZONE_SOIL_MOISTURE_THRESHOLD]: parseFloat(v),
-                        }),
-                      1,
-                    )
-                  : ""}
-                <div class="zone-section">
-                  ${localize("panels.zones.sections.status", lang)}
-                </div>
-                ${this._bucketRow(zone, index, lang)}
-                ${
-                  // A figure to compare setups by: the advanced panel's.
-                  this._adv(html`
-                    ${this._valueRow(
-                      html`${html`${localize(
-                          "panels.zones.labels.et-deficiency",
-                          lang,
-                        )}`}<si-info
-                          >${localize(
-                            "panels.zones.labels.et-deficiency-help",
+                      `)
+                    }
+                    ${this._durationRow(zone, index, lang, durationReadonly)}
+                    ${durationReadonly
+                      ? html`<div class="setting-help">
+                          ${localize(
+                            zone.state === SmartIrrigationZoneState.Disabled
+                              ? "panels.zones.labels.duration-readonly-disabled"
+                              : "panels.zones.labels.duration-readonly-automatic",
                             lang,
-                          )}</si-info
-                        >`,
-                      zone.et_deficiency != null
-                        ? `${this._n(Number(zone.et_deficiency), 2)} ${unit_text(
-                            this.config,
-                            ZONE_BUCKET,
-                          )}`
-                        : "—",
-                    )}
-                  `)
-                }
-                ${this._durationRow(zone, index, lang, durationReadonly)}
-                ${durationReadonly
-                  ? html`<div class="setting-help">
-                      ${localize(
-                        zone.state === SmartIrrigationZoneState.Disabled
-                          ? "panels.zones.labels.duration-readonly-disabled"
-                          : "panels.zones.labels.duration-readonly-automatic",
-                        lang,
-                      )}
-                    </div>`
-                  : ""}
-              </div>
+                          )}
+                        </div>`
+                      : ""}
+                  </div>`}
 
               <div class="zone-actions">
                 ${isAutomatic
@@ -2729,8 +2757,11 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     key?: string,
     lang?: string,
   ): TemplateResult {
+    // A value-row: on a phone the value follows its label on the same line
+    // (#1048). Only the duration had it; the water balance and the daily need
+    // still put theirs on a line of their own, under a tall empty gap.
     return html`
-      <div class="setting-row">
+      <div class="setting-row value-row">
         <div class="setting-label">${label}</div>
         <div class="value-field">
           <span class="value-text">${text}</span>
@@ -2969,6 +3000,170 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
   // Action button: native ha-button, light "filled" appearance,
   // "danger" variant turns it red.
+  /**
+   * The zone as YAML: open it in place of the form (the zone is unfolded to
+   * show it), or go back to the form, from an icon of the zone's header row,
+   * as a program's Edit in YAML.
+   */
+  private async _openZoneYaml(zone: SmartIrrigationZone): Promise<void> {
+    if (zone.id == undefined) return;
+    await loadHaYamlEditor().catch(() => undefined);
+    const initial = zoneToYaml(zone);
+    this._yamlEdits.set(zone.id, { initial, value: initial, valid: true });
+    this._expanded.add(zone.id);
+    this.zoneCache.delete(zone.id.toString());
+    this._scheduleUpdate();
+  }
+
+  private _closeZoneYaml(id: number): void {
+    this._yamlEdits.delete(id);
+    this.zoneCache.delete(id.toString());
+    this._scheduleUpdate();
+  }
+
+  private _zoneYamlToggle(
+    zone: SmartIrrigationZone,
+    lang: string,
+  ): TemplateResult | string {
+    if (zone.id == undefined) return "";
+    const id = zone.id;
+    const open = this._yamlEdits.has(id);
+    const label = localize(
+      open ? "programs.yaml_back" : "programs.yaml_edit",
+      lang,
+    );
+    return html`<ha-icon-button
+      class="zone-head-action"
+      .path=${open ? mdiFormSelect : mdiCodeBraces}
+      .label=${label}
+      title=${label}
+      @click=${(e: Event) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (open) this._closeZoneYaml(id);
+        else this._openZoneYaml(zone);
+      }}
+      @keydown=${(e: KeyboardEvent) => e.stopPropagation()}
+    ></ha-icon-button>`;
+  }
+
+  /**
+   * As Home Assistant's own visual editors do: the zone options set in YAML
+   * only have no field in the form, even when set. The form keeps them (it
+   * sends only what an edit changed), and the zone says, read-only, which
+   * ones it uses, with Edit in YAML at hand to change them.
+   */
+  private _zoneYamlOnlyNotice(
+    zone: SmartIrrigationZone,
+    lang: string,
+  ): TemplateResult | string {
+    const items = zoneYamlOnly(zone, (key) =>
+      localize(`panels.zones.labels.${key}`, lang),
+    );
+    if (!items.length) return "";
+    return html`<ha-alert
+      alert-type="info"
+      .title=${localize("programs.yaml_only_title", lang)}
+    >
+      ${localize("panels.zones.yaml.only_help", lang)}
+      <div>${items.join(" · ")}</div>
+      <ha-button
+        slot="action"
+        appearance="plain"
+        @click=${() => this._openZoneYaml(zone)}
+        >${localize("programs.yaml_edit", lang)}</ha-button
+      >
+    </ha-alert>`;
+  }
+
+  /**
+   * The YAML editor of a zone. Applied, what changed is saved the way a form
+   * edit is (only the changed keys, through the zone save), and what the
+   * backend refuses is said under the editor, which stays open.
+   */
+  private _zoneYamlBlock(
+    zone: SmartIrrigationZone,
+    lang: string,
+  ): TemplateResult {
+    const id = zone.id as number;
+    const edit = this._yamlEdits.get(id)!;
+    const read = edit.valid ? zoneFromYaml(edit.value, zone) : null;
+    const problem = !edit.valid
+      ? localize("programs.yaml_invalid", lang)
+      : read && "error" in read
+        ? read.error === "not_a_zone"
+          ? localize("panels.zones.yaml.not_a_zone", lang)
+          : localize("panels.zones.yaml.not_settings", lang).replace(
+              "{keys}",
+              read.keys.join(", "),
+            )
+        : edit.error;
+    const apply = async () => {
+      if (!this.hass || !read || "error" in read || edit.saving) return;
+      if (!Object.keys(read.changes).length) {
+        this._closeZoneYaml(id);
+        return;
+      }
+      edit.saving = true;
+      edit.error = undefined;
+      this._scheduleUpdate();
+      try {
+        // A form edit of this zone still waiting to go out goes with it.
+        const pending = this._pendingZoneChanges.get(id);
+        this._pendingZoneChanges.delete(id);
+        await this.saveToHA({
+          ...(pending || {}),
+          ...read.changes,
+          id,
+        } as unknown as SmartIrrigationZone);
+        this._closeZoneYaml(id);
+        fireEvent(
+          this,
+          "hass-notification" as any,
+          { message: localize("panels.zones.yaml.applied", lang) } as any,
+        );
+        await this._fetchData();
+      } catch (error: any) {
+        // The backend's own words: what it refused, and why.
+        edit.error = error?.body?.message ?? error?.message ?? String(error);
+      } finally {
+        edit.saving = false;
+        this.zoneCache.delete(id.toString());
+        this._scheduleUpdate();
+      }
+    };
+    return html`<div class="settings">
+      <div class="zone-section">
+        YAML<si-info>${localize("panels.zones.yaml.help", lang)}</si-info>
+      </div>
+      <ha-yaml-editor
+        .hass=${this.hass}
+        .defaultValue=${edit.initial}
+        @value-changed=${(e: CustomEvent) => {
+          e.stopPropagation();
+          const { value, isValid } = e.detail || {};
+          edit.value = value;
+          edit.valid = isValid !== false;
+          edit.error = undefined;
+          this.zoneCache.delete(id.toString());
+          this._scheduleUpdate();
+        }}
+      ></ha-yaml-editor>
+      ${problem
+        ? html`<div class="setting-help yaml-problem">${problem}</div>`
+        : ""}
+      <div class="yaml-actions">
+        ${this._actionBtn(
+          mdiCheck,
+          localize("programs.yaml_apply", lang),
+          apply,
+          false,
+          !read || "error" in read || !!edit.saving,
+        )}
+      </div>
+    </div>`;
+  }
+
   private _actionBtn(
     icon: string,
     label: string,
@@ -3320,6 +3515,20 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         font-size: 0.85em;
         color: var(--secondary-text-color);
       }
+      .zone-head-action {
+        flex: 0 0 auto;
+        color: var(--primary-color);
+        --mdc-icon-button-size: 36px;
+        --mdc-icon-size: 20px;
+        --ha-icon-button-size: 36px;
+      }
+      .yaml-problem {
+        color: var(--error-color, #db4437);
+        border-bottom: 0;
+      }
+      .yaml-actions {
+        padding: 8px 0;
+      }
       .zone-chevron {
         flex: 0 0 auto;
         color: var(--secondary-text-color);
@@ -3469,7 +3678,10 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         padding: 6px 0 10px 0;
         border-bottom: 1px solid var(--divider-color);
       }
-      .setting-row:last-child {
+      .setting-row:last-child,
+      /* A hint closing its block: the actions below draw their own line, and
+         the two lines 16 px apart framed an empty strip (#1048). */
+      .setting-help:last-child {
         border-bottom: 0;
       }
       .setting-label {
@@ -3716,6 +3928,10 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           justify-content: flex-start;
           gap: 0 12px;
           min-height: 44px;
+        }
+        .zone-actions {
+          margin-top: 8px;
+          padding-top: 12px;
         }
         .value-row .value-field {
           justify-content: flex-start;

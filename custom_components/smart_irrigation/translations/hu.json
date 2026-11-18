@@ -312,7 +312,7 @@
     },
     "run_program": {
       "name": "Program futtatása",
-      "description": "A teljes vezérlő egy programjának futtatása most, vagy amint sorra kerül, ha egy másik program fut. A program a Smart Irrigation által kiszámított időtartamokkal öntözi a zónáit, hacsak a lépései mást nem írnak elő.",
+      "description": "Egy program futtatása most, vagy amint sorra kerül, ha egy másik program fut. A program a Smart Irrigation által kiszámított időtartamokkal öntözi a zónáit, hacsak a lépései mást nem írnak elő.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -430,7 +430,7 @@
     },
     "adjust_program": {
       "name": "Program módosítása",
-      "description": "A teljes vezérlő egy programjának hosszabb vagy rövidebb öntözése egy ideig. A módosítás felváltja az előzőt (sosem adódnak össze), a beállítása után induló futásokra vonatkozik, és a megadott órák után véget ér.",
+      "description": "Egy program hosszabb vagy rövidebb öntözése egy ideig. A módosítás felváltja az előzőt (sosem adódnak össze), a beállítása után induló futásokra vonatkozik, és a megadott órák után véget ér.",
       "fields": {
         "program_id": {
           "name": "Program",

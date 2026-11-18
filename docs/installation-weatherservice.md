@@ -1,36 +1,34 @@
 ---
-layout: default
-title: "Installation: Configuring weather service"
+title: "Configuring the weather service"
 ---
 # Configuring the weather service
 
-> Main page: [Installation](installation.md)<br/>
-> Previous: [Downloading the integration](installation-download.md)<br/>
-> Next: [Configuration](configuration.md)
-
-The weather service is configured **from the Smart Irrigation panel**, on the fly — it is no longer part of the install wizard. You can enable it, change it, or turn it off at any time without reinstalling or reloading the integration.
+The weather service is set **in the Smart Irrigation panel**, not when the integration is added. You can turn it on, change it, or turn it off at any time, without reinstalling or reloading anything. Which one to choose is explained on [Which weather service](weather-services.md).
 
 To set it up:
 
 1. Open the **Smart Irrigation** panel from the Home Assistant sidebar.
-2. Go to the **Weather service** settings.
-3. Toggle **Use a weather service** on, then pick the service you want:
-   - **Open-Meteo** (the default) is keyless and works worldwide — no API key required.
-   - **A weather entity in Home Assistant** reads one of your weather entities (DWD, Met.no, KNMI, ...): pick the entity instead of a key. It reports no rain that fell, so each sensor group needs a rain sensor (see [weather services](weather-services.md#a-weather-entity-in-home-assistant)).
-   - **Open Weather Map** and **Pirate Weather** require an API key (see below).
-4. Enter the API key if the chosen service needs one, or pick the weather entity, then save. When the key or the entity is accepted you will see a success message; otherwise double check it. After switching to a weather entity, the page also names the sensor groups that still take their rain from the weather service: give each of them a rain sensor.
+2. Go to **Weather › Weather service**.
+3. Switch on **Use a weather service**, then pick the service:
+   - **Open-Meteo** (the default) works worldwide and needs no API key.
+   - **A weather entity in Home Assistant** reads one of your weather entities (DWD, Met.no, KNMI...): pick the entity instead of a key. It reports no rain that fell, so each sensor group needs a rain sensor (see [weather services](weather-services.md#a-weather-entity-in-home-assistant)).
+   - **OpenWeatherMap** and **Pirate Weather** need an API key (see below).
+4. Enter the API key if the service needs one, or pick the weather entity, then **Save**. The key or the entity is checked before the change is applied, and a message says whether it was accepted.
 
-If you turn the weather service **off**, forecasting is unavailable and you must provide all weather data from another source, such as your own weather station sensors, configured in your [sensor groups](configuration-sensor-groups.md).
+After switching to a weather entity, the page also names the sensor groups that still take their rain from the weather service: give each of them a rain sensor.
 
-Make sure your Home Assistant home location is set correctly so the data matches your location, or set [manual coordinates](MANUAL_COORDINATES.md).
+If you turn the weather service **off**, there is no forecast, and all the weather data must come from your own sensors, set in your [sensor groups](configuration-sensor-groups.md).
 
-## Getting Open Weather Map API Key
+Make sure your Home Assistant location is set correctly so the data matches your garden, or set [manual coordinates](MANUAL_COORDINATES.md).
 
-Go to [OpenWeatherMap](https://openweathermap.org) and create an account. You can enter any company and purpose while creating an account. After creating your account, You will need to sign up for the paid (but free for limited API calls) OneCall API 3.0 plan if you do not have a key already. Make sure to enter credit card information to get the API truly activated. Then, go to API Keys and get your key. If the key does not work right away, no worries. The email you should have received from OpenWeaterMap says it will be activated 'within the next couple of hours'. So if it does not work right away, be patient a bit. If you are worried about the cost of the API, You can put a rate limit below the paid threshold in the "Billing plans" page of your profile.
+## Getting an OpenWeatherMap API key
 
-## Getting Pirate Weather API key
-Follow the instructions on this page (see `API Key` section): https://docs.pirateweather.net/en/latest/API/.
+1. Create an account on [OpenWeatherMap](https://openweathermap.org). Any company name and purpose will do.
+2. Subscribe to the **One Call API 3.0** plan. It is a paid plan that is free up to 1000 calls a day, and it must be activated with a payment card. A plain default key is refused.
+3. Copy your key from **API keys**.
 
-> Main page: [Installation](installation.md)<br/>
-> Previous: [Downloading the integration](installation-download.md)<br/>
-> Next: [Configuration](configuration.md)
+A new key can take a couple of hours to work, as the OpenWeatherMap email says. If you worry about the cost, set a call limit below the paid threshold on the **Billing plans** page of your profile.
+
+## Getting a Pirate Weather API key
+
+Follow the **API Key** section of the [Pirate Weather documentation](https://docs.pirateweather.net/en/latest/API/).

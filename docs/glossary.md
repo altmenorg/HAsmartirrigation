@@ -1,6 +1,9 @@
+---
+title: "Glossary"
+---
 # Glossary
 
-One word for each thing in the panel; these pages follow as they are revised. The code, the services, the entity ids and the attributes keep their names, so automations that use them don't change. The column "In code" gives that name.
+One word for each thing in the panel, and these pages use the same words. The code, the services, the entity ids and the attributes keep their own names, so automations that use them do not change. The column "In code" gives that name.
 
 When you translate the panel, use the word in the second or third column for the thing in the first; a language without a column yet is free to pick its word, as long as it keeps to one.
 
@@ -10,15 +13,18 @@ When you translate the panel, use the word in the second or third column for the
 | What a zone is short of, the water balance below zero, as a positive amount. | Deficit | Defizit | (negative `bucket`) |
 | The largest surplus a zone keeps above field capacity. | Maximum water balance | Maximale Wasserbilanz | `maximum_bucket` |
 | How fast a saturated root zone drains, in mm/h. | Drainage rate | Entwässerungsrate | `drainage_rate` |
-| The water lost to evaporation and plants. ET0 is the reference value from the weather, ETc that value times the crop factor. | Evapotranspiration (ET0, ETc) | Evapotranspiration (ET0, ETc) | — |
+| The water lost to evaporation and plants. ET0 is the reference value from the weather, ETc that value times the crop factor. | Evapotranspiration (ET0, ETc) | Evapotranspiration (ET0, ETc) | (none) |
 | The factor between ET0 and what the planting uses. | Crop factor (Kc) | Pflanzenfaktor (Kc) | `multiplier` |
 | The way a zone's water loss is calculated: from the weather (PyETO), a fixed amount (Static), or a value another sensor provides (Passthrough). | Module | Modul | `module` |
 | The sources a zone reads its weather from: a weather service, your own sensors, or both. | Sensor group | Sensorgruppe | `mapping` |
 | An online service that provides weather data and forecasts. | Weather service | Wetterdienst | `weather_service` |
 | How long a zone is watered at the next start, worked out from its water balance and its flow. | Duration | Dauer | `duration` |
-| What starts the watering: a time, sunrise or sunset, or the sun's position. | Start trigger | Startauslöser | `irrigation_start_triggers` |
-| A set of zones watered together on a schedule (full controller only). | Program | Programm | `programs` |
-| Smart Irrigation opens and closes the valves itself. | Full controller | Volle Steuerung | `full_controller` |
+| With Calculate only, when the start event fires: a time, sunrise or sunset, or the sun's position. | Start trigger | Startauslöser | `irrigation_start_triggers` |
+| What Smart Irrigation does: open the valves itself with its programs, only calculate, or nothing. | Calculate and water, Calculate only, Stop everything | Berechnen und bewässern, Nur berechnen, Alles anhalten | `mode`: `water`, `calculate`, `off` |
+| An ordered list of steps that waters zones, started by its schedules (with Calculate and water). | Program | Programm | `programs` |
+| One zone, or several watered together, in a program. | Step | Schritt | `steps` |
+| When a program starts: a moment and the days it applies to. | Schedule | Zeitplan | `schedules` |
+| A pump or a main valve that runs while a zone it feeds is watered. | Pump or main valve | Pumpe oder Hauptventil | `supplies` |
 | A soil or planting nobody picked: the zone is calculated with the value it started with. | Not chosen yet | Noch nicht gewählt | `soil_type` / `plant_type` empty |
 
 ## Words that are not used
@@ -26,6 +32,7 @@ When you translate the panel, use the word in the second or third column for the
 | Instead of | Say |
 |---|---|
 | bucket (in a text), Vorrat, Eimer | water balance, Wasserbilanz |
+| full controller, master switch | Calculate and water, What Smart Irrigation does |
 | engine, calculation engine, Berechnungs-Engine | module, Modul |
 | mapping (in a text) | sensor group, Sensorgruppe |
 | crop coefficient, multiplier, Pflanzenkoeffizient, Multiplikator | crop factor, Pflanzenfaktor |

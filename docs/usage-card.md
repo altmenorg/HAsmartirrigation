@@ -1,12 +1,7 @@
 ---
-layout: default
-title: "Usage: Dashboard card"
+title: "Dashboard card"
 ---
 # The dashboard card
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Info and History](usage-info.md)<br/>
-> Next: [Entities](usage-entities.md)
 
 The panel in the sidebar is where an installation is set up, which is occasional work. The card is for the rest of the time: it sits on your dashboard, next to the lights, and says what each zone is short of, how long it would run, and when the water goes on.
 
@@ -30,7 +25,7 @@ Then put `type: custom:smart-irrigation-card` in a view.
 
 ## What it shows
 
-- **The next start**, and when a run would be held back, the reason it would be: rain in the forecast, freezing, wind, or a rain sensor that says it is raining.
+- **The next start**, and when a run would be held back, the reason: rain forecast, freeze, wind, rain sensor, days between irrigation, soil moisture, or a postponement.
 - **Per zone**: the water it is short of, the run that would deliver it, and when it last watered. A zone in manual or disabled state says so next to its name.
 - **A zone that would water now** is in the accent colour, so a glance is enough.
 
@@ -42,8 +37,8 @@ The estimate is computed on the server for every zone, so the card asks for it e
 
 | Button | What it does |
 | --- | --- |
-| Water now (drop) | Runs that zone's valve for the calculated duration, and credits the water balance when it finishes. It takes **two taps**: the first arms it, the second runs it, and it disarms itself after five seconds. It only appears for a zone that has a [linked valve](configuration-zones.md), and only with **Calculate and water**. |
-| Calculate (calculator) | Runs the calculation for that zone now and commits it, as the panel's own button does. |
+| Water now (drop) | Runs that zone's valve for the calculated duration, and credits the water balance when it finishes. It takes **two taps**: the first arms it, the second runs it, and it disarms itself after five seconds. It only appears with **Calculate and water**, for a zone that has a [linked valve](configuration-zones.md). |
+| Calculate now (calculator) | Runs the calculation for that zone now and commits it, as the panel's own button does. |
 | Start (play) | On a program row: runs the program now, or as soon as it is its turn. Only on an idle program. |
 | Pause / Resume | On a running or paused program: holds the watering and goes on from where it stopped. Pause calls the global `pause_watering` service, so it holds all the watering, not one program, and ends by itself after the service's default of 60 minutes if nobody resumes. |
 | Next step (skip) | Ends the zones of the step in progress and goes on to the next step. |
@@ -52,9 +47,9 @@ The estimate is computed on the server for every zone, so the card asks for it e
 
 ## Programs
 
-When the [full controller](usage-full-controller.md) is on and has programs, a block above the zones lists one row per program: its name, its state (idle, running, waiting, paused, suspended or disabled) and its next start. While a program runs, the row shows the step (for example 2/3), the percentage done and the time left. The card asks for this every 5 seconds while a program is running, paused or waiting, and every 60 seconds otherwise, and not at all while the tab is hidden. With the full controller off, or no program, nothing is shown and the card looks as before. Hide the block with `show_programs: false`.
+With **Calculate and water** and at least one [program](usage-full-controller.md), a block above the zones lists one row per program: its name, its state (idle, running, waiting, paused or suspended) and its next start, or the program it starts after. While a program runs, the row shows the step (for example 2/3), the percentage done and the time left. The card asks for this every 5 seconds while a program is running, paused or waiting, and every 60 seconds otherwise, and not at all while the tab is hidden. With Calculate only, or no program, the block is not shown. Hide it with `show_programs: false`.
 
-Stop acts on the whole watering, not on one program, because the controller waters one program at a time.
+Stop acts on all the watering, not on one program.
 
 ## Options
 
@@ -66,7 +61,7 @@ All of them are in the visual editor, and this is what they are called in YAML:
 | `zones` | every zone | The zone ids to show. Use it for a card per area, or to keep the greenhouse on its own dashboard. |
 | `show_next_start` | `true` | The next start line above the zones. |
 | `compact` | `false` | Only the zones that would water now. The card then says "Nothing to water right now" when none would. |
-| `show_programs` | `true` | The programs block, shown only when the [full controller](usage-full-controller.md) is on and has at least one program. Set it to `false` to hide it. |
+| `show_programs` | `true` | The programs block, shown only with Calculate and water and at least one [program](usage-full-controller.md). Set it to `false` to hide it. |
 
 ```yaml
 type: custom:smart-irrigation-card
@@ -75,12 +70,8 @@ zones: [0, 2]
 compact: true
 ```
 
-> The card reads its words from the language files, with English as the fallback. The programs block is translated in all 20 languages.
+The card speaks the 20 languages of the panel, with English as the fallback.
 
 ## A card from the community
 
 [Irrigation Zone Card](https://github.com/lweberru/ha_irrigation_zone_card), by [@lweberru](https://github.com/lweberru), is a visual card for one zone at a time: the soil moisture as a ring, the live water balance on a scale with its zero point, the calculated duration, the water used and an optional valve control; the same installation adds Irrigation Overview, a card for the planning, rain and frost protection and the integration-wide actions. It finds a zone's entities from the integration's stable ids, so renamed entities keep working. It is installed from HACS as a custom repository (type Dashboard) and maintained by its author; questions about it go to [its repository](https://github.com/lweberru/ha_irrigation_zone_card).
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Info and History](usage-info.md)<br/>
-> Next: [Entities](usage-entities.md)

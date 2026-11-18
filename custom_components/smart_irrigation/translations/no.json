@@ -312,7 +312,7 @@
     },
     "run_program": {
       "name": "Kjør program",
-      "description": "Kjør et program i den fulle kontrolleren nå, eller så snart det er dets tur når et annet kjører. Programmet vanner sonene sine med varighetene Smart Irrigation har beregnet, med mindre trinnene sier noe annet.",
+      "description": "Kjør et program nå, eller så snart det er dets tur når et annet kjører. Programmet vanner sonene sine med varighetene Smart Irrigation har beregnet, med mindre trinnene sier noe annet.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -430,7 +430,7 @@
     },
     "adjust_program": {
       "name": "Juster et program",
-      "description": "Få et program i den fulle kontrolleren til å vanne lenger eller kortere en stund. Justeringen erstatter den forrige (den legges aldri sammen), gjelder kjøringene som starter etter at den er satt, og slutter etter de angitte timene.",
+      "description": "Få et program til å vanne lenger eller kortere en stund. Justeringen erstatter den forrige (den legges aldri sammen), gjelder kjøringene som starter etter at den er satt, og slutter etter de angitte timene.",
       "fields": {
         "program_id": {
           "name": "Program",

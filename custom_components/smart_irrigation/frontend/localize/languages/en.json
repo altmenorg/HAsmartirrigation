@@ -198,7 +198,7 @@
         "no-data": "No data has been retrieved from the weather service yet."
       },
       "title": "Weather service",
-      "description": "View and change the weather service used to fetch weather data — no need to reinstall the integration. The API key is validated and the change is applied immediately.",
+      "description": "View and change the weather service used to fetch weather data, with no need to reinstall the integration. The API key is validated and the change is applied immediately.",
       "labels": {
         "use-weather-service": "Use a weather service",
         "service": "Weather service",
@@ -212,7 +212,7 @@
         "open-sensor-groups": "Open sensor groups"
       },
       "messages": {
-        "no-service": "No weather service is used — weather data comes from your own sensors only.",
+        "no-service": "No weather service is used: weather data comes from your own sensors only.",
         "saved": "Weather service updated and applied.",
         "reload-note": "Saving validates the API key against the service and applies the change immediately.",
         "owm-onecall-hint": "OpenWeatherMap needs the One Call API 3.0 plan (One Call by Call). It is free up to 1000 calls/day but must be activated with a card, and a new key can take up to a couple of hours to work. A plain default key is rejected.",
@@ -243,7 +243,7 @@
       },
       "messages": {
         "exported": "Backup file downloaded.",
-        "restored": "Configuration restored — reloading the integration.",
+        "restored": "Configuration restored: reloading the integration.",
         "invalid-file": "This file is not a valid Smart Irrigation backup.",
         "confirm-title": "Replace the entire configuration?",
         "summary": "This backup contains",
@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Panel",
           "labels": {
             "advanced": "Advanced settings",
             "advanced-hint": "Shows the settings that tune the model: drainage, thresholds, multiplier, how far ahead a zone looks. They have sound defaults; leave this off unless you know you need them. Your values are kept either way."
@@ -500,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "Nothing here opens a valve",
-          "body": "Smart Irrigation calculates how long to water; something has to act on it. Either turn on direct valve control under Settings and then link a valve to each zone, or write an automation on the start event (the blueprints do this for you). If an automation already does it, there is nothing to change.",
+          "body": "Smart Irrigation calculates how long to water; something has to act on it. Either choose \"Calculate and water\" under Settings and link a valve to each zone, or write an automation on the start event (the blueprints do this for you). If an automation already does it, there is nothing to change.",
           "action": "To valve control"
         }
       }
@@ -711,7 +710,7 @@
         "data-number-of-data-points": "Number of data points",
         "drainage_rate": "Drainage rate",
         "linked-entity": "Linked valve/switch",
-        "linked-entity-hint": "The valve or switch that waters this zone. With direct valve control, Smart Irrigation opens and closes it. With observed watering, every run of it (by hand, an automation or Smart Irrigation) credits the water balance from run time and throughput.",
+        "linked-entity-hint": "The valve or switch that waters this zone. With \"Calculate and water\", Smart Irrigation opens and closes it. With observed watering, every run of it (by hand, an automation or Smart Irrigation) credits the water balance from run time and throughput.",
         "valve-off": "A valve can be linked once Smart Irrigation waters (Calculate and water) or observed watering is on.",
         "valve-off-link": "Turn on",
         "supply": "Pump or main valve",
@@ -726,7 +725,7 @@
         "observed-ignore-seconds-help": "A run of the valve this long or shorter is not credited: a few minutes to cool the leaves on a hot afternoon mostly evaporates. A longer run counts in full. Empty credits every run.",
         "confirm-timeout": "Wait for the valve to confirm",
         "open-resends": "Send the open again",
-        "confirm-timeout-help": "How long the valve has to report that it opened or closed, and how often the open is resent meanwhile. Empty: 8 s, no resend (full controller: 30 s, two); closing 5 s, always tried twice. Cloud valves such as Gardena: wait longer, 0 resends, each command counts against a quota.",
+        "confirm-timeout-help": "How long the valve has to report that it opened or closed, and how often the open is resent meanwhile. Empty: 30 s and two resends; closing 5 s, always tried twice. Cloud valves such as Gardena: wait longer, 0 resends, each command counts against a quota.",
         "safety-off-topic": "Safety off MQTT topic",
         "safety-off-state-key": "Safety off state key",
         "safety-off-mode": "Safety off mode",
@@ -812,7 +811,8 @@
         "duration-readonly-disabled": "A disabled zone is never watered, so it has no run time.",
         "et-deficiency-help": "What this zone needs per day: ETc, ET0 times the crop factor with the seasonal adjustment, before rain and before scaling to the interval, so it compares across setups. ET0 alone is the zone sensor's `eto` attribute, to check against a weather service.",
         "safety-off-entity": "Valve's own duration",
-        "safety-off-entity-help": "For a valve that closes by itself after a duration of its own, such as Gardena (its \"watering duration\" number, 1 min unless changed): pick that number here. Before each open, Smart Irrigation writes the pass's length plus 30 s to it, so the valve stays open for the whole pass and still closes by itself if Home Assistant stops. Without it, such a valve closes after its preset time."
+        "safety-off-entity-help": "For a valve that closes by itself after a duration of its own, such as Gardena (its \"watering duration\" number, 1 min unless changed): pick that number here. Before each open, Smart Irrigation writes the pass's length plus 30 s to it, so the valve stays open for the whole pass and still closes by itself if Home Assistant stops. Without it, such a valve closes after its preset time.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "There are no zones defined yet.",
       "title": "Zones",
@@ -867,11 +867,18 @@
         "zone": "Zone and valve",
         "need": "What it needs",
         "status": "Where it stands"
+      },
+      "yaml": {
+        "only_help": "Settings the visual editor does not show. Editing here keeps them.",
+        "help": "The zone's settings as text, in the units the panel shows. An optional setting left out is cleared; a required one (name, size...) is kept. Nothing is saved until you apply.",
+        "not_a_zone": "This is not a zone: a zone is a set of keys (name, size, throughput...).",
+        "not_settings": "Not settings of a zone, or not set here: {keys}",
+        "applied": "Zone saved"
       }
     },
     "history": {
       "title": "History",
-      "description": "Every irrigation run Smart Irrigation has credited to a zone: when it started, how long it watered and how much water it used. Runs are recorded by direct valve control and by observed watering, and are kept for 90 days.",
+      "description": "Every irrigation run Smart Irrigation has credited to a zone: when it started, how long it watered and how much water it used. Runs are recorded when Smart Irrigation waters and by observed watering, and are kept for 90 days.",
       "refresh": "Refresh",
       "no-data": "No irrigation runs have been recorded yet.",
       "table": {
@@ -1002,7 +1009,7 @@
         },
         "nothing-waters": "Nothing is watered by the import. Irrigation Unlimited keeps watering until you switch it off and these schedules on.",
         "blocked": "Resolve what is marked in red first; until then nothing can be imported.",
-        "full-controller-off": "The full controller is off: the programs are imported, but they only water once it is on.",
+        "full-controller-off": "Smart Irrigation is not set to \"Calculate and water\": the programs are imported, but they only water once it is.",
         "nothing-waters-iu-off": "The import waters nothing, and Irrigation Unlimited is not running: Home Assistant did not set it up (see its log). Nothing waters until you switch these schedules on."
       },
       "errors": {
@@ -1026,16 +1033,16 @@
         "programs": "{count, plural, one {# program} other {# programs}}",
         "next": "The schedules of new programs are off, so Irrigation Unlimited is still the one watering. Look at the programs, then switch over at the top of this page.",
         "open-programs": "Open the programs",
-        "next-off": "The full controller is off, so these programs do not water yet, and Irrigation Unlimited goes on watering. Switch the full controller on in the settings, then switch over at the top of this page.",
+        "next-off": "Smart Irrigation is not set to \"Calculate and water\", so these programs do not water yet, and Irrigation Unlimited goes on watering. Choose \"Calculate and water\" in the settings, then switch over at the top of this page.",
         "open-settings": "Open the settings",
         "next-iu-off": "The schedules of new programs are off, and Irrigation Unlimited is not running: nothing waters for now. Look at the programs, then switch their schedules on.",
-        "next-off-iu-off": "The full controller is off, so these programs do not water yet, and Irrigation Unlimited is not running: nothing waters for now. Switch the full controller on in the settings, then the programs' schedules."
+        "next-off-iu-off": "Smart Irrigation is not set to \"Calculate and water\", so these programs do not water yet, and Irrigation Unlimited is not running: nothing waters for now. Choose \"Calculate and water\" in the settings, then switch the programs' schedules on."
       },
       "conflicts": {
         "zone_twice": "{zone} and {other} would both become {target}. Choose another zone for one of them.",
         "calculated_needs_zone": "{zone} is calculated by Smart Irrigation today, from the zone an adjust-time automation feeds it from. Choose that zone or another existing one.",
-        "program_exists": "A program \"{name}\" ({id}) is in the way: no import made it. Rename or delete it first, in Watering, Programs (with the full controller on).",
-        "supply_exists": "A pump \"{name}\" ({id}) is in the way: no import made it. Rename or delete it first, in Watering, Pumps and valves (with the full controller on)."
+        "program_exists": "A program \"{name}\" ({id}) is in the way: no import made it. Rename or delete it first, in Watering, Programs (once \"Calculate and water\" is chosen).",
+        "supply_exists": "A pump \"{name}\" ({id}) is in the way: no import made it. Rename or delete it first, in Watering, Pumps and valves (once \"Calculate and water\" is chosen)."
       },
       "confirm_remove": "This import deletes what an earlier import made and Irrigation Unlimited no longer has: {names}. Go ahead?",
       "cutover": {
@@ -1045,7 +1052,7 @@
         "si-waters-now": "Smart Irrigation waters: imported schedules are on, and Irrigation Unlimited's controllers are off.",
         "nobody-waters": "Nothing waters: Irrigation Unlimited's controllers are off, and so are the imported schedules.",
         "both-on": "Both would water: Irrigation Unlimited has a controller on, and imported schedules are on too. Switch Irrigation Unlimited off, or the schedules.",
-        "full-controller-off": "The full controller is off: switch it on in the settings first, or the imported programs do not water.",
+        "full-controller-off": "Smart Irrigation is not set to \"Calculate and water\": choose it in the settings first, or the imported programs do not water.",
         "programs": "The imported programs",
         "schedules-on": "{on} of {count} schedules on",
         "open-programs": "Look at them on the Programs page before you switch over",
@@ -1064,7 +1071,7 @@
         "confirm-back": "The imported schedules are switched off, and Irrigation Unlimited's controllers on again. Irrigation Unlimited waters again.",
         "errors": {
           "generic": "That did not work.",
-          "full_controller_off": "Switch the full controller on first: without it, nothing waters.",
+          "full_controller_off": "Choose \"Calculate and water\" first: without it, nothing waters.",
           "not_imported": "Nothing has been imported yet.",
           "iu_failed": "Irrigation Unlimited did not take the switch. What this step had changed is undone: see above who waters.",
           "not_switched": "The watering has not been handed to Smart Irrigation, so there is nothing to go back from.",
@@ -1098,7 +1105,7 @@
         "every_limit": "every {every, number} days: Smart Irrigation goes up to {max, number}",
         "every_not_number": "{value} is not a number of days",
         "feeds_other_zone": "an automation feeds it from zone {from}, but it is matched to zone {to}: its calculated duration is that zone's",
-        "full_controller_off": "the full controller is off: the programs are imported, but they water only once it is on",
+        "full_controller_off": "Smart Irrigation is not set to \"Calculate and water\": the programs are imported, but they water only once it is",
         "held_to_limit": "{seconds, number} s is held to {limit, number} s, the most Smart Irrigation allows",
         "lead_kept": "{time} is kept: moving it earlier by the supply's lead of {lead, number} s would change the day",
         "lead_time": "zone \"{zone}\" has a lead time of {lead, number} s, which Smart Irrigation adds to every fixed run: it waters that much longer than in IU, unless the lead time is set to 0 or the step shortened",
@@ -1112,7 +1119,7 @@
         "offset_limit": "an offset of {offset, number} min: Smart Irrigation allows {max, number}",
         "offset_rounded": "the offset of {seconds, number} s is rounded to {minutes, number} min: Smart Irrigation works in minutes there",
         "shared_queue": "{count} controllers without a master: their programs run one after the other, as zones without a supply share one queue",
-        "overlap": "{count} zones and sequences have schedules: where their runs overlap, IU waters them at the same time, the full controller one after the other",
+        "overlap": "{count} zones and sequences have schedules: where their runs overlap, IU waters them at the same time, Smart Irrigation one after the other",
         "passes_held": "{repeats, number} repeats are held to {max, number} passes",
         "period_needs_both": "the period {from} to {until} needs both days: the schedule runs all year",
         "program_per_duration": "{count} programs, one per schedule duration",
@@ -1156,7 +1163,7 @@
     "active_default": "Default: done by sunrise",
     "active_hint": "Only the selected trigger starts the watering, once a day. Default starts so that every zone is done by sunrise; with None, Smart Irrigation starts nothing.",
     "usage_before": "When a trigger fires, Smart Irrigation emits the event ",
-    "usage_after": " — react to it in an automation to start watering. Its data carries trigger_name, trigger_type and offset_minutes, to tell the triggers apart. On a day skipped for rain or for the days between irrigation, no event fires.",
+    "usage_after": ". React to it in an automation to start watering. Its data carries trigger_name, trigger_type and offset_minutes, to tell the triggers apart. On a day skipped for rain or for the days between irrigation, no event fires.",
     "add_trigger": "Add trigger",
     "edit_trigger": "Edit trigger",
     "delete_trigger": "Delete trigger",
@@ -1201,7 +1208,7 @@
       "cancel": "Cancel",
       "save": "Save",
       "delete": "Delete",
-      "help": "When this trigger fires, Smart Irrigation emits the following event — use it in an automation to start watering. The event data includes this trigger's name (and type/offset), so you can react to it specifically:"
+      "help": "When this trigger fires, Smart Irrigation emits the following event. Use it in an automation to start watering. The event data includes this trigger's name (and type/offset), so you can react to it specifically:"
     },
     "offset_auto": "Auto (calculated from total zone duration)",
     "confirm_delete": "Are you sure you want to delete the trigger '{name}'?",
@@ -1242,6 +1249,8 @@
     "effective_rain_description": "Ignore a shower smaller than a fifth of the evapotranspiration of the period: it wets the leaves and evaporates. It is judged on the whole period between two calculations.",
     "forecast_label": "Take the forecast rain into account",
     "forecast_description": "Below the threshold, each zone gets its deficit less the rain forecast for 24 hours, weighted by its probability: 4 mm forecast against a 10 mm deficit waters 6 mm. At or above it, zones in the open are skipped. Greenhouse zones are not affected.",
+    "forecast_no_service": "Needs a weather service: the forecast comes from it.",
+    "forecast_no_service_on": "No weather service: there is no forecast to read, so this holds nothing back.",
     "forecast_set_up_service": "Set up a weather service"
   },
   "coordinate_config": {
@@ -1317,7 +1326,6 @@
     "step_delay": "Wait after this step",
     "step_delay_help": "Negative: the next step starts that long before this one ends.",
     "tours": "Rounds",
-    "tours_help": "The whole list of steps is watered this many times, each round with its share of the water. Unlike passes, which repeat one step before going on, a round lets each zone soak while the others water.",
     "enabled": "Enabled",
     "add_step": "Add a step",
     "delete_step": "Delete the step",
@@ -1359,17 +1367,11 @@
     "schedule_every_offset": "Shifted by",
     "schedule_every_help": "Every 3 days with a shift of 0, 1 or 2 lets three programs take turns, one day in three, never on the same day.",
     "schedule_parity": "Days of the month",
-    "parity_any": "All",
     "parity_even": "Even days",
     "parity_odd": "Odd days",
     "schedule_days_of_month": "Specific days of the month",
-    "schedule_days_of_month_help": "Day numbers separated by commas, and \"last\" for the last day of the month (for example 1, 15, last). A month too short for a day skips it. Empty: any day. It adds to the other filters.",
     "schedule_fallback_time": "If there is no sunrise or sunset",
-    "schedule_fallback_time_help": "For a day without a sunrise or sunset (polar day or night).",
     "schedule_months": "Months",
-    "schedule_months_help": "None ticked: every month.",
-    "schedule_yaml_only": "Set in YAML (Edit in YAML, at the top of the program): shown here because this schedule uses it.",
-    "yaml_only_set": "Set in YAML (Edit in YAML, at the top of the program): shown here because it is set.",
     "schedule_from": "From",
     "schedule_until": "Until",
     "schedule_period_help": "A period of the year, which may run over New Year (from November to March). Empty: the whole year.",
@@ -1383,9 +1385,8 @@
     "condition_precipitation": "Rain forecast",
     "condition_days_between": "Days since the last watering",
     "condition_soil_moisture": "Soil moisture",
+    "conditions_subset": "Only these weather checks",
     "schedule_weather_help": "On, the checks of Weather, Skip watering can hold the run back or shorten it: rain, frost, wind, the days between waterings, a wet soil and the days you postponed. Turn it off for a greenhouse drip line that does not care.",
-    "schedule_conditions_only": "Only: {list}",
-    "schedule_conditions_yaml": "This schedule applies only these checks, a list set in YAML (skip_conditions). Change or remove it in the program's YAML: without it, all of them apply.",
     "pause": "Pause",
     "resume": "Resume",
     "next_step": "Next step",
@@ -1412,7 +1413,6 @@
     "adjust_seconds": "Time added (+) or removed (-)",
     "step_bounds_help": "Applied in this order: the program's \"Adjust durations\" percentage, if one is in force (it is set on the program), the time added or removed, then minimum and maximum (0: none). A step that needs no water stays at zero; the minimum never starts it.",
     "min_deficit_mm": "Only water when the deficit is at least",
-    "min_deficit_mm_help": "In mm, 0 to always water. Set, it replaces the zone's own threshold for this step. Fixed-duration steps are always watered.",
     "adjust_title": "Adjust durations",
     "adjust_none": "No adjustment in force.",
     "adjust_percent": "Percent",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "Apply",
     "adjust_reset": "Reset",
     "confirm_reset_adjustment": "Remove the adjustment of this program?",
-    "mode_off": "The full controller is off. Turn it on in Settings, General.",
+    "mode_off": "No program waters: Smart Irrigation is not set to \"Calculate and water\". Choose it in Settings, General, under \"What Smart Irrigation does\".",
     "no_zone": "no zone",
     "mode_calculated_short": "calculated",
     "every_day": "every day",
@@ -1437,9 +1437,7 @@
     "steps_title": "Steps",
     "schedules_title": "Schedules",
     "passes_help": "Cycle and soak for this step: its water split into this many passes, each zone soaking between two of them. 1: in a single go.",
-    "schedule_fallback_skip": "Skip that day",
     "schedule_fallback_previous": "Use the time of the last one seen",
-    "schedule_fallback_at": "Start at a fixed time",
     "summary_start_sunrise": "starts at sunrise",
     "summary_start_sunset": "starts at sunset",
     "summary_start_azimuth": "starts when the sun is at {deg}°",
@@ -1467,6 +1465,8 @@
     "preview_help": "Each zone on its own line, with the durations Smart Irrigation would water now. They follow the weather, so a run may differ when it starts.",
     "yaml_back": "Back to the editor",
     "yaml_edit": "Edit in YAML",
+    "yaml_only_title": "Set in YAML (not editable here)",
+    "yaml_only_help": "Settings the visual editor does not show. Editing here keeps them.",
     "yaml_help": "The program as text. A step names its zones by name or by number, and what is left out takes its default. Nothing is saved until you apply: the timeline below shows what the program would do.",
     "yaml_apply": "Apply",
     "yaml_invalid": "This is not valid YAML.",
@@ -1485,7 +1485,8 @@
     "schedule_azimuth": "Sun's bearing",
     "schedule_azimuth_help": "Degrees clockwise from north: 90 east, 180 south, 270 west. For a bed that the shade of a wall or a tree leaves at that moment.",
     "view_flow": "Diagram",
-    "view_timeline": "Timeline"
+    "view_timeline": "Timeline",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Pumps and main valves",
@@ -1507,7 +1508,7 @@
     "title": "Observed watering (closed loop)",
     "description": "Credits each zone's water balance from real watering, instead of an automation resetting it. Pick a valve or switch per zone under Zones: while it is open, run time times throughput is credited, or the volume a meter measured. Remove set_bucket and reset_bucket calls from your automations, or it counts twice.",
     "enabled_label": "Enable observed watering",
-    "confirm_full_controller": "Turn on the full controller? Smart Irrigation will drive the valves and start the watering itself. A valve found open at startup that no run of ours owns is closed.",
+    "confirm_full_controller": "Calculate and water? Smart Irrigation will open the valves and start the watering itself, with its programs. A valve found open at startup that no run of ours owns is closed.",
     "sequencing_label": "Zone sequencing",
     "sequencing": {
       "sequential": "Sequential (one zone at a time)",
@@ -1631,7 +1632,7 @@
       "zones": "Zones (all of them when empty)",
       "show_next_start": "Show the next start",
       "compact": "Only the zones that would water",
-      "show_programs": "Show the programs (full controller)"
+      "show_programs": "Show the programs"
     },
     "no_valve": "no valve linked, not watered",
     "no_trigger": "No start trigger",
@@ -1690,6 +1691,7 @@
     "weather": "Weather allows it?",
     "weather_sub": "Rain, frost, wind…",
     "weather_yes": "Yes",
+    "weather_yes_unread": "Yes, but {reason} could not be read",
     "weather_no": "No: {reason}",
     "otherwise": "Otherwise: nothing that day",
     "supply_on": "{name} on",

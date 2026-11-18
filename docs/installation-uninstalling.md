@@ -1,21 +1,14 @@
 ---
-layout: default
-title: "Installation: Uninstalling"
+title: "Uninstalling"
 ---
 # Uninstalling
 
-> Main page: [Installation](installation.md)<br/>
-> Previous: [Migrating from V1 to V2](installation-migration.md)
+!!! warning "Export a backup first"
 
-To remove Smart Irrigation from Home Assistant, go to Configuration > Integrations. In the Smart Irrigation card, click the button with the 3 dots, and click 'Delete'.
+    Deleting the integration removes its zones, sensor groups, programs and settings. Adding it again starts from nothing, with the setup assistant. If you may want them back, export a backup first under **Settings › Backup / restore** in the Smart Irrigation panel.
 
-Deleting it removes its zones, sensor groups, programs and settings. Adding it again starts from nothing, with the setup assistant. If you may want them back, export a backup first under **Settings › Backup / restore** in the Smart Irrigation panel.
-
-To remove all files, do the following:
-* **If installed with HACS**: in the HACS panel, find Smart Irrigation. Click the button with the 3 dots and click 'Uninstall'.
-* **If installed manually**: in the `custom_components` directory, remove the `smart_irrigation` folder.
-
-Restart HA to remove all traces of the integration from your sytem.
-
-> Main page: [Installation](installation.md)<br/>
-> Previous: [Migrating from V1 to V2](installation-migration.md)
+1. In **Settings › Devices & services**, open **Smart Irrigation**, then choose **Delete** in the three-dot menu.
+2. Remove the files:
+   - **Installed with HACS**: in HACS, find Smart Irrigation and choose **Remove** in the three-dot menu.
+   - **Installed by hand**: delete the `custom_components/smart_irrigation` folder.
+3. Restart Home Assistant.

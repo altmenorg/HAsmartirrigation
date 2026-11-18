@@ -112,6 +112,10 @@ async def test_every_start_of_the_day_is_calculated_again_not_only_the_first():
     coordinator._watering_decision_today = True
     coordinator._watering_prepared_today = True
     coordinator._zones_held_by_days_between = set()
+    # The readings of the moment are judged again at this start.
+    coordinator.async_evaluate_skip_conditions = AsyncMock(
+        return_value={"should_skip": False, "reason": None, "checks": []}
+    )
     for hold in (
         "_hold_back_zones_held_by_days_between",
         "_hold_back_zones_with_moist_soil",

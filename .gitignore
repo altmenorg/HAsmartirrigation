@@ -408,3 +408,6 @@ test_calendar_fix.py
 
 # Icon-generation scratch (the real brand assets live in custom_components/.../brand/)
 /images/brand/
+
+# MkDocs build output
+site/

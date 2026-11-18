@@ -198,7 +198,7 @@
         "no-data": "Aucune donnée n'a encore été récupérée du service météo."
       },
       "title": "Service météo",
-      "description": "Consulte et modifie le service météo utilisé pour récupérer les données — sans réinstaller l'intégration. La clé API est validée et le changement est appliqué immédiatement.",
+      "description": "Consulte et modifie le service météo utilisé pour récupérer les données, sans réinstaller l'intégration. La clé API est validée et le changement est appliqué immédiatement.",
       "labels": {
         "use-weather-service": "Utiliser un service météo",
         "service": "Service météo",
@@ -212,7 +212,7 @@
         "open-sensor-groups": "Ouvrir les groupes de capteurs"
       },
       "messages": {
-        "no-service": "Aucun service météo utilisé — les données proviennent uniquement de tes capteurs.",
+        "no-service": "Aucun service météo utilisé : les données proviennent uniquement de tes capteurs.",
         "saved": "Service météo mis à jour et appliqué.",
         "reload-note": "L'enregistrement valide la clé API auprès du service et applique le changement immédiatement.",
         "owm-onecall-hint": "OpenWeatherMap exige le forfait One Call API 3.0 (One Call by Call). Il est gratuit jusqu'à 1000 appels par jour mais doit être activé avec une carte, et une nouvelle clé peut mettre une ou deux heures à fonctionner. Une simple clé par défaut est refusée.",
@@ -243,7 +243,7 @@
       },
       "messages": {
         "exported": "Fichier de sauvegarde téléchargé.",
-        "restored": "Configuration restaurée — rechargement de l'intégration.",
+        "restored": "Configuration restaurée : rechargement de l'intégration.",
         "invalid-file": "Ce fichier n'est pas une sauvegarde Smart Irrigation valide.",
         "confirm-title": "Remplacer toute la configuration ?",
         "summary": "Cette sauvegarde contient",
@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Panneau",
           "labels": {
             "advanced": "Réglages avancés",
             "advanced-hint": "Affiche les réglages qui ajustent le modèle : drainage, seuils, multiplicateur, anticipation des jours à venir. Leurs valeurs par défaut sont saines, laisse éteint tant que tu n'en as pas besoin. Tes valeurs sont conservées dans tous les cas."
@@ -500,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "Rien ici n'ouvre de vanne",
-          "body": "Smart Irrigation calcule la durée d'arrosage ; il faut que quelque chose l'exécute. Soit tu actives le pilotage direct des vannes dans Réglages puis tu lies une vanne à chaque zone, soit tu écris une automatisation sur l'événement de départ (les blueprints le font pour toi). Si une automatisation le fait déjà, il n'y a rien à changer.",
+          "body": "Smart Irrigation calcule la durée d'arrosage ; il faut que quelque chose l'exécute. Soit tu choisis « Calculer et arroser » dans les Réglages et tu relies une vanne à chaque zone, soit tu écris une automatisation sur l'événement de démarrage (les blueprints le font pour toi). Si une automatisation le fait déjà, il n'y a rien à changer.",
           "action": "Vers le pilotage des vannes"
         }
       }
@@ -711,7 +710,7 @@
         "data-number-of-data-points": "Nombre de points de données",
         "drainage_rate": "Taux de drainage",
         "linked-entity": "Vanne/interrupteur lié",
-        "linked-entity-hint": "La vanne ou l'interrupteur qui arrose cette zone. Smart Irrigation l'ouvre et la ferme quand le pilotage direct est activé. Avec l'arrosage observé activé, chacune de ses ouvertures (à la main, par une automatisation, ou par Smart Irrigation) crédite le bilan hydrique d'après la durée d'arrosage et le débit de la zone.",
+        "linked-entity-hint": "La vanne ou l'interrupteur qui arrose cette zone. Avec « Calculer et arroser », Smart Irrigation l'ouvre et la ferme. Avec l'arrosage observé, chaque passage (à la main, par une automatisation ou par Smart Irrigation) crédite le bilan hydrique d'après la durée et le débit.",
         "valve-off": "Une vanne peut être liée dès que Smart Irrigation arrose (Calculer et arroser) ou que l'arrosage observé est activé.",
         "valve-off-link": "Activer",
         "supply": "Pompe ou vanne générale",
@@ -726,7 +725,7 @@
         "observed-ignore-seconds-help": "Une ouverture de la vanne aussi courte ou plus courte n'est pas créditée : quelques minutes pour rafraîchir les feuilles un après-midi de chaleur s'évaporent surtout. Un arrosage plus long compte en entier. Vide : chaque arrosage est crédité.",
         "confirm-timeout": "Attendre la confirmation de la vanne",
         "open-resends": "Renvoyer l'ouverture",
-        "confirm-timeout-help": "Le temps laissé à la vanne pour signaler qu'elle s'est ouverte ou fermée, et le nombre de fois où l'ouverture est renvoyée pendant ce temps. Vide, les valeurs par défaut s'appliquent : 8 secondes sans renvoi, ou 30 secondes et deux renvois avec le contrôleur complet, et 5 secondes pour une fermeture. Une vanne connectée au cloud, comme Gardena, confirme lentement et compte chaque commande dans un quota : donne-lui une attente plus longue et 0 renvoi. Une fermeture est toujours retentée une seconde fois.",
+        "confirm-timeout-help": "Le temps laissé à la vanne pour signaler qu'elle s'est ouverte ou fermée, et le nombre de fois où l'ouverture est renvoyée pendant ce temps. Vide : 30 s et deux renvois ; fermeture 5 s, toujours tentée deux fois. Vannes cloud comme Gardena : attends plus longtemps, 0 renvoi, chaque commande compte dans un quota.",
         "safety-off-topic": "Topic MQTT de coupure de sécurité",
         "safety-off-state-key": "Clé d'état de coupure de sécurité",
         "safety-off-mode": "Mode de coupure de sécurité",
@@ -812,7 +811,8 @@
         "duration-readonly-disabled": "Une zone désactivée n'est jamais arrosée, elle n'a donc pas de durée d'arrosage.",
         "et-deficiency-help": "Ce dont cette zone a besoin par jour : ETc, l'évapotranspiration de référence multipliée par le facteur de culture, ajustement saisonnier inclus. Avant la mise à l'échelle de l'intervalle et avant la pluie, ce qui la rend comparable d'une configuration à l'autre. Le capteur de la zone porte aussi la valeur de référence seule, dans l'attribut `eto`, à confronter à ce que publie un service météo.",
         "safety-off-entity": "Durée propre de la vanne",
-        "safety-off-entity-help": "Pour une vanne qui se ferme d'elle-même au bout d'une durée qui lui est propre, comme Gardena (son nombre « durée d'arrosage », 1 min sauf si tu l'as changé) : choisis ce nombre ici. Avant chaque ouverture, Smart Irrigation y écrit la durée de la passe plus 30 s, pour que la vanne reste ouverte pendant toute la passe et se ferme quand même d'elle-même si Home Assistant s'arrête. Sans cela, une telle vanne se ferme au bout de sa durée préréglée."
+        "safety-off-entity-help": "Pour une vanne qui se ferme d'elle-même au bout d'une durée qui lui est propre, comme Gardena (son nombre « durée d'arrosage », 1 min sauf si tu l'as changé) : choisis ce nombre ici. Avant chaque ouverture, Smart Irrigation y écrit la durée de la passe plus 30 s, pour que la vanne reste ouverte pendant toute la passe et se ferme quand même d'elle-même si Home Assistant s'arrête. Sans cela, une telle vanne se ferme au bout de sa durée préréglée.",
+        "yaml_only_item": "{label} : {value}"
       },
       "no_items": "Il n'y a pas encore de zone définie.",
       "title": "Zones",
@@ -867,11 +867,18 @@
         "zone": "Zone et vanne",
         "need": "Ce dont elle a besoin",
         "status": "Où elle en est"
+      },
+      "yaml": {
+        "only_help": "Des réglages que l'éditeur visuel n'affiche pas. Ils sont conservés quand tu modifies ici.",
+        "help": "Les réglages de la zone en texte, dans les unités du panneau. Un réglage facultatif retiré est effacé ; un réglage obligatoire (nom, surface...) est conservé. Rien n'est enregistré avant que tu appliques.",
+        "not_a_zone": "Ce n'est pas une zone : une zone est un ensemble de clés (name, size, throughput...).",
+        "not_settings": "Pas des réglages d'une zone, ou pas modifiables ici : {keys}",
+        "applied": "Zone enregistrée"
       }
     },
     "history": {
       "title": "Historique",
-      "description": "Chaque arrosage comptabilisé par Smart Irrigation pour une zone : quand il a commencé, combien de temps il a duré et quel volume d'eau il a utilisé. Les arrosages sont enregistrés par le contrôle direct des vannes et par l'arrosage observé, et sont conservés 90 jours.",
+      "description": "Chaque arrosage comptabilisé par Smart Irrigation pour une zone : quand il a commencé, combien de temps il a duré et quel volume d'eau il a utilisé. Les arrosages sont enregistrés quand Smart Irrigation arrose et par l'arrosage observé, et sont conservés 90 jours.",
       "refresh": "Actualiser",
       "no-data": "Aucun arrosage n'a encore été enregistré.",
       "table": {
@@ -1002,7 +1009,7 @@
         },
         "nothing-waters": "L'import n'arrose rien. Irrigation Unlimited continue d'arroser jusqu'à ce que tu le désactives et actives ces horaires.",
         "blocked": "Règle d'abord ce qui est marqué en rouge ; d'ici là, rien ne peut être importé.",
-        "full-controller-off": "Le contrôleur complet est désactivé : les programmes sont importés, mais n'arrosent qu'une fois qu'il est activé.",
+        "full-controller-off": "Smart Irrigation n'est pas réglé sur « Calculer et arroser » : les programmes sont importés, mais n'arrosent qu'une fois ce choix fait.",
         "nothing-waters-iu-off": "L'import n'arrose rien, et Irrigation Unlimited ne tourne pas : Home Assistant ne l'a pas chargé (voir son journal). Rien n'arrose tant que tu n'actives pas ces horaires."
       },
       "errors": {
@@ -1026,16 +1033,16 @@
         "programs": "{count, plural, one {# programme} other {# programmes}}",
         "next": "Les horaires des nouveaux programmes sont désactivés : c'est donc toujours Irrigation Unlimited qui arrose. Quand tu es prêt, désactive les contrôleurs d'Irrigation Unlimited et active ces horaires, sur la page Programmes.",
         "open-programs": "Ouvrir les programmes",
-        "next-off": "Le contrôleur complet est désactivé : ces programmes n'arrosent pas encore, et Irrigation Unlimited continue d'arroser. Active le contrôleur complet dans les réglages, puis désactive Irrigation Unlimited et active ces horaires.",
+        "next-off": "Smart Irrigation n'est pas réglé sur « Calculer et arroser » : ces programmes n'arrosent pas encore, et Irrigation Unlimited continue d'arroser. Choisis « Calculer et arroser » dans les réglages, puis bascule en haut de cette page.",
         "open-settings": "Ouvrir les réglages",
         "next-iu-off": "Les horaires des nouveaux programmes sont désactivés, et Irrigation Unlimited ne tourne pas : rien n'arrose pour l'instant. Vérifie les programmes, puis active leurs horaires.",
-        "next-off-iu-off": "Le contrôleur complet est désactivé : ces programmes n'arrosent pas encore, et Irrigation Unlimited ne tourne pas : rien n'arrose pour l'instant. Active le contrôleur complet dans les réglages, puis les horaires des programmes."
+        "next-off-iu-off": "Smart Irrigation n'est pas réglé sur « Calculer et arroser » : ces programmes n'arrosent pas encore, et Irrigation Unlimited ne tourne pas : rien n'arrose pour l'instant. Choisis « Calculer et arroser » dans les réglages, puis active les horaires des programmes."
       },
       "conflicts": {
         "zone_twice": "{zone} et {other} deviendraient toutes les deux {target}. Choisis une autre zone pour l'une d'elles.",
         "calculated_needs_zone": "{zone} est aujourd'hui calculée par Smart Irrigation, à partir de la zone depuis laquelle une automatisation d'ajustement de durée l'alimente. Choisis cette zone ou une autre zone existante.",
-        "program_exists": "Un programme « {name} » ({id}) gêne : aucun import ne l'a créé. Renomme-le ou supprime-le d'abord, dans Arrosage, Programmes (avec le contrôleur complet activé).",
-        "supply_exists": "Une pompe « {name} » ({id}) gêne : aucun import ne l'a créée. Renomme-la ou supprime-la d'abord, dans Arrosage, Pompes et vannes (avec le contrôleur complet activé)."
+        "program_exists": "Un programme « {name} » ({id}) gêne : aucun import ne l'a créé. Renomme-le ou supprime-le d'abord, dans Arrosage, Programmes (une fois « Calculer et arroser » choisi).",
+        "supply_exists": "Une pompe « {name} » ({id}) gêne : aucun import ne l'a créée. Renomme-la ou supprime-la d'abord, dans Arrosage, Pompes et vannes (une fois « Calculer et arroser » choisi)."
       },
       "confirm_remove": "Cet import supprime ce qu'un import précédent a créé et qu'Irrigation Unlimited n'a plus : {names}. Continuer ?",
       "cutover": {
@@ -1045,7 +1052,7 @@
         "si-waters-now": "Smart Irrigation arrose : les horaires importés sont activés, et les contrôleurs d'Irrigation Unlimited désactivés.",
         "nobody-waters": "Rien n'arrose : les contrôleurs d'Irrigation Unlimited sont désactivés, et les horaires importés aussi.",
         "both-on": "Les deux arroseraient : Irrigation Unlimited a un contrôleur activé, et des horaires importés sont activés aussi. Désactive Irrigation Unlimited, ou les horaires.",
-        "full-controller-off": "Le contrôleur complet est désactivé : active-le d'abord dans les réglages, sinon les programmes importés n'arrosent pas.",
+        "full-controller-off": "Smart Irrigation n'est pas réglé sur « Calculer et arroser » : choisis-le d'abord dans les réglages, sinon les programmes importés n'arrosent pas.",
         "programs": "Les programmes importés",
         "schedules-on": "{on} horaires activés sur {count}",
         "open-programs": "Regarde-les sur la page Programmes avant de basculer",
@@ -1064,7 +1071,7 @@
         "confirm-back": "Les horaires importés sont désactivés, et les contrôleurs d'Irrigation Unlimited réactivés. Irrigation Unlimited arrose à nouveau.",
         "errors": {
           "generic": "Ça n'a pas marché.",
-          "full_controller_off": "Active d'abord le contrôleur complet : sans lui, rien n'arrose.",
+          "full_controller_off": "Choisis d'abord « Calculer et arroser » : sans cela, rien n'arrose.",
           "not_imported": "Rien n'a encore été importé.",
           "iu_failed": "Irrigation Unlimited n'a pas pris le changement. Ce que cette étape avait modifié est annulé : vois ci-dessus qui arrose.",
           "not_switched": "L'arrosage n'a pas été confié à Smart Irrigation : il n'y a donc rien à annuler.",
@@ -1098,7 +1105,7 @@
         "every_limit": "tous les {every, number} jours : Smart Irrigation va jusqu'à {max, number}",
         "every_not_number": "{value} n'est pas un nombre de jours",
         "feeds_other_zone": "une automatisation l'alimente depuis la zone {from}, mais elle est associée à la zone {to} : sa durée calculée est celle de cette zone",
-        "full_controller_off": "le contrôleur complet est désactivé : les programmes sont importés, mais n'arrosent qu'une fois qu'il est activé",
+        "full_controller_off": "Smart Irrigation n'est pas réglé sur « Calculer et arroser » : les programmes sont importés, mais n'arrosent qu'une fois ce choix fait",
         "held_to_limit": "{seconds, number} s sont ramenées à {limit, number} s, le maximum permis par Smart Irrigation",
         "lead_kept": "{time} est gardé : l'avancer du délai de {lead, number} s de la pompe changerait de jour",
         "lead_time": "la zone « {zone} » a un temps de mise en eau de {lead, number} s, que Smart Irrigation ajoute à chaque arrosage à durée fixe : elle arrose d'autant plus longtemps que dans IU, sauf si le temps de mise en eau est mis à 0 ou l'étape raccourcie",
@@ -1111,7 +1118,7 @@
         "off_in_iu_matched": "désactivée dans IU et associée à « {zone} », qui reste telle quelle : les programmes la laissent de côté",
         "offset_limit": "un décalage de {offset, number} min : Smart Irrigation permet {max, number}",
         "offset_rounded": "le décalage de {seconds, number} s est arrondi à {minutes, number} min : Smart Irrigation y compte en minutes",
-        "overlap": "{count} zones et séquences ont des horaires : là où leurs arrosages se chevauchent, IU les arrose en même temps, le contrôleur complet l'un après l'autre",
+        "overlap": "{count} zones et séquences ont des horaires : là où leurs arrosages se chevauchent, IU les arrose en même temps, Smart Irrigation l'un après l'autre",
         "passes_held": "{repeats, number} répétitions sont ramenées à {max, number} passes",
         "period_needs_both": "la période du {from} au {until} demande les deux dates : l'horaire tourne toute l'année",
         "program_per_duration": "{count} programmes, un par durée d'horaire",
@@ -1156,7 +1163,7 @@
     "active_default": "Par défaut : fini au lever du soleil",
     "active_hint": "Seul le déclencheur choisi lance l'arrosage, une fois par jour. Par défaut, l'arrosage part de façon à ce que chaque zone ait fini au lever du soleil ; avec Aucun, Smart Irrigation ne lance rien.",
     "usage_before": "Lorsqu'un déclencheur s'active, Smart Irrigation émet l'événement ",
-    "usage_after": " — écoute-le dans une automatisation pour démarrer l'arrosage. Les données de l'événement incluent trigger_name, trigger_type et offset_minutes, tu peux donc réagir différemment selon le déclencheur. Les réglages de saut pour précipitations et de jours entre arrosages s'appliquent toujours : un jour de saut, aucun événement n'est émis.",
+    "usage_after": ". Écoute-le dans une automatisation pour démarrer l'arrosage. Les données de l'événement incluent trigger_name, trigger_type et offset_minutes, tu peux donc réagir différemment selon le déclencheur. Les réglages de saut pour précipitations et de jours entre arrosages s'appliquent toujours : un jour de saut, aucun événement n'est émis.",
     "add_trigger": "Ajouter un déclencheur",
     "edit_trigger": "Modifier le déclencheur",
     "delete_trigger": "Supprimer le déclencheur",
@@ -1201,7 +1208,7 @@
       "cancel": "Annuler",
       "save": "Enregistrer",
       "delete": "Supprimer",
-      "help": "Lorsque ce déclencheur s'active, Smart Irrigation émet l'événement suivant — utilise-le dans une automatisation pour démarrer l'arrosage. Les données de l'événement incluent le nom de ce déclencheur (ainsi que son type/décalage), tu peux donc y réagir spécifiquement :"
+      "help": "Lorsque ce déclencheur s'active, Smart Irrigation émet l'événement suivant. Utilise-le dans une automatisation pour démarrer l'arrosage. Les données de l'événement incluent le nom de ce déclencheur (ainsi que son type/décalage), tu peux donc y réagir spécifiquement :"
     },
     "offset_auto": "Auto (calculé d'après la durée d'arrosage totale des zones)",
     "confirm_delete": "Veux-tu vraiment supprimer le déclencheur \"{name}\" ?",
@@ -1242,6 +1249,8 @@
     "effective_rain_description": "Ignorer une averse inférieure au cinquième de l'évapotranspiration de la période : elle mouille les feuilles et s'évapore. Jugé sur toute la période entre deux calculs.",
     "forecast_label": "Tenir compte de la pluie prévue",
     "forecast_description": "En dessous du seuil, chaque zone est arrosée pour son déficit moins la pluie prévue dans les 24 heures suivantes, pondérée par la probabilité donnée par le service météo : 4 mm prévus sur un déficit de 10 mm arrosent 6 mm. À partir du seuil, le départ est sauté pour les zones à l'air libre. Les zones en serre ne sont pas concernées.",
+    "forecast_no_service": "A besoin d'un service météo : c'est lui qui fournit la prévision.",
+    "forecast_no_service_on": "Pas de service météo : il n'y a aucune prévision à lire, donc ceci ne retient rien.",
     "forecast_set_up_service": "Configurer un service météo"
   },
   "coordinate_config": {
@@ -1317,7 +1326,6 @@
     "step_delay": "Attente après cette étape",
     "step_delay_help": "Négatif : l'étape suivante démarre ce temps avant la fin de celle-ci.",
     "tours": "Tours d'arrosage",
-    "tours_help": "Toute la liste des étapes est arrosée autant de fois, chaque tour avec sa part de l'eau. Contrairement aux passes, qui répètent une étape avant de passer à la suivante, un tour laisse chaque zone absorber pendant que les autres arrosent.",
     "enabled": "Activé",
     "add_step": "Ajouter une étape",
     "delete_step": "Supprimer l'étape",
@@ -1359,17 +1367,11 @@
     "schedule_every_offset": "Décalé de",
     "schedule_every_help": "Tous les 3 jours avec un décalage de 0, 1 ou 2 permet à trois programmes de se relayer, un jour sur trois, jamais le même jour.",
     "schedule_parity": "Jours du mois",
-    "parity_any": "Tous",
     "parity_even": "Jours pairs",
     "parity_odd": "Jours impairs",
     "schedule_days_of_month": "Jours précis du mois",
-    "schedule_days_of_month_help": "Des numéros de jour séparés par des virgules, et « dernier » pour le dernier jour du mois (par exemple 1, 15, dernier). Un mois trop court pour un jour l'ignore. Vide : tous les jours. S'ajoute aux autres filtres.",
     "schedule_fallback_time": "S'il n'y a ni lever ni coucher",
-    "schedule_fallback_time_help": "Pour un jour sans lever ni coucher du soleil (jour ou nuit polaire).",
     "schedule_months": "Mois",
-    "schedule_months_help": "Aucun coché : tous les mois.",
-    "schedule_yaml_only": "Se règle en YAML (Modifier en YAML, en haut du programme) : affiché ici parce que cet horaire l'utilise.",
-    "yaml_only_set": "Se règle en YAML (Modifier en YAML, en haut du programme) : affiché ici parce qu'il est renseigné.",
     "schedule_from": "Du",
     "schedule_until": "Au",
     "schedule_period_help": "Une période de l'année, qui peut passer le Nouvel An (de novembre à mars). Vide : toute l'année.",
@@ -1383,9 +1385,8 @@
     "condition_precipitation": "Pluie prévue",
     "condition_days_between": "Jours depuis le dernier arrosage",
     "condition_soil_moisture": "Humidité du sol",
+    "conditions_subset": "Seulement ces vérifications météo",
     "schedule_weather_help": "Activé, les contrôles de Météo, Annulation de l'arrosage peuvent annuler ou raccourcir l'arrosage : pluie, gel, vent, jours entre deux arrosages, sol humide et jours reportés. À désactiver pour un goutte-à-goutte de serre que la météo ne concerne pas.",
-    "schedule_conditions_only": "Seulement : {list}",
-    "schedule_conditions_yaml": "Ce planning n'applique que ces contrôles, une liste définie en YAML (skip_conditions). Modifiez-la ou retirez-la dans le YAML du programme : sans elle, tous s'appliquent.",
     "pause": "Pause",
     "resume": "Reprendre",
     "next_step": "Étape suivante",
@@ -1412,7 +1413,6 @@
     "adjust_seconds": "Temps ajouté (+) ou retiré (-)",
     "step_bounds_help": "Ordre d'application : d'abord le pourcentage de « Ajuster les durées » du programme, s'il y en a un en cours (il se règle sur le programme, pas ici), puis le temps ajouté ou retiré, puis le minimum et le maximum. 0 pour le minimum ou le maximum : aucun. Une étape qui n'a besoin d'aucune eau reste à zéro : le minimum ne la lance jamais.",
     "min_deficit_mm": "N'arroser que si le déficit atteint au moins",
-    "min_deficit_mm_help": "En mm, 0 pour toujours arroser. S'il est renseigné, il remplace le seuil de la zone pour cette étape. Les étapes à durée fixe sont toujours arrosées.",
     "adjust_title": "Ajuster les durées",
     "adjust_none": "Aucun ajustement en cours.",
     "adjust_percent": "Pourcentage",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "Appliquer",
     "adjust_reset": "Réinitialiser",
     "confirm_reset_adjustment": "Supprimer l'ajustement de ce programme ?",
-    "mode_off": "Le contrôleur complet est désactivé. Active-le dans Réglages, Général.",
+    "mode_off": "Aucun programme n'arrose : Smart Irrigation n'est pas réglé sur « Calculer et arroser ». Choisis-le dans Réglages, Général, sous « Ce que fait Smart Irrigation ».",
     "no_zone": "aucune zone",
     "mode_calculated_short": "calculée",
     "every_day": "tous les jours",
@@ -1437,9 +1437,7 @@
     "steps_title": "Étapes",
     "schedules_title": "Horaires",
     "passes_help": "Cycle and soak pour cette étape : son eau répartie en autant de passes, chaque zone absorbant entre deux passes. 1 : en une seule fois.",
-    "schedule_fallback_skip": "Sauter ce jour",
     "schedule_fallback_previous": "Reprendre l'heure du dernier vu",
-    "schedule_fallback_at": "Démarrer à une heure fixe",
     "summary_start_sunrise": "démarre au lever du soleil",
     "summary_start_sunset": "démarre au coucher du soleil",
     "summary_start_azimuth": "démarre quand le soleil est à {deg}°",
@@ -1467,6 +1465,8 @@
     "preview_help": "Une ligne par zone, avec les durées que Smart Irrigation arroserait maintenant. Elles suivent la météo : l'arrosage peut différer au moment où il démarre.",
     "yaml_back": "Revenir à l'éditeur",
     "yaml_edit": "Modifier en YAML",
+    "yaml_only_title": "Réglé en YAML (non modifiable ici)",
+    "yaml_only_help": "Des réglages que l'éditeur visuel n'affiche pas. Ils sont conservés quand tu modifies ici.",
     "yaml_help": "Le programme sous forme de texte. Une étape désigne ses zones par leur nom ou leur numéro, et ce qui est omis prend sa valeur par défaut. Rien n'est enregistré avant d'appliquer : la frise ci-dessous montre ce que ferait le programme.",
     "yaml_apply": "Appliquer",
     "yaml_invalid": "Ce n'est pas du YAML valide.",
@@ -1485,7 +1485,8 @@
     "schedule_azimuth": "Azimut du soleil",
     "schedule_azimuth_help": "Degrés depuis le nord dans le sens horaire : 90 est, 180 sud, 270 ouest. Pour un massif que l'ombre d'un mur ou d'un arbre quitte à ce moment-là.",
     "view_flow": "Schéma",
-    "view_timeline": "Frise"
+    "view_timeline": "Frise",
+    "yaml_only_item": "{label} : {value}"
   },
   "supplies": {
     "title": "Pompes et vannes générales",
@@ -1507,7 +1508,7 @@
     "title": "Arrosage observé (boucle fermée)",
     "description": "Crédite le bilan hydrique de chaque zone à partir de l'arrosage réel, au lieu qu'une automatisation le réinitialise. Choisis une vanne ou un interrupteur par zone dans Zones : tant qu'il est ouvert, la durée d'arrosage multipliée par le débit est créditée, ou le volume mesuré par un compteur. Retire les appels à set_bucket et reset_bucket de tes automatisations, sinon l'eau est comptée deux fois.",
     "enabled_label": "Activer l'arrosage observé",
-    "confirm_full_controller": "Activer le contrôleur complet ? Smart Irrigation pilotera les vannes et lancera l'arrosage lui-même. Une vanne trouvée ouverte au démarrage sans arrosage de notre part est refermée.",
+    "confirm_full_controller": "Calculer et arroser ? Smart Irrigation ouvrira les vannes et lancera l'arrosage lui-même, avec ses programmes. Une vanne trouvée ouverte au démarrage sans arrosage de notre part est refermée.",
     "sequencing_label": "Séquencement des zones",
     "sequencing": {
       "sequential": "Séquentiel (une zone à la fois)",
@@ -1631,7 +1632,7 @@
       "zones": "Zones (toutes si vide)",
       "show_next_start": "Afficher le prochain départ",
       "compact": "Seulement les zones qui arroseraient",
-      "show_programs": "Afficher les programmes (contrôleur complet)"
+      "show_programs": "Afficher les programmes"
     },
     "no_valve": "aucune vanne liée, pas arrosée",
     "no_trigger": "Aucun déclencheur de départ",
@@ -1690,6 +1691,7 @@
     "weather": "Météo favorable ?",
     "weather_sub": "Pluie, gel, vent…",
     "weather_yes": "Oui",
+    "weather_yes_unread": "Oui, mais {reason} n'a pas pu être lu",
     "weather_no": "Non : {reason}",
     "otherwise": "Sinon : rien ce jour-là",
     "supply_on": "{name} en marche",

@@ -198,7 +198,7 @@
         "no-data": "Det er ennå ikke hentet data fra værtjenesten."
       },
       "title": "Værtjeneste",
-      "description": "Vis og endre værtjenesten som brukes til å hente værdata — uten å installere integrasjonen på nytt. API-nøkkelen valideres og endringen brukes umiddelbart.",
+      "description": "Vis og endre værtjenesten som brukes til å hente værdata, uten å installere integrasjonen på nytt. API-nøkkelen valideres og endringen brukes umiddelbart.",
       "labels": {
         "use-weather-service": "Bruk en værtjeneste",
         "service": "Værtjeneste",
@@ -212,7 +212,7 @@
         "open-sensor-groups": "Åpne sensorgrupper"
       },
       "messages": {
-        "no-service": "Ingen værtjeneste brukes — værdataene kommer kun fra dine egne sensorer.",
+        "no-service": "Ingen værtjeneste brukes: værdataene kommer kun fra dine egne sensorer.",
         "saved": "Værtjeneste oppdatert og tatt i bruk.",
         "reload-note": "Når du lagrer, valideres API-nøkkelen mot tjenesten og endringen brukes umiddelbart.",
         "owm-onecall-hint": "OpenWeatherMap krever abonnementet One Call API 3.0 (One Call by Call). Det er gratis opp til 1000 kall om dagen, men må aktiveres med et kort, og en ny nøkkel kan bruke et par timer før den virker. En vanlig standardnøkkel blir avvist.",
@@ -243,7 +243,7 @@
       },
       "messages": {
         "exported": "Sikkerhetskopifil lastet ned.",
-        "restored": "Konfigurasjon gjenopprettet — laster integrasjonen på nytt.",
+        "restored": "Konfigurasjon gjenopprettet: laster integrasjonen på nytt.",
         "invalid-file": "Denne filen er ikke en gyldig Smart Irrigation-sikkerhetskopi.",
         "confirm-title": "Erstatte hele konfigurasjonen?",
         "summary": "Denne sikkerhetskopien inneholder",
@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Panel",
           "labels": {
             "advanced": "Avanserte innstillinger",
             "advanced-hint": "Viser innstillingene som finjusterer modellen: drenering, grenser, faktor, hvor langt fram en sone ser. De har fornuftige standardverdier; la dette være av med mindre du vet at du trenger dem. Verdiene dine beholdes uansett."
@@ -500,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "Ingenting her åpner en ventil",
-          "body": "Smart Irrigation beregner hvor lenge det skal vannes; noe må handle på det. Enten slår du på direkte ventilstyring under Innstillinger og knytter deretter en ventil til hver sone, eller du skriver en automasjon på start-hendelsen (blueprintene gjør det for deg). Hvis en automasjon alt gjør det, er det ingenting å endre.",
+          "body": "Smart Irrigation beregner hvor lenge det skal vannes; noe må handle ut fra det. Velg enten «Beregn og vann» under Innstillinger og koble en ventil til hver sone, eller skriv en automasjon på starthendelsen (blueprintene gjør dette for deg). Hvis en automasjon allerede gjør det, er det ingenting å endre.",
           "action": "Til ventilstyring"
         }
       }
@@ -711,7 +710,7 @@
         "data-number-of-data-points": "Antall datapunkter",
         "drainage_rate": "Dreneringsrate",
         "linked-entity": "Tilknyttet ventil/bryter",
-        "linked-entity-hint": "Ventilen eller bryteren som vanner denne sonen. Hver gang den kjører (en manuell kran, en automasjon, eller Smart Irrigation selv når direkte ventilstyring er på), krediteres vannbalansen ut fra kjøretiden og sonens kapasitet. Påkrevd for funksjonene med lukket sløyfe.",
+        "linked-entity-hint": "Ventilen eller bryteren som vanner denne sonen. Med «Beregn og vann» åpner og lukker Smart Irrigation den. Med observert vanning krediterer hver kjøring av den (for hånd, av en automasjon eller av Smart Irrigation) vannbalansen ut fra kjøretid og gjennomstrømning.",
         "valve-off": "En ventil kan kobles til når Smart Irrigation vanner (Beregn og vann) eller observert vanning er på.",
         "valve-off-link": "Slå på",
         "supply": "Pumpe eller hovedventil",
@@ -726,7 +725,7 @@
         "observed-ignore-seconds-help": "En så kort eller kortere åpning av ventilen krediteres ikke: noen minutter for å kjøle bladene en varm ettermiddag fordamper for det meste. En lengre vanning teller fullt ut. Tom: hver vanning krediteres.",
         "confirm-timeout": "Vent på at ventilen bekrefter",
         "open-resends": "Send åpning på nytt",
-        "confirm-timeout-help": "Hvor lenge ventilen har på å melde at den åpnet eller lukket, og hvor mange ganger åpningen sendes på nytt i den tiden. Tomt beholder standardverdiene: 8 sekunder uten gjentakelse, eller 30 sekunder og to gjentakelser med full kontroller, og 5 sekunder for en lukking. En skyventil som Gardena bekrefter sakte og teller hver kommando mot en kvote: gi den lengre ventetid og 0 gjentakelser. En lukking forsøkes alltid en gang til.",
+        "confirm-timeout-help": "Hvor lenge ventilen har på å melde at den åpnet eller lukket, og hvor mange ganger åpningen sendes på nytt i den tiden. Tomt: 30 s og to gjentakelser; lukking 5 s, alltid forsøkt to ganger. Skyventiler som Gardena: vent lenger, 0 gjentakelser, hver kommando teller mot en kvote.",
         "safety-off-topic": "MQTT-topic for sikkerhetsavslag",
         "safety-off-state-key": "Tilstandsnøkkel for sikkerhetsavslag",
         "safety-off-mode": "Modus for sikkerhetsavslag",
@@ -812,7 +811,8 @@
         "duration-readonly-disabled": "En sone som er slått av, vannes aldri, så den har ingen vanningstid.",
         "et-deficiency-help": "Hva denne sonen trenger per dag: ETc, referansefordampingen ganger vekstfaktoren, sesongjustering inkludert. Før skaleringen til intervallet og før regnet, og det er det som gjør tallet sammenlignbart fra ett oppsett til et annet. Sonesensoren bærer også referansetallet for seg, som attributtet `eto`, til å holde mot det en værtjeneste publiserer.",
         "safety-off-entity": "Ventilens egen varighet",
-        "safety-off-entity-help": "For en ventil som lukker av seg selv etter en egen varighet, som Gardena (tallet \"vanningsvarighet\", 1 min med mindre det er endret): velg det tallet her. Før hver åpning skriver Smart Irrigation omgangens lengde pluss 30 s til det, slik at ventilen holder seg åpen hele omgangen og likevel lukker av seg selv hvis Home Assistant stopper. Uten det lukker en slik ventil etter den forhåndsinnstilte tiden."
+        "safety-off-entity-help": "For en ventil som lukker av seg selv etter en egen varighet, som Gardena (tallet \"vanningsvarighet\", 1 min med mindre det er endret): velg det tallet her. Før hver åpning skriver Smart Irrigation omgangens lengde pluss 30 s til det, slik at ventilen holder seg åpen hele omgangen og likevel lukker av seg selv hvis Home Assistant stopper. Uten det lukker en slik ventil etter den forhåndsinnstilte tiden.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Det er ingen definerte soner ennå.",
       "title": "Soner",
@@ -867,11 +867,18 @@
         "zone": "Sone og ventil",
         "need": "Hva den trenger",
         "status": "Hvor den står"
+      },
+      "yaml": {
+        "only_help": "Innstillinger som den visuelle redigereren ikke viser. De beholdes når du redigerer her.",
+        "help": "Sonens innstillinger som tekst, i panelets enheter. En valgfri innstilling som utelates, tømmes; en påkrevd (navn, areal...) beholdes. Ingenting lagres før du bruker endringen.",
+        "not_a_zone": "Dette er ikke en sone: en sone er et sett med nøkler (name, size, throughput...).",
+        "not_settings": "Ikke innstillinger for en sone, eller kan ikke settes her: {keys}",
+        "applied": "Sone lagret"
       }
     },
     "history": {
       "title": "Historikk",
-      "description": "Hver vanning Smart Irrigation har tilskrevet en sone: når den begynte, hvor lenge den vannet og hvor mye vann den brukte. Vanninger registreres av direkte ventilstyring og av observert vanning, og tas vare på i 90 dager.",
+      "description": "Hver vanning Smart Irrigation har tilskrevet en sone: når den begynte, hvor lenge den vannet og hvor mye vann den brukte. Vanninger registreres når Smart Irrigation vanner, og av observert vanning, og tas vare på i 90 dager.",
       "refresh": "Oppdater",
       "no-data": "Ingen vanninger er registrert ennå.",
       "table": {
@@ -1002,7 +1009,7 @@
         },
         "nothing-waters": "Importen vanner ingenting. Irrigation Unlimited fortsetter å vanne til du slår den av og disse tidsplanene på.",
         "blocked": "Løs først det som er merket med rødt; til da kan ingenting importeres.",
-        "full-controller-off": "Den fulle kontrolleren er av: programmene importeres, men vanner først når den er på.",
+        "full-controller-off": "Smart Irrigation er ikke satt til «Beregn og vann»: programmene importeres, men vanner først når det er valgt.",
         "nothing-waters-iu-off": "Importen vanner ingenting, og Irrigation Unlimited kjører ikke: Home Assistant lastet den ikke (se loggen). Ingenting vannes før du slår på disse tidsplanene."
       },
       "errors": {
@@ -1026,16 +1033,16 @@
         "programs": "{count, plural, one {# program} other {# programmer}}",
         "next": "Tidsplanene til nye programmer er slått av, så det er fortsatt Irrigation Unlimited som vanner. Når du er klar, slår du av kontrollerne i Irrigation Unlimited og disse tidsplanene på, på siden Programmer.",
         "open-programs": "Åpne programmene",
-        "next-off": "Den fulle kontrolleren er av, så disse programmene vanner ikke ennå, og Irrigation Unlimited fortsetter å vanne. Slå på den fulle kontrolleren i innstillingene, og slå deretter av Irrigation Unlimited og disse tidsplanene på.",
+        "next-off": "Smart Irrigation er ikke satt til «Beregn og vann», så disse programmene vanner ikke ennå, og Irrigation Unlimited fortsetter å vanne. Velg «Beregn og vann» i innstillingene, og bytt så over øverst på denne siden.",
         "open-settings": "Åpne innstillingene",
         "next-iu-off": "Tidsplanene til de nye programmene er av, og Irrigation Unlimited kjører ikke: ingenting vannes nå. Se over programmene, og slå deretter på tidsplanene deres.",
-        "next-off-iu-off": "Den fulle kontrolleren er av, så disse programmene vanner ikke ennå, og Irrigation Unlimited kjører ikke: ingenting vannes nå. Slå på den fulle kontrolleren i innstillingene, deretter programmenes tidsplaner."
+        "next-off-iu-off": "Smart Irrigation er ikke satt til «Beregn og vann», så disse programmene vanner ikke ennå, og Irrigation Unlimited kjører ikke: ingenting vanner foreløpig. Velg «Beregn og vann» i innstillingene, og slå så på programmenes tidsplaner."
       },
       "conflicts": {
         "zone_twice": "{zone} og {other} ville begge blitt {target}. Velg en annen sone for en av dem.",
         "calculated_needs_zone": "{zone} beregnes i dag av Smart Irrigation, fra sonen en automatisering for tidsjustering forsyner den fra. Velg den sonen eller en annen eksisterende.",
-        "program_exists": "Et program «{name}» ({id}) står i veien: ingen import har laget det. Gi det nytt navn eller slett det først, under Vanning, Programmer (med den fulle kontrolleren på).",
-        "supply_exists": "En pumpe «{name}» ({id}) står i veien: ingen import har laget den. Gi den nytt navn eller slett den først, under Vanning, Pumper og ventiler (med den fulle kontrolleren på)."
+        "program_exists": "Et program «{name}» ({id}) står i veien: ingen import har laget det. Gi det nytt navn eller slett det først, under Vanning, Programmer (når «Beregn og vann» er valgt).",
+        "supply_exists": "En pumpe «{name}» ({id}) står i veien: ingen import har laget den. Gi den nytt navn eller slett den først, under Vanning, Pumper og ventiler (når «Beregn og vann» er valgt)."
       },
       "confirm_remove": "Denne importen sletter det en tidligere import laget og som Irrigation Unlimited ikke lenger har: {names}. Fortsette?",
       "cutover": {
@@ -1045,7 +1052,7 @@
         "si-waters-now": "Smart Irrigation vanner: importerte tidsplaner er på, og kontrollerne i Irrigation Unlimited er av.",
         "nobody-waters": "Ingenting vanner: kontrollerne i Irrigation Unlimited er av, og det er de importerte tidsplanene også.",
         "both-on": "Begge ville vannet: Irrigation Unlimited har en kontroller på, og importerte tidsplaner er også på. Slå av Irrigation Unlimited, eller tidsplanene.",
-        "full-controller-off": "Den fulle kontrolleren er av: slå den først på i innstillingene, ellers vanner ikke de importerte programmene.",
+        "full-controller-off": "Smart Irrigation er ikke satt til «Beregn og vann»: velg det først i innstillingene, ellers vanner ikke de importerte programmene.",
         "programs": "De importerte programmene",
         "schedules-on": "{on} av {count} tidsplaner på",
         "open-programs": "Se på dem på siden Programmer før du bytter over",
@@ -1064,7 +1071,7 @@
         "confirm-back": "De importerte tidsplanene slås av, og kontrollerne i Irrigation Unlimited slås på igjen. Irrigation Unlimited vanner igjen.",
         "errors": {
           "generic": "Det gikk ikke.",
-          "full_controller_off": "Slå først på den fulle kontrolleren: uten den vanner ingenting.",
+          "full_controller_off": "Velg først «Beregn og vann»: uten det vanner ingenting.",
           "not_imported": "Ingenting er importert ennå.",
           "iu_failed": "Irrigation Unlimited tok ikke imot byttet. Det dette trinnet hadde endret, er tilbakestilt: se over hvem som vanner.",
           "not_switched": "Vanningen er ikke overlatt til Smart Irrigation, så det er ingenting å gå tilbake fra.",
@@ -1098,7 +1105,7 @@
         "every_limit": "hver {every, number}. dag: Smart Irrigation går opp til {max, number}",
         "every_not_number": "{value} er ikke et antall dager",
         "feeds_other_zone": "en automatisering forsyner den fra sone {from}, men den er koblet til sone {to}: den beregnede varigheten er den sonens",
-        "full_controller_off": "den fulle kontrolleren er av: programmene importeres, men vanner først når den er på",
+        "full_controller_off": "Smart Irrigation er ikke satt til «Beregn og vann»: programmene importeres, men vanner først når det er valgt",
         "held_to_limit": "{seconds, number} s holdes på {limit, number} s, det meste Smart Irrigation tillater",
         "lead_kept": "{time} beholdes: å flytte det {lead, number} s tidligere for pumpens forsprang ville endret dag",
         "lead_time": "sonen «{zone}» har en ledetid på {lead, number} s, som Smart Irrigation legger til hver fast kjøring: den vanner så mye lenger enn i IU, med mindre ledetiden settes til 0 eller trinnet kortes ned",
@@ -1111,7 +1118,7 @@
         "off_in_iu_matched": "slått av i IU og koblet til «{zone}», som blir som den er: programmene utelater den",
         "offset_limit": "en forskyvning på {offset, number} min: Smart Irrigation tillater {max, number}",
         "offset_rounded": "forskyvningen på {seconds, number} s rundes av til {minutes, number} min: Smart Irrigation regner i minutter der",
-        "overlap": "{count} soner og sekvenser har tidsplaner: der kjøringene deres overlapper, vanner IU dem samtidig, den fulle kontrolleren etter hverandre",
+        "overlap": "{count} soner og sekvenser har tidsplaner: der kjøringene deres overlapper, vanner IU dem samtidig, Smart Irrigation etter hverandre",
         "passes_held": "{repeats, number} gjentakelser begrenses til {max, number} omganger",
         "period_needs_both": "perioden {from} til {until} trenger begge dagene: tidsplanen gjelder hele året",
         "program_per_duration": "{count} programmer, ett per tidsplanvarighet",
@@ -1156,7 +1163,7 @@
     "active_default": "Standard: ferdig ved soloppgang",
     "active_hint": "Bare den valgte utløseren starter vanningen, én gang om dagen. Standard starter slik at hver sone er ferdig ved soloppgang; med Ingen starter Smart Irrigation ingenting.",
     "usage_before": "Når en utløser utløses, sender Smart Irrigation hendelsen ",
-    "usage_after": " — lytt etter den i en automasjon for å starte vanning. Hendelsesdataene inneholder trigger_name, trigger_type og offset_minutes, slik at du kan reagere ulikt per utløser. Innstillingene for nedbørshopp og dager mellom vanninger gjelder fortsatt: på en hoppdag sendes ingen hendelse.",
+    "usage_after": ". Lytt etter den i en automasjon for å starte vanning. Hendelsesdataene inneholder trigger_name, trigger_type og offset_minutes, slik at du kan reagere ulikt per utløser. Innstillingene for nedbørshopp og dager mellom vanninger gjelder fortsatt: på en hoppdag sendes ingen hendelse.",
     "add_trigger": "Legg til utløser",
     "edit_trigger": "Rediger utløser",
     "delete_trigger": "Slett utløser",
@@ -1201,7 +1208,7 @@
       "cancel": "Avbryt",
       "save": "Lagre",
       "delete": "Slett",
-      "help": "Når denne utløseren utløses, sender Smart Irrigation følgende hendelse — bruk den i en automasjon for å starte vanning. Hendelsesdataene inneholder navnet på denne utløseren (samt type/forskyvning), slik at du kan reagere spesifikt på den:"
+      "help": "Når denne utløseren utløses, sender Smart Irrigation følgende hendelse. Bruk den i en automasjon for å starte vanning. Hendelsesdataene inneholder navnet på denne utløseren (samt type/forskyvning), slik at du kan reagere spesifikt på den:"
     },
     "offset_auto": "Auto (beregnet fra total sonevarighet)",
     "confirm_delete": "Er du sikker på at du vil slette utløseren \"{name}\"?",
@@ -1242,6 +1249,8 @@
     "effective_rain_description": "Ignorer en byge på under en femtedel av fordampingen i perioden: den fukter bladene og fordamper. Den vurderes over hele perioden mellom to beregninger.",
     "forecast_label": "Ta hensyn til varslet regn",
     "forecast_description": "Under terskelen vannes hver sone for sitt underskudd minus regnet som er varslet de neste 24 timene, vektet etter sannsynligheten værtjenesten oppgir: 4 mm varslet mot et underskudd på 10 mm gir 6 mm. Ved terskelen eller over hoppes vanningen over for sonene utendørs. Soner i drivhus påvirkes ikke.",
+    "forecast_no_service": "Trenger en værtjeneste: værvarselet kommer derfra.",
+    "forecast_no_service_on": "Ingen værtjeneste: det finnes ikke noe varsel å lese, så dette holder ingenting tilbake.",
     "forecast_set_up_service": "Sett opp en værtjeneste"
   },
   "coordinate_config": {
@@ -1317,7 +1326,6 @@
     "step_delay": "Vent etter dette trinnet",
     "step_delay_help": "Negativ: neste trinn starter så lenge før dette slutter.",
     "tours": "Runder",
-    "tours_help": "Hele listen med trinn vannes så mange ganger, hver runde med sin del av vannet. I motsetning til omganger, som gjentar ett trinn før det neste, lar en runde hver sone ta opp vannet mens de andre vanner.",
     "enabled": "Aktivert",
     "add_step": "Legg til et trinn",
     "delete_step": "Slett trinnet",
@@ -1359,17 +1367,11 @@
     "schedule_every_offset": "Forskjøvet med",
     "schedule_every_help": "Hver 3. dag med en forskyvning på 0, 1 eller 2 lar tre programmer ta turen, én dag av tre, aldri samme dag.",
     "schedule_parity": "Dager i måneden",
-    "parity_any": "Alle",
     "parity_even": "Partallsdager",
     "parity_odd": "Oddetallsdager",
     "schedule_days_of_month": "Bestemte dager i måneden",
-    "schedule_days_of_month_help": "Dagnumre atskilt med komma, og «siste» for månedens siste dag (for eksempel 1, 15, siste). En måned som er for kort for en dag hopper over den. Tomt: alle dager. Kommer i tillegg til de andre filtrene.",
     "schedule_fallback_time": "Hvis det ikke er soloppgang eller solnedgang",
-    "schedule_fallback_time_help": "For en dag uten soloppgang eller solnedgang (polardag eller -natt).",
     "schedule_months": "Måneder",
-    "schedule_months_help": "Ingen avmerket: hver måned.",
-    "schedule_yaml_only": "Stilles inn i YAML (Rediger i YAML, øverst i programmet): vises her fordi denne tidsplanen bruker det.",
-    "yaml_only_set": "Stilles inn i YAML (Rediger i YAML, øverst i programmet): vises her fordi det er satt.",
     "schedule_from": "Fra",
     "schedule_until": "Til",
     "schedule_period_help": "En periode av året, som kan gå over nyttår (fra november til mars). Tom: hele året.",
@@ -1383,9 +1385,8 @@
     "condition_precipitation": "Regnvarsel",
     "condition_days_between": "Dager siden forrige vanning",
     "condition_soil_moisture": "Jordfukt",
+    "conditions_subset": "Bare disse værsjekkene",
     "schedule_weather_help": "På: sjekkene under Vær, Hopp over vanning kan holde vanningen tilbake eller korte den ned: regn, frost, vind, dager mellom vanninger, våt jord og utsatte dager. Slå av for en dryppslange i drivhuset som været ikke angår.",
-    "schedule_conditions_only": "Bare: {list}",
-    "schedule_conditions_yaml": "Denne tidsplanen bruker bare disse sjekkene, en liste satt i YAML (skip_conditions). Endre eller fjern den i programmets YAML: uten den gjelder alle.",
     "pause": "Pause",
     "resume": "Gjenoppta",
     "next_step": "Neste trinn",
@@ -1412,7 +1413,6 @@
     "adjust_seconds": "Tid lagt til (+) eller trukket fra (-)",
     "step_bounds_help": "Rekkefølge: først prosenten fra programmets «Juster varighetene», når en slik gjelder (den settes på programmet, ikke her), så tiden lagt til eller trukket fra, så minimum og maksimum. 0 for minimum eller maksimum: ingen. Et trinn som ikke trenger vann, blir stående på null: minimum starter det aldri.",
     "min_deficit_mm": "Vann bare når underskuddet er minst",
-    "min_deficit_mm_help": "I mm, 0 for å alltid vanne. Satt erstatter den sonens egen terskel for dette trinnet. Trinn med fast varighet vannes alltid.",
     "adjust_title": "Juster varighetene",
     "adjust_none": "Ingen justering gjelder.",
     "adjust_percent": "Prosent",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "Bruk",
     "adjust_reset": "Nullstill",
     "confirm_reset_adjustment": "Fjerne justeringen av dette programmet?",
-    "mode_off": "Den fulle kontrolleren er av. Slå den på i Innstillinger, Generelt.",
+    "mode_off": "Ingen programmer vanner: Smart Irrigation er ikke satt til «Beregn og vann». Velg det i Innstillinger, Generelt, under «Hva Smart Irrigation gjør».",
     "no_zone": "ingen sone",
     "mode_calculated_short": "beregnet",
     "every_day": "hver dag",
@@ -1437,9 +1437,7 @@
     "steps_title": "Trinn",
     "schedules_title": "Tidsplaner",
     "passes_help": "Cycle and soak for dette trinnet: vannet delt i så mange omganger, og hver sone tar opp vann mellom to av dem. 1: på én gang.",
-    "schedule_fallback_skip": "Hopp over den dagen",
     "schedule_fallback_previous": "Bruk tidspunktet for den sist sette",
-    "schedule_fallback_at": "Start på et fast tidspunkt",
     "summary_start_sunrise": "starter ved soloppgang",
     "summary_start_sunset": "starter ved solnedgang",
     "summary_start_azimuth": "starter når solen står i {deg}°",
@@ -1467,6 +1465,8 @@
     "preview_help": "Hver sone på sin egen linje, med varighetene Smart Irrigation ville vannet nå. De følger været, så en vanning kan bli annerledes når den starter.",
     "yaml_back": "Tilbake til redigeringen",
     "yaml_edit": "Rediger i YAML",
+    "yaml_only_title": "Stilt inn i YAML (kan ikke redigeres her)",
+    "yaml_only_help": "Innstillinger som den visuelle redigereren ikke viser. De beholdes når du redigerer her.",
     "yaml_help": "Programmet som tekst. Et trinn angir sonene sine med navn eller nummer, og det som utelates får standardverdien. Ingenting lagres før du bruker endringen: tidslinjen nedenfor viser hva programmet ville gjort.",
     "yaml_apply": "Bruk",
     "yaml_invalid": "Dette er ikke gyldig YAML.",
@@ -1485,7 +1485,8 @@
     "schedule_azimuth": "Solens asimut",
     "schedule_azimuth_help": "Grader med klokken fra nord: 90 øst, 180 sør, 270 vest. For et bed som skyggen av en mur eller et tre forlater i det øyeblikket.",
     "view_flow": "Diagram",
-    "view_timeline": "Tidslinje"
+    "view_timeline": "Tidslinje",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Pumper og hovedventiler",
@@ -1507,7 +1508,7 @@
     "title": "Observert vanning (lukket sløyfe)",
     "description": "Krediterer hver sones vannbalanse fra reell vanning, i stedet for at en automasjon nullstiller den. Velg en ventil eller bryter per sone i Soner: mens den er åpen, krediteres kjøretid ganger kapasitet, eller volumet en måler har målt. Fjern kall til set_bucket og reset_bucket fra automasjonene dine, ellers telles vannet dobbelt.",
     "enabled_label": "Aktiver observert vanning",
-    "confirm_full_controller": "Slå på full kontroller? Smart Irrigation styrer da ventilene og starter vanningen selv. En ventil som er funnet åpen ved oppstart og som ingen av våre kjøringer eier, lukkes.",
+    "confirm_full_controller": "Beregn og vann? Smart Irrigation åpner da selv ventilene og starter vanningen med programmene sine. En ventil som er funnet åpen ved oppstart og som ingen av våre kjøringer eier, lukkes.",
     "sequencing_label": "Sonesekvensering",
     "sequencing": {
       "sequential": "Sekvensiell (én sone om gangen)",
@@ -1631,7 +1632,7 @@
       "zones": "Soner (alle hvis tom)",
       "show_next_start": "Vis neste start",
       "compact": "Bare soner som ville vannet",
-      "show_programs": "Vis programmene (full kontroller)"
+      "show_programs": "Vis programmene"
     },
     "no_valve": "ingen ventil tilknyttet, vannes ikke",
     "no_trigger": "Ingen startutløser",
@@ -1690,6 +1691,7 @@
     "weather": "Tillater været det?",
     "weather_sub": "Regn, frost, vind…",
     "weather_yes": "Ja",
+    "weather_yes_unread": "Ja, men {reason} kunne ikke leses",
     "weather_no": "Nei: {reason}",
     "otherwise": "Ellers: ingenting den dagen",
     "supply_on": "{name} på",

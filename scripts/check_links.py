@@ -2,9 +2,9 @@
 
 Every relative link in ``docs/`` and the README must reach a file that exists,
 and a link to ``page.md#section`` must name a heading of that page, as GitHub
-and Jekyll turn it into an anchor. Links to other sites are checked weekly by
-the link-check workflow instead, since a site that is down for an hour should
-not fail a change.
+and the MkDocs site (GitHub-style slugs, see mkdocs.yml) turn it into an
+anchor. Links to other sites are checked weekly by the link-check workflow
+instead, since a site that is down for an hour should not fail a change.
 """
 
 import re

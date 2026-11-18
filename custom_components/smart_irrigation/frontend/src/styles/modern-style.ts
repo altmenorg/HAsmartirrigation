@@ -276,6 +276,25 @@ export const modernStyle = css`
     color: var(--primary-text-color);
     margin-bottom: 4px;
   }
+  /* A sub-group's title with its switch (the rain sensor, freeze and wind
+     checks): it borrowed the collapsible card's head, padding included, so
+     each one sat indented inside 24 px of empty space more than its rows
+     (#1048). It is a line of the card, not a card's head. */
+  .si-subgroup-title.si-head {
+    padding: 0;
+    cursor: auto;
+    user-select: auto;
+  }
+  .si-subgroup-title:last-child {
+    margin-bottom: 0;
+  }
+  /* Inside a card's content, whose own padding is room enough. */
+  .card-content > .si-subgroup:first-child {
+    padding-top: 0;
+  }
+  .card-content > .si-subgroup:last-child {
+    padding-bottom: 0;
+  }
   /* a sub-group's own setting-rows shouldn't draw their own divider line
      (the sub-group already has one), keeps the nested look clean */
   .si-subgroup .setting-row {
@@ -418,11 +437,28 @@ export const modernStyle = css`
       align-items: stretch;
       gap: 6px;
     }
-    /* A switch stays on the right of its title, never under it (#1049). */
+    /* A switch stays on the right of its title, never under it (#1049),
+       and its row is no taller than the switch needs (#1048). */
     .setting-row:has(> ha-switch) {
       flex-direction: row;
       align-items: center;
       gap: 12px;
+      min-height: 44px;
+    }
+    .card-content > .si-subgroup {
+      padding: 8px 0;
+    }
+    .card-content > .si-subgroup:first-child {
+      padding-top: 0;
+    }
+    .card-content > .si-subgroup:last-child {
+      padding-bottom: 0;
+    }
+    /* Home Assistant's card title keeps 16 px under itself, made for a card
+       that starts with a paragraph: above a row that has its own padding it
+       read as an empty line (#1048). */
+    .card-header {
+      padding-bottom: 8px;
     }
     .field,
     .select-wrap,

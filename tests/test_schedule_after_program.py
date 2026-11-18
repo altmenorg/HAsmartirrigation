@@ -1,10 +1,14 @@
 """A schedule that starts its program after another program (type "after").
 
-The rules: it starts only when the other program really watered and finished
-(by its schedule or by hand), not when that one was held back, suspended, had
-nothing to water or was stopped; its own days and weather still apply; loops
-and deleting a program another one waits for are refused at save; the planning
-places it after the other program's planned end.
+The rules: when the other program really watered and finished (by its
+schedule or by hand), it starts after its end plus the offset. When a scheduled
+run of the other program was held back (the weather, a suspension, nothing to
+water), it starts all the same, at that run's planned moment plus the offset.
+When the other program was stopped by hand, or its run failed, it does not
+start. Its own days and weather still apply; loops and deleting a program
+another one waits for are refused at save; the planning places it after the
+other program's planned end, or at its planned moment when that one will not
+water.
 """
 
 import asyncio
@@ -484,14 +488,24 @@ async def test_a_program_with_nothing_to_water_starts_nothing_after_it(
     assert "b" not in _started(hass)
 
 
-async def test_a_program_held_back_by_the_weather_starts_nothing_after_it(
+async def _due_chained_start(coord, armed):
+    """Fire the one start after a program that waits for its moment."""
+    [(callback, when)] = armed.calls[-1:]
+    callback(when)
+    await _settle(coord)
+    return when
+
+
+async def test_a_program_held_back_by_the_frost_still_starts_the_one_after_it(
     monkeypatch, armed
 ):
+    # The lawn at 06:00 is held back by a frost; the greenhouse drip, weather
+    # off, chained ten minutes after it, waters all the same.
     hass, coord = _chain(
         monkeypatch,
         [
             _program("a", [{"time": "06:00"}], zones=(0,)),
-            _program("b", [_after("a")], zones=(1,)),
+            _program("b", [_after("a", offset_minutes=10)], zones=(1,)),
         ],
     )
     coord._prepare_program_watering = AsyncMock(return_value=(False, set()))
@@ -499,11 +513,43 @@ async def test_a_program_held_back_by_the_weather_starts_nothing_after_it(
     await coord._fire_program_schedule("a", "schedule_1", _utc(1, 6))
     await _settle(coord)
 
+    # From the planned moment of the run held back, plus the offset.
+    [pending] = coord.store.config.pending_chained_starts
+    assert pending["program_id"] == "b"
+    assert dt_util.parse_datetime(pending["due"]) == _utc(1, 6, 10)
+    when = await _due_chained_start(coord, armed)
+    assert when == _utc(1, 6, 10)
+    assert _started(hass) == ["b"]
+    # Only A's weather was judged: B ignores it.
+    coord._prepare_program_watering.assert_awaited_once()
+    assert coord._prepare_program_watering.await_args.args[1]["program_id"] == "a"
+
+
+async def test_a_chained_program_that_takes_the_weather_is_held_back_itself(
+    monkeypatch, armed
+):
+    hass, coord = _chain(
+        monkeypatch,
+        [
+            _program("a", [{"time": "06:00"}], zones=(0,)),
+            _program("b", [_after("a", weather=True)], zones=(1,)),
+        ],
+    )
+    coord._prepare_program_watering = AsyncMock(return_value=(False, set()))
+
+    await coord._fire_program_schedule("a", "schedule_1", _utc(1, 6))
+    await _settle(coord)
+    await _due_chained_start(coord, armed)
+
     assert _started(hass) == []
-    assert not getattr(coord.store.config, "pending_chained_starts", None)
+    # B's start came, and its own weather setting held it back.
+    judged = [
+        c.args[1]["program_id"] for c in coord._prepare_program_watering.await_args_list
+    ]
+    assert judged == ["a", "b"]
 
 
-async def test_a_suspended_program_starts_nothing_after_it(monkeypatch, armed):
+async def test_a_suspended_program_still_starts_the_one_after_it(monkeypatch, armed):
     hass, coord = _chain(
         monkeypatch,
         [
@@ -515,8 +561,51 @@ async def test_a_suspended_program_starts_nothing_after_it(monkeypatch, armed):
 
     await coord._fire_program_schedule("a", "schedule_1", _utc(1, 6))
     await _settle(coord)
+    await _due_chained_start(coord, armed)
 
-    assert _started(hass) == []
+    assert _started(hass) == ["b"]
+
+
+async def test_a_scheduled_run_with_nothing_to_water_starts_the_one_after_it(
+    monkeypatch, armed
+):
+    hass, coord = _chain(
+        monkeypatch,
+        [
+            _program("a", [{"time": "06:00", "weather": False}], zones=(0,)),
+            _program("b", [_after("a", offset_minutes=5)], zones=(1,)),
+        ],
+    )
+    coord.store.by_id[0][const.ZONE_DURATION] = 0
+
+    await coord._fire_program_schedule("a", "schedule_1", _utc(1, 6))
+    await _settle(coord)
+    when = await _due_chained_start(coord, armed)
+
+    assert when == _utc(1, 6, 5)
+    assert _started(hass) == ["b"]
+
+
+async def test_a_chain_held_back_twice_passes_the_moment_on(monkeypatch, armed):
+    # A and B both held back by the weather: C, weather off, starts at A's
+    # moment plus both offsets.
+    hass, coord = _chain(
+        monkeypatch,
+        [
+            _program("a", [{"time": "06:00"}], zones=(0,)),
+            _program("b", [_after("a", weather=True, offset_minutes=5)], zones=(1,)),
+            _program("c", [_after("b", offset_minutes=5)], zones=(2,)),
+        ],
+    )
+    coord._prepare_program_watering = AsyncMock(return_value=(False, set()))
+
+    await coord._fire_program_schedule("a", "schedule_1", _utc(1, 6))
+    await _settle(coord)
+    await _due_chained_start(coord, armed)
+    when = await _due_chained_start(coord, armed)
+
+    assert when == _utc(1, 6, 10)
+    assert _started(hass) == ["c"]
 
 
 async def test_a_scheduled_run_starts_the_program_after_it(monkeypatch, armed):
@@ -737,6 +826,7 @@ async def test_the_chained_run_is_planned_right_after_the_other_ends(monkeypatch
         "program_id": "a",
         "program": "A",
         "offset_minutes": 10,
+        "held_back": False,
     }
     assert by_program["b"]["after_run"] == by_program["a"]["run_key"]
     assert by_program["c"]["start"] == _utc(1, 6, 20).isoformat()
@@ -754,20 +844,25 @@ async def test_a_chained_program_is_not_planned_without_its_predecessor(monkeypa
     assert await coord.async_planning(3) == []
 
 
-async def test_nothing_is_planned_after_a_run_that_will_not_water(monkeypatch):
+async def test_a_run_that_will_not_water_still_has_the_next_one_planned(monkeypatch):
     hass, coord = _chain(
         monkeypatch,
         [
             _program("a", [{"time": "06:00"}], zones=(0,)),
-            _program("b", [_after("a")], zones=(1,)),
+            _program("b", [_after("a", offset_minutes=10)], zones=(1,)),
         ],
     )
     await coord.async_suspend(const.SUSPEND_PROGRAM, "a", hours=24)
 
     planned = await coord.async_planning(1)
 
-    assert [p["program_id"] for p in planned] == ["a"]
+    assert [p["program_id"] for p in planned] == ["a", "b"]
     assert planned[0]["skipped_reason"] == "suspended"
+    # At A's planned moment plus the offset, not behind a run that never waters.
+    assert planned[1]["start"] == _utc(1, 6, 10).isoformat()
+    assert planned[1]["after"]["held_back"] is True
+    assert "after_run" not in planned[1]
+    assert sequence_planning(planned)[1]["start"] == _utc(1, 6, 10).isoformat()
 
 
 async def test_the_planning_keeps_the_days_of_the_chained_schedule(monkeypatch):

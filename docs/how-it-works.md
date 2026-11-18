@@ -1,19 +1,28 @@
+---
+title: "How it works"
+---
 # How it works
 
-The below image shows a graphical representation of what this integration does.
+The picture below shows what Smart Irrigation does. The words for each part, as the panel uses them, are in the [glossary](glossary.md).
 
-The words for each part, as the panel uses them, are in the [glossary](glossary.md).
+![Rain adds water to the soil, evapotranspiration takes it away, and the water balance keeps the difference](assets/images/smart_irrigation_diagram.png)
 
-![](assets/images/smart_irrigation_diagram.png)
+1. Rain and snow add water to the ground: the **precipitation**.
+2. Sun, temperature, humidity, wind and the place on earth decide how much water leaves the ground and the leaves: the **evapotranspiration**.
+3. The difference between the two is the **net precipitation** (the `delta`). Negative, more water was lost than the rain brought; positive, the rain brought more than was lost.
+4. At each calculation, the net precipitation is added to the zone's **water balance** (the `bucket` attribute), which starts at zero: `new water balance = old water balance + net precipitation`.
+5. Above zero, the soil holds more than it can keep, and the surplus drains. The drainage rate falls as the surplus empties, following the hydraulic conductivity of [Brooks and Corey, Eq. 4-6](https://open.library.okstate.edu/rainorshine/chapter/1-8-models-for-soil-hydraulic-conductivity/), scaled by the maximum water balance.
 
-1. Snow and rain fall on the ground add moisture. Together, this makes up the `precipitation`.
-2. Sunshine, temperature, wind speed, place on earth and other factors influence the amount of moisture lost from the ground(`evapotranspiration`).
-3. The difference between `precipitation` and `evapotranspiration` is the `delta` or `nett precipitation`: negative values mean more moisture is lost than gets added by rain/snow, while positive values mean more moisture is added by rain/snow than what evaporates.
-4. At some point in the day (configurable) the `nett precipitation` is added/substracted from the water balance (the `bucket` attribute), which starts at zero. The water balance is calculated using this formula: `old_bucket + nett precipitation.
-5. If the water balance > 0, the `drainage rate` is taken into the account (if set) and subtracted from the water balance value. The actual drainage rate is determined dynamically by the fraction the water balance is of the maximum water balance value, following hydraulic conductivity method of [Brooks and Corey, Eq. 4-6](https://open.library.okstate.edu/rainorshine/chapter/1-8-models-for-soil-hydraulic-conductivity/). When it rained during the window, the window is replayed **hour by hour**: each hour gets its evapotranspiration, the rain that fell in it, then that hour's drainage. The evapotranspiration of each hour is the hourly equation's own figure when the hourly calculation is on, and otherwise follows the sun (in proportion to how high it stands, nothing at night). A rain that just fell is only drained from the hour it fell, not as if it had been in the soil since the previous calculation. When the rain is seen is taken from the readings of the rain sensor (a rain gauge's total, or a rain rate); when nothing says it, the rain is spread evenly over the window.
-6. If the water balance is below zero, irrigation is required.
-7. Irrigation should run for `sensor.smart_irrigation_[zone_name]` seconds, which is 0 when `bucket >= 0` or when the deficit is below the zone's **irrigation threshold** — deep and infrequent beats a daily trickle.
-8. Afterwards the water balance has to be credited with the water that went in. Three ways, and you pick one: let Smart Irrigation [open the valve itself](configuration-closed-loop.md), which credits the run it performed; let it [watch the valve](configuration-closed-loop.md) and credit any run of it; or call [`credit_watering`](usage-services.md) from your own automation with how long the zone ran. Never two of them, or the water is counted twice. A [blueprint](usage-automations.md) does the third for you, per brand of controller.
+    When it rained during the period, the period is replayed **hour by hour**: each hour gets its evapotranspiration, the rain that fell in it, then that hour's drainage. The evapotranspiration of each hour is the hourly equation's own figure when the hourly calculation is on, and otherwise follows the sun (in proportion to how high it stands, nothing at night). A rain that just fell only drains from the hour it fell, not as if it had been in the soil since the previous calculation. When the rain fell is taken from the readings of the rain sensor (a rain gauge's total, or a rain rate); when nothing says it, the rain is spread evenly over the period.
+
+6. Below zero, the zone is short of water: watering is needed.
+7. The zone waters for `sensor.smart_irrigation_[zone_name]` seconds. That is 0 when the water balance is zero or above, or when the deficit is below the zone's **irrigation threshold**: deep and infrequent beats a daily trickle.
+8. Afterwards, the water balance is credited with the water that went in. Three ways, and you pick one:
+   - let Smart Irrigation [open the valve itself](usage-full-controller.md) (Calculate and water), which credits the runs it makes;
+   - let it [watch the valve](configuration-closed-loop.md) (observed watering) and credit any run of it;
+   - call [`credit_watering`](usage-services.md) from your own automation with how long the zone ran. A [blueprint](usage-automations.md) does it for you, per brand of controller.
+
+   Never two of them, or the water is counted twice.
 
 The whole of what is published and when it changes is on one page: [the output contract](usage-output-contract.md).
 
@@ -24,14 +33,16 @@ well-watered grass surface would lose. A hedge, a vegetable bed and a lawn do
 not lose the same, and the difference is the **crop factor** `Kc`, which is the
 zone's crop factor setting:
 
-    ETc = ET0 x Kc
+```text
+ETc = ET0 x Kc
+```
 
 It is applied to the evapotranspiration, before the water balance. That order
 matters, and it is worth saying why, because it used to be the other way round:
 the factor was applied at the very end, to the duration. That scaled the whole
 balance rather than the crop's water use, so a factor below 1 credited only that
 fraction of the rain that fell, and the water balance kept draining at the full
-reference rate — reaching any threshold about `1/Kc` times too fast. No factor
+reference rate, reaching any threshold about `1/Kc` times too fast. No factor
 applied at the end can undo a decision about *when* to water.
 
 The panel asks what grows in the zone, in words, and writes the FAO-56 factor
@@ -51,40 +62,44 @@ an average of a curve.
 A new installation starts on the hourly form. One that existed before it arrived
 keeps the daily one until its owner switches, because the two give different
 numbers and nobody's watering should change on an update. The switch is under
-Settings > General, and [what each form needs is documented
+Settings › General, and [what each form needs is documented
 there](configuration-general.md).
 
 Either way the sun is the term the result is most sensitive to. A radiation
 sensor is best, a weather service that publishes radiation is next, and the
-day's temperature range is the last resort — the estimate FAO-56 gives for
+day's temperature range is the last resort: the estimate FAO-56 gives for
 exactly that case.
 
-## Weekly behavior example
-To understand how `precipitation`, `nett precipitation`, the water balance and irrigation interact, see let's look at an example behavior in a week.
-With this you should be able to do a sanity check against your confiruation and make sure everything is working together.
-The scenario is as follows: we will look at several days, including the precipitation and evapotranspiration for those days and the effects on the water balance and whether ot not irrigation should be triggered. Note that the values here are not representative of any real-life situation and the example below only uses one zone to keep things simple.
+## A week, as an example
 
-### Initialization
-Initially, the water balance is `0`, so the duration for irrigation is set to `0s`. 
+To see how the precipitation, the net precipitation, the water balance and the watering work together, here is one zone over a week. Use it to check your own configuration. The values are made up and only show the mechanism.
+
+At the start, the water balance is `0`, so the duration is `0` seconds.
 
 ### Variables used
-* `P`: Precipitation
-* `Et`: Evapotranspiation
-* `D`: nett Precipitation or Delta (`=P-Et`)
-* `B`: Water balance
-* `Bu`: Water balance after calculation has happened (=`B+D`)
-* `Du`: Duration for irrigation in seconds
+
+- `P`: precipitation
+- `Et`: evapotranspiration
+- `D`: net precipitation, or delta (`P - Et`)
+- `B`: water balance
+- `Bu`: water balance after the calculation (`B + D`)
+- `Du`: watering duration, in seconds
 
 ### Scenario
+
 | Day | `P` | `Et` | `D` | `B` | `Bu` | `Du` | Notes |
 |---|---|---|---|---|---|---|---|
-|1|`0.5`|`0.1`|`0.4`|`0`|`0.4`|`0`|`P > Et` so water balance increased from `0` to `0.4`. Since `Bu > 0` no irrigation is required|
-|2|`0`|`0.6`|`-0.6`|`0.40`|`-0.2`|`180`|`P < Et`, so water balance decreased from `0.4` to `-0.2`. Since Bu < 0` irrigation is required and water balance is reset afterwards|
-|3|`1`|`0.2`|`0.8`|`0` (reset)|`0.8`|`0`|No irrigation required|
-|4|`0.2`|`0.4`|`-0.2`|`0.8`|`0.6`|`0`|No irrigation required even though `P < Et` and water balance was decreased from `0.8` to `0.6`|
-|5|`0`|`1.5`|`-1.5`|`0.6`|`-0.9`|`600`| Since `Bu < 0` irrigation is required and water balance is reset afterwards|
-|6|`0`|`0.4`|`-0.4`|`0` (reset)|`-0.4`|`300`|Since `Bu < 0` irrigation is required and water balance is reset afterwards|
-|7|`0.5`|`0.2`|`0.3`|`0` (reset)|`0.3`|`0`|No irrigation required|
+|1|`0.5`|`0.1`|`0.4`|`0`|`0.4`|`0`|`P > Et`, so the water balance increased from `0` to `0.4`. Since `Bu > 0`, no watering is required|
+|2|`0`|`0.6`|`-0.6`|`0.4`|`-0.2`|`180`|`P < Et`, so the water balance decreased from `0.4` to `-0.2`. Since `Bu < 0`, watering is required, and the water balance is credited back to `0` afterwards|
+|3|`1`|`0.2`|`0.8`|`0` (credited)|`0.8`|`0`|No watering required|
+|4|`0.2`|`0.4`|`-0.2`|`0.8`|`0.6`|`0`|No watering required, even though `P < Et` and the water balance decreased from `0.8` to `0.6`|
+|5|`0`|`1.5`|`-1.5`|`0.6`|`-0.9`|`600`|Since `Bu < 0`, watering is required, and the water balance is credited back to `0` afterwards|
+|6|`0`|`0.4`|`-0.4`|`0` (credited)|`-0.4`|`300`|Since `Bu < 0`, watering is required, and the water balance is credited back to `0` afterwards|
+|7|`0.5`|`0.2`|`0.3`|`0` (credited)|`0.3`|`0`|No watering required|
 
-## When to irrigate
-You should irrigate when the irrigation tells you to, but keep in mind that for grass, experts say you should water deeply but infrequently to avoid overwatering and encourage deep rooting. It might be a good idea to create an automation that starts early enough to finish before sunrise and run that only once per week if `duration is 0` or if the `bucket < -25 mm (~1")`. Adjust to your specific needs. See [Example automation](usage-automations.md) for examples.
+## When to water
+
+For most plants, a lawn included, deep and infrequent watering is better than a little every day: it encourages deep roots. Smart Irrigation does that with two settings rather than an automation of your own:
+
+- the zone's **irrigation threshold**, the deficit it lets build up before watering at all (see [zones](configuration-zones.md), which explains how to pick a number from your soil and root depth);
+- the **days between irrigation**, the fewest days between two waterings (see [Skip watering](configuration-weather.md#days-between-irrigation-events)).

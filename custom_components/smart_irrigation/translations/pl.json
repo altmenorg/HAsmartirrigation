@@ -312,7 +312,7 @@
     },
     "run_program": {
       "name": "Uruchom program",
-      "description": "Uruchom program pełnego kontrolera teraz albo gdy przyjdzie jego kolej, jeśli działa inny. Program podlewa swoje strefy czasami obliczonymi przez Smart Irrigation, chyba że jego kroki mówią inaczej.",
+      "description": "Uruchom program teraz albo gdy przyjdzie jego kolej, jeśli działa inny. Program podlewa swoje strefy czasami obliczonymi przez Smart Irrigation, chyba że jego kroki mówią inaczej.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -430,7 +430,7 @@
     },
     "adjust_program": {
       "name": "Dostosuj program",
-      "description": "Spraw, aby program pełnego kontrolera przez pewien czas podlewał dłużej lub krócej. Korekta zastępuje poprzednią (nigdy się nie sumuje), dotyczy uruchomień rozpoczętych po jej ustawieniu i kończy się po podanych godzinach.",
+      "description": "Spraw, aby program przez pewien czas podlewał dłużej lub krócej. Korekta zastępuje poprzednią (nigdy się nie sumuje), dotyczy uruchomień rozpoczętych po jej ustawieniu i kończy się po podanych godzinach.",
       "fields": {
         "program_id": {
           "name": "Program",

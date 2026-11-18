@@ -29,7 +29,12 @@ async def test_a_hard_deadline_schedule_hands_its_end_to_the_runner(
     await _fire(scheduler, _utc(1, 7))
 
     scheduler.async_run_program.assert_awaited_once_with(
-        "evening", manual=False, only_zones=None, note_day=ANY, deadline=_utc(1, 7)
+        "evening",
+        manual=False,
+        only_zones=None,
+        note_day=ANY,
+        chain_moment=ANY,
+        deadline=_utc(1, 7),
     )
 
 
@@ -39,7 +44,7 @@ async def test_an_end_schedule_without_the_flag_has_no_deadline(armed):  # noqa:
     await _fire(scheduler, _utc(1, 7))
 
     scheduler.async_run_program.assert_awaited_once_with(
-        "evening", manual=False, only_zones=None, note_day=ANY
+        "evening", manual=False, only_zones=None, note_day=ANY, chain_moment=ANY
     )
 
 
@@ -51,7 +56,7 @@ async def test_a_start_schedule_ignores_the_flag(armed):  # noqa: F811
     await _fire(scheduler, _utc(1, 6))
 
     scheduler.async_run_program.assert_awaited_once_with(
-        "evening", manual=False, only_zones=None, note_day=ANY
+        "evening", manual=False, only_zones=None, note_day=ANY, chain_moment=ANY
     )
 
 

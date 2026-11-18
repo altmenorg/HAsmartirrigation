@@ -888,8 +888,8 @@ def plan(
             _item(
                 "",
                 NOT_CARRIED,
-                "the full controller is off: the programs are imported, but they "
-                "water only once it is on",
+                'Smart Irrigation is not set to "Calculate and water": the '
+                "programs are imported, but they water only once it is",
                 code="full_controller_off",
             )
         )
@@ -1517,7 +1517,7 @@ async def _to_smart_irrigation(hass: HomeAssistant, coordinator) -> dict:
     if getattr(store.config, const.CONF_FULL_CONTROLLER, False) is not True:
         raise IUImportError(
             "full_controller_off",
-            "Switch the full controller on first: without it, nothing waters.",
+            'Choose "Calculate and water" first: without it, nothing waters.',
         )
     off_in_iu = _iu_switched_off(hass)
     on_now = [c["entity_id"] for c in iu_controllers(hass) if c["enabled"] is True]

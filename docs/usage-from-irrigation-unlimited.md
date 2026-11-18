@@ -1,16 +1,11 @@
 ---
-layout: default
-title: "Usage: Coming from Irrigation Unlimited"
+title: "Coming from Irrigation Unlimited"
 ---
 # Coming from Irrigation Unlimited
 
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Full controller](usage-full-controller.md)<br/>
-> Next: [Troubleshooting](usage-troubleshooting.md)
+[Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) (IU) is a scheduler and a sequencer of valves with no water model: it does not know the weather, the evapotranspiration or how much water a zone has lost. Smart Irrigation does, and the two used to be joined by two automations written by hand (`adjust_time` into IU, `reset_bucket` at the end).
 
-[Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) (IU) is a scheduler and a sequencer of valves with no water model: it does not know the weather, the evapotranspiration or how much water a zone has lost. Smart Irrigation does, and until now the two were joined by two automations written by hand (`adjust_time` into IU, `reset_bucket` at the end).
-
-The [full controller](usage-full-controller.md) does the scheduling and the running itself. This page says where each thing you used in IU went. It can also bring your configuration over for you: see [Importing your configuration](#importing-your-configuration).
+With **Calculate and water**, Smart Irrigation does the scheduling and the running itself, with its [programs](usage-full-controller.md). This page says where each thing you used in IU went. It can also bring your configuration over for you: see [Importing your configuration](#importing-your-configuration).
 
 ## The words
 
@@ -22,18 +17,18 @@ The [full controller](usage-full-controller.md) does the scheduling and the runn
 | Sequence zone (a step) | **Step**: one zone, or several watered together |
 | Step with zones in parallel | A **step** with several zones, watered at the same time |
 | Delay between steps, including a negative one | **Wait after this step**; a negative value overlaps the steps (up to an hour) |
-| `adjust_time` (`actual`, `percentage`, `increase`, `decrease`) | The step's duration: *calculated* (the default), *calculated times a percentage*, or *fixed*, with a minimum, a maximum and an offset in seconds (`min_seconds`, `max_seconds`, `adjust_seconds`). For a temporary change of a whole program, `smart_irrigation.adjust_program` (a `percent` and/or `seconds`, for some `hours` or until reset). You no longer need an automation to hand it the duration, because the calculated one is the default. |
+| `adjust_time` (`actual`, `percentage`, `increase`, `decrease`) | The step's duration: *calculated* (the default), *calculated times a percentage*, or *fixed*, with a minimum, a maximum (`min_seconds`, `max_seconds`) and an offset in seconds (`adjust_seconds: -120`, **YAML only**, see [YAML-only options](usage-full-controller.md#yaml-only-options)). For a temporary change of a whole program, `smart_irrigation.adjust_program` (a `percent` and/or `seconds`, for some `hours` or until reset). You no longer need an automation to hand it the duration, because the calculated one is the default. |
 | `reset_bucket` or `set_bucket` after the run | Nothing to do: a run of ours credits the water balance itself, for the water that went through |
 | `suspend` | `smart_irrigation.suspend`, for a zone or a program, for some hours or until a date |
 | `manual_run` | `smart_irrigation.water_zone` or `smart_irrigation.run_program`. A manual run joins the queue and takes its turn by default (`mode: queue`); `mode: replace` stops what is running first. `run_program` also takes `seconds`, a total shared between the steps, and `stop_program` ends one program. |
 | `cancel` | `smart_irrigation.stop_watering` |
 | Pause and resume | `smart_irrigation.pause_watering` and `resume_watering` |
 | Skip to the next step | `smart_irrigation.next_step` |
-| Schedule (time, sun, cron) | A program's **schedules**: time of day or sun (with an offset, and a fallback time for polar days, `fallback_time`, set in the program's YAML), with the days as filters. Cron is not supported as such; the import turns a cron line with a bounded set of times into time schedules. |
+| Schedule (time, sun, cron) | A program's **schedules**: time of day or sun (with an offset, and a fallback time for polar days, `fallback_time: previous`, **YAML only**, see [YAML-only options](usage-full-controller.md#yaml-only-options)), with the days as filters. Cron is not supported as such; the import turns a cron line with a bounded set of times into time schedules. |
 | `anchor: start` and `anchor: finish` | The schedule's moment is when the program **starts**, or when it **must be done** (the start is worked back from the length of the run) |
-| Weekdays, day of the month, even/odd, `every_n_days`, months, `from`/`to` | The same filters, on each schedule: days of the week, every N days with a shift (the shift, `every_offset`, set in the program's YAML), even or odd days, named days of the month (`1, 15, last`), months, and a period of the year that may span New Year |
-| `entity_states` | Not the same feature. In IU it lets a timed valve receive only the on command, only the off, or neither. We have no such switch. The nearest things are the per-zone **safety off mode** (`auto`, `zha`, `off`), which can arm a hardware timed off (MQTT topic, or a ZHA command) as a dead-man behind the normal close, and [the check while a valve is open](usage-full-controller.md). The ZHA timed off is armed automatically for a Sonoff SWV (tested on a real valve, ZHA, firmware 1.0.04: it honours the command and counts the time in seconds); for any other ZHA model it is opt-in (`zha` mode) because the unit of the time is unverified. A Sonoff SWV in `auto` mode is now also *opened* by that timed command, so it never runs without its own timer. See [closed loop](configuration-closed-loop.md). |
-| `check_back` (`delay`, `retries`) | The zone's **Wait for the valve to confirm** and **Send the open again** (shown once a wait is set), in its advanced settings. The wait applies to the open and the close. A valve that closes by itself while it should be open is caught by the check every 60 seconds and is not reopened (see `sync_error` below) |
+| Weekdays, day of the month, even/odd, `every_n_days`, months, `from`/`to` | The same filters, on each schedule: days of the week, every N days, and a period of the year that may span New Year, in the form; the shift of every N days (`every_offset: 1`), even or odd days (`parity: even`), named days of the month (`days_of_month: [1, 15, last]`) and months (`months: [5, 6, 7, 8, 9]`) are **YAML only**, see [YAML-only options](usage-full-controller.md#yaml-only-options) |
+| `entity_states` | Not the same feature. In IU it lets a timed valve receive only the on command, only the off, or neither. We have no such switch. The nearest things are the per-zone **safety off mode** (`auto`, `zha`, `off`), which can arm a hardware timed off (MQTT topic, or a ZHA command) as a dead-man behind the normal close, the **Valve's own duration** of a valve that closes by itself, and [the check while a valve is open](usage-full-controller.md#seeing-what-is-going-on). See [hardware auto-off](configuration-closed-loop.md#hardware-auto-off-mqtt-on_time-dead-man). |
+| `check_back` (`delay`, `retries`) | The zone's **Wait for the valve to confirm** (advanced mode) and how often the open is sent again (`open_resends`, **YAML only**: the zone's [Edit in YAML](configuration-zones.md#a-zone-in-yaml)). The wait applies to the open and the close. A valve that closes by itself while it should be open is caught by the check every 60 seconds and is not reopened (see `sync_error` below) |
 | `irrigation_unlimited_start` and `finish` events | `smart_irrigation_program_started` and `program_finished` |
 | `valve_on` and `valve_off` events | `smart_irrigation_valve_on` and `valve_off`, for zones and supplies |
 | `sync_error` | `smart_irrigation_valve_out_of_sync`, with a `smart_irrigation_zone_problem` of reason `valve_closed_early`: a valve held open that reads closed |
@@ -44,11 +39,11 @@ The [full controller](usage-full-controller.md) does the scheduling and the runn
 - **Programs never overlap.** IU lets overlapping runs go on together; here a second program waits for the first, and a step with several zones (or a negative wait between steps) is how you ask for zones at the same time. A pump on a home network seldom has the pressure for more.
 - **The weather is part of the schedule.** A schedule skips, shortens or holds back what the skip conditions say. Turn it off per schedule if you want a plain timer.
 - **The default duration is the one Smart Irrigation calculated**, not a number you type.
-- **Nothing is configured in YAML.** It is all in the panel, and a restart goes on with the steps still to do instead of dropping a run that was under way.
+- **No YAML file to maintain.** It is all in the panel; a few power-user options are written in a program's or a zone's **Edit in YAML** (see [YAML-only options](usage-full-controller.md#yaml-only-options)). A restart goes on with the steps still to do instead of dropping a run that was under way.
 
 ## Importing your configuration
 
-In **Settings, General**, the card **Import from Irrigation Unlimited** opens a wizard that reads your IU configuration and turns it into zones, programs, their schedules and supplies. It takes the configuration from where IU has it: your YAML (`configuration.yaml` and its includes, as Home Assistant loaded it), IU's own settings when it was set up in the interface, or YAML you paste. Pasted YAML is read as text: `!include`, `!secret` and `!env_var` are not followed, and the report says so.
+Under **Settings › General**, the card **Import from Irrigation Unlimited** opens a wizard that reads your IU configuration and turns it into zones, programs, their schedules and supplies. It takes the configuration from where IU has it: your YAML (`configuration.yaml` and its includes, as Home Assistant loaded it), IU's own settings when it was set up in the interface, or YAML you paste. Pasted YAML is read as text: `!include`, `!secret` and `!env_var` are not followed, and the report says so.
 
 Nothing is changed before you have seen it all:
 
@@ -58,7 +53,7 @@ Nothing is changed before you have seen it all:
 
 The schedules of new programs are created **switched off**, so IU keeps watering until you are ready to [switch over](#switching-over). The wizard says so differently when IU is not running, for instance because Home Assistant rejected its configuration: nothing waters then until you switch the schedules on.
 
-Switching the full controller on, which the programs need, creates a program with every zone that has a valve when there is no program yet. If you import first, the imported programs are the ones that water: a program only waters the zones of its steps. A program of your own that waters the same zones as the imported ones waters them twice: switch its schedules off under Programs. Importing again later updates what the earlier import made, in place, and removes what IU no longer has; the wizard asks before it removes anything. Only an administrator can import.
+The programs need **Calculate and water**. Choosing it creates a program with every zone that has a valve when there is no program yet. If you import first, the imported programs are the ones that water: a program only waters the zones of its steps. A program of your own that waters the same zones as the imported ones waters them twice: switch its schedules off under **Watering › Programs**. Importing again later updates what the earlier import made, in place, and removes what IU no longer has; the wizard asks before it removes anything. Only an administrator can import.
 
 ### Switching over
 
@@ -83,14 +78,12 @@ After the switch, importing again keeps the on or off you gave each schedule, an
 
 If you would rather rebuild than import:
 
-1. Switch on the [full controller](usage-full-controller.md).
-2. Add your pump or main valve as a supply, and pick it in each zone.
+1. Choose **Calculate and water** in [Settings › General](configuration-general.md#calculate-and-water-calculate-only-or-stop-everything).
+2. Add your pump or main valve under **Watering › Pumps and valves**, and pick it in each zone.
 3. Make a program per IU sequence: its steps are the sequence's zones, in order. Leave the duration on *calculated*.
 4. Add a schedule to each. If IU ran it to finish at sunrise, take *Sunrise*, *must be done*.
 5. Switch IU's own schedules off, and remove the two automations that handed it durations and reset the water balance.
-6. Look at the **Planning** card: it shows the next days (3, 7 or 14, as you pick on the chart). Compare it with what IU would have done before you remove IU.
-
-> Previous: [Full controller](usage-full-controller.md)
+6. Look at **Watering › Planning**: it shows the next days (3, 7 or 14, as you pick on the chart). Compare it with what IU would have done before you remove IU.
 
 ## Not in Smart Irrigation
 

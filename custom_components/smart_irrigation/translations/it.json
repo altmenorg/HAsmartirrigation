@@ -312,7 +312,7 @@
     },
     "run_program": {
       "name": "Avvia programma",
-      "description": "Avvia ora un programma del controller completo, o appena è il suo turno se un altro è in corso. Il programma irriga le sue zone con le durate calcolate da Smart Irrigation, a meno che i suoi passi non dicano altrimenti.",
+      "description": "Avvia ora un programma, o appena è il suo turno se un altro è in corso. Il programma irriga le sue zone con le durate calcolate da Smart Irrigation, a meno che i suoi passi non dicano altrimenti.",
       "fields": {
         "program_id": {
           "name": "Programma",
@@ -430,7 +430,7 @@
     },
     "adjust_program": {
       "name": "Regola un programma",
-      "description": "Fa irrigare un programma del controller completo più a lungo o più brevemente, per un certo tempo. La regolazione sostituisce la precedente (non si somma mai), si applica alle esecuzioni che partono dopo averla impostata e termina dopo le ore indicate.",
+      "description": "Fa irrigare un programma più a lungo o più brevemente, per un certo tempo. La regolazione sostituisce la precedente (non si somma mai), si applica alle esecuzioni che partono dopo averla impostata e termina dopo le ore indicate.",
       "fields": {
         "program_id": {
           "name": "Programma",

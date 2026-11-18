@@ -174,6 +174,15 @@ class SmartIrrigationConfigView(HomeAssistantView):
         _LOGGER.debug("[websocket]: request: %s %s", request, data)
         hass = request.app["hass"]
         coordinator = hass.data[const.DOMAIN]["coordinator"]
+        if data.get(const.CONF_WATERING_ENABLED) is False:
+            # The old "calculate only" switch (deprecated, gone in 2027.11):
+            # what Smart Irrigation does is the one choice now, so a client
+            # still sending it off must not leave a state no choice describes.
+            data = {k: v for k, v in data.items() if k != const.CONF_WATERING_ENABLED}
+            _LOGGER.warning(
+                "Ignored watering_enabled: false, which is no longer used; "
+                "choose what Smart Irrigation does in Settings, General"
+            )
         try:
             await coordinator.async_update_config(data)
         except ProgramsRefused as err:
@@ -1198,6 +1207,17 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
         except Exception as e:  # noqa: BLE001 - the info panel must not fail on it
             _LOGGER.debug("Skip preview unavailable: %s", e)
             skip_preview = None
+        # A start later today keeps the day's decision on the rain forecast and
+        # the days between irrigation; frost, wind and rain sensor stay live,
+        # as that start will read them again.
+        keep_the_day = getattr(coordinator, "with_the_days_decision", None)
+        if callable(keep_the_day) and skip_preview is not None:
+            try:
+                kept = keep_the_day(skip_preview, next_irrigation_start)
+                if isinstance(kept, dict):
+                    skip_preview = kept
+            except Exception as e:  # noqa: BLE001 - display only
+                _LOGGER.debug("Day decision not applied to the preview: %s", e)
 
         # Account for the "days between irrigation" restriction. The start
         # triggers fire every day, but on a skip day the watering decision is

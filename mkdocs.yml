@@ -1,0 +1,152 @@
+# Documentation site, built with MkDocs Material (replaces the Jekyll "slate" theme).
+# Build locally: pip install -r requirements-docs.txt && mkdocs serve
+site_name: Smart Irrigation
+site_description: A Home Assistant integration that waters your garden for what it actually lost to the weather.
+site_url: https://altmenorg.github.io/HAsmartirrigation/
+repo_url: https://github.com/altmenorg/HAsmartirrigation
+repo_name: altmenorg/HAsmartirrigation
+edit_uri: edit/dev/docs/
+docs_dir: docs
+# Keep the page.html addresses of the Jekyll site, so the links to it all over
+# GitHub and the forums keep working.
+use_directory_urls: false
+
+# Fail the strict build on a broken page link or anchor too.
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
+
+# Leftovers of the Jekyll site, kept for now but not part of the build.
+exclude_docs: |
+  _config.yml
+  _data/
+  _includes/
+  _layouts/
+  _sass/
+  assets/css/
+
+theme:
+  name: material
+  language: en
+  logo: assets/images/logo-mark.svg
+  favicon: assets/images/logo-mark.svg
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to system preference
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - navigation.footer
+    - navigation.instant
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+    - toc.follow
+
+hooks:
+  - scripts/mkdocs_hooks.py
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/altmenorg/HAsmartirrigation
+      name: Smart Irrigation on GitHub
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      # GitHub-style anchors, as the Jekyll site had, so links to sections keep working.
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  # Sub-lists indented by 2 spaces, as GitHub reads them. (A list needs a blank
+  # line before it, as in GitHub's own rendering of the pages.)
+  - mdx_truly_sane_lists:
+      nested_indent: 2
+      truly_sane: true
+
+nav:
+  - Home:
+      - Introduction: index.md
+      - From nothing to a watered garden: getting-started-from-scratch.md
+  - Installation:
+      - installation.md
+      - Downloading the integration: installation-download.md
+      - Weather service: installation-weatherservice.md
+      - Which weather service: weather-services.md
+      - Manual coordinates: MANUAL_COORDINATES.md
+      - "Options: the Configure button": installation-options.md
+      - Updating: installation-updating.md
+      - Migrating from V1 to V2: installation-migration.md
+      - Uninstalling: installation-uninstalling.md
+  - Configuration:
+      - configuration.md
+      - Setup assistant: configuration-setup.md
+      - General: configuration-general.md
+      - Weather: configuration-weather.md
+      - Zones: configuration-zones.md
+      - Modules: configuration-modules.md
+      - Sensor groups: configuration-sensor-groups.md
+      - Closed-loop watering: configuration-closed-loop.md
+  - How it works:
+      - how-it-works.md
+      - Glossary: glossary.md
+  - Usage:
+      - usage.md
+      - Home tab (Info and History): usage-info.md
+      - Dashboard card: usage-card.md
+      - Entities: usage-entities.md
+      - Services: usage-services.md
+      - Events: usage-events.md
+      - Automations: usage-automations.md
+      - The output contract: usage-output-contract.md
+      - Off-the-shelf controllers: usage-controllers.md
+      - Other integrations: usage-enhanced-scheduling-integration.md
+      - Watering with programs: usage-full-controller.md
+      - Coming from Irrigation Unlimited: usage-from-irrigation-unlimited.md
+      - Assistants (AI): usage-assistants.md
+      - Troubleshooting: usage-troubleshooting.md
+  - Help:
+      - help.md

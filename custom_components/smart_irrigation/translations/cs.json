@@ -312,7 +312,7 @@
     },
     "run_program": {
       "name": "Spustit program",
-      "description": "Spustit program plného řadiče nyní, nebo jakmile na něj přijde řada, když běží jiný. Program zalévá své zóny dobami, které vypočítala Smart Irrigation, pokud jeho kroky neříkají jinak.",
+      "description": "Spustit program nyní, nebo jakmile na něj přijde řada, když běží jiný. Program zalévá své zóny dobami, které vypočítala Smart Irrigation, pokud jeho kroky neříkají jinak.",
       "fields": {
         "program_id": {
           "name": "Program",
@@ -430,7 +430,7 @@
     },
     "adjust_program": {
       "name": "Upravit program",
-      "description": "Nechat program plného řadiče na čas zalévat déle nebo kratší dobu. Úprava nahrazuje předchozí (nikdy se nesčítá), platí pro běhy, které začnou po jejím nastavení, a končí po zadaných hodinách.",
+      "description": "Nechat program na čas zalévat déle nebo kratší dobu. Úprava nahrazuje předchozí (nikdy se nesčítá), platí pro běhy, které začnou po jejím nastavení, a končí po zadaných hodinách.",
       "fields": {
         "program_id": {
           "name": "Program",

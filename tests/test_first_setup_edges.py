@@ -60,9 +60,9 @@ def test_the_panel_says_it_in_en_and_de(lang, key):
 
 @pytest.mark.parametrize("lang", ["en", "de"])
 def test_the_valve_hint_says_to_turn_control_on_first(lang):
-    """Linking a valve is only offered once control is on: the order matters."""
+    """Linking a valve is only offered once Smart Irrigation waters: the order matters."""
     body = _get(_load(PANEL, lang), "panels.info.gaps.no_valve_path.body")
-    control = {"en": "direct valve control", "de": "Ventilsteuerung"}[lang]
+    control = {"en": "Calculate and water", "de": "Berechnen und bewässern"}[lang]
     link = {"en": "link a valve", "de": "verknüpfe"}[lang]
     assert body.index(control) < body.index(link)
 

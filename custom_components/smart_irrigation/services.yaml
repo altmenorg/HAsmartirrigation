@@ -130,9 +130,9 @@ credit_watering:
 run_program:
   name: Run program
   description: >-
-    Run a program of the full controller now, or as soon as it is its turn when
-    another one is running. The program waters its zones with the durations
-    Smart Irrigation calculated, unless its steps say otherwise.
+    Run a program now, or as soon as it is its turn when another one is
+    running. The program waters its zones with the durations Smart Irrigation
+    calculated, unless its steps say otherwise.
   fields:
     program_id:
       name: Program
@@ -331,9 +331,9 @@ suspend:
 adjust_program:
   name: Adjust a program
   description: >-
-    Make a program of the full controller water longer or shorter, for a
-    while. The adjustment replaces the previous one (it never adds up), applies
-    to the runs that start after it is set, and ends after the hours given.
+    Make a program water longer or shorter, for a while. The adjustment
+    replaces the previous one (it never adds up), applies to the runs that start
+    after it is set, and ends after the hours given.
   fields:
     program_id:
       name: Program

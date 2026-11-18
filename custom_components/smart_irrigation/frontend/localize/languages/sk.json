@@ -198,7 +198,7 @@
         "no-data": "Z meteoslužby doteraz neboli získané žiadne údaje."
       },
       "title": "Poveternostná služba",
-      "description": "Zobrazte a zmeňte poveternostnú službu používanú na získavanie meteorologických údajov — bez potreby preinštalovať integráciu. API kľúč sa overí a zmena sa použije okamžite.",
+      "description": "Zobrazte a zmeňte poveternostnú službu používanú na získavanie meteorologických údajov, bez potreby preinštalovať integráciu. API kľúč sa overí a zmena sa použije okamžite.",
       "labels": {
         "use-weather-service": "Použiť poveternostnú službu",
         "service": "Poveternostná služba",
@@ -212,7 +212,7 @@
         "open-sensor-groups": "Otvoriť skupiny senzorov"
       },
       "messages": {
-        "no-service": "Nepoužíva sa žiadna poveternostná služba — meteorologické údaje pochádzajú iba z vašich vlastných senzorov.",
+        "no-service": "Nepoužíva sa žiadna poveternostná služba: meteorologické údaje pochádzajú iba z vašich vlastných senzorov.",
         "saved": "Poveternostná služba aktualizovaná a použitá.",
         "reload-note": "Pri uložení sa API kľúč overí voči službe a zmena sa použije okamžite.",
         "owm-onecall-hint": "OpenWeatherMap potrebuje tarif One Call API 3.0 (One Call by Call). Do 1000 volaní denne je zdarma, ale musí byť aktivovaný kartou, a nový kľúč môže začať fungovať až po pár hodinách. Obyčajný predvolený kľúč je odmietnutý.",
@@ -243,7 +243,7 @@
       },
       "messages": {
         "exported": "Súbor zálohy stiahnutý.",
-        "restored": "Konfigurácia obnovená — integrácia sa znova načítava.",
+        "restored": "Konfigurácia obnovená: integrácia sa znova načítava.",
         "invalid-file": "Tento súbor nie je platná záloha Smart Irrigation.",
         "confirm-title": "Nahradiť celú konfiguráciu?",
         "summary": "Táto záloha obsahuje",
@@ -296,7 +296,6 @@
           }
         },
         "panel-mode": {
-          "header": "Panel",
           "labels": {
             "advanced": "Rozšírené nastavenia",
             "advanced-hint": "Zobrazí nastavenia, ktoré ladia model: drenáž, prahy, násobiteľ, ako ďaleko dopredu sa zóna pozerá. Majú rozumné predvolené hodnoty; nechajte to vypnuté, ak neviete, že ich potrebujete. Vaše hodnoty sa v oboch prípadoch zachovajú."
@@ -500,7 +499,7 @@
         },
         "no_valve_path": {
           "title": "Nič tu neotvára ventil",
-          "body": "Smart Irrigation počíta, ako dlho zalievať; niečo na to musí zareagovať. Buď zapnite priame riadenie ventilov v Nastaveniach a potom priraďte ventil ku každej zóne, alebo napíšte automatizáciu na udalosť štartu (blueprinty to urobia za vás). Ak to už automatizácia robí, nie je čo meniť.",
+          "body": "Smart Irrigation počíta, ako dlho zalievať; niečo podľa toho musí konať. Buď v Nastaveniach zvoľte „Počítať a zavlažovať“ a ku každej zóne pripojte ventil, alebo napíšte automatizáciu na udalosť spustenia (blueprinty to urobia za vás). Ak to už automatizácia robí, nie je čo meniť.",
           "action": "K riadeniu ventilov"
         }
       }
@@ -711,7 +710,7 @@
         "data-number-of-data-points": "Počet údajových bodov",
         "drainage_rate": "Rýchlosť odvodnenia",
         "linked-entity": "Prepojený ventil/spínač",
-        "linked-entity-hint": "Ventil alebo spínač, ktorý zavlažuje túto zónu. Vždy keď je spustený (ručným kohútikom, automatizáciou alebo samotnou Smart Irrigation pri zapnutom priamom ovládaní ventilu), sa vodnej bilancii pripíše hodnota z času behu a priepustnosti zóny. Vyžaduje sa pre funkcie uzavretej slučky.",
+        "linked-entity-hint": "Ventil alebo spínač, ktorý zalieva túto zónu. S voľbou „Počítať a zavlažovať“ ho Smart Irrigation otvára a zatvára. So sledovaným zalievaním každé jeho spustenie (ručne, automatizáciou alebo Smart Irrigation) pripíše vodnej bilancii podľa doby chodu a prietoku.",
         "valve-off": "Ventil sa dá prepojiť, keď Smart Irrigation zavlažuje (Počítať a zavlažovať) alebo je zapnuté sledované zavlažovanie.",
         "valve-off-link": "Zapnúť",
         "supply": "Čerpadlo alebo hlavný ventil",
@@ -726,7 +725,7 @@
         "observed-ignore-seconds-help": "Takto krátky alebo kratší chod ventilu sa nepripočíta: pár minút na ochladenie listov v horúcom popoludní sa väčšinou odparí. Dlhší chod sa počíta celý. Prázdne: pripočíta sa každý chod.",
         "confirm-timeout": "Čakať na potvrdenie ventilu",
         "open-resends": "Znova odoslať otvorenie",
-        "confirm-timeout-help": "Koľko času má ventil na ohlásenie, že sa otvoril alebo zatvoril, a koľkokrát sa za ten čas znova odošle otvorenie. Prázdne ponechá predvolené hodnoty: 8 sekúnd bez opakovania, alebo 30 sekúnd a dve opakovania s úplným ovládačom, a 5 sekúnd na zatvorenie. Cloudový ventil, napríklad Gardena, potvrdzuje pomaly a každý príkaz započítava do kvóty: dajte mu dlhšie čakanie a 0 opakovaní. Zatvorenie sa vždy skúsi druhýkrát.",
+        "confirm-timeout-help": "Koľko času má ventil na ohlásenie, že sa otvoril alebo zatvoril, a koľkokrát sa za ten čas znova odošle otvorenie. Prázdne: 30 s a dve opakovania; zatvorenie 5 s, vždy skúšané dvakrát. Cloudové ventily ako Gardena: čakajte dlhšie, 0 opakovaní, každý príkaz sa počíta do kvóty.",
         "safety-off-topic": "Bezpečnostný topic MQTT na vypnutie",
         "safety-off-state-key": "Kľúč stavu bezpečnostného vypnutia",
         "safety-off-mode": "Režim bezpečnostného vypnutia",
@@ -812,7 +811,8 @@
         "duration-readonly-disabled": "Vypnutá zóna sa nikdy nezalieva, takže nemá čas zavlažovania.",
         "et-deficiency-help": "Čo táto zóna potrebuje za deň: ETc, referenčná evapotranspirácia krát plodinový faktor, vrátane sezónnej úpravy. Pred prepočtom na interval a pred dažďom, čo je práve to, čo ju robí porovnateľnou medzi konfiguráciami. Senzor zóny nesie aj samotnú referenčnú hodnotu, ako atribút `eto`, na porovnanie s tým, čo zverejňuje meteoslužba.",
         "safety-off-entity": "Vlastný čas ventilu",
-        "safety-off-entity-help": "Pre ventil, ktorý sa sám zatvorí po vlastnom čase, napríklad Gardena (jeho číslo „čas zavlažovania“, 1 min, ak nebolo zmenené): vyberte tu toto číslo. Pred každým otvorením doň Smart Irrigation zapíše dĺžku dávky plus 30 s, takže ventil zostane otvorený počas celej dávky a aj tak sa sám zatvorí, ak sa Home Assistant zastaví. Bez toho sa taký ventil zatvorí po svojom prednastavenom čase."
+        "safety-off-entity-help": "Pre ventil, ktorý sa sám zatvorí po vlastnom čase, napríklad Gardena (jeho číslo „čas zavlažovania“, 1 min, ak nebolo zmenené): vyberte tu toto číslo. Pred každým otvorením doň Smart Irrigation zapíše dĺžku dávky plus 30 s, takže ventil zostane otvorený počas celej dávky a aj tak sa sám zatvorí, ak sa Home Assistant zastaví. Bez toho sa taký ventil zatvorí po svojom prednastavenom čase.",
+        "yaml_only_item": "{label}: {value}"
       },
       "no_items": "Zatiaľ nie sú definované žiadne zóny.",
       "title": "Zóny",
@@ -867,11 +867,18 @@
         "zone": "Zóna a ventil",
         "need": "Čo potrebuje",
         "status": "Ako je na tom"
+      },
+      "yaml": {
+        "only_help": "Nastavenia, ktoré vizuálny editor nezobrazuje. Pri úpravách tu zostanú zachované.",
+        "help": "Nastavenia zóny ako text, v jednotkách panela. Vynechané voliteľné nastavenie sa vymaže, povinné (názov, plocha...) zostane. Nič sa neuloží, kým nepoužijete.",
+        "not_a_zone": "Toto nie je zóna: zóna je súbor kľúčov (name, size, throughput...).",
+        "not_settings": "Nie sú to nastavenia zóny, alebo sa tu nedajú nastaviť: {keys}",
+        "applied": "Zóna uložená"
       }
     },
     "history": {
       "title": "História",
-      "description": "Každé zavlažovanie, ktoré Smart Irrigation pripísal zóne: kedy začalo, ako dlho zalievalo a koľko vody spotrebovalo. Zavlažovania zaznamenáva priame riadenie ventilov a sledované zalievanie, a uchovávajú sa 90 dní.",
+      "description": "Každé zavlažovanie, ktoré Smart Irrigation pripísal zóne: kedy začalo, ako dlho zalievalo a koľko vody spotrebovalo. Zavlažovania sa zaznamenávajú, keď zalieva Smart Irrigation, a pri sledovanom zalievaní, a uchovávajú sa 90 dní.",
       "refresh": "Obnoviť",
       "no-data": "Doteraz nebolo zaznamenané žiadne zavlažovanie.",
       "table": {
@@ -1002,7 +1009,7 @@
         },
         "nothing-waters": "Import nič nezalieva. Irrigation Unlimited zalieva ďalej, kým ho nevypnete a nezapnete tieto rozvrhy.",
         "blocked": "Najprv vyriešte to, čo je označené červenou; dovtedy nemožno nič importovať.",
-        "full-controller-off": "Plný ovládač je vypnutý: programy sa naimportujú, ale zalievať budú až po jeho zapnutí.",
+        "full-controller-off": "Smart Irrigation nie je nastavený na „Počítať a zavlažovať“: programy sa importujú, ale zalievajú až po tejto voľbe.",
         "nothing-waters-iu-off": "Import nič nezalieva a Irrigation Unlimited nebeží: Home Assistant ho nenačítal (pozrite jeho protokol). Nič nezalieva, kým nezapnete tieto rozvrhy."
       },
       "errors": {
@@ -1026,16 +1033,16 @@
         "programs": "{count, plural, one {# program} few {# programy} other {# programov}}",
         "next": "Rozvrhy nových programov sú vypnuté, takže zalieva stále Irrigation Unlimited. Keď budete pripravení, vypnite ovládače Irrigation Unlimited a zapnite tieto rozvrhy na stránke Programy.",
         "open-programs": "Otvoriť programy",
-        "next-off": "Plný ovládač je vypnutý, takže tieto programy zatiaľ nezalievajú a Irrigation Unlimited zalieva ďalej. Zapnite plný ovládač v nastaveniach, potom vypnite Irrigation Unlimited a zapnite tieto rozvrhy.",
+        "next-off": "Smart Irrigation nie je nastavený na „Počítať a zavlažovať“, takže tieto programy zatiaľ nezalievajú a Irrigation Unlimited zalieva ďalej. V nastaveniach zvoľte „Počítať a zavlažovať“ a potom prepnite hore na tejto stránke.",
         "open-settings": "Otvoriť nastavenia",
         "next-iu-off": "Rozvrhy nových programov sú vypnuté a Irrigation Unlimited nebeží: zatiaľ nič nezalieva. Skontrolujte programy a potom zapnite ich rozvrhy.",
-        "next-off-iu-off": "Plný ovládač je vypnutý, takže tieto programy zatiaľ nezalievajú, a Irrigation Unlimited nebeží: zatiaľ nič nezalieva. Zapnite plný ovládač v nastaveniach, potom rozvrhy programov."
+        "next-off-iu-off": "Smart Irrigation nie je nastavený na „Počítať a zavlažovať“, takže tieto programy zatiaľ nezalievajú, a Irrigation Unlimited nebeží: zatiaľ nič nezalieva. V nastaveniach zvoľte „Počítať a zavlažovať“ a potom zapnite rozvrhy programov."
       },
       "conflicts": {
         "zone_twice": "Z {zone} aj {other} by sa stala {target}. Vyberte pre jednu z nich inú zónu.",
         "calculated_needs_zone": "{zone} dnes počíta Smart Irrigation, zo zóny, z ktorej ju napája automatizácia úpravy času. Vyberte túto zónu alebo inú existujúcu.",
-        "program_exists": "Program „{name}“ ({id}) prekáža: nevytvoril ho žiadny import. Najprv ho premenujte alebo odstráňte v Zavlažovanie, Programy (so zapnutým plným ovládačom).",
-        "supply_exists": "Čerpadlo „{name}“ ({id}) prekáža: nevytvoril ho žiadny import. Najprv ho premenujte alebo odstráňte v Zavlažovanie, Čerpadlá a ventily (so zapnutým plným ovládačom)."
+        "program_exists": "Program „{name}“ ({id}) prekáža: nevytvoril ho žiadny import. Najprv ho premenujte alebo odstráňte v Zavlažovanie, Programy (keď bude zvolené „Počítať a zavlažovať“).",
+        "supply_exists": "Čerpadlo „{name}“ ({id}) prekáža: nevytvoril ho žiadny import. Najprv ho premenujte alebo odstráňte v Zavlažovanie, Čerpadlá a ventily (keď bude zvolené „Počítať a zavlažovať“)."
       },
       "confirm_remove": "Tento import odstráni to, čo vytvoril skorší import a čo Irrigation Unlimited už nemá: {names}. Pokračovať?",
       "cutover": {
@@ -1045,7 +1052,7 @@
         "si-waters-now": "Zalieva Smart Irrigation: importované rozvrhy sú zapnuté a ovládače Irrigation Unlimited vypnuté.",
         "nobody-waters": "Nič nezalieva: ovládače Irrigation Unlimited sú vypnuté, rovnako ako importované rozvrhy.",
         "both-on": "Zalievali by oba: Irrigation Unlimited má zapnutý ovládač a zapnuté sú aj importované rozvrhy. Vypnite Irrigation Unlimited, alebo rozvrhy.",
-        "full-controller-off": "Plný ovládač je vypnutý: najprv ho zapnite v nastaveniach, inak importované programy nezalievajú.",
+        "full-controller-off": "Smart Irrigation nie je nastavený na „Počítať a zavlažovať“: najprv to zvoľte v nastaveniach, inak importované programy nezalievajú.",
         "programs": "Importované programy",
         "schedules-on": "zapnuté rozvrhy: {on} z {count}",
         "open-programs": "Skôr než prepnete, pozrite si ich na stránke Programy",
@@ -1064,7 +1071,7 @@
         "confirm-back": "Importované rozvrhy sa vypnú a ovládače Irrigation Unlimited sa znova zapnú. Zalieva opäť Irrigation Unlimited.",
         "errors": {
           "generic": "To sa nepodarilo.",
-          "full_controller_off": "Najprv zapnite plný ovládač: bez neho nič nezalieva.",
+          "full_controller_off": "Najprv zvoľte „Počítať a zavlažovať“: bez toho nič nezalieva.",
           "not_imported": "Zatiaľ nebolo nič importované.",
           "iu_failed": "Irrigation Unlimited prepnutie neprijal. Čo tento krok zmenil, je vrátené späť: kto zalieva, vidíte vyššie.",
           "not_switched": "Zalievanie nebolo odovzdané Smart Irrigation, takže nie je od čoho sa vracať.",
@@ -1098,7 +1105,7 @@
         "every_limit": "každých {every, number} dní: Smart Irrigation zvládne najviac {max, number}",
         "every_not_number": "{value} nie je počet dní",
         "feeds_other_zone": "automatizácia ju napája zo zóny {from}, ale je priradená k zóne {to}: jej vypočítané trvanie je trvanie tejto zóny",
-        "full_controller_off": "plný ovládač je vypnutý: programy sa naimportujú, ale zalievať budú až po jeho zapnutí",
+        "full_controller_off": "Smart Irrigation nie je nastavený na „Počítať a zavlažovať“: programy sa importujú, ale zalievajú až po tejto voľbe",
         "held_to_limit": "{seconds, number} s sa obmedzí na {limit, number} s, viac Smart Irrigation nedovoľuje",
         "lead_kept": "{time} zostáva: posunutie skôr o predstih čerpadla {lead, number} s by zmenilo deň",
         "lead_time": "zóna „{zone}“ má čas nábehu {lead, number} s, ktorý Smart Irrigation pripočíta ku každému pevnému behu: zalieva o toľko dlhšie ako v IU, pokiaľ sa čas nábehu nenastaví na 0 alebo sa krok neskráti",
@@ -1111,7 +1118,7 @@
         "off_in_iu_matched": "vypnuté v IU a priradené k „{zone}“, ktorá zostáva tak, ako je: programy ju vynechávajú",
         "offset_limit": "posun o {offset, number} min: Smart Irrigation dovoľuje {max, number}",
         "offset_rounded": "posun o {seconds, number} s sa zaokrúhli na {minutes, number} min: Smart Irrigation tam počíta v minútach",
-        "overlap": "zóny a sekvencie s rozvrhmi: {count}; kde sa ich behy prekrývajú, IU ich zalieva súčasne, plný ovládač jednu po druhej",
+        "overlap": "zóny a sekvencie s rozvrhmi: {count}; kde sa ich behy prekrývajú, IU ich zalieva súčasne, Smart Irrigation jednu po druhej",
         "passes_held": "{repeats, number} opakovaní sa obmedzí na počet dávok {max, number}",
         "period_needs_both": "obdobie {from} až {until} potrebuje oba dni: rozvrh platí celý rok",
         "program_per_duration": "programy: {count}, jeden pre každé trvanie rozvrhov",
@@ -1156,7 +1163,7 @@
     "active_default": "Predvolené: hotovo do východu slnka",
     "active_hint": "Zavlažovanie spúšťa len zvolený spúšťač, raz denne. Predvolené spúšťa tak, aby každá zóna skončila do východu slnka; s voľbou Žiadny Smart Irrigation nič nespúšťa.",
     "usage_before": "Keď sa spúšťač spustí, Smart Irrigation odošle udalosť ",
-    "usage_after": " — počúvajte ju v automatizácii na spustenie zavlažovania. Údaje udalosti obsahujú trigger_name, trigger_type a offset_minutes, takže môžete reagovať odlišne pre každý spúšťač. Nastavenia preskočenia pri zrážkach a dní medzi zavlažovaniami stále platia: v deň preskočenia sa neodošle žiadna udalosť.",
+    "usage_after": ". Počúvajte ju v automatizácii na spustenie zavlažovania. Údaje udalosti obsahujú trigger_name, trigger_type a offset_minutes, takže môžete reagovať odlišne pre každý spúšťač. Nastavenia preskočenia pri zrážkach a dní medzi zavlažovaniami stále platia: v deň preskočenia sa neodošle žiadna udalosť.",
     "add_trigger": "Pridať spúšťač",
     "edit_trigger": "Upraviť spúšťač",
     "delete_trigger": "Odstrániť spúšťač",
@@ -1201,7 +1208,7 @@
       "cancel": "Zrušiť",
       "save": "Uložiť",
       "delete": "Odstrániť",
-      "help": "Keď sa tento spúšťač spustí, Smart Irrigation odošle nasledujúcu udalosť — použite ju v automatizácii na spustenie zavlažovania. Údaje udalosti obsahujú názov tohto spúšťača (a typ/posun), takže naň môžete reagovať konkrétne:"
+      "help": "Keď sa tento spúšťač spustí, Smart Irrigation odošle nasledujúcu udalosť. Použite ju v automatizácii na spustenie zavlažovania. Údaje udalosti obsahujú názov tohto spúšťača (a typ/posun), takže naň môžete reagovať konkrétne:"
     },
     "offset_auto": "Automaticky (vypočítané z celkového trvania zón)",
     "confirm_delete": "Naozaj chcete odstrániť spúšťač „{name}“?",
@@ -1242,6 +1249,8 @@
     "effective_rain_description": "Ignorovať prehánku menšiu než pätina evapotranspirácie obdobia: zmočí listy a vyparí sa. Posudzuje sa podľa celého obdobia medzi dvoma výpočtami.",
     "forecast_label": "Zohľadniť predpovedaný dážď",
     "forecast_description": "Pod prahom sa každá zóna zavlažuje na svoj deficit znížený o dážď predpovedaný na nasledujúcich 24 hodín, vážený pravdepodobnosťou, ktorú udáva poveternostná služba: predpoveď 4 mm pri deficite 10 mm znamená zavlažovanie 6 mm. Pri prahu a nad ním sa spustenie preskočí pre zóny vo voľnom priestore. Zóny v skleníku nie sú dotknuté.",
+    "forecast_no_service": "Potrebuje meteorologickú službu: predpoveď pochádza z nej.",
+    "forecast_no_service_on": "Žiadna meteorologická služba: nie je čo čítať, takže toto nič nezadrží.",
     "forecast_set_up_service": "Nastaviť meteorologickú službu"
   },
   "coordinate_config": {
@@ -1317,7 +1326,6 @@
     "step_delay": "Čakanie po tomto kroku",
     "step_delay_help": "Záporné: ďalší krok sa začne o toľko skôr, než tento skončí.",
     "tours": "Kolá",
-    "tours_help": "Celý zoznam krokov sa zaleje toľkokrát, každé kolo so svojím podielom vody. Na rozdiel od dávok, ktoré opakujú jeden krok pred ďalším, kolo nechá každú zónu vsakovať, kým ostatné zalievajú.",
     "enabled": "Zapnutý",
     "add_step": "Pridať krok",
     "delete_step": "Odstrániť krok",
@@ -1359,17 +1367,11 @@
     "schedule_every_offset": "Posunuté o",
     "schedule_every_help": "Každé 3 dni s posunom 0, 1 alebo 2 umožní trom programom striedať sa, raz za tri dni, nikdy v ten istý deň.",
     "schedule_parity": "Dni v mesiaci",
-    "parity_any": "Všetky",
     "parity_even": "Párne dni",
     "parity_odd": "Nepárne dni",
     "schedule_days_of_month": "Konkrétne dni v mesiaci",
-    "schedule_days_of_month_help": "Čísla dní oddelené čiarkami a „posledný“ pre posledný deň mesiaca (napríklad 1, 15, posledný). Mesiac, ktorý je pre daný deň príliš krátky, ho vynechá. Prázdne: ktorýkoľvek deň. Pridáva sa k ostatným filtrom.",
     "schedule_fallback_time": "Ak nie je východ ani západ slnka",
-    "schedule_fallback_time_help": "Pre deň bez východu alebo západu slnka (polárny deň alebo noc).",
     "schedule_months": "Mesiace",
-    "schedule_months_help": "Nič nezaškrtnuté: každý mesiac.",
-    "schedule_yaml_only": "Nastavuje sa v YAML (Upraviť v YAML, hore v programe): zobrazené tu, pretože ho tento plán používa.",
-    "yaml_only_set": "Nastavuje sa v YAML (Upraviť v YAML, hore v programe): zobrazené tu, pretože je nastavené.",
     "schedule_from": "Od",
     "schedule_until": "Do",
     "schedule_period_help": "Obdobie roka, ktoré môže prechádzať cez Nový rok (od novembra do marca). Prázdne: celý rok.",
@@ -1383,9 +1385,8 @@
     "condition_precipitation": "Predpoveď dažďa",
     "condition_days_between": "Dni od posledného zavlažovania",
     "condition_soil_moisture": "Vlhkosť pôdy",
+    "conditions_subset": "Len tieto kontroly počasia",
     "schedule_weather_help": "Zapnuté: kontroly v Počasie, Vynechanie zavlažovania môžu zavlažovanie zadržať alebo skrátiť: dážď, mráz, vietor, dni medzi zavlažovaniami, vlhká pôda a odložené dni. Vypnite pre kvapkovú závlahu v skleníku, ktorej sa počasie netýka.",
-    "schedule_conditions_only": "Len: {list}",
-    "schedule_conditions_yaml": "Tento plán uplatňuje len tieto kontroly, zoznam nastavený v YAML (skip_conditions). Zmeňte alebo odstráňte ho v YAML programu: bez neho platia všetky.",
     "pause": "Pozastaviť",
     "resume": "Pokračovať",
     "next_step": "Ďalší krok",
@@ -1412,7 +1413,6 @@
     "adjust_seconds": "Čas pridaný (+) alebo ubraný (-)",
     "step_bounds_help": "Poradie použitia: najprv percento z „Úprava trvania“ programu, ak nejaké platí (nastavuje sa v programe, nie tu), potom pridaný alebo ubraný čas, potom minimum a maximum. 0 pre minimum alebo maximum: žiadne. Krok, ktorý nepotrebuje vodu, zostane na nule: minimum ho nikdy nespustí.",
     "min_deficit_mm": "Zalievať, iba ak je deficit aspoň",
-    "min_deficit_mm_help": "V mm, 0 na polievanie vždy. Ak je nastavený, nahrádza pre tento krok vlastný prah zóny. Kroky s pevnou dobou sa polievajú vždy.",
     "adjust_title": "Úprava trvania",
     "adjust_none": "Žiadna úprava nie je v platnosti.",
     "adjust_percent": "Percento",
@@ -1421,7 +1421,7 @@
     "adjust_apply": "Použiť",
     "adjust_reset": "Obnoviť",
     "confirm_reset_adjustment": "Odstrániť úpravu tohto programu?",
-    "mode_off": "Plný ovládač je vypnutý. Zapnite ho v Nastaveniach, Všeobecné.",
+    "mode_off": "Žiadny program nezalieva: Smart Irrigation nie je nastavený na „Počítať a zavlažovať“. Zvoľte to v Nastaveniach, Všeobecné, pod „Čo Smart Irrigation robí“.",
     "no_zone": "žiadna zóna",
     "mode_calculated_short": "vypočítané",
     "every_day": "každý deň",
@@ -1437,9 +1437,7 @@
     "steps_title": "Kroky",
     "schedules_title": "Rozvrhy",
     "passes_help": "Cycle and soak pre tento krok: jeho voda rozdelená do toľkých dávok, každá zóna medzi dvoma dávkami vsakuje. 1: naraz.",
-    "schedule_fallback_skip": "Ten deň vynechať",
     "schedule_fallback_previous": "Použiť čas posledného zaznamenaného",
-    "schedule_fallback_at": "Spustiť v pevný čas",
     "summary_start_sunrise": "začína pri východe slnka",
     "summary_start_sunset": "začína pri západe slnka",
     "summary_start_azimuth": "začne, keď je slnko na {deg}°",
@@ -1467,6 +1465,8 @@
     "preview_help": "Každá zóna na vlastnom riadku, s časmi, ktoré by Smart Irrigation zavlažoval teraz. Riadia sa počasím, takže zavlažovanie sa pri štarte môže líšiť.",
     "yaml_back": "Späť do editora",
     "yaml_edit": "Upraviť v YAML",
+    "yaml_only_title": "Nastavené v YAML (tu sa nedá upraviť)",
+    "yaml_only_help": "Nastavenia, ktoré vizuálny editor nezobrazuje. Pri úpravách tu zostanú zachované.",
     "yaml_help": "Program ako text. Krok uvádza svoje zóny menom alebo číslom a čo chýba, má predvolenú hodnotu. Nič sa neuloží, kým nepoužijete: časová os nižšie ukazuje, čo by program urobil.",
     "yaml_apply": "Použiť",
     "yaml_invalid": "Toto nie je platný YAML.",
@@ -1485,7 +1485,8 @@
     "schedule_azimuth": "Azimut slnka",
     "schedule_azimuth_help": "Stupne v smere hodín od severu: 90 východ, 180 juh, 270 západ. Pre záhon, z ktorého v tej chvíli odchádza tieň múru alebo stromu.",
     "view_flow": "Schéma",
-    "view_timeline": "Časová os"
+    "view_timeline": "Časová os",
+    "yaml_only_item": "{label}: {value}"
   },
   "supplies": {
     "title": "Čerpadlá a hlavné ventily",
@@ -1507,7 +1508,7 @@
     "title": "Sledované zavlažovanie (uzavretá slučka)",
     "description": "Pripisuje vodnej bilancii každej zóny zo skutočného zavlažovania, namiesto toho, aby ju resetovala automatizácia. V sekcii Zóny vyberte pre každú zónu ventil alebo spínač: kým je otvorený, pripisuje sa čas behu krát priepustnosť, alebo objem nameraný meračom. Zo svojich automatizácií odstráňte volania set_bucket a reset_bucket, inak sa voda započíta dvakrát.",
     "enabled_label": "Povoliť sledované zavlažovanie",
-    "confirm_full_controller": "Zapnúť plný ovládač? Smart Irrigation bude ovládať ventily a sám spúšťať zavlažovanie. Ventil, ktorý sa pri štarte nájde otvorený a nepatrí žiadnemu nášmu zavlažovaniu, sa zatvorí.",
+    "confirm_full_controller": "Počítať a zavlažovať? Smart Irrigation bude sám otvárať ventily a spúšťať zavlažovanie svojimi programami. Ventil, ktorý sa pri štarte nájde otvorený a nepatrí žiadnemu nášmu zavlažovaniu, sa zatvorí.",
     "sequencing_label": "Poradie zón",
     "sequencing": {
       "sequential": "Postupne (jedna zóna po druhej)",
@@ -1631,7 +1632,7 @@
       "zones": "Zóny (všetky, ak prázdne)",
       "show_next_start": "Zobraziť ďalší štart",
       "compact": "Len zóny, ktoré by zavlažovali",
-      "show_programs": "Zobraziť programy (plný ovládač)"
+      "show_programs": "Zobraziť programy"
     },
     "no_valve": "nie je pripojený ventil, nezalieva sa",
     "no_trigger": "Žiadny spúšťač štartu",
@@ -1690,6 +1691,7 @@
     "weather": "Dovolí to počasie?",
     "weather_sub": "Dážď, mráz, vietor…",
     "weather_yes": "Áno",
+    "weather_yes_unread": "Áno, ale {reason} sa nepodarilo prečítať",
     "weather_no": "Nie: {reason}",
     "otherwise": "Inak: v ten deň nič",
     "supply_on": "{name} zapnuté",

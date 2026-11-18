@@ -791,10 +791,14 @@ class SmartIrrigationCoordinator(
         # independently (replaces the old single global "fired today" block).
         # In-memory; cleared at midnight.
         self._fired_triggers_today: set = set()
-        # Today's watering decision (precipitation forecast + days-between),
-        # computed once and shared by all triggers for the day:
-        # None = undecided, True = water, False = skip.
+        # Today's decision on the conditions about the day (rain forecast,
+        # days between irrigation), made at the first start and kept for the
+        # day: None = undecided, True = they let it water, False = one vetoes.
+        # The conditions of the moment (frost, wind, rain sensor, postponement)
+        # are judged at each start instead (triggers._prepare_watering_for_today).
         self._watering_decision_today = True if self._start_event_fired_today else None
+        # The checks behind it, {check id: check}, or None until it is made.
+        self._day_checks: dict | None = None
         # The structured result of the most recent real watering decision, so
         # the panel can say why a run was skipped rather than only that it was.
         # None until one has been made, and after a restart.

@@ -54,6 +54,13 @@ import {
   wouldLoop,
 } from "../../data/program-chain";
 import { notifyTargets } from "../../data/notify-targets";
+import {
+  withProgram,
+  withSchedule,
+  withStep,
+  yamlOnlyLine,
+  yamlOnlyOptions,
+} from "../../data/yaml-only";
 import "../../dialogs/trigger-dialog";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import {
@@ -122,16 +129,6 @@ import {
  * Kept outside the element: each tab renders its own template, so switching
  * tabs creates a new element and an instance field would fold everything back.
  */
-// The skip condition ids of a schedule, as in const.py SKIP_CONDITION_IDS.
-const SKIP_CONDITION_IDS = [
-  "postponed",
-  "rain_sensor",
-  "freeze",
-  "wind",
-  "precipitation",
-  "days_between",
-  "soil_moisture",
-];
 
 // The days the week view shows, kept by this browser across tabs and reloads
 // (#1051). Storage can be missing or refused (private window): then 7.
@@ -536,6 +533,37 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 </div>`
               : ""
           }
+          ${
+            // The calculation audit log, for chasing a calculation down: a
+            // row of this card rather than a card of its own (#1056). The
+            // advanced mode only, unless it is on (it writes a file).
+            this.config.ui_mode === "advanced" || this.config.calc_log_enabled
+              ? html`<div class="setting-row">
+                  <div class="setting-label">
+                    ${localize(
+                      "calculation_log.title",
+                      this.hass.language,
+                    )}<si-info
+                      >${localize(
+                        "calculation_log.description",
+                        this.hass.language,
+                      )}
+                      ${localize(
+                        "calculation_log.file_hint",
+                        this.hass.language,
+                      )}</si-info
+                    >
+                  </div>
+                  <ha-switch
+                    .checked=${!!this.config.calc_log_enabled}
+                    @change=${(e: Event) =>
+                      this.handleConfigChange({
+                        calc_log_enabled: (e.target as any).checked,
+                      })}
+                  ></ha-switch>
+                </div>`
+              : ""
+          }
         </div>`;
       r1 = html`<ha-card
         ><h1 class="card-header">
@@ -771,21 +799,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Observed Watering (closed-loop bucket) Card
       const r9 = this.renderObservedWateringCard();
 
-      // Calculation audit log Card: for chasing a calculation down, the
-      // advanced mode only, unless it is on (it writes a file).
-      const r10 =
-        advanced || this.config.calc_log_enabled
-          ? this.renderCalculationLogCard()
-          : html``;
-
-      // Whether the bundled blueprints are copied (#930): on out of the box,
-      // the advanced mode only, unless it was turned off.
-      const r16 =
-        advanced || this.config.install_blueprints === false
-          ? this.renderBlueprintsCard()
-          : html``;
-
-      // How much of the panel to show.
+      // How much of the panel to show, and whether the bundled blueprints
+      // are copied (#930): one card of two rows (#1056).
       const r11 = this.renderPanelModeCard();
 
       // Seasonal adjustments (advanced).
@@ -854,7 +869,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // The master switch stays above everything it switches.
       // The days between irrigation are on the Weather tab's skip page, with
       // every other check that holds a run back.
-      const r = html`${r18} ${heading("calculation")}${r1}${r13}${r10}
+      const r = html`${r18} ${heading("calculation")}${r1}${r13}
       ${
         // Observed watering is on the advanced panel, the start triggers are
         // for "Calculate only": with neither, the heading stood alone.
@@ -862,7 +877,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ? html`${heading("control")}${r9}${full ? "" : r5}`
           : ""
       }
-      ${heading("system")}${r11}${r16}${r12}${r17}`;
+      ${heading("system")}${r11}${r12}${r17}`;
 
       return r;
     }
@@ -1193,7 +1208,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       this._scheduleUpdate();
     };
     const patch = (index: number, changes: Partial<SmartIrrigationProgram>) =>
-      save(programs.map((p, n) => (n === index ? { ...p, ...changes } : p)));
+      // Every key the form has no field for (the YAML-only options) is kept.
+      save(programs.map((p, n) => (n === index ? withProgram(p, changes) : p)));
     const num = (v: string, fallback = 0) => {
       const n = parseFloat(v);
       return isNaN(n) ? fallback : n;
@@ -1899,6 +1915,27 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       </span>`;
     };
 
+    // As Home Assistant's own visual editors do: the options set in YAML only
+    // have no field in the form, even when set. The form keeps them as they
+    // are, and the program says, once and read-only, which ones it uses, with
+    // Edit in YAML at hand to change them.
+    const yamlOnlyNotice = (program: SmartIrrigationProgram) => {
+      const groups = yamlOnlyOptions(program, { t, monthName });
+      if (!groups.length) return "";
+      const id = program.id ?? "";
+      return html`<ha-alert alert-type="info" .title=${t("yaml_only_title")}>
+        ${t("yaml_only_help")}
+        ${groups.map((group) => html`<div>${yamlOnlyLine(group)}</div>`)}
+        <ha-button
+          slot="action"
+          appearance="plain"
+          @click=${() =>
+            openYaml(id, programToYaml(program, this.zones, programs))}
+          >${t("yaml_edit")}</ha-button
+        >
+      </ha-alert>`;
+    };
+
     const renderStep = (
       program: SmartIrrigationProgram,
       index: number,
@@ -1906,11 +1943,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       stepIndex: number,
     ) => {
       const patchStep = (changes: Partial<SmartIrrigationStep>) =>
-        patch(index, {
-          steps: (program.steps || []).map((s, n) =>
-            n === stepIndex ? { ...s, ...changes } : s,
-          ),
-        });
+        patch(index, withStep(program, stepIndex, changes));
       const toggleZone = (zoneId: number, on: boolean) => {
         const zones = (step.zones || []).filter((z) => z !== zoneId);
         patchStep({ zones: on ? [...zones, zoneId] : zones });
@@ -2063,8 +2096,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             (step.max_litres ?? 0) > 0 ||
               (step.min_seconds ?? 0) > 0 ||
               (step.max_seconds ?? 0) > 0 ||
-              (step.adjust_seconds ?? 0) !== 0 ||
-              (step.min_deficit_mm ?? 0) > 0 ||
               (step.delay !== null && step.delay !== undefined),
             html`
               ${this._numRow(
@@ -2112,41 +2143,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     )}
                   </div>`
                 : ""}
-              ${
-                // The time added or removed and the deficit a step waits for
-                // are set in YAML: shown here only on a step that uses them,
-                // so that nothing acts on the watering out of sight.
-                (step.adjust_seconds ?? 0) !== 0
-                  ? this._numRow(
-                      html`${t("adjust_seconds")}<si-info
-                          >${t("yaml_only_set")}</si-info
-                        >`,
-                      localize("common.units.seconds", lang),
-                      step.adjust_seconds ?? 0,
-                      (v) =>
-                        patchStep({
-                          adjust_seconds: Math.max(
-                            -21600,
-                            Math.min(21600, Math.round(num(v))),
-                          ),
-                        }),
-                    )
-                  : ""
-              }
-              ${(step.min_deficit_mm ?? 0) > 0
-                ? this._numRow(
-                    html`${t("min_deficit_mm")}<si-info
-                        >${t("min_deficit_mm_help")}
-                        ${t("yaml_only_set")}</si-info
-                      >`,
-                    "mm",
-                    step.min_deficit_mm ?? 0,
-                    (v) => patchStep({ min_deficit_mm: Math.max(0, num(v)) }),
-                    1,
-                    false,
-                    0,
-                  )
-                : ""}
               ${this._textRow(
                 html`${t("step_delay")}<si-info
                     >${t("step_delay_help")}</si-info
@@ -2185,11 +2181,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       scheduleIndex: number,
     ) => {
       const patchSchedule = (changes: Partial<SmartIrrigationSchedule>) =>
-        patch(index, {
-          schedules: (program.schedules || []).map((s, n) =>
-            n === scheduleIndex ? { ...s, ...changes } : s,
-          ),
-        });
+        patch(index, withSchedule(program, scheduleIndex, changes));
       // The programs this one may start after: not itself, and none that
       // already waits for it (they would start each other in a loop).
       const followable = programs.filter(
@@ -2436,36 +2428,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               .checked=${schedule.weather !== false}
               @change=${(e: Event) =>
                 // A list of conditions set in YAML is kept: on again, it
-                // applies again, and shows below.
+                // applies again (the program's "Set in YAML" notice says so).
                 patchSchedule({ weather: (e.target as any).checked })}
             ></ha-switch>
           </div>
-          ${schedule.weather !== false &&
-          Array.isArray(schedule.skip_conditions)
-            ? // Some of the conditions only: chosen in YAML, shown here so
-              // that it never acts out of sight.
-              html`<div class="setting-hint row-hint">
-                ${t("schedule_conditions_only").replace(
-                  "{list}",
-                  SKIP_CONDITION_IDS.filter(
-                    (id) =>
-                      id === "postponed" ||
-                      schedule.skip_conditions!.includes(id),
-                  )
-                    .map((id) => t(`condition_${id}`))
-                    .join(", "),
-                )}<si-info>${t("schedule_conditions_yaml")}</si-info>
-              </div>`
-            : ""}
           ${more(
             `more:schedule:${schedule.id}`,
-            !!schedule.fallback_time ||
-              schedule.hard_deadline === true ||
+            schedule.hard_deadline === true ||
               (schedule.every_n_days ?? 1) > 1 ||
-              schedule.parity === "even" ||
-              schedule.parity === "odd" ||
-              (schedule.days_of_month || []).length > 0 ||
-              (schedule.months || []).length > 0 ||
               !!schedule.from_date ||
               !!schedule.until_date,
             html`
@@ -2480,131 +2450,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     every_n_days: Math.max(1, Math.round(num(v, 1))),
                   }),
               )}
-              ${
-                // The shift lets programs take turns on "every N days": set in
-                // YAML, shown here only on a schedule that uses it.
-                (schedule.every_n_days ?? 1) > 1 &&
-                (schedule.every_offset ?? 0) > 0
-                  ? this._numRow(
-                      html`${t("schedule_every_offset")}<si-info
-                          >${t("schedule_yaml_only")}</si-info
-                        >`,
-                      t("schedule_days"),
-                      schedule.every_offset ?? 0,
-                      (v) =>
-                        patchSchedule({
-                          every_offset: Math.max(0, Math.round(num(v))),
-                        }),
-                    )
-                  : ""
-              }
-              ${
-                // Even or odd days, days of the month and months are set in
-                // YAML: shown here only on a schedule that uses them, so that
-                // nothing acts on the watering out of sight.
-                schedule.parity === "even" || schedule.parity === "odd"
-                  ? this._selectRow(
-                      html`${t("schedule_parity")}<si-info
-                          >${t("schedule_yaml_only")}</si-info
-                        >`,
-                      html`
-                        <option
-                          value="any"
-                          ?selected=${schedule.parity !== "even" &&
-                          schedule.parity !== "odd"}
-                        >
-                          ${t("parity_any")}
-                        </option>
-                        <option
-                          value="even"
-                          ?selected=${schedule.parity === "even"}
-                        >
-                          ${t("parity_even")}
-                        </option>
-                        <option
-                          value="odd"
-                          ?selected=${schedule.parity === "odd"}
-                        >
-                          ${t("parity_odd")}
-                        </option>
-                      `,
-                      (e: Event) =>
-                        patchSchedule({
-                          parity: (e.target as HTMLSelectElement)
-                            .value as SmartIrrigationSchedule["parity"],
-                        }),
-                    )
-                  : ""
-              }
-              ${(schedule.days_of_month || []).length
-                ? this._textRow(
-                    html`${t("schedule_days_of_month")}<si-info
-                        >${t("schedule_days_of_month_help")}
-                        ${t("schedule_yaml_only")}</si-info
-                      >`,
-                    `1, 15, ${t("last_word")}`,
-                    (schedule.days_of_month || [])
-                      .map((day) => (day === "last" ? t("last_word") : day))
-                      .join(", "),
-                    (v) =>
-                      patchSchedule({
-                        days_of_month: v
-                          .split(/[,;\s]+/)
-                          .map((part) => part.trim().toLowerCase())
-                          // The word of the panel's language, or "last" as stored.
-                          .map((part) =>
-                            part === t("last_word").toLowerCase()
-                              ? "last"
-                              : part,
-                          )
-                          .filter(
-                            (part) =>
-                              part === "last" ||
-                              (/^\d+$/.test(part) &&
-                                Number(part) >= 1 &&
-                                Number(part) <= 31),
-                          )
-                          .map((part) =>
-                            part === "last" ? part : Number(part),
-                          ),
-                      }),
-                  )
-                : ""}
-              ${(schedule.months || []).length
-                ? html`<div class="setting-row">
-                    <div class="setting-label">
-                      ${t("schedule_months")}<si-info
-                        >${t("schedule_months_help")}
-                        ${t("schedule_yaml_only")}</si-info
-                      >
-                    </div>
-                    <div>
-                      ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(
-                        (month) => html`
-                          <label
-                            style="margin-right: 10px; white-space: nowrap;"
-                          >
-                            <input
-                              type="checkbox"
-                              .checked=${(schedule.months || []).includes(
-                                month + 1,
-                              )}
-                              @change=${(e: Event) =>
-                                patchSchedule({
-                                  months: toggle(
-                                    schedule.months,
-                                    month + 1,
-                                    (e.target as HTMLInputElement).checked,
-                                  ),
-                                })}
-                            />
-                            ${monthName(month)}
-                          </label>
-                        `,
-                      )}
-                    </div>
-                  </div>`
-                : ""}
               ${this._monthDayRow(
                 t("schedule_from"),
                 schedule.from_date,
@@ -2619,60 +2464,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 monthName,
                 (v) => patchSchedule({ until_date: v }),
               )}
-              ${
-                // What a day without a sunrise or sunset does (polar days) is
-                // set in YAML: shown here only on a schedule that has one, so
-                // that nothing acts on the watering out of sight. Left out,
-                // that day is skipped.
-                schedule.type === "sun" && schedule.fallback_time
-                  ? html`
-                      ${this._selectRow(
-                        html`${t("schedule_fallback_time")}<si-info
-                            >${t("schedule_fallback_time_help")}
-                            ${t("schedule_yaml_only")}</si-info
-                          >`,
-                        html`
-                          <option value="" ?selected=${!schedule.fallback_time}>
-                            ${t("schedule_fallback_skip")}
-                          </option>
-                          <option
-                            value="previous"
-                            ?selected=${schedule.fallback_time === "previous"}
-                          >
-                            ${t("schedule_fallback_previous")}
-                          </option>
-                          <option
-                            value="at"
-                            ?selected=${!!schedule.fallback_time &&
-                            schedule.fallback_time !== "previous"}
-                          >
-                            ${t("schedule_fallback_at")}
-                          </option>
-                        `,
-                        (e: Event) => {
-                          const choice = (e.target as HTMLSelectElement).value;
-                          const fixed =
-                            schedule.fallback_time &&
-                            schedule.fallback_time !== "previous"
-                              ? schedule.fallback_time
-                              : "06:00";
-                          patchSchedule({
-                            fallback_time:
-                              choice === "at" ? fixed : choice || null,
-                          });
-                        },
-                      )}
-                      ${schedule.fallback_time &&
-                      schedule.fallback_time !== "previous"
-                        ? this._timeRow(
-                            t("schedule_time"),
-                            schedule.fallback_time,
-                            (v) => patchSchedule({ fallback_time: v || null }),
-                          )
-                        : ""}
-                    `
-                  : ""
-              }
               ${schedule.anchor === "end"
                 ? html`
                     <div class="setting-row">
@@ -2893,7 +2684,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   ? html`${runHead(program)}
                     ${yamlBlock(program.id ?? "", index)}`
                   : html`
-                      ${runHead(program)}
+                      ${yamlOnlyNotice(program)} ${runHead(program)}
                       ${this._textRow(t("name"), "", program.name, (v) =>
                         patch(index, { name: v }),
                       )}
@@ -2927,28 +2718,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       </div>
                       <div class="fold-section">${t("schedules_title")}</div>
                       ${renderSchedules(program, index)}
-                      ${
-                        // Rounds are set in YAML: shown here only on a
-                        // program that waters in more than one, so that
-                        // nothing acts on the watering out of sight.
-                        (program.tours ?? 1) > 1
-                          ? this._numRow(
-                              html`${t("tours")}<si-info
-                                  >${t("tours_help")}
-                                  ${t("yaml_only_set")}</si-info
-                                >`,
-                              "",
-                              program.tours ?? 1,
-                              (v) =>
-                                patch(index, {
-                                  tours: Math.max(1, Math.round(num(v, 1))),
-                                }),
-                              1,
-                              false,
-                              1,
-                            )
-                          : ""
-                      }
                       ${renderNotify(program, index)} ${adjustBlock(program)}
                       ${
                         // The last program cannot be deleted (the backend
@@ -3383,7 +3152,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const lang = this.hass.language;
     return html`
       <ha-card>
-        <h1 class="card-header">
+        <h1 class="card-header header-action">
           <span
             >${localize("panels.setup.title", lang)}<si-info
               >${localize(
@@ -3392,8 +3161,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}</si-info
             ></span
           >
-        </h1>
-        <div class="card-actions">
           <ha-button
             @click=${() => {
               window.history.pushState(
@@ -3406,7 +3173,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           >
             ${localize("panels.general.cards.setup-assistant.open", lang)}
           </ha-button>
-        </div>
+        </h1>
       </ha-card>
     `;
   }
@@ -3420,7 +3187,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const lang = this.hass.language;
     return html`
       <ha-card>
-        <h1 class="card-header">
+        <h1 class="card-header header-action">
           <span
             >${localize("panels.iu_import.title", lang)}<si-info
               >${localize(
@@ -3429,8 +3196,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}</si-info
             ></span
           >
-        </h1>
-        <div class="card-actions">
           <ha-button
             @click=${() => {
               window.history.pushState(
@@ -3443,7 +3208,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           >
             ${localize("panels.general.cards.iu-import.open", lang)}
           </ha-button>
-        </div>
+        </h1>
       </ha-card>
     `;
   }
@@ -3810,21 +3575,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   this.hass.language,
                 )}
               </si-info>
-              ${this.config.use_weather_service
-                ? ""
-                : html`<si-info
-                    ><a
-                      href="/${DOMAIN}/weatherservice"
-                      @click=${(e: Event) => {
-                        e.preventDefault();
-                        navigate(this, `/${DOMAIN}/weatherservice`);
-                      }}
-                      >${localize(
-                        "weather_skip.forecast_set_up_service",
-                        this.hass.language,
-                      )}</a
-                    ></si-info
-                  >`}
             </div>
             <ha-switch
               .checked=${!!(
@@ -3845,7 +3595,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 })}
             ></ha-switch>
           </div>
-
+          ${this._forecastWithoutService()}
           ${this.config.skip_irrigation_on_precipitation ||
           this.config.forecast_rain_credit
             ? this._numRow(
@@ -4423,26 +4173,28 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
    * sound defaults, and meeting them by accident is how a working
    * installation gets broken, so the standard panel leaves them out. Nothing
    * is lost by switching: the values are kept either way.
+   *
+   * One card of two rows with whether Smart Irrigation lays its example
+   * blueprints down (#930, #1056). The System heading above names it, so it
+   * has no title of its own.
    */
   renderPanelModeCard() {
     if (!this.hass || !this.config) return html``;
+    const lang = this.hass.language;
     const advanced = this.config.ui_mode === "advanced";
-    return html`<ha-card
-      header="${localize(
-        "panels.general.cards.panel-mode.header",
-        this.hass.language,
-      )}"
-    >
+    // On out of the box: the advanced mode only, unless it was turned off.
+    const blueprints = advanced || this.config.install_blueprints === false;
+    return html`<ha-card>
       <div class="card-content">
         <div class="setting-row">
           <div class="setting-label">
             ${localize(
               "panels.general.cards.panel-mode.labels.advanced",
-              this.hass.language,
+              lang,
             )}<si-info
               >${localize(
                 "panels.general.cards.panel-mode.labels.advanced-hint",
-                this.hass.language,
+                lang,
               )}</si-info
             >
           </div>
@@ -4454,11 +4206,27 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               })}
           ></ha-switch>
         </div>
+        ${blueprints
+          ? html`<div class="setting-row">
+              <div class="setting-label">
+                ${localize("blueprints.title", lang)}<si-info
+                  >${localize("blueprints.install_label", lang)}.
+                  ${localize("blueprints.install_help", lang)}</si-info
+                >
+              </div>
+              <ha-switch
+                .checked=${this.config.install_blueprints !== false}
+                @change=${(e: Event) =>
+                  this.handleConfigChange({
+                    install_blueprints: (e.target as any).checked,
+                  })}
+              ></ha-switch>
+            </div>`
+          : ""}
       </div>
     </ha-card>`;
   }
 
-  /** Whether Smart Irrigation lays its example blueprints down (#930). */
   /** A card's title with the switch that turns it on: no "Enabled" row. */
   private _switchHeader(
     title: unknown,
@@ -4487,41 +4255,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         @change=${(e: Event) => onChange((e.target as any).checked)}
       ></ha-switch>
     </div>`;
-  }
-
-  renderBlueprintsCard() {
-    if (!this.config || !this.hass) return html``;
-    const lang = this.hass.language;
-    return html`
-      <ha-card>
-        ${this._switchHeader(
-          html`${localize("blueprints.title", lang)}<si-info
-              >${localize("blueprints.install_label", lang)}.
-              ${localize("blueprints.install_help", lang)}</si-info
-            >`,
-          this.config.install_blueprints !== false,
-          (on) => this.handleConfigChange({ install_blueprints: on }),
-        )}
-      </ha-card>
-    `;
-  }
-
-  renderCalculationLogCard() {
-    if (!this.config || !this.data || !this.hass) return html``;
-    const lang = this.hass.language;
-
-    return html`
-      <ha-card>
-        ${this._switchHeader(
-          html`${localize("calculation_log.title", lang)}<si-info
-              >${localize("calculation_log.description", lang)}
-              ${localize("calculation_log.file_hint", lang)}</si-info
-            >`,
-          !!this.config.calc_log_enabled,
-          (on) => this.handleConfigChange({ calc_log_enabled: on }),
-        )}
-      </ha-card>
-    `;
   }
 
   renderCoordinateCard() {
@@ -4859,6 +4592,38 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     `;
   }
 
+  /**
+   * Without a weather service there is no forecast. In sight, not behind a
+   * second "i": switched on (kept from before), it holds nothing back.
+   */
+  private _forecastWithoutService() {
+    if (!this.hass || !this.config || this.config.use_weather_service)
+      return "";
+    const on = !!(
+      this.config.skip_irrigation_on_precipitation ||
+      this.config.forecast_rain_credit
+    );
+    return html`<div class="setting-hint row-hint ${on ? "warning-hint" : ""}">
+      ${localize(
+        on
+          ? "weather_skip.forecast_no_service_on"
+          : "weather_skip.forecast_no_service",
+        this.hass.language,
+      )}
+      <a
+        href="/${DOMAIN}/weatherservice"
+        @click=${(e: Event) => {
+          e.preventDefault();
+          navigate(this, `/${DOMAIN}/weatherservice`);
+        }}
+        >${localize(
+          "weather_skip.forecast_set_up_service",
+          this.hass.language,
+        )}</a
+      >
+    </div>`;
+  }
+
   private _numRow(
     label: string | TemplateResult,
     unit: string | TemplateResult,
@@ -5043,15 +4808,47 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         padding: 16px 16px 0;
         border-top: 1px solid var(--divider-color);
       }
+      /* The icon on the title's middle (#1056): both on one 28 px line,
+         the icon centred in it. It hung 2 px under the line's top, and the
+         heading's line was taller than the icon, so it sat low. */
       .settings-section ha-icon {
         color: var(--primary-color);
-        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        height: 28px;
       }
       .settings-section h2 {
         margin: 0;
         font-size: 1.3em;
+        line-height: 28px;
         font-weight: 500;
         color: var(--primary-text-color);
+      }
+      /* A card that is only a way somewhere (the setup assistant, the
+         Irrigation Unlimited import): the button on the title's line, not on
+         a row of its own under a divider (#1056). */
+      .card-header.header-action {
+        align-items: center;
+        gap: 12px;
+        padding-bottom: 12px;
+      }
+      .card-header.header-action > span {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow-wrap: anywhere;
+        line-height: 1.3;
+      }
+      /* A button's own size, not the title's 24 px. */
+      .card-header.header-action > ha-button {
+        flex: 0 0 auto;
+        font-size: var(--ha-font-size-m, 14px);
+        letter-spacing: normal;
+        line-height: normal;
+      }
+      /* A seasonal adjustment: its own padding, since .si-subgroup sets the
+         card content's to 0 on the sides. */
+      .card-content.si-subgroup {
+        padding: 12px 16px;
       }
       .settings-section-sub {
         margin-top: 2px;

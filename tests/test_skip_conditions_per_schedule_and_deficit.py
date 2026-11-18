@@ -1,13 +1,12 @@
 """A schedule's own skip conditions, and a step's threshold on the water deficit."""
 
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import MagicMock
 
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.program_runner import (
     ProgramRun,
     ProgramRunnerMixin,
 )
-from custom_components.smart_irrigation.program_scheduler import ProgramSchedulerMixin
 from custom_components.smart_irrigation.programs import (
     below_deficit,
     normalize_step,
@@ -107,58 +106,8 @@ async def test_the_users_postponement_applies_even_with_an_empty_list():
     assert result["reason"] == "postponed"
 
 
-class Scheduler(ProgramSchedulerMixin):
-    def __init__(self, should_skip, reason=None):
-        self._watering_decision_today = None
-        self._last_skip_evaluation = None
-        self._zones_held_by_days_between = {9}
-        self.async_evaluate_skip_conditions = AsyncMock(
-            return_value={"should_skip": should_skip, "reason": reason, "checks": []}
-        )
-        self.async_zones_held_by_days_between = AsyncMock(return_value={1})
-        self._count_precipitation_skip = AsyncMock()
-        self.seen = []
-
-        async def prepare(name, data, soil_moisture=True):
-            self.seen.append(
-                (
-                    self._watering_decision_today,
-                    set(self._zones_held_by_days_between),
-                )
-            )
-            return self._watering_decision_today, set()
-
-        self._prepare_watering_for_today = AsyncMock(side_effect=prepare)
-
-
-async def test_a_schedule_without_a_list_uses_the_days_shared_decision():
-    scheduler = Scheduler(should_skip=True)
-    await scheduler._prepare_program_watering("p", {}, None)
-    scheduler.async_evaluate_skip_conditions.assert_not_awaited()
-    scheduler._prepare_watering_for_today.assert_awaited_once()
-
-
-async def test_a_schedule_with_a_list_decides_on_its_conditions_and_restores_the_day():
-    scheduler = Scheduler(should_skip=False)
-    go, _ = await scheduler._prepare_program_watering("p", {}, ["wind"])
-    scheduler.async_evaluate_skip_conditions.assert_awaited_once_with(only=["wind"])
-    assert go is True
-    # Days between not chosen: no zone is held by it during the preparation.
-    assert scheduler.seen == [(True, set())]
-    # The shared state is as it was.
-    assert scheduler._watering_decision_today is None
-    assert scheduler._last_skip_evaluation is None
-    assert scheduler._zones_held_by_days_between == {9}
-
-
-async def test_a_veto_among_the_chosen_conditions_skips_the_run():
-    scheduler = Scheduler(should_skip=True, reason="precipitation")
-    go, _ = await scheduler._prepare_program_watering(
-        "p", {}, ["precipitation", "days_between"]
-    )
-    assert go is False
-    assert scheduler.seen == [(False, {1})]
-    scheduler._count_precipitation_skip.assert_awaited_once()
+# How a schedule's list meets the day's decision and the readings of the moment:
+# tests/test_weather_per_start.py.
 
 
 # --- F3: the threshold on a step -----------------------------------------------

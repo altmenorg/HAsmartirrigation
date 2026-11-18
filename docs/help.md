@@ -1,18 +1,17 @@
 ---
-layout: default
-title: "Configuration: Help"
+title: "Help"
 ---
 # Help
 
-Start with the [documentation](index.md): installation, configuration (zones, sensor groups, modules), usage, events, services and troubleshooting.
+Start with the [documentation](index.md): installation, configuration (zones, sensor groups, weather), watering with programs, entities, events, services and [troubleshooting](usage-troubleshooting.md).
 
 Prefer video? Watch the [tutorial playlist on YouTube (English)](https://youtube.com/playlist?list=PLUHIAUPJHMiakbda92--fgb6A0hFReAo7) or this [community tutorial in German](https://youtu.be/1AYLuIs7_Pw).
 
 Still stuck? Browse the [Discussions](https://github.com/altmenorg/HAsmartirrigation/discussions) and the [Home Assistant community thread](https://community.home-assistant.io/t/smart-irrigation-save-water-by-precisely-watering-your-lawn-garden/).
 
-If that does not help, open an [issue](https://github.com/altmenorg/HAsmartirrigation/issues).
+If that does not help, open an [issue](https://github.com/altmenorg/HAsmartirrigation/issues), with a diagnostics file (see [troubleshooting](usage-troubleshooting.md)).
 
-## Help translate {#help-translate}
+## Help translate
 
 The panel and the names Home Assistant shows for the integration (entities, buttons, services, the setup dialog) come in 20 languages. Apart from English and French, those translations were machine-made and nobody who speaks the language has read them yet, so some will read oddly.
 

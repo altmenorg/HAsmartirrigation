@@ -312,7 +312,7 @@
     },
     "run_program": {
       "name": "Lancer un programme",
-      "description": "Lancer un programme du contrôleur complet maintenant, ou dès que c'est son tour si un autre tourne. Le programme arrose ses zones avec les durées calculées par Smart Irrigation, sauf si ses étapes disent autre chose.",
+      "description": "Lancer un programme maintenant, ou dès que c'est son tour si un autre tourne. Le programme arrose ses zones avec les durées calculées par Smart Irrigation, sauf si ses étapes disent autre chose.",
       "fields": {
         "program_id": {
           "name": "Programme",
@@ -430,7 +430,7 @@
     },
     "adjust_program": {
       "name": "Ajuster un programme",
-      "description": "Faire arroser un programme du contrôleur complet plus longtemps ou moins longtemps, pour un temps. L'ajustement remplace le précédent (il ne s'additionne jamais), s'applique aux passages qui démarrent après lui et prend fin après le nombre d'heures indiqué.",
+      "description": "Faire arroser un programme plus longtemps ou moins longtemps, pour un temps. L'ajustement remplace le précédent (il ne s'additionne jamais), s'applique aux passages qui démarrent après lui et prend fin après le nombre d'heures indiqué.",
       "fields": {
         "program_id": {
           "name": "Programme",

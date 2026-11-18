@@ -26,13 +26,17 @@ What the learning from the fork this was modelled on says is done here:
 * what fires is checked against the record at the moment it fires, so two
   arming passes cannot start the same occurrence twice.
 
-The weather gate is the one the start trigger uses: the same decision, made once
-a day, and the same holds on the zones the run is about to water.
+The weather gate is the one the start trigger used: the readings of the moment
+(frost, wind, rain sensor, postponement) judged at each start, the conditions
+about the day (rain forecast, days between irrigation) decided once a day, and
+the same holds on the zones the run is about to water.
 
 A schedule of the type "after" has no timer: the runner calls
 ``async_start_programs_after`` when a program has really watered and finished
 (ProgramRun.really_ran), and the programs whose schedules wait for it start
-then, or their offset later. A start waiting for its offset is recorded
+then, or their offset later. A scheduled run held back (the weather, a
+suspension, nothing to water) starts them too, at its planned moment plus their
+offset; one stopped by hand or that failed does not. A start waiting for its offset is recorded
 (``CONF_PENDING_CHAINED_STARTS``) so that a restart arms it again; one that
 came due while Home Assistant was down is started late within the catch-up
 window (CATCH_UP_GRACE_SECONDS), and dropped beyond it.
@@ -266,55 +270,25 @@ class ProgramSchedulerMixin:
     async def _prepare_program_watering(self, name, event_data, conditions):
         """``(go, sheltered)`` for a schedule that takes the weather into account.
 
-        ``conditions`` None is the day's shared decision, as it always was. A list
-        is the schedule's own choice of skip conditions: they are judged now and
-        the result stands in for the day's decision only while the rest of the
-        preparation (the event of a skipped day, the sheltered zones, the holds)
-        runs, then the shared decision is put back as it was.
+        ``conditions`` None applies every skip condition; a list is the
+        schedule's own choice of them. Either way the readings of the moment
+        (frost, wind, rain sensor, postponement) are judged now, for this start,
+        and the conditions about the day (rain forecast, days between
+        irrigation) come from the day's decision, made at its first start
+        (triggers._prepare_watering_for_today).
 
-        One preparation at a time: the swap spans awaits, so two schedules
-        firing together would otherwise see each other's decision.
+        One preparation at a time: the day's decision is made across awaits,
+        and two schedules firing together must not both make it.
         """
         lock = getattr(self, "_prepare_watering_lock", None)
         if lock is None:
             lock = self._prepare_watering_lock = asyncio.Lock()
         async with lock:
-            return await self._prepare_program_watering_locked(
-                name, event_data, conditions
+            if conditions is None:
+                return await self._prepare_watering_for_today(name, event_data)
+            return await self._prepare_watering_for_today(
+                name, event_data, conditions=list(conditions)
             )
-
-    async def _prepare_program_watering_locked(self, name, event_data, conditions):
-        if conditions is None:
-            return await self._prepare_watering_for_today(name, event_data)
-        evaluation = await self.async_evaluate_skip_conditions(only=conditions)
-        saved = (
-            self._watering_decision_today,
-            self._last_skip_evaluation,
-            getattr(self, "_zones_held_by_days_between", None),
-        )
-        try:
-            self._last_skip_evaluation = {
-                **evaluation,
-                "evaluated_at": dt_util.now().isoformat(),
-            }
-            self._watering_decision_today = not evaluation["should_skip"]
-            self._zones_held_by_days_between = (
-                await self.async_zones_held_by_days_between()
-                if "days_between" in conditions
-                else set()
-            )
-            if evaluation["reason"] == "precipitation":
-                await self._count_precipitation_skip()
-            # A schedule that left "soil_moisture" out does not hold zones back
-            # for a moist soil either (the argument is only passed then).
-            extra = {} if "soil_moisture" in conditions else {"soil_moisture": False}
-            return await self._prepare_watering_for_today(name, event_data, **extra)
-        finally:
-            (
-                self._watering_decision_today,
-                self._last_skip_evaluation,
-                self._zones_held_by_days_between,
-            ) = saved
 
     async def _fire_program_schedule(self, program_id, schedule_id, target) -> None:
         """A schedule is due: remember it, arm the next one, then run the program."""
@@ -382,10 +356,16 @@ class ProgramSchedulerMixin:
         The same for a schedule whose moment came and for one that starts after
         another program: suspended, already running, held back by the weather
         or not, and the day counted when a step really waters.
+
+        A run held back here (suspended, the weather) or that finds nothing to
+        water still starts the programs that come after it, at ``target`` (its
+        planned moment) plus their offset, judged by their own weather setting
+        (``async_start_programs_after`` with ``held_back``).
         """
         name = program.get(const.PROGRAM_NAME) or program_id
         if suspended:
             _LOGGER.info("Program %s is suspended, its schedule passes", program_id)
+            await self._start_after_held_back(program_id, target)
             return
         registry = (
             self._program_registry() if hasattr(self, "_program_registry") else {}
@@ -421,6 +401,7 @@ class ProgramSchedulerMixin:
                 )
                 return
             if not go:
+                await self._start_after_held_back(program_id, target)
                 return
             only_zones = sheltered or None
             self._fire_legacy_start_event(program_id, name, schedule_id)
@@ -444,13 +425,25 @@ class ProgramSchedulerMixin:
             # The finish is a limit: the run is cut there.
             extra["deadline"] = target
         # The day is counted when a step really starts, for the zones it waters.
+        # A run that finds nothing to water starts what comes after it at its
+        # planned moment (the runner reads ``chain_moment``).
         await self.async_run_program(
             program_id,
             manual=False,
             only_zones=only_zones,
             note_day=_count_the_day,
+            chain_moment=target,
             **extra,
         )
+
+    async def _start_after_held_back(self, program_id, target) -> None:
+        """A run was held back: start what comes after it all the same."""
+        try:
+            await self.async_start_programs_after(program_id, target, held_back=True)
+        except Exception as e:  # noqa: BLE001 - the held back run is over
+            _LOGGER.error(
+                "Program %s: could not start what comes after it: %s", program_id, e
+            )
 
     # --- after another program -------------------------------------------------
 
@@ -485,13 +478,23 @@ class ProgramSchedulerMixin:
             {const.CONF_PENDING_CHAINED_STARTS: entries or None}
         )
 
-    async def async_start_programs_after(self, program_id, finished) -> None:
-        """A program has really watered and finished: start what comes after it.
+    async def async_start_programs_after(
+        self, program_id, finished, held_back: bool = False
+    ) -> None:
+        """A program is done with its turn: start what comes after it.
 
         Every enabled "after" schedule waiting for ``program_id`` starts its own
         program at ``finished`` plus its offset, if its days hold on the day of
-        that start. Called by the runner (program_runner.py), for a manual run
-        as for a scheduled one.
+        that start, and its own weather setting judges it then. Called by the
+        runner (program_runner.py) when a run really watered and finished, for
+        a manual run as for a scheduled one: ``finished`` is its end.
+
+        ``held_back``: a scheduled run of ``program_id`` did not water (the
+        weather, a suspension, nothing to water). ``finished`` is then its
+        planned moment, and what comes after it starts all the same: a drip
+        line in a greenhouse, weather off, chained after a lawn program, waters
+        on a frosty morning. A run stopped by hand, or that failed, starts
+        nothing after it (the runner does not call this then).
         """
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
@@ -545,11 +548,16 @@ class ProgramSchedulerMixin:
                 if old is not None:
                     old()
                 _LOGGER.info(
-                    "Program %s starts after %s (schedule %s) at %s",
+                    "Program %s starts after %s (schedule %s) at %s%s",
                     chained_id,
                     program_id,
                     schedule_id,
                     dt_util.as_local(due).strftime("%H:%M"),
+                    (
+                        ", from its planned moment: it did not water"
+                        if held_back
+                        else ""
+                    ),
                 )
                 self._arm_chained_start(entry, due)
         if changed:

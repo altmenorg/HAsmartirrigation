@@ -540,7 +540,7 @@ def test_the_lead_time_of_an_own_zone_is_reported_for_fixed_steps():
 def test_with_the_full_controller_off_the_preview_says_so():
     coordinator = FakeCoordinator(full_controller=False)
     report = iu_import_ha.plan(CONFIG, coordinator.store, [], None)["report"]
-    assert any("full controller is off" in i["note"] for i in report["items"])
+    assert any("Calculate and water" in i["note"] for i in report["items"])
 
 
 # --- doing it ------------------------------------------------------------------

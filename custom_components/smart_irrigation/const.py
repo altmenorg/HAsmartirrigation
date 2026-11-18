@@ -1,6 +1,6 @@
 """Store constants."""
 
-VERSION = "v2026.11.1-alpha4"
+VERSION = "v2026.11.1-alpha6"
 NAME = "Smart Irrigation"
 MANUFACTURER = "@altmenorg"
 
@@ -308,6 +308,15 @@ SKIP_CONDITION_IDS = (
 )
 # The user's own "not now": it applies whenever the weather is taken into account.
 SKIP_CONDITION_ALWAYS = "postponed"
+# The conditions that are a statement about the day: decided at the first start
+# of the day and kept for every later start that day (a run in the morning
+# resets the days since the last irrigation, and must not hold back the evening
+# run for it). The others are readings of the moment (the postponement ends at
+# a moment, a frost at 06:00 is gone at 18:00), judged again at each start.
+SKIP_CONDITIONS_OF_THE_DAY = ("precipitation", "days_between")
+SKIP_CONDITIONS_OF_THE_MOMENT = tuple(
+    c for c in SKIP_CONDITION_IDS if c not in SKIP_CONDITIONS_OF_THE_DAY
+)
 # An end-anchored schedule whose finish is a hard limit: the run is cut there.
 SCHEDULE_HARD_DEADLINE = "hard_deadline"
 # A schedule of the type "after" starts its program when another program has

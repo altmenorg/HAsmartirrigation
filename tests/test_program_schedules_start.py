@@ -418,32 +418,17 @@ async def test_a_suspended_program_or_the_controller_off_fires_nothing(armed):
 
 async def test_the_schedules_own_conditions_reach_the_preparation(armed):
     with_wind = MainScheduler([_main([{"time": "06:00", "skip_conditions": ["wind"]}])])
-    with_wind.async_evaluate_skip_conditions = AsyncMock(
-        return_value={"should_skip": False, "reason": None, "checks": []}
-    )
-    with_wind.async_zones_held_by_days_between = AsyncMock(return_value=set())
-    with_wind._count_precipitation_skip = AsyncMock()
-    with_wind._watering_decision_today = None
-    with_wind._last_skip_evaluation = None
 
     await _fire(with_wind)
 
-    with_wind.async_evaluate_skip_conditions.assert_awaited_once_with(only=["wind"])
-    # The moist soil is not one of the conditions: no hold for it.
+    # The list goes to the preparation, which judges them for this start.
     [(_, _, kwargs)] = with_wind._prepare_calls
-    assert kwargs == {"soil_moisture": False}
+    assert kwargs == {"conditions": ["wind"]}
     with_wind.async_run_program.assert_awaited_once()
 
-    with_soil = MainScheduler(
-        [_main([{"time": "06:00", "skip_conditions": ["wind", "soil_moisture"]}])]
-    )
-    with_soil.async_evaluate_skip_conditions = with_wind.async_evaluate_skip_conditions
-    with_soil.async_zones_held_by_days_between = AsyncMock(return_value=set())
-    with_soil._count_precipitation_skip = AsyncMock()
-    with_soil._watering_decision_today = None
-    with_soil._last_skip_evaluation = None
-    await _fire(with_soil)
-    [(_, _, kwargs)] = with_soil._prepare_calls
+    every = MainScheduler([_main([{"time": "06:00"}])])
+    await _fire(every)
+    [(_, _, kwargs)] = every._prepare_calls
     assert kwargs == {}
 
 
@@ -471,6 +456,10 @@ class Preparing(TriggersMixin):
         self.hass = MagicMock()
         self.hass.async_create_task = lambda coro: coro.close()
         self._increment_days_since_irrigation = AsyncMock()
+        # The readings of the moment, judged at each start: nothing vetoes.
+        self.async_evaluate_skip_conditions = AsyncMock(
+            return_value={"should_skip": False, "reason": None, "checks": []}
+        )
 
 
 async def test_the_moist_soil_hold_is_applied_by_default():

@@ -1,32 +1,33 @@
 ---
-layout: default
-title: "Usage: Automations"
+title: "Automations"
 ---
 # Automations
 
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Events](usage-events.md)<br/>
-> Next: [Off-the-shelf controllers](usage-controllers.md)
+With **Calculate only**, Smart Irrigation calculates and something of yours opens the valves: an automation, a blueprint, a controller or another integration. That works with any irrigation system, however it is connected to Home Assistant. (With **Calculate and water**, Smart Irrigation opens the valves itself, with its [programs](usage-full-controller.md), and you need none of this.)
 
-Since this integration does not interface with your irrigation system directly, you will need to use the data it outputs to create an automation that will start and stop your irrigation system for you. This way you can use this custom integration with any irrigation system you might have, regardless of how that interfaces with Home Assistant. In order for this to work correctly, you should base your automation on the value of `sensor.smart_irrigation_[zone_name]` as long as you run your automation after it was updated (e.g. 11:00 PM/23:00 hours local time). If that value is above `0` it is time to irrigate. Note that the value is the run time in seconds. Also, after irrigation, you need to call the `smart_irrigation.credit_watering` service with how long the zone ran, so the water balance is credited with the water it received. (`smart_irrigation.set_bucket` without a value, which sets the water balance to 0, still works, but loses the deficit a run cut short by the maximum duration did not water.)
+Your automation reads the zone's duration sensor, `sensor.smart_irrigation_[zone_name]`, after it was updated: by the start event, `smart_irrigation_start_irrigation_all_zones` (see [events](usage-events.md)), or after the daily calculation (23:00 by default). Above `0`, it is time to water, for that many seconds.
 
-> **The last step in any automation is very important, since you will need to let the integration know you have finished irrigating, by calling the `smart_irrigation.credit_watering` service**
+!!! warning "Tell Smart Irrigation the zone was watered"
 
-> Resetting the water balance says the soil is at field capacity at that moment, so any rain collected since the last calculation is part of what that statement covers and is not counted again at the next one. Rain falling after the reset still counts as usual. This matters when it rains between the calculation and irrigation: without it the same rain would both shorten the run and be counted again in the next water balance.
+    The last step of any watering automation is to call `smart_irrigation.credit_watering` with how long the zone ran, so the water balance is credited with the water it received. `smart_irrigation.set_bucket` without a value, which sets the water balance to 0, still works, but loses the deficit a run cut short by the maximum duration did not water.
 
-Experts say you should water deeply but infrequently to avoid overwatering and encourage deep rooting. It might be a good idea to create an automation that starts early enough to finish before sunrise (using the [`smart_irrigation_start_irrigation_all_zones` event](usage-events.md)) and only once per week if duration is above `0` or whenever the `bucket < -25 mm`. Adjust to your specific needs.
+Resetting the water balance says the soil is at field capacity at that moment, so any rain collected since the last calculation is part of what that statement covers and is not counted again at the next one. Rain falling after the reset still counts as usual. Without that, rain falling between the calculation and the watering would both shorten the run and be counted again in the next water balance.
 
-The examples on this page don't use a timer - see [this discussion](https://github.com/altmenorg/HAsmartirrigation/discussions/361) for an example of using a timer for extra safety.
+Deep and infrequent watering is better for most plants: rather than an automation that waters once a week, give the zone an [irrigation threshold](configuration-zones.md) or set the [days between irrigation](configuration-weather.md#days-between-irrigation-events).
 
-> Writing your own executor rather than using a blueprint? [The output contract](usage-output-contract.md) says exactly what Smart Irrigation publishes, when it changes, and what to send back.
+The examples on this page use no timer: see [this discussion](https://github.com/altmenorg/HAsmartirrigation/discussions/361) for an example that uses one for extra safety.
+
+!!! tip
+
+    Writing your own executor rather than using a blueprint? [The output contract](usage-output-contract.md) says exactly what Smart Irrigation publishes, when it changes, and what to send back.
 
 ## Blueprints we provide
 
 A blueprint is a parameterised mould for an automation: you import it once, pick your entities from filtered dropdowns, and Home Assistant writes the automation for you.
 
-**You already have them.** Smart Irrigation copies the blueprints below into your own `blueprints/` folder when it starts, so they are waiting for you under *Settings > Automations & scenes > Blueprints*, grouped as Smart Irrigation. Nothing to download.
+**You already have them.** Smart Irrigation copies the blueprints below into your own `blueprints/` folder when it starts, so they are waiting for you under **Settings › Automations & scenes › Blueprints**, grouped as Smart Irrigation. Nothing to download.
 
-Existing files are never overwritten, so anything you have edited stays yours. That also means an improved blueprint does not reach you on its own: use the **Import** link in the table below to pull the current version. Each blueprint is copied once: one you delete is not put back at the next start. To copy none at all, switch off **Install the example blueprints** in the **Blueprints** card of the General page (advanced mode); the ones already in your folder are left as they are. You can also browse [the whole folder](https://github.com/altmenorg/HAsmartirrigation/tree/master/custom_components/smart_irrigation/blueprints).
+Existing files are never overwritten, so anything you have edited stays yours. That also means an improved blueprint does not reach you on its own: use the **Import** link in the table below to pull the current version. Each blueprint is copied once: one you delete is not put back at the next start. To copy none at all, switch off **Blueprints** under **Settings › General** (advanced mode); the ones already in your folder are left as they are. You can also browse [the whole folder](https://github.com/altmenorg/HAsmartirrigation/tree/master/custom_components/smart_irrigation/blueprints).
 
 Pick the one that matches how your valves are actually driven:
 
@@ -52,51 +53,46 @@ Pick the one that matches how your valves are actually driven:
 
 With Irrigation Unlimited, note that it exposes **binary sensors**, not switches: Smart Irrigation tells it how long to run through `adjust_time` and IU does the running. Do not drive the valve yourself in parallel, or the two will fight.
 
-If you use **observed watering** or **Calculate and water** (see [closed loop](configuration-closed-loop.md)), turn off the blueprint's option "Credit the run to the water balance" (the Rain Bird, Hydrawise, Rachio, OpenSprinkler and B-hyve blueprints have it; the standard one always credits, so leave it out): the integration credits the water balance itself and the two would count twice. The ESPHome blueprint, the `simple-scheduler` script, the Irrigation Unlimited reset blueprint and the example automations below still call `set_bucket` without a value, which sets the water balance to 0 instead of crediting the run.
+If you use **observed watering** (see [closed loop](configuration-closed-loop.md)), turn off the blueprint's option "Credit the run to the water balance" (the Rain Bird, Hydrawise, Rachio, OpenSprinkler and B-hyve blueprints have it; the standard one always credits, so leave it out): the integration credits the water balance itself and the two would count twice. The ESPHome blueprint, the `simple-scheduler` script, the Irrigation Unlimited reset blueprint and the example automations below still call `set_bucket` without a value, which sets the water balance to 0 instead of crediting the run.
 
-### Example 1: one valve, once per week irrigation if duration > 0 or if the water balance < - 25 mm:
+## Example automations
 
-This example automation runs daily and checks `sensor.smart_irrigation_[zone_name]`. It checks if the `buckets` is `< -25mm (~1")` or if's a monday and duration is above `0`. This follows the expert recommendation mentioned above.
+The example automations below still call `set_bucket` without a value at the end. Prefer `credit_watering`, as above.
+
+### Example 1: one valve, watering once a week or when the deficit is large
+
+This automation runs daily and checks `sensor.smart_irrigation_[zone_name]`. It waters when the water balance is below -25 mm (about 1 inch), or on Mondays when the duration is above `0`.
 
 [yaml](https://github.com/altmenorg/HAsmartirrigation/blob/master/automations/1_one_valve_once_per_week.yaml)
 
-### Example 2: one valve, potentially daily irrigation
+### Example 2: one valve, possibly every day
 
-Here is an example automation that runs when the `smart_irrigation_start_irrigation_all_zones` event is fired. It checks if `sensor.smart_irrigation_[zone_name]` is above 0 and if it is it turns on `switch.irrigation_tap1`, waits the number of seconds as indicated by `sensor.smart_irrigation_[zone_name]` and then turns off `switch.irrigation_tap1`. Finally, it resets the water balance by calling the `smart_irrigation.set_bucket` service without a value. If you have multiple instances you will need to adjust the event, entities and service names accordingly.
+This automation runs when the `smart_irrigation_start_irrigation_all_zones` event fires. If `sensor.smart_irrigation_[zone_name]` is above 0, it turns on `switch.irrigation_tap1`, waits that many seconds, and turns it off. Then it resets the water balance with `smart_irrigation.set_bucket` without a value.
 
 [yaml](https://github.com/altmenorg/HAsmartirrigation/blob/master/automations/2_one_valve_potential_daily.yaml)
-## Example 3: one valve, irrigation depending on work day sensor
-Here is an example automation that runs at 5 AM local time, but only on set days of the week indicated by `binary_sensor.workday_sensor`). As above, it checks if `sensor.smart_irrigation_[zone_name]` is above 0 and if it is it turns on `switch.irrigation_tap1`, waits the number of seconds as indicated by `sensor.smart_irrigation_[zone_name]` and then turns off `switch.irrigation_tap1`. Finally, it resets the water balance by calling the `smart_irrigation.set_bucket` service without a value.
-This automation depends on the [workday binary sensor](https://www.home-assistant.io/integrations/workday/) which you will have to set up separately. Alternatively you could use a condition such as:
-```
+
+### Example 3: one valve, on work days
+
+This automation runs at 05:00, only on the days `binary_sensor.workday_sensor` allows. As above, it waters `switch.irrigation_tap1` for the zone's duration and then resets the water balance. It needs the [workday binary sensor](https://www.home-assistant.io/integrations/workday/), set up separately. You can use a condition on the weekday instead:
+
+```yaml
 condition:
-  condition: time
-  weekday:
-  - mon
-  - thu
+  - condition: time
+    weekday:
+      - mon
+      - thu
 ```
 
 [yaml](https://github.com/altmenorg/HAsmartirrigation/blob/master/automations/3_one_valve_workday.yaml)
-### Example 4: two valves, irrigation depending on work day sensor
-Here is an example automation that runs at 4 AM local time, but only on set days of the week indicated by `binary_sensor.workday_sensor`). As above, it checks if `sensor.smart_irrigation_[zone_name]` is above 0 and if it is it turns on `switch.irrigation_tap1`, waits the number of seconds as indicated by `sensor.smart_irrigation_[zone_name]` and then turns off `switch.irrigation_tap1`. Then it turns on `switch.irrigation_tap2`, waits the number of seconds as indicated by `sensor.smart_irrigation_[zone_name]` and then turns off `switch.irrigation_tap2`. Finally, it resets the water balance by calling the `smart_irrigation.set_bucket` service without a value.
-This automation depends on the [workday binary sensor](https://www.home-assistant.io/integrations/workday/) which you will have to set up separately. Alternatively you could use a condition such as:
-```
-condition:
-  condition: time
-  weekday:
-  - mon
-  - thu
-```
+
+### Example 4: two valves, on work days
+
+The same at 04:00, for two valves one after the other: `switch.irrigation_tap1`, then `switch.irrigation_tap2`, each for its zone's duration, then the water balance is reset. It also needs the workday sensor, or the weekday condition above.
 
 [yaml](https://github.com/altmenorg/HAsmartirrigation/blob/master/automations/4_two_valves_workday.yaml)
 
+### Example 5: six zones on ESPHome
 
-## Example 5: Advanced multi-tap example
-This example handles multiple taps for a six-zone system controlled by [ESPHome](https://esphome.io/components/sprinkler.html). This is the automation the creator of this integration uses themselves (ignoring the expert advice above...).
+Six zones driven by an [ESPHome sprinkler controller](https://esphome.io/components/sprinkler.html). This is the automation the creator of this integration used (ignoring the advice above).
 
 [yaml](https://github.com/altmenorg/HAsmartirrigation/blob/master/automations/5_multi_tap.yaml)
-
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Events](usage-events.md)<br/>
-> Next: [Off-the-shelf controllers](usage-controllers.md)
