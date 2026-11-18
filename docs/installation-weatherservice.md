@@ -3,14 +3,14 @@ title: "Installation: Configuring weather service"
 ---
 # Configuring the weather service
 
-The weather service is configured **from the Smart Irrigation panel**, on the fly — it is no longer part of the install wizard. You can enable it, change it, or turn it off at any time without reinstalling or reloading the integration.
+The weather service is configured **from the Smart Irrigation panel**, on the fly; it is no longer part of the install wizard. You can enable it, change it, or turn it off at any time without reinstalling or reloading the integration.
 
 To set it up:
 
 1. Open the **Smart Irrigation** panel from the Home Assistant sidebar.
 2. Go to the **Weather service** settings.
 3. Toggle **Use a weather service** on, then pick the service you want:
-   - **Open-Meteo** (the default) is keyless and works worldwide — no API key required.
+   - **Open-Meteo** (the default) is keyless and works worldwide, with no API key.
    - **A weather entity in Home Assistant** reads one of your weather entities (DWD, Met.no, KNMI, ...): pick the entity instead of a key. It reports no rain that fell, so each sensor group needs a rain sensor (see [weather services](weather-services.md#a-weather-entity-in-home-assistant)).
    - **Open Weather Map** and **Pirate Weather** require an API key (see below).
 4. Enter the API key if the chosen service needs one, or pick the weather entity, then save. When the key or the entity is accepted you will see a success message; otherwise double check it. After switching to a weather entity, the page also names the sensor groups that still take their rain from the weather service: give each of them a rain sensor.

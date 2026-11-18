@@ -12,7 +12,7 @@ The words for each part, as the panel uses them, are in the [glossary](glossary.
 4. At some point in the day (configurable) the `nett precipitation` is added/substracted from the water balance (the `bucket` attribute), which starts at zero. The water balance is calculated using this formula: `old_bucket + nett precipitation.
 5. If the water balance > 0, the `drainage rate` is taken into the account (if set) and subtracted from the water balance value. The actual drainage rate is determined dynamically by the fraction the water balance is of the maximum water balance value, following hydraulic conductivity method of [Brooks and Corey, Eq. 4-6](https://open.library.okstate.edu/rainorshine/chapter/1-8-models-for-soil-hydraulic-conductivity/). When it rained during the window, the window is replayed **hour by hour**: each hour gets its evapotranspiration, the rain that fell in it, then that hour's drainage. The evapotranspiration of each hour is the hourly equation's own figure when the hourly calculation is on, and otherwise follows the sun (in proportion to how high it stands, nothing at night). A rain that just fell is only drained from the hour it fell, not as if it had been in the soil since the previous calculation. When the rain is seen is taken from the readings of the rain sensor (a rain gauge's total, or a rain rate); when nothing says it, the rain is spread evenly over the window.
 6. If the water balance is below zero, irrigation is required.
-7. Irrigation should run for `sensor.smart_irrigation_[zone_name]` seconds, which is 0 when `bucket >= 0` or when the deficit is below the zone's **irrigation threshold** — deep and infrequent beats a daily trickle.
+7. Irrigation should run for `sensor.smart_irrigation_[zone_name]` seconds, which is 0 when `bucket >= 0` or when the deficit is below the zone's **irrigation threshold**: deep and infrequent beats a daily trickle.
 8. Afterwards the water balance has to be credited with the water that went in. Three ways, and you pick one: let Smart Irrigation [open the valve itself](configuration-closed-loop.md), which credits the run it performed; let it [watch the valve](configuration-closed-loop.md) and credit any run of it; or call [`credit_watering`](usage-services.md) from your own automation with how long the zone ran. Never two of them, or the water is counted twice. A [blueprint](usage-automations.md) does the third for you, per brand of controller.
 
 The whole of what is published and when it changes is on one page: [the output contract](usage-output-contract.md).
@@ -31,7 +31,7 @@ matters, and it is worth saying why, because it used to be the other way round:
 the factor was applied at the very end, to the duration. That scaled the whole
 balance rather than the crop's water use, so a factor below 1 credited only that
 fraction of the rain that fell, and the water balance kept draining at the full
-reference rate — reaching any threshold about `1/Kc` times too fast. No factor
+reference rate, reaching any threshold about `1/Kc` times too fast. No factor
 applied at the end can undo a decision about *when* to water.
 
 The panel asks what grows in the zone, in words, and writes the FAO-56 factor
@@ -56,7 +56,7 @@ there](configuration-general.md).
 
 Either way the sun is the term the result is most sensitive to. A radiation
 sensor is best, a weather service that publishes radiation is next, and the
-day's temperature range is the last resort — the estimate FAO-56 gives for
+day's temperature range is the last resort: the estimate FAO-56 gives for
 exactly that case.
 
 ## Weekly behavior example

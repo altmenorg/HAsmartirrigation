@@ -3,7 +3,7 @@ title: "Configuration: General"
 ---
 # General configuration
 
-**Settings > General** holds the global settings. Under the master switch, they come in three sections:
+**Settings > General** holds the global settings. Under **What Smart Irrigation does**, they come in three sections:
 
 * **Calculation**: when the durations are worked out and how, the seasonal adjustments and the calculation log.
 * **Control**: the [full controller](usage-full-controller.md), [observed watering](configuration-closed-loop.md) and, when the full controller is off, the start trigger.
