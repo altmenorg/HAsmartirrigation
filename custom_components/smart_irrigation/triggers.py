@@ -12,6 +12,7 @@ import asyncio
 import logging
 from datetime import datetime, timedelta
 from functools import partial
+from typing import Any
 
 import homeassistant.util.dt as dt_util
 from homeassistant.const import CONF_LONGITUDE
@@ -62,6 +63,11 @@ class TriggersMixin:
     coordinator state (store, hass, the skip-condition checks, the trigger
     bookkeeping attributes, and the direct-valve runner).
     """
+
+    # Set by the coordinator or other mixins; declared for the type checker.
+    _day_checks: dict | None
+    async_evaluate_skip_conditions: Any
+    async_zones_held_by_days_between: Any
 
     def schedules_start_watering(self) -> bool:
         """Whether the programs' schedules start the watering, not the trigger.

@@ -798,7 +798,7 @@ class SmartIrrigationCoordinator(
         # are judged at each start instead (triggers._prepare_watering_for_today).
         self._watering_decision_today = True if self._start_event_fired_today else None
         # The checks behind it, {check id: check}, or None until it is made.
-        self._day_checks = None
+        self._day_checks: dict | None = None
         # The structured result of the most recent real watering decision, so
         # the panel can say why a run was skipped rather than only that it was.
         # None until one has been made, and after a restart.
