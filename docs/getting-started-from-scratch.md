@@ -46,7 +46,7 @@ When it is up, create your account, set your **location, time zone and elevation
 
 Add the valve the way its own integration asks (a Zigbee stick and ZHA or Zigbee2MQTT for a Zigbee valve, the brand's integration for a Wi-Fi one, a GPIO or Modbus integration for a relay board).
 
-Then prove it works, before Smart Irrigation is anywhere near it: in **Developer tools > Actions**, call `switch.turn_on` (or `valve.open_valve`) on that entity and watch the water. Turn it off again. If that does not work, nothing later will, and it will look like our fault.
+Then prove it works, before Smart Irrigation is anywhere near it: in **Developer tools › Actions**, call `switch.turn_on` (or `valve.open_valve`) on that entity and watch the water. Turn it off again. If that does not work, nothing later will, and it will look like our fault.
 
 Write the entity id down, `switch.garden_tap` or whatever it is.
 
@@ -54,21 +54,24 @@ Write the entity id down, `switch.garden_tap` or whatever it is.
 
 Install [HACS](https://hacs.xyz) if you do not have it, then:
 
-1. **HACS > Integrations**, search for **Smart Irrigation**, download it.
+1. In **HACS**, search for **Smart Irrigation**, download it.
 2. Restart Home Assistant.
-3. **Settings > Devices & services > Add integration**, search for **Smart Irrigation**.
-4. Pick your weather service, or say you will use your own sensors. Open-Meteo needs nothing; OpenWeatherMap and Pirate Weather ask for a free API key.
+3. **Settings › Devices & services › Add integration**, search for **Smart Irrigation**.
+4. Confirm: setup asks nothing. The weather service is chosen later, in the panel: Open-Meteo needs nothing; OpenWeatherMap and Pirate Weather ask for a free API key.
 
 The full version of this step, including the manual install and what to do when HACS does not find it, is on the [installation](installation.md) page.
 
 ## 4. The first zone (5 minutes)
 
-Open **Smart Irrigation** in the sidebar. The setup assistant asks four questions at most: what the zone is, whether it is outside or under glass, where the evaporation figure should come from, and which sensors you have. It creates the sensor group and the first zone for you.
+Open **Smart Irrigation** in the sidebar. To use a weather service, turn it on first: on **Weather › Weather service**, switch on **Use a weather service**, keep **Open-Meteo** and save. Then open the setup assistant (**Settings › General**, **Open the assistant**). It asks a few questions, one at a time:
 
-Then, on the zone's card, fill in what only you know:
+1. **What should Smart Irrigation do?** **Calculate and water** if Smart Irrigation should open the valve itself, **Calculate only** if your own automation or controller will (step 5 explains both).
+2. **What are you watering?** A name, the **area** and the **flow** you measured, and the **valve**: the entity from step 2.
+3. **Where does it grow?** Outdoors, or under glass or plastic.
+4. **Where should the evaporation figure come from?** The weather service is the simplest answer. It is only offered once a weather service is on.
+5. **Which entities should it read?**, only when your answers need sensors.
 
-- the **area** and the **flow** you measured;
-- **what the soil is** and **what grows there**, in words. Those two write the drainage rate and the crop factor behind them (FAO-56 values), which is what nobody can answer in millimetres an hour.
+It creates the sensor group and the first zone for you. Then, on the zone's card under **Zones**, say **what the soil is** and **what grows there**, in words. Those two set the drainage rate and the crop factor behind them (FAO-56 values), which nobody can answer in millimetres an hour.
 
 You now have a zone that computes a duration every night at 23:00.
 
@@ -76,16 +79,20 @@ You now have a zone that computes a duration every night at 23:00.
 
 This is the step people skip, and then nothing waters: Smart Irrigation decides *how long*, and something has to *do it*. Two ways.
 
-**Let Smart Irrigation do it.** In **Settings > General**, choose **Calculate and water** in the first card, then set the zone's **Linked valve/switch** to the entity from step 2. It puts the zone in a program, which opens the valve at its schedule (done by sunrise unless you change it), waits the calculated duration, closes it, and credits the zone itself. Nothing else to write. Give your valve a hardware failsafe if it has one: if Home Assistant goes down mid-run, nothing here can close it.
+**Let Smart Irrigation do it: Calculate and water.** If you chose it in the assistant and gave the zone its valve, it is done: the zone is a step of a program called **Watering**, which waters it every day, done by sunrise. The program opens the valve, waits the calculated duration, closes it, and credits the zone itself. Nothing else to write. You find it under **Watering › Programs**. If you chose Calculate only first, set the zone's **Linked valve/switch** under Zones, then choose **Calculate and water** in **Settings › General**: with no program yet, it creates one with every zone that has a valve.
 
-**Or keep your own automation.** An [import-ready blueprint](usage-automations.md#blueprints-we-provide) does it for a plain switch, for Irrigation Unlimited, or for a Rain Bird, Hydrawise, Rachio, OpenSprinkler or B-hyve controller. Turn the controller's own schedule off if it has one, or it will water twice.
+!!! warning "Give your valve a hardware failsafe"
+
+    If Home Assistant goes down in the middle of a run, nothing here can close the valve. Give it a maximum run time on the device itself if it has one: see [hardware auto-off](configuration-closed-loop.md#hardware-auto-off-mqtt-on_time-dead-man).
+
+**Or keep your own automation: Calculate only.** An [import-ready blueprint](usage-automations.md#blueprints-we-provide) does it for a plain switch, for Irrigation Unlimited, or for a Rain Bird, Hydrawise, Rachio, OpenSprinkler or B-hyve controller. Turn the controller's own schedule off if it has one, or it will water twice.
 
 Either way, the **Home** page tells you whether an installation would ever water, and names the reason when it would not.
 
 ## 6. Check it, tonight and tomorrow
 
 - **Home** page: what happens next, and what would hold it back. It answers in one sentence.
-- Press **irrigate now** on a zone, or add the [dashboard card](usage-card.md) and press it there: two taps, and you should hear water.
+- With Calculate and water, press **Water** on the zone's card under **Zones**, or add the [dashboard card](usage-card.md) and press its drop: two taps, and you should hear water.
 - Tomorrow morning, the zone's **calculation explanation** shows the night's numbers: what was read, what evaporated, what rain was credited, and the duration it produced.
 
 ## After a week
@@ -94,7 +101,7 @@ Change one thing at a time, and let a few days pass before judging it.
 
 - **It waters too often, in short runs.** Raise the zone's **irrigation threshold**: the deficit it lets build up before watering at all. Deep and infrequent is better for almost everything, a lawn included; the [zones page](configuration-zones.md) has the arithmetic for picking a number from your soil and root depth.
 - **It waters too much or too little overall.** The **crop factor** is the honest knob (the *what grows here* choice sets it), not the duration. Check the flow you measured first.
-- **The ground stays soaked.** Your soil cannot take it that fast: **water in several passes** with a soak between them, under Settings > General on the advanced panel.
+- **The ground stays soaked.** Your soil cannot take it that fast: water in several passes with a soak between them. With Calculate and water, that is **Water in several passes** on the zone's step, under **Watering › Programs**. With Calculate only, your own automation or controller does it.
 - **Nothing happens at all.** [Troubleshooting](usage-troubleshooting.md), then an [issue](https://github.com/altmenorg/HAsmartirrigation/issues) with a diagnostics file, which is the fastest way to a real answer.
 
 ## What to read next
@@ -102,4 +109,5 @@ Change one thing at a time, and let a few days pass before judging it.
 - [How it works](how-it-works.md): the water balance, in plain terms.
 - [Which weather service](weather-services.md), and what each one gives you.
 - [Zone configuration](configuration-zones.md): every setting on a zone and what it does.
-- [Closed loop](configuration-closed-loop.md): letting Smart Irrigation drive the valve, crediting from real runs, and cycle and soak.
+- [Watering with programs](usage-full-controller.md): programs, schedules, pumps and main valves, with Calculate and water.
+- [Closed-loop watering](configuration-closed-loop.md): crediting from real runs, and what happens at the valve.

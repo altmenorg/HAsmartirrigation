@@ -1,5 +1,5 @@
 ---
-title: "Usage: Off-the-shelf controllers"
+title: "Off-the-shelf controllers"
 ---
 # Off-the-shelf controllers
 
@@ -15,12 +15,14 @@ If your valves are wired to a commercial controller, you do not have to replace 
 
 This is different from **Calculate and water**, where Smart Irrigation opens and closes a `switch` or `valve` entity itself. A controller does not expose its zones that way: you hand it a duration, it starts its own timer and stops on its own. That is what the blueprints do.
 
-**These blueprints have not yet been confirmed on real hardware.** They were written against each integration's documented actions and their templates are rendered by Home Assistant's own module in our tests, but we do not own the controllers. If you do, a word in the [discussions](https://github.com/altmenorg/HAsmartirrigation/discussions) saying it works, or what it needed, is the most useful contribution there is.
+!!! warning "Not yet confirmed on real hardware"
+
+    They were written against each integration's documented actions and their templates are rendered by Home Assistant's own module in our tests, but we do not own the controllers. If you do, a word in the [discussions](https://github.com/altmenorg/HAsmartirrigation/discussions) saying it works, or what it needed, is the most useful contribution there is.
 
 ## Before you start
 
 1. **Smart Irrigation calculates.** At least one zone is in automatic mode and the [Home page](usage-info.md) shows a duration for it after the daily calculation.
-2. **A start trigger is set** on the [General page](configuration-general.md). The blueprints listen to the `smart_irrigation_start_irrigation_all_zones` [event](usage-events.md); without a trigger, that event never fires and nothing waters.
+2. **Smart Irrigation is on Calculate only, with a start trigger** (see [start triggers](configuration-general.md#start-triggers)). The blueprints listen to the `smart_irrigation_start_irrigation_all_zones` [event](usage-events.md); with the trigger on None, that event never fires and nothing waters.
 3. **The controller's integration is set up** in Home Assistant and its zones show up as entities.
 4. **The controller's own schedule is off** for the zones Smart Irrigation will drive. Otherwise it waters twice: once on its own program, once on ours. How to do that for each brand is [below](#per-controller-notes).
 
@@ -28,7 +30,7 @@ This is different from **Calculate and water**, where Smart Irrigation opens and
 
 The blueprints are copied into your own `blueprints/` folder when the integration starts, so they are already in Home Assistant. If you do not see them, or want the latest version, use the import links on the [automations page](usage-automations.md#blueprints-we-provide).
 
-1. Go to *Settings > Automations & scenes > Blueprints* and pick **Smart Irrigation with Rain Bird** (or Hydrawise, Rachio, OpenSprinkler, B-hyve).
+1. Go to **Settings › Automations & scenes › Blueprints** and pick **Smart Irrigation with Rain Bird** (or Hydrawise, Rachio, OpenSprinkler, B-hyve).
 2. Click *Create automation* and fill in the three fields:
    - **Smart Irrigation zone**: the zone's duration sensor, `sensor.smart_irrigation_<zone name>`. The list only offers Smart Irrigation duration sensors.
    - **Controller zone**: the entity of the controller zone that waters it. Which entity that is depends on the brand, see the [notes below](#per-controller-notes). The list is filtered to that integration.
@@ -41,7 +43,7 @@ One automation per zone is deliberate: each zone has its own duration and its ow
 
 When the start trigger is reached, every automation created from these blueprints wakes up at the same moment and does the same thing:
 
-1. **Checks the duration.** If the zone's duration is 0, nothing happens. On a [skip day](configuration-general.md) the start event is not fired at all, so nothing happens either.
+1. **Checks the duration.** If the zone's duration is 0, nothing happens. On a [skipped day](configuration-weather.md#skipping-a-run) the start event is not fired at all, so nothing happens either.
 2. **Converts the duration** to what the controller takes. Smart Irrigation counts in seconds. Rain Bird, Hydrawise, Rachio and B-hyve take whole minutes, so the run is **rounded up** (a calculated 3 min 10 s becomes 4 min: a little too much water is better than a deficit left behind) and is **at least 1 minute**. OpenSprinkler takes seconds and gets them as they are. Every run is capped at the longest run the controller accepts, see the table above. Rachio's cap of 3 hours is the one you may actually hit: if a zone regularly needs more, check its throughput and precipitation rate on the [zones page](configuration-zones.md).
 3. **Starts the controller zone** for that time. The controller runs its own timer and stops the valve itself.
 4. **Waits the same time**, then **credits the run to the water balance** of the zone (the `credit_watering` action, with the time it ran), so the next calculation starts from what the soil really received. A run cut short by the zone's maximum duration keeps the deficit it did not water. If you turned the credit off, the automation just ends.
@@ -86,7 +88,7 @@ If your controller refuses or drops a start while a zone is running, chain the z
 - **Controller zone entity**: the station's **enabled `switch`** (the integration marks it with device class `station`; the blueprint's list is filtered to those). It is the entity the `opensprinkler.run_station` action takes, and the station must be enabled or the run is refused.
 - **Turn off its schedule**: each OpenSprinkler program has an enabled `switch` in Home Assistant, turn them off, or disable the programs in the OpenSprinkler interface. Keep the controller's own enabled switch on.
 - Runs are queued, so several zones asked at once water one after the other.
-- Up to beta 5 the blueprint called `opensprinkler.run`, which the integration has deprecated. It now calls `opensprinkler.run_station`. If you imported the blueprint before that, import it again.
+- The blueprint calls `opensprinkler.run_station`. An older copy calls `opensprinkler.run`, which the integration has deprecated: if yours does, import the blueprint again.
 
 ### Orbit B-hyve
 

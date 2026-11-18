@@ -153,7 +153,7 @@ STEP_FIELDS: dict[str, dict] = {
         default=0,
         low=0,
         high=100000,
-        unit="l",
+        unit="L",
     ),
     const.STEP_ENABLED: _field(
         "boolean", "false: the step is left out of the runs.", default=True
@@ -476,7 +476,7 @@ ZONE_FIELDS: dict[str, dict] = {
     ),
     const.ZONE_DAYS_BETWEEN_IRRIGATION: _field(
         "integer or null",
-        "Days between waterings for this zone (null: the general setting; "
+        "Days between irrigation for this zone (null: the general setting; "
         "0: no restriction).",
         low=0,
         high=365,

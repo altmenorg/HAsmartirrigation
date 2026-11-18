@@ -3,18 +3,21 @@ title: "Installation"
 ---
 # Installation
 
-> Starting with nothing at all, not even Home Assistant? [From nothing to a watered garden](getting-started-from-scratch.md) walks the whole path in half an hour, hardware included, and comes back here for this part.
+!!! tip "Starting with nothing at all?"
+
+    Not even Home Assistant? [From nothing to a watered garden](getting-started-from-scratch.md) walks the whole path in half an hour, hardware included, and comes back here for this part.
 
 Smart Irrigation needs Home Assistant 2026.3 or later.
 
-Three steps:
+Four steps:
 
 1. **[Download the integration](installation-download.md)** from HACS (one click) or by hand, and restart Home Assistant.
 2. **Add it** in Settings › Devices & services › Add integration › Smart Irrigation. Setup asks nothing: a new **Smart Irrigation** panel appears in the sidebar.
 
-    ![](assets/images/installation-1.png)
+    ![Adding Smart Irrigation in Home Assistant](assets/images/installation-1.png)
 
-3. **Open the panel** and follow its setup assistant: it creates your first zone and picks the [weather service](installation-weatherservice.md) (Open-Meteo by default, no key needed). From there, [configure the rest](configuration.md).
+3. **Turn on a [weather service](installation-weatherservice.md)** if you want one, under **Weather › Weather service** in the panel: Open-Meteo is the default and needs no key. Skip this if all your weather comes from your own sensors.
+4. **Run the setup assistant** (**Settings › General**, **Open the assistant**): it asks what Smart Irrigation should do and creates your first zone with its sensor group. From there, [configure the rest](configuration.md).
 
 Also in this section:
 

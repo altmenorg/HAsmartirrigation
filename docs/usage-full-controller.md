@@ -1,11 +1,12 @@
 ---
-title: "Usage: Full controller"
+title: "Watering with programs"
 ---
-# Full controller
+# Watering with programs
 
-By default Smart Irrigation decides **how long** each zone waters and leaves the running of the valves to you: an automation, a controller, [Irrigation Unlimited](usage-enhanced-scheduling-integration.md). The **full controller** is an option for those who would rather have it do both. It runs the whole watering itself: when, in what order, with which pump, for how long, and what to do when you want it to stop.
+Smart Irrigation can water in two ways, and you pick one in **Settings › General**, under **What Smart Irrigation does** (the setup assistant asks too):
 
-It is **off by default**, and turning it on changes nothing until you add to it. Nothing on this page appears in the panel until it is on.
+- **Calculate and water**: Smart Irrigation runs the whole watering itself. **Programs** of steps say which zones water and in what order, their **schedules** say when ("done by sunrise", every other day, only in summer, after another program), and **pumps and main valves** come on with the zones they feed. This page is about that mode.
+- **Calculate only**, the choice of a new installation: Smart Irrigation works out how long each zone needs and something of yours opens the valves, an [automation](usage-automations.md), a [controller](usage-controllers.md) or [another integration](usage-enhanced-scheduling-integration.md).
 
 <p align="center">
   <img src="assets/images/panel-programs.png" alt="The Watering tab: the programs, their steps and their schedules" width="860">
@@ -13,25 +14,27 @@ It is **off by default**, and turning it on changes nothing until you add to it.
 
 ## Turning it on
 
-The full controller is what **Calculate and water** means: choose it in [Settings, General](configuration-general.md#calculate-and-water-calculate-only-or-stop-everything), in the first card's list, **What Smart Irrigation does**. There is no other switch to turn on.
+Choose **Calculate and water** in [Settings › General](configuration-general.md#calculate-and-water-calculate-only-or-stop-everything), in the first card's list, **What Smart Irrigation does**. There is no other switch to turn on.
 
 Choosing it:
 
 - lets Smart Irrigation open and close the valves itself, and turns on [observed watering](configuration-closed-loop.md), so a watering by hand counts too;
 - waters with **programs**, each one the zones of its steps, started by its own **schedules**. When there is no program yet, it creates one with the zones that have a valve and a schedule that starts it as your start trigger did (done by sunrise by default), so nothing changes in when you water. A zone added later is watered once a program has it in a step: the [setup assistant](configuration-setup.md#with-calculate-and-water) puts a new zone in one for you;
-- adds a **Watering** tab to the panel, with three pages: **Planning**, **Programs** and **Pumps**. The cards below are in it.
+- adds a **Watering** tab to the panel, with three pages: **Planning**, **Programs**, and **Pumps and valves**. The cards below are in it.
 
 Choosing **Calculate only** goes back to calculating for an automation of your own: Smart Irrigation fires its start event at the start trigger and opens no valve. Your programs and supplies stay stored for the day you choose Calculate and water again.
 
-Up to 2026.11.0 this took two switches, **Full controller** and **Let Smart Irrigation control the valve**, and the main program of that time could also be started by the start trigger or switched off on its own. An installation is moved over once, keeping its watering as it was: direct valve control alone becomes Calculate and water, the active start trigger becomes a schedule of the program that was the main program, now an ordinary program called **Watering** (see below; the other triggers you had defined become schedules switched off, so none is lost: switch one on to use it), and if it was switched off its schedules stay switched off.
+??? note "Coming from 2026.11.0 or earlier"
 
-<a id="no-main-program"></a>**No main program any more (2026.11.1).** Up to 2026.11.0 a special **main program** watered every zone with a valve, in the order of the general settings, and the other programs had steps. Now every program is the same kind. Your main program was turned once into an ordinary program, so it waters exactly as before: it keeps its id `main` (its sensor, its last runs and its notifications stay) and its schedules, and its name unless it was still the default **Main program**, which becomes **Watering** in the language of Home Assistant (a name you changed is kept); and gets explicit steps, the zones it watered in the same order. With **one after the other**, one step per zone, each followed by the pause between zones as its wait (none after the last); with **all at once**, one step with all the zones. Each step takes the calculated duration, in the passes the old setting asked for. A zone added afterwards is not watered until a program has it in a step. The **Program on** setting and its switch entity are gone too: a program starts on its own through the schedules that are on, so a program that was off had its schedules switched off. **Run now** always works. The `set_program_enabled` action is **deprecated** and will be removed in 2027.11: it still works, switching all of a program's schedules on or off, and raises a repair notice; use `set_schedule_enabled` instead.
+    Up to 2026.11.0 this took two switches, **Full controller** and **Let Smart Irrigation control the valve**, and the main program of that time could also be started by the start trigger or switched off on its own. An installation is moved over once, keeping its watering as it was: direct valve control alone becomes Calculate and water, the active start trigger becomes a schedule of the program that was the main program, now an ordinary program called **Watering** (see below; the other triggers you had defined become schedules switched off, so none is lost: switch one on to use it), and if it was switched off its schedules stay switched off.
+
+    <a id="no-main-program"></a>**No main program any more (2026.11.1).** Up to 2026.11.0 a special **main program** watered every zone with a valve, in the order of the general settings, and the other programs had steps. Now every program is the same kind. Your main program was turned once into an ordinary program, so it waters exactly as before: it keeps its id `main` (its sensor, its last runs and its notifications stay) and its schedules, and its name unless it was still the default **Main program**, which becomes **Watering** in the language of Home Assistant (a name you changed is kept); and gets explicit steps, the zones it watered in the same order. With **one after the other**, one step per zone, each followed by the pause between zones as its wait (none after the last); with **all at once**, one step with all the zones. Each step takes the calculated duration, in the passes the old setting asked for. A zone added afterwards is not watered until a program has it in a step. The **Program on** setting and its switch entity are gone too: a program starts on its own through the schedules that are on, so a program that was off had its schedules switched off. **Run now** always works. The `set_program_enabled` action is **deprecated** and will be removed in 2027.11: it still works, switching all of a program's schedules on or off, and raises a repair notice; use `set_schedule_enabled` instead.
 
 One thing is different from the moment it is on: **a valve found open at startup that no run of ours owns is closed.** After a crash or a restart, a valve left open by a run nobody resumes would water until someone noticed. A reading that says nothing (`unavailable`, `unknown`) is never taken for an open valve. That startup alignment also closes a zone's extra valves, and it looks at the supplies: a pump or main valve that is on while nothing holds it is switched off, and one whose state cannot be read yet is looked at again 30 and 120 seconds later, since its entity often comes up after Home Assistant has started.
 
 ## Pumps and main valves (supplies)
 
-A **supply** is one or several entities, a pump or a main valve in front of the zone valves, that run while a zone they feed is being watered. Add them in the card **Pumps and main valves**, then pick one in each zone's settings.
+A **supply** is one or several entities, a pump or a main valve in front of the zone valves, that run while a zone they feed is being watered. Add them on the **Pumps and main valves** card, under **Watering › Pumps and valves**, then pick one in each zone's **Pump or main valve**.
 
 Each supply has two delays, in seconds, and both are **signed**, from -3600 to +3600:
 
@@ -40,13 +43,13 @@ Each supply has two delays, in seconds, and both are **signed**, from -3600 to +
 | **Delay before** | The supply comes on that long *before* the zone valve opens. | The valve opens first, and the supply comes on that long *after*. |
 | **Delay after** | The supply stays on that long *after* the zone valve closes. | The supply goes off that long *before* the valve closes, so a pump never pushes against a closed valve. |
 
-**Power cut before starting** (`kick_seconds`, 0 to 60, 0 by default; advanced mode, and shown in every mode once it is not 0): for a pump whose pressure controller only starts again after its power has been cut, the supply is switched off that many seconds and then on, each time it is switched on. A supply already on for another zone is not cut again.
+**Power cut before starting** (`kick_seconds`, 0 to 60, 0 by default; advanced mode, shown in every mode once it is not 0): for a pump whose pressure controller only starts again after its power has been cut, the supply is switched off that many seconds and then on, each time it is switched on. A supply already on for another zone is not cut again.
 
 A supply is on while **anything holds it**, and goes off when the last hold is given back, after its delay. It is never switched off on a guess of when the cycle will end. Two zones in a row share one run of the pump, and with a delay after the pump stays on between them.
 
 **A supply that will not come on keeps the zone shut.** Each switch call is tried twice, 3 seconds apart, and the entity must then read a state within 5 seconds. If the supply still has not come on, the zone's valve is not opened (no pump, no water), the run of that zone ends with a `smart_irrigation_zone_problem` of reason `supply_did_not_turn_on`, and `smart_irrigation_supply_problem` is fired too. A supply that will not go **off** never blocks anything: the off is tried again after 15, 45 and 120 seconds, `smart_irrigation_supply_problem` (reason `supply_did_not_turn_off`) is fired for the first failure (the retries are silent), and a supply still on after that stays recorded as on, so the next run or the next startup puts it off. The payload of `supply_problem` is `supply_id`, `supply`, `entity_id` and `reason` (`supply_did_not_turn_on` or `supply_did_not_turn_off`).
 
-A zone can also have **other valves** that open and close with its own (a zone whose water comes through two valves), and `light` and `cover` entities are accepted as valves.
+A zone can also have **other valves of the zone** that open and close with its own (a zone whose water comes through two valves), and `light` and `cover` entities are accepted as valves.
 
 ## Programs
 
@@ -79,32 +82,149 @@ An unfolded program shows **what a run would do**: one line per zone on a time a
 
 ### A program in YAML
 
-**Edit in YAML** shows the program as text, in place of the form, and back: a program written in YAML is an ordinary program once applied, and the form edits it as any other. To paste a program written elsewhere, add a **New program** and open it in YAML. Nothing is saved until **Apply**: as you type, the program is cleaned the way a save cleans it and drawn on the timeline, and a zone that does not exist, or one the run leaves out (no valve, or disabled), is named. Only a valid program can be applied.
+**Edit in YAML** (the `{ }` icon of a program) shows the program as text, in place of the form, and the same icon brings the form back. A program written in YAML is an ordinary program once applied, and the form edits it as any other. To paste a program written elsewhere, add a **New program** and open it in YAML.
 
-The text is short on purpose, so it can be read, copied between installations or written by an assistant:
+Nothing is saved until **Apply**. As you type, the program is cleaned the way a save cleans it and drawn on the timeline, and a zone that does not exist, or that the run leaves out (no valve, or disabled), is named. Only a valid program can be applied.
 
-```yaml
-name: Evening
-steps:
-  - zones: [Vegetable garden, Greenhouse]   # watered together
-    mode: percent
-    percent: 80
-    passes: 2
-  - zones: [Hedges]
-    delay: -60                              # the next step starts a minute early
-schedules:
-  - time: "21:00"
-    weekdays: [0, 2, 4]                     # 0 is Monday
-```
+The text is short on purpose, so it can be read, copied between installations or written by an assistant. What is left out takes its default, the same as the form: a calculated duration, one pass, no wait, a schedule that starts at its moment every day with the weather taken into account.
 
-A step names its zones by name (case aside) or by number; a name two zones share is not guessed, use the number. What is left out takes its default, the same as the form: a calculated duration, one pass, no wait, a schedule that starts at its moment every day with the weather taken into account. The keys are the ones described above: for a step `zones`, `mode` (`calculated`, `percent` or `fixed`), `percent`, `seconds`, `passes`, `delay`, `max_litres`, `min_seconds`, `max_seconds`, `adjust_seconds`, `min_deficit_mm` and `enabled`; for the program `name`, `tours`, `steps`, `schedules` and `notify` (see below); for a schedule `type` (`time`, `sun` or `after`), `time`, `event` (`sunrise`, `sunset` or `azimuth`, with `azimuth` in degrees), `after_program` (with `type: after`: the program it starts after, by name or id; see [Chaining programs](#after-a-program)), `offset_minutes` (0 or more with `type: after`), `anchor` (`start` or `end`), `weekdays`, `every_n_days`, `every_offset`, `parity`, `days_of_month`, `months`, `from_date`, `until_date`, `weather`, `skip_conditions`, `hard_deadline` and `fallback_time`. The `id` lines keep a program, a step or a schedule the same one across an edit (a schedule remembers its last run under its id): keep them when you edit, leave them out of a new program. An assistant can write and check a program for you: see [Assistants (AI)](usage-assistants.md).
+=== "A simple program"
 
-<a id="yaml-only-options"></a>**YAML-only options.** As in Home Assistant's own visual editors, some options have no field in the form, even when they are set: they are written here, in YAML (or by the services or an assistant). Editing the program in the form keeps them as they are, and an unfolded program that uses one says so at its top, in a **Set in YAML (not editable here)** box listing them, with **Edit in YAML** at hand to change them. They are:
+    ```yaml
+    name: Evening
+    steps:
+      - zones: [Vegetable garden, Greenhouse]   # watered together
+        mode: percent
+        percent: 80
+        passes: 2                               # cycle and soak
+      - zones: [Hedges]
+        delay: -60                              # the next step starts a minute early
+    schedules:
+      - time: "21:00"
+        weekdays: [0, 2, 4]                     # 0 is Monday
+    ```
 
-- for the program: `tours: 2`, the [rounds](#programs);
-- for a step: `adjust_seconds: -120`, the [time added or removed](#programs), and `min_deficit_mm: 7`, [only water when the deficit is at least](#programs);
-- for a schedule: `every_offset: 1`, the shift of every N days, `parity: even` (or `odd`), `days_of_month: [1, 15, last]` and `months: [5, 6, 7, 8, 9]`, [the days](#schedules); `fallback_time: previous` (or `"06:00"`), for [polar day and night](#schedules); `skip_conditions: [rain_sensor, freeze]`, [only some of the checks](#schedules) (the **Take the weather into account** switch itself stays in the form).
-- for a zone, in its own [Edit in YAML](configuration-zones.md#a-zone-in-yaml): `safety_off_state_key: state_l1`, the [safety off state key](configuration-closed-loop.md#hardware-auto-off-mqtt-on_time-dead-man), and `open_resends: 0`, how often [the open is sent again](configuration-closed-loop.md#when-smart-irrigation-runs-the-valves).
+=== "Done by sunrise, then a chained program"
+
+    ```yaml
+    name: Lawn
+    steps:
+      - zones: [Front lawn]
+      - zones: [Back lawn]
+    schedules:
+      - type: sun
+        event: sunrise
+        anchor: end                             # done by sunrise
+        every_n_days: 2
+    ```
+
+    ```yaml
+    name: Greenhouse drip
+    steps:
+      - zones: [Greenhouse]
+        mode: fixed
+        seconds: 600
+    schedules:
+      - type: after
+        after_program: Lawn                     # 15 minutes after Lawn
+        offset_minutes: 15
+        weather: false                          # waters whatever the weather
+    ```
+
+=== "With options only YAML sets"
+
+    ```yaml
+    name: Summer beds
+    tours: 2                                    # the whole list, twice
+    steps:
+      - zones: [Roses, Shrubs]
+        adjust_seconds: 120                     # two more minutes each
+        min_deficit_mm: 5                       # only when 5 mm short or more
+    schedules:
+      - time: "06:00"
+        months: [5, 6, 7, 8, 9]                 # May to September
+        parity: even                            # even days of the month
+        skip_conditions: [freeze, wind]         # only these weather checks
+    ```
+
+A step names its zones by name (case aside) or by number; a name two zones share is not guessed, use the number. The `id` lines keep a program, a step or a schedule the same one across an edit (a schedule remembers its last run under its id): keep them when you edit, leave them out of a new program.
+
+<a id="yaml-only-options"></a>
+
+!!! yaml-only "YAML-only options"
+
+    As in Home Assistant's own visual editors, some options have no field in the form, even when they are set: they are written here, in YAML (or by the services or an assistant). Editing the program in the form keeps them as they are, and an unfolded program that uses one says so at its top, in a **Set in YAML (not editable here)** box listing them, with **Edit in YAML** at hand to change them. They are:
+
+    - for the program: `tours: 2`, the [rounds](#programs);
+    - for a step: `adjust_seconds: -120`, the [time added or removed](#programs), and `min_deficit_mm: 7`, [only water when the deficit is at least](#programs);
+    - for a schedule: `every_offset: 1`, the shift of every N days, `parity: even` (or `odd`), `days_of_month: [1, 15, last]` and `months: [5, 6, 7, 8, 9]`, [the days](#schedules); `fallback_time: previous` (or `"06:00"`), for [polar day and night](#schedules); `skip_conditions: [rain_sensor, freeze]`, [only some of the checks](#schedules) (the **Take the weather into account** switch itself stays in the form).
+    - for a zone, in its own [Edit in YAML](configuration-zones.md#a-zone-in-yaml): `safety_off_state_key: state_l1`, the [safety off state key](configuration-closed-loop.md#hardware-auto-off-mqtt-on_time-dead-man), and `open_resends: 0`, how often [the open is sent again](configuration-closed-loop.md#when-smart-irrigation-runs-the-valves).
+
+**Every key**, with its values and default. The same reference is given to [assistants](usage-assistants.md), which can write and check a program for you.
+
+<!-- yaml-reference:start (generated by scripts/gen_yaml_reference.py) -->
+
+#### Program
+
+| Key | Values | Default | What it does |
+| --- | --- | --- | --- |
+| `name` | string |  | The name shown to the user. |
+| `steps` | list of step |  | The steps, watered in this order (see `step`). |
+| `schedules` | list of schedule | `[]` | When it starts (see `schedule`). All off or none: it starts only when run by hand. |
+| `tours` | 1 to 6 | `1` | **YAML only.** How many times the whole list of steps is gone through in one run. |
+| `notify` | notify |  | Who is told about its runs, and when (see `notify`). Absent: nobody. |
+
+#### Step
+
+| Key | Values | Default | What it does |
+| --- | --- | --- | --- |
+| `zones` | list of zone id or name |  | The zones of the step, watered together. Names are matched to ids. |
+| `mode` | `calculated`, `percent`, `fixed` | `calculated` | How long it waters: the duration Smart Irrigation calculated, a percent of it, or a fixed number of seconds. |
+| `percent` | 0 to 1000 % | `100` | With mode percent: the share of the calculated water. |
+| `seconds` | 0 to 86400 s | `0` | With mode fixed: the seconds of water. |
+| `passes` | 1 to 6 | `1` | Cycle and soak: the water split in this many passes, with the soak of the settings between them. |
+| `delay` | -3600 to 21600 s |  | Wait after this step before the next one; negative: the next one starts that long before this one ends (overlap). |
+| `max_litres` | 0 to 100000 L | `0` | A zone stops once this many litres went through its flow meter (0: no limit). |
+| `enabled` | boolean | `true` | false: the step is left out of the runs. |
+| `min_seconds` | 0 to 86400 s | `0` | Least water of a zone in the step (0: no bound). |
+| `max_seconds` | 0 to 86400 s | `0` | Most water of a zone in the step (0: no bound). |
+| `adjust_seconds` | -21600 to 21600 s | `0` | **YAML only.** Seconds added to (or, negative, taken from) the water, after the percent and before the bounds. |
+| `min_deficit_mm` | 0 to 100 mm | `0` | **YAML only.** A zone whose water deficit is below this sits the step out (0: the zone's own threshold). Not for mode fixed. |
+
+#### Schedule
+
+| Key | Values | Default | What it does |
+| --- | --- | --- | --- |
+| `enabled` | boolean | `true` | false: this schedule starts nothing. |
+| `type` | `time`, `sun`, `after` | `time` | time: at a clock time; sun: at a sun event with an offset; after: when another program has really watered and finished, or at its planned moment when it did not water (held back, suspended, nothing to water); not when it was stopped by hand or failed. |
+| `time` | string HH:MM | `06:00` | The clock time. *(time only)* |
+| `event` | `sunrise`, `sunset`, `azimuth` | `sunrise` | The sun event; azimuth: when the sun reaches `azimuth`. *(sun only)* |
+| `azimuth` | 0 to 360 deg | `180` | With event azimuth: the sun's bearing, in degrees from north. *(sun only)* |
+| `offset_minutes` | -720 to 720 min | `0` | sun: minutes after the event (negative: before). after: minutes after the other program finished, or after its planned moment when it did not water (0 or more). *(sun, after only)* |
+| `anchor` | `start`, `end` | `start` | start: the moment is when it starts; end: when it must be done (placed back from the calculated run). *(time, sun only)* |
+| `hard_deadline` | boolean | `false` | With anchor end: the end is a limit, the run is cut there. *(time, sun only)* |
+| `after_program` | string |  | The id (or name) of the program it starts after. No loops. *(after only)* |
+| `weekdays` | 0 to 6 | `[]` | Days of the week it runs on, 0 Monday to 6 Sunday (empty: every day). |
+| `every_n_days` | 1 to 60 | `1` | Every N days (1: every day). |
+| `every_offset` | 0 to 59 days | `0` | **YAML only.** Shifts the every-N-days cycle by that many days, to take turns (groups A, B, C). |
+| `parity` | `any`, `even`, `odd` | `any` | **YAML only.** Even or odd days of the month only. |
+| `days_of_month` | 1 to 31 | `[]` | **YAML only.** Named days of the month, 1 to 31 or last (empty: any). |
+| `months` | 1 to 12 | `[]` | **YAML only.** Months it runs in, 1 January to 12 December (empty: all). |
+| `from_date` | string MM-DD or null |  | Start of the period of the year it runs in (may wrap over New Year). |
+| `until_date` | string MM-DD or null |  | End of that period, included. |
+| `fallback_time` | string HH:MM or 'previous' |  | **YAML only.** Polar day or night, no sun event: start at this time, or at the last one seen (previous). Absent: the day is skipped. *(sun only)* |
+| `weather` | boolean | `true` | Whether the skip conditions (rain, frost, wind, moist soil...) can hold the run back. Frost, wind, the rain sensor and a postponement are read at each start; the rain forecast and the days between waterings are decided once a day, at its first start. |
+| `skip_conditions` | `postponed`, `rain_sensor`, `freeze`, `wind`, `precipitation`, `days_between`, `soil_moisture` |  | **YAML only.** With weather on: only these skip conditions apply (absent: all; postponed always applies). |
+
+#### Notify
+
+| Key | Values | Default | What it does |
+| --- | --- | --- | --- |
+| `targets` | list of string |  | notify.<entity or action> (a phone app...) or persistent_notification. None: nothing is stored, nobody is told. |
+| `when` | `finish`, `problems` | `finish` | finish: after every run; problems: only when something went wrong. |
+| `start` | boolean | `false` | Also tell when a run starts. |
+
+<!-- yaml-reference:end -->
 
 ### Being told when a program has watered
 
@@ -135,7 +255,7 @@ A program has any number of schedules, each a **moment** and the **days** it app
 - **Polar day and night**: a sunrise or sunset schedule has no moment on a day when the sun does not rise or set, and that day is skipped. **If there is no sunrise or sunset** (`fallback_time`) chooses what that day does: skip it (the default), use the time of the last sunrise or sunset seen (offset included, looking back at most 60 days; `previous`), or start at a fixed time (`HH:MM`). It is **YAML only** (or set by the services), for instance `fallback_time: previous` or `fallback_time: "06:00"` on the schedule (see [YAML-only options](#yaml-only-options)).
 - **Before or after the sun** is limited to 12 hours either way (-720 to +720 minutes).
 - **The days** are filters, and all of them have to hold: they apply to the day of the **moment**. A run that must be done by Monday 01:00 and takes two hours starts on Sunday at 23:00, and "Monday" is the day that counts. The weather, on the other hand, is judged when the run starts, so that run asks Sunday's conditions. The filters are: days of the week; *every N days* (N up to 60) with a shift from 0 to N - 1 (three programs with N = 3 and shifts 0, 1 and 2 take turns and never share a day); even or odd days of the month; named days of the month (`1, 15, last`, where a month too short for a day skips it, `31` in April, and `last` is every month's own last day); months; and a period of the year, a month and a day picked for each end, which may run over New Year (from November to March; `MM-DD` in the service, `11-01` to `03-01`). The panel's **More options** of a schedule has the days of the week, every N days and the period. The others are **YAML only** (or set by the services; see [YAML-only options](#yaml-only-options)): the shift of every N days (`every_offset: 1`), even or odd days (`parity: even` or `parity: odd`), the days of the month (`days_of_month: [1, 15, last]`) and the months (`months: [5, 6, 7, 8, 9]`, January is 1).
-- **Take the weather into account** (`weather`), a switch, on by default. On, the checks of **Weather > [Skip watering](configuration-weather.md#skip-watering)** apply (rain, frost, wind, the days between irrigation, a wet soil, postponed days). What is measured (the rain sensor, the frost, the wind, a postponement) is judged at each start, against what it reads then: a frost at 06:00 holds back a lawn program at 06:00, not a bed program at 18:00 on a mild evening. The rain forecast and the days between irrigation are about the day: they are decided at the first start of the day and kept for the day's later starts, so the morning run, which resets the days since the last irrigation, does not hold back the evening run. On a day when rain is forecast, only the zones the rain cannot reach run. Off is for a greenhouse drip line that does not care (`weather: false`). In the drawing of a program, the **Weather allows it?** box gives the answer for its next run: **Yes**, or **No** with the check that holds it back (the rain forecast with its millimetres, the wind...). It is left out when no schedule of the program takes the weather into account.
+- **Take the weather into account** (`weather`), a switch, on by default. On, the checks of **Weather › [Skip watering](configuration-weather.md#skip-watering)** apply (rain, frost, wind, the days between irrigation, a wet soil, postponed days). What is measured (the rain sensor, the frost, the wind, a postponement) is judged at each start, against what it reads then: a frost at 06:00 holds back a lawn program at 06:00, not a bed program at 18:00 on a mild evening. The rain forecast and the days between irrigation are about the day: they are decided at the first start of the day and kept for the day's later starts, so the morning run, which resets the days since the last irrigation, does not hold back the evening run. On a day when rain is forecast, only the zones the rain cannot reach run. Off is for a greenhouse drip line that does not care (`weather: false`). In the drawing of a program, the **Weather allows it?** box gives the answer for its next run: **Yes**, or **No** with the check that holds it back (the rain forecast with its millimetres, the wind...). It is left out when no schedule of the program takes the weather into account.
 - **Only some of the checks** (`skip_conditions`, **YAML only**, or set by an [assistant](usage-assistants.md), for instance `skip_conditions: [rain_sensor, freeze]` on the schedule; see [YAML-only options](#yaml-only-options)): a list choosing which of the skip conditions this schedule applies, among `postponed`, `rain_sensor`, `freeze`, `wind`, `precipitation`, `days_between` and `soil_moisture`. Left out, all of them apply, as before. Your own postponement always applies when the weather is taken into account. The schedule judges its chosen conditions as every schedule does: what is measured at the moment it starts, the rain forecast and the days between irrigation from the day's decision (made at the day's first start, whatever conditions that start chose); the holds that follow (days between per zone, a moist soil, rain since the calculation) are the same ones, except that a zone is only held by its days between when that condition is chosen, and by a moist soil only when `soil_moisture` is chosen. Those holds change the zones' durations for the whole day, so they cannot be undone: if a schedule that applies the moist soil hold ran first, a later schedule of the same day that left `soil_moisture` out finds those zones already at zero. The other way round works: a schedule that left it out first does not stop a later one from applying it. Switching the schedule's weather off in the panel keeps the list but it no longer applies; switched on again, it applies again.
 
 Good to know: the weather holds work on the zones' calculated durations, which all programs share. On a day a weather-aware start has held a zone back, a program that ignores the weather but waters that zone for its *calculated* duration finds nothing to water. For a zone that must be watered whatever the weather says, give its step a *fixed* duration.
@@ -183,7 +303,7 @@ The rules:
 
 ### Irrigate all zones now
 
-The **Irrigate all zones** button of the hub device runs every zone that has a valve once, as a one-off: it is not a program and has no schedule. Its order (one after the other or all at once), its passes and its pause between zones are in **Watering > Programs**, folded at the bottom of the card under **Settings of the Irrigate all zones button**, in the advanced mode (the block shows in every mode once one of them is changed: all at once, more than one pass or a pause). They change nothing to the programs, which water their own steps. The run takes its turn on every supply, fires `smart_irrigation_irrigation_started` and `smart_irrigation_irrigation_finished`, and credits each zone for what it delivered.
+The **Irrigate all zones** button of the hub device runs every zone that has a valve once, as a one-off: it is not a program and has no schedule. Its order (one after the other or all at once), its passes and its pause between zones are under **Watering › Programs**, folded at the bottom of the card under **Settings of the Irrigate all zones button**, in advanced mode (the block shows in every mode once one of them is changed: all at once, more than one pass or a pause). They change nothing to the programs, which water their own steps. The run takes its turn on every supply, fires `smart_irrigation_irrigation_started` and `smart_irrigation_irrigation_finished`, and credits each zone for what it delivered.
 
 ## Driving the watering
 
@@ -194,13 +314,13 @@ The Programs card: each program's header row has its actions as icons, beside it
 | `smart_irrigation.run_program` | Runs a program now, or when it is its turn. Optional `seconds` (1 to 86400) is a total for the whole program, shared between its steps in proportion to their planned durations; left out, the planned durations. A program that is already running or waiting, or suspended, is not run, with a line in the log. A program whose schedules are all off runs all the same: they only decide when it starts on its own. Optional `mode`: `queue` (default) takes the turn behind what is running, `replace` first stops what runs and waits, cleanly (valves closed, delivered water credited), then runs the program. |
 | `smart_irrigation.water_zone` | Waters a zone for a number of seconds of water, or for its calculated duration. With `mode: queue` (default) it takes its turn like everything else; with `mode: replace` it first stops what is running and waiting. With several zones, only the first replaces, the others follow it. A zone you suspended is watered anyway: asking for it by hand overrides the suspension. |
 | `smart_irrigation.stop_program` | Stops one program: if it runs, its open zones close the normal way and are credited for what they delivered, and no further step starts; if it waits for its turn, it is taken out of the queue. An unknown id does nothing. |
-| `smart_irrigation.set_step_enabled`, `set_schedule_enabled` | Switch one of a program's steps (`step_id`) or one of its schedules (`schedule_id`) on or off (`enabled`), as the panel does (`set_program_enabled` is [deprecated](#no-main-program)): the schedules are armed again and the panel refreshes. With the full controller off nothing changes; an unknown program, step or schedule id is refused with an error. |
+| `smart_irrigation.set_step_enabled`, `set_schedule_enabled` | Switch one of a program's steps (`step_id`) or one of its schedules (`schedule_id`) on or off (`enabled`), as the panel does (`set_program_enabled` is [deprecated](#no-main-program)): the schedules are armed again and the panel refreshes. With Calculate only nothing changes; an unknown program, step or schedule id is refused with an error. |
 | `smart_irrigation.pause_watering` | Closes the open valves and holds everything, the zones waiting included. The clock stops: what was delivered is credited and, after the resume, the part of the pass still owed is watered. A pause that is not lifted ends by itself after an hour (or the `minutes` given). |
 | `smart_irrigation.resume_watering` | Goes on from where the pause stopped. |
 | `smart_irrigation.next_step` | Ends the zones of the step a program is on, and lets it go on. With overlapping steps, it ends every step that is open. Programs on supplies of their own water side by side: `program_id` moves only that one on, and without it every program that is running moves on. |
 | `smart_irrigation.stop_watering` | Stops now: every valve is closed, each zone is credited for the water it delivered, programs and waiting zones end. With zones chosen, only those, and the programs under way or waiting do not water those zones in their later steps either. Without zones it also ends a pause. |
 | `smart_irrigation.suspend` | Keeps a zone or a program from watering for some hours or until a date. Zero hours lifts it. Hours are limited to 8760, a date that cannot be read is refused (it never lifts a suspension), and an unknown program id is ignored. |
-| `smart_irrigation.adjust_program` | Makes a program water longer or shorter for a while (Irrigation Unlimited's `adjust_time`): a `percent` (0 to 1000) of every step's water, and/or `seconds` added to it, for `hours` (1 to 8760) or until reset. It replaces the previous adjustment instead of adding to it, applies to the runs that start after it is set (not to the one under way), survives a restart, and `reset: true` clears it. Refused when the full controller is off, and for an unknown program id. The program's sensor shows it in the `adjustment` attribute. |
+| `smart_irrigation.adjust_program` | Makes a program water longer or shorter for a while (Irrigation Unlimited's `adjust_time`): a `percent` (0 to 1000) of every step's water, and/or `seconds` added to it, for `hours` (1 to 8760) or until reset. It replaces the previous adjustment instead of adding to it, applies to the runs that start after it is set (not to the one under way), survives a restart, and `reset: true` clears it. Refused with Calculate only, and for an unknown program id. The program's sensor shows it in the `adjustment` attribute. |
 | `smart_irrigation.use_measured_throughput` | Takes the flow a zone's meter measured as its throughput. The measurement is advice and is never applied on its own. |
 
 ## Seeing what is going on
@@ -226,9 +346,9 @@ A program run and a cycle that is under way are recorded as they go. After a res
 
 A **pause** survives a restart while its end is still ahead: the watering is held again until then (or until you resume), and the valves that were open are not reopened by the pause itself; the program goes on from the resume as it does after any pause. A valve run interrupted by the restart is held the same way: nothing is opened (the pump included) while the pause lasts, and the rest of its pass is watered after the resume, with the water delivered before the restart credited once. A manual run you stopped while it waited is also removed from the stored queue at once, and queued runs wait for every run resumed after the restart (a valve run or a cycle, not only a program) before they start. **The water a pause owes is kept too:** when a pause closes the valves of a step, what each zone still owes (and the passes after it) is recorded, so a reload (an options save) or a restart during the pause does not lose it. After it, and once the pause is over, those zones water what they owed first (credited once, the part delivered before the pause having been credited already), then the program goes on with the next steps. A pause that ended while Home Assistant was down is not held again, and the owed water is watered at once; owed water more than 30 hours old is dropped. **Manual runs waiting for their turn** (a `run_program` asked for during another program) are kept too: after a restart they are put back in line, behind a program that is being resumed, unless they are more than six hours old or their program is gone, disabled or suspended.
 
-A valve that is slow to say it is open, a battery valve on Zigbee for instance, is given 30 seconds instead of 8 and is asked to open again at 10 and 20 seconds. Only one that stays closed after that is a failure, reported as `valve_did_not_open`. A zone can set its own wait (advanced mode) and number of resends (`open_resends`, YAML only), for a cloud valve that confirms slowly or should not be asked twice: see [the confirmation per zone](configuration-closed-loop.md#when-smart-irrigation-runs-the-valves).
+A valve that is slow to say it is open, a battery valve on Zigbee for instance, is given 30 seconds and is asked to open again at 10 and 20 seconds. Only one that stays closed after that is a failure, reported as `valve_did_not_open`. A zone can set its own wait (advanced mode) and number of resends (`open_resends`, YAML only), for a cloud valve that confirms slowly or should not be asked twice: see [the confirmation per zone](configuration-closed-loop.md#when-smart-irrigation-runs-the-valves).
 
-A **Sonoff SWV on ZHA** is opened with one command, ZHA's *on with timed off*, which opens the valve and bounds it at the same time: the time is the pass length plus a 30-second margin, so the valve closes itself even if Home Assistant dies right after opening. Smart Irrigation still closes it at the normal time, and a repeated open (above) sends the same command. This happens only when the zone's safety off mode is `auto` (the default), the zone has no MQTT topic and the valve is a known SWV; in `zha` or `off` mode the normal open is used. The command is tried once, for 6 seconds. If it fails, a warning is logged once for the zone and the valve is opened the normal way. See [closed-loop control](configuration-closed-loop.md) for the details and the other valves.
+A **Sonoff SWV on ZHA** is opened with one command that also starts its own timer, so it closes itself even if Home Assistant dies right after opening it. See [hardware auto-off](configuration-closed-loop.md#hardware-auto-off-mqtt-on_time-dead-man) for the details and the other valves.
 
 ## Limitations
 
@@ -236,4 +356,4 @@ A **Sonoff SWV on ZHA** is opened with one command, ZHA's *on with timed off*, w
 
 ## What it is not
 
-It is not a pressure controller, a master-valve scheduler for a whole farm, or a replacement for a controller that already does its job. If a Rain Bird, Hydrawise, Rachio, OpenSprinkler or B-hyve runs your valves, [its blueprint](usage-controllers.md) is the right way and the full controller has nothing to add to it.
+It is not a pressure controller, a master-valve scheduler for a whole farm, or a replacement for a controller that already does its job. If a Rain Bird, Hydrawise, Rachio, OpenSprinkler or B-hyve runs your valves, [its blueprint](usage-controllers.md) is the right way, with Calculate only, and the programs have nothing to add to it.

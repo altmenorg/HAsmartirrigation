@@ -101,9 +101,8 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  # Lists as GitHub reads them, so the pages read the same on GitHub and here:
-  # a list right after a line of text, and sub-lists indented by 2 spaces.
-  - mdx_breakless_lists
+  # Sub-lists indented by 2 spaces, as GitHub reads them. (A list needs a blank
+  # line before it, as in GitHub's own rendering of the pages.)
   - mdx_truly_sane_lists:
       nested_indent: 2
       truly_sane: true
@@ -144,8 +143,8 @@ nav:
       - Automations: usage-automations.md
       - The output contract: usage-output-contract.md
       - Off-the-shelf controllers: usage-controllers.md
-      - Enhanced scheduling: usage-enhanced-scheduling-integration.md
-      - Full controller: usage-full-controller.md
+      - Other integrations: usage-enhanced-scheduling-integration.md
+      - Watering with programs: usage-full-controller.md
       - Coming from Irrigation Unlimited: usage-from-irrigation-unlimited.md
       - Assistants (AI): usage-assistants.md
       - Troubleshooting: usage-troubleshooting.md

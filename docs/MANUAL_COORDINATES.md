@@ -1,121 +1,62 @@
 ---
 title: "Manual coordinates"
 ---
-# Manual Coordinate Configuration
+# Manual coordinates
 
-This feature allows users to manually set coordinates (latitude, longitude, and elevation) for weather data retrieval, rather than inheriting them from the Home Assistant global settings by default.
+By default, Smart Irrigation reads the weather for the location set in Home Assistant. Manual coordinates (latitude, longitude and elevation) read it somewhere else, for instance when:
 
-## Overview
+- your garden is at another property than your Home Assistant;
+- you want the weather of a nearby weather station;
+- your Home Assistant location is not set precisely;
+- the elevation of your Home Assistant location is wrong or missing.
 
-By default, Smart Irrigation uses your Home Assistant's configured location coordinates for weather data retrieval. With this feature, you can override these coordinates if you need weather data from a different location, such as:
+## Where
 
-- Your irrigation system is at a different property than your Home Assistant instance
-- You want to use weather data from a nearby weather station
-- Your Home Assistant location is not precisely set
-- You need elevation data for more accurate weather calculations
+On the **Location coordinates** card, under **Weather › Weather service** in the Smart Irrigation panel. The card shows in [advanced mode](configuration.md#standard-and-advanced), or whenever manual coordinates are on, so coordinates in use are never out of sight.
 
-## Configuration
+!!! note
 
-### Where
+    The integration's **Configure** button (**Settings › Devices & services**) does not set them. Up to 2026.11.0 it asked for coordinates, but what it saved was never used. It now only points to the panel.
 
-On the **Weather service** page of the **Weather** tab of the Smart Irrigation panel, under the weather service, the **Location coordinates** card. It shows in the advanced mode (Settings > General, how much of the panel to show), or whenever manual coordinates are on, so coordinates in use are never out of sight.
+## The card
 
-> The integration's **Configure** button (Settings > Devices & services) does not set them: up to 2026.11.0 it asked for coordinates, but what it saved was never used. It now only points to the panel.
+- **Use manual coordinates** switches between your own coordinates and the Home Assistant location. Off, the card shows the current Home Assistant coordinates.
+- **Latitude**, in decimal degrees, from -90 to 90 (for example 40.7128 for New York).
+- **Longitude**, in decimal degrees, from -180 to 180 (for example -74.0060 for New York).
+- **Elevation**, in metres above sea level, from -1000 to 9000. Optional, 0 when left empty.
 
-### Manual Coordinate Fields
+The values are checked as you type, up to 6 decimal places.
 
-When manual coordinates are enabled, you can configure:
+## How they are used
 
-- **Latitude**: Decimal degrees, range -90 to 90 (e.g., 40.7128 for New York)
-- **Longitude**: Decimal degrees, range -180 to 180 (e.g., -74.0060 for New York)  
-- **Elevation**: Meters above sea level, range -1000 to 9000 (optional, defaults to 0)
+1. **Manual coordinates**, when they are on and both latitude and longitude are set.
+2. Otherwise **the Home Assistant coordinates**. A warning is logged if Home Assistant still has its default location.
 
-### On the card
+Every weather service reads the coordinates in use:
 
-- Toggle between manual coordinates and Home Assistant location
-- View current Home Assistant coordinates when manual mode is disabled
-- Edit manual coordinates with real-time validation
-- See the coordinate values that will be used for weather data
+- **Open-Meteo** for the forecast, the hourly radiation history and the hourly forecast;
+- **OpenWeatherMap** for its calls and for the pressure at your elevation;
+- **Pirate Weather** for its forecasts.
 
-## Technical Details
+They are used from the next weather update. No restart is needed.
 
-### Coordinate Selection Logic
+## Examples
 
-The system uses the following priority order for coordinates:
+**A garden at another property.** Switch on manual coordinates, set the latitude and longitude of the garden, and its elevation if it differs much from home.
 
-1. **Manual coordinates** (if enabled and valid)
-   - Must have both latitude and longitude set
-   - Elevation defaults to 0 if not specified
-2. **Home Assistant coordinates** (fallback)
-   - Uses HA's configured latitude, longitude, elevation
-   - Logs warnings if using default values
+**A nearby weather station.** Switch on manual coordinates and enter the coordinates of the station.
 
-### Weather Service Integration
-
-All supported weather services automatically use the effective coordinates:
-
-- **Open-Meteo**: uses the coordinates for the forecast, for the hourly radiation history, and for the hourly forecast
-- **OpenWeatherMap**: uses the coordinates for API calls and pressure calculations
-- **Pirate Weather**: uses the coordinates for location-specific forecasts
-
-### Coordinate Validation
-
-Input validation ensures:
-- Latitude: -90° to 90° (North/South poles to equator)
-- Longitude: -180° to 180° (International Date Line coverage)
-- Elevation: -1000m to 9000m (below sea level to high mountains)
-- Precision: Up to 6 decimal places for sub-meter accuracy
-
-## Usage Examples
-
-### Example 1: Remote Property
-Your Home Assistant is at your main residence, but you want to irrigate a garden at a remote property:
-
-1. Enable manual coordinates
-2. Set latitude/longitude to the remote property location
-3. Set elevation if significantly different from your main location
-
-### Example 2: Weather Station Alignment
-You want to use data from a specific weather station location:
-
-1. Find the coordinates of your preferred weather station
-2. Enable manual coordinates  
-3. Input the weather station's coordinates
-
-### Example 3: Elevation Correction
-Your HA location is correct but elevation is wrong or missing:
-
-1. Enable manual coordinates
-2. Keep the same latitude/longitude as HA
-3. Set the correct elevation for better pressure calculations
-
-## Internationalization
-
-The coordinate configuration feature is localized in the 20 languages of the panel.
+**A wrong elevation.** Switch on manual coordinates, keep the latitude and longitude of Home Assistant, and set the correct elevation. The pressure, and so the evapotranspiration, depend on it.
 
 ## Troubleshooting
 
-### Common Issues
+**The coordinates do not seem to be used.** Check that **Use manual coordinates** is on, then wait for the next weather update.
 
-**Coordinates not taking effect:**
-- They are used from the next weather update: no restart is needed
-- Check that **Use manual coordinates** is on, on the Location coordinates card
+**The weather data looks wrong.** Check the coordinates on a map, check that the elevation is sensible, and check that the weather service's API key is valid.
 
-**Weather data seems wrong:**
-- Verify coordinates are correct (use a mapping service to confirm)
-- Check that elevation is reasonable for your location
-- Ensure weather service API key is valid
+The log says which coordinates are used:
 
-**UI shows default coordinates:**
-- Manual coordinates may not be enabled
-- Check the toggle on the Location coordinates card (Weather > Weather service)
-
-### Logging
-
-The system logs coordinate selection decisions:
-```
+```text
 INFO: Using manual coordinates: lat=40.712800, lon=-74.006000, elevation=100m
 INFO: Using Home Assistant coordinates: lat=52.000000, lon=5.000000, elevation=10m
 ```
-
-Look for these messages in your Home Assistant logs to confirm which coordinates are being used.
