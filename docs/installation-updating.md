@@ -1,11 +1,7 @@
 ---
-layout: default
 title: "Installation: Updating"
 ---
 # Updating
-
-> Main page: [Installation](installation.md)<br/>
-> Next: [Migrating from V1 to V2](installation-migration.md)
 
 1. To install the latest version, follow these instructions:
     * **If installed using HACS**: In the HACS panel or in the Home Assistant updates there should be a notification when a new version is available. Follow the instructions within HACS to update the installation files. You can also force checking for an update by updating information for the repository in the HACS.
@@ -26,6 +22,3 @@ title: "Installation: Updating"
     * **Verify version of the frontend**:
 In the Smart Irrigation configuration panel, the version number is displayed in the top right. If the version does not match with the backend version, your browser has an outdated version stored in the cache.
 To clear the cache, you should do a [force refresh of your browser](https://refreshyourcache.com/en/cache/).
-
-> Main page: [Installation](installation.md)<br/>
-> Next: [Migrating from V1 to V2](installation-migration.md)

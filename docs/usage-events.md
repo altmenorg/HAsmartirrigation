@@ -1,13 +1,8 @@
 ---
-layout: default
 title: "Usage: Events"
 ---
 
 # Events
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Services](usage-services.md)<br/>
-> Next: [Automations](usage-automations.md)
 
 After installation, the following events are available:
 
@@ -80,7 +75,3 @@ trigger:
     event_data:
       trigger_name: "Morning"
 ```
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Services](usage-services.md)<br/>
-> Next: [Automations](usage-automations.md)

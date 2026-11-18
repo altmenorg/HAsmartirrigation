@@ -1,11 +1,7 @@
 ---
-layout: default
 title: "Usage: Info and history"
 ---
 # Info and history
-
-> Main page: [Usage](usage.md)<br/>
-> Next: [Dashboard card](usage-card.md)
 
 The **Home** tab answers the questions the other tabs cannot: what is about to
 happen, and what already happened. Info is its first page, History its second.

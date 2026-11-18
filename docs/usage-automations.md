@@ -1,12 +1,7 @@
 ---
-layout: default
 title: "Usage: Automations"
 ---
 # Automations
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Events](usage-events.md)<br/>
-> Next: [Off-the-shelf controllers](usage-controllers.md)
 
 Since this integration does not interface with your irrigation system directly, you will need to use the data it outputs to create an automation that will start and stop your irrigation system for you. This way you can use this custom integration with any irrigation system you might have, regardless of how that interfaces with Home Assistant. In order for this to work correctly, you should base your automation on the value of `sensor.smart_irrigation_[zone_name]` as long as you run your automation after it was updated (e.g. 11:00 PM/23:00 hours local time). If that value is above `0` it is time to irrigate. Note that the value is the run time in seconds. Also, after irrigation, you need to call the `smart_irrigation.credit_watering` service with how long the zone ran, so the water balance is credited with the water it received. (`smart_irrigation.set_bucket` without a value, which sets the water balance to 0, still works, but loses the deficit a run cut short by the maximum duration did not water.)
 
@@ -95,8 +90,3 @@ condition:
 This example handles multiple taps for a six-zone system controlled by [ESPHome](https://esphome.io/components/sprinkler.html). This is the automation the creator of this integration uses themselves (ignoring the expert advice above...).
 
 [yaml](https://github.com/altmenorg/HAsmartirrigation/blob/master/automations/5_multi_tap.yaml)
-
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Events](usage-events.md)<br/>
-> Next: [Off-the-shelf controllers](usage-controllers.md)

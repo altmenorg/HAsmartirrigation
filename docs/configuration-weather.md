@@ -1,12 +1,7 @@
 ---
-layout: default
 title: "Configuration: Weather"
 ---
 # Weather configuration
-
-> Main page: [Configuration](configuration.md)<br/>
-> Previous: [General configuration](configuration-general.md)<br/>
-> Next: [Zone configuration](configuration-zones.md)
 
 The **Weather** tab gathers what Smart Irrigation reads the weather from, and everything that holds a run back. It has three pages:
 
@@ -81,8 +76,3 @@ The value is the length of the watering cycle in calendar days: set to *N*, irri
 The system automatically tracks the number of days since the last irrigation event. The counter is incremented once per calendar day, at midnight, whether or not irrigation happened that day. If an irrigation trigger occurs but insufficient days have passed, the event is skipped and the counter simply keeps running. When enough days have passed, the next trigger will fire the irrigation event and reset the counter to 0.
 
 This feature works alongside existing precipitation forecasting - if both restrictions apply, both must be satisfied for irrigation to occur.
-
-
-> Main page: [Configuration](configuration.md)<br/>
-> Previous: [General configuration](configuration-general.md)<br/>
-> Next: [Zone configuration](configuration-zones.md)

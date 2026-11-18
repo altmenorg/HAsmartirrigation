@@ -1,10 +1,8 @@
 ---
-layout: default
 title: "Usage: The output contract"
 ---
 # The output contract
 
-> Main page: [Usage](usage.md)<br/>
 > See also: [Entities](usage-entities.md), [Events](usage-events.md), [Automations](usage-automations.md)
 
 This page is for anybody who drives the water themselves: your own automation, a controller integration, or another integration that wants to consume what Smart Irrigation decides. It is one page on purpose, so it can be read without reading the rest, and it says what is promised and what is not.

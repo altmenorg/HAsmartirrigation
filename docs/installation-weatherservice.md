@@ -1,12 +1,7 @@
 ---
-layout: default
 title: "Installation: Configuring weather service"
 ---
 # Configuring the weather service
-
-> Main page: [Installation](installation.md)<br/>
-> Previous: [Downloading the integration](installation-download.md)<br/>
-> Next: [Configuration](configuration.md)
 
 The weather service is configured **from the Smart Irrigation panel**, on the fly — it is no longer part of the install wizard. You can enable it, change it, or turn it off at any time without reinstalling or reloading the integration.
 
@@ -30,7 +25,3 @@ Go to [OpenWeatherMap](https://openweathermap.org) and create an account. You ca
 
 ## Getting Pirate Weather API key
 Follow the instructions on this page (see `API Key` section): https://docs.pirateweather.net/en/latest/API/.
-
-> Main page: [Installation](installation.md)<br/>
-> Previous: [Downloading the integration](installation-download.md)<br/>
-> Next: [Configuration](configuration.md)

@@ -1,11 +1,7 @@
 ---
-layout: default
 title: "Configuration: Guided setup"
 ---
 # Guided setup
-
-> Main page: [Configuration](configuration.md)<br/>
-> Next: [General configuration](configuration-general.md)
 
 The setup assistant exists because the other pages assume you already know what
 a sensor group is. It asks one question at a time, and only the questions your

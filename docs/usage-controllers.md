@@ -1,12 +1,7 @@
 ---
-layout: default
 title: "Usage: Off-the-shelf controllers"
 ---
 # Off-the-shelf controllers
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Automations](usage-automations.md)<br/>
-> Next: [Full controller](usage-full-controller.md)
 
 If your valves are wired to a commercial controller, you do not have to replace it. Smart Irrigation decides **how long** each zone waters, and the controller **runs** the valves, through the action its Home Assistant integration provides. One blueprint per controller does the plumbing:
 
@@ -102,7 +97,3 @@ If your controller refuses or drops a start while a zone is running, chain the z
 ## Telling us how it went
 
 Each blueprint says in its description that it is not yet confirmed on real hardware. When you have run one, please post in the [discussions](https://github.com/altmenorg/HAsmartirrigation/discussions): the controller model, whether the zone started and stopped at the right time, and anything you had to change. Once a controller is confirmed we remove the warning from its blueprint.
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Automations](usage-automations.md)<br/>
-> Next: [Full controller](usage-full-controller.md)

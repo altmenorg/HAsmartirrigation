@@ -1,12 +1,7 @@
 ---
-layout: default
 title: "Configuration: Modules"
 ---
 # Module configuration
-
-> Main page: [Configuration](configuration.md)<br/>
-> Previous: [Zone configuration](configuration-zones.md)<br/>
-> Next: [Sensor group configuration](configuration-sensor-groups.md)
 
 A module is the method used to work out how much water evaporated.
 
@@ -56,7 +51,3 @@ Two settings of its own:
 ## Adding and deleting a module
 
 A zone creates the module behind it when you choose how it is calculated, and a module nothing uses any more is removed. The [setup assistant](configuration-setup.md) under **Settings > General** creates the module, the sensor group and the zone together, from what you answer.
-
-> Main page: [Configuration](configuration.md)<br/>
-> Previous: [Zone configuration](configuration-zones.md)<br/>
-> Next: [Sensor group configuration](configuration-sensor-groups.md)

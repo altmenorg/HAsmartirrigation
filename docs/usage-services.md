@@ -1,12 +1,7 @@
 ---
-layout: default
 title: "Usage: Services"
 ---
 # Services
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Entities](usage-entities.md)<br/>
-> Next: [Events](usage-events.md)
 
 After installation, the following services are available. Where an action acts on zones, a target picks them, and no target means every zone. A zone is picked by its sensor (`sensor.smart_irrigation_[zone]`); picking an area or a device is refused, so it never stands for every zone. The services that deal with the water balance keep ids with `bucket` in them, such as `smart_irrigation.set_bucket`.
 
@@ -79,7 +74,3 @@ Until 2026.11 there were pairs of actions for one zone and for all zones. They b
 | `create_recurring_schedule`, `update_recurring_schedule`, `delete_recurring_schedule` | The programs' schedules, under **Watering** (full controller). No action replaces these. |
 
 The blueprints we ship call the new names. A blueprint Smart Irrigation laid down and you never edited is replaced by the new version when Home Assistant starts; one you edited is left as it is, and keeps working on the old name until then.
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Entities](usage-entities.md)<br/>
-> Next: [Events](usage-events.md)

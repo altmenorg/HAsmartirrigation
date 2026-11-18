@@ -1,11 +1,8 @@
 ---
-layout: default
 title: "Usage: Assistants (AI)"
 ---
 
 # Assistants (AI)
-
-> Main page: [Usage](usage.md)<br/>
 
 Smart Irrigation can be offered to an assistant: Claude, ChatGPT or any other client of the Model Context Protocol (MCP), or a conversation agent of Home Assistant (Assist). The assistant can then answer questions such as "why was the lawn not watered this morning?", "what will run tomorrow?" or "which zone is the driest?", and set Smart Irrigation up with you: "add a zone for the vegetable garden on the second valve", "water the hedges every other evening".
 
