@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "Smart Irrigation se nastavuje ve vlastním panelu: otevřete Smart Irrigation v postranním panelu. Místo, pro které se čte počasí, je v Počasí › Meteorologická služba (režim: Pokročilý)."
     }

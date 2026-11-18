@@ -94,4 +94,5 @@ async def test_configure_points_to_the_panel(hass):
 def test_every_language_says_where_the_settings_are(path):
     texts = json.loads(path.read_text(encoding="utf-8"))
     assert texts["options"]["abort"]["use_panel"].strip()
-    assert "step" not in texts["options"]
+    # hassfest requires a step block; the flow never shows it.
+    assert set(texts["options"]["step"]) == {"init"}

@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "Smart Irrigation sa nastavuje vo vlastnom paneli: otvorte Smart Irrigation v bočnom paneli. Miesto, pre ktoré sa číta počasie, je v Počasie › Poveternostná služba (režim: Pokročilý)."
     }

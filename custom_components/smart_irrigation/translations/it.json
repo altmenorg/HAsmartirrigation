@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "Smart Irrigation si configura nel suo pannello: apri Smart Irrigation nella barra laterale. La posizione per cui viene letto il meteo è in Meteo › Servizio meteo (modalità: Avanzato)."
     }

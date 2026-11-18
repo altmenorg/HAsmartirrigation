@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "Smart Irrigation 在其自己的面板中設定：在側邊欄開啟 Smart Irrigation。讀取天氣所用的位置在 氣象 › 氣象服務（模式：進階）。"
     }

@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "Smart Irrigation 在其自己的面板中设置：在侧边栏打开 Smart Irrigation。读取天气所用的位置在 天气 › 天气服务（模式：高级）。"
     }

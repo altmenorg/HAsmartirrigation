@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "O Smart Irrigation é configurado no próprio painel: abra o Smart Irrigation na barra lateral. A localização para a qual o clima é lido fica em Clima › Serviço de meteorologia (modo: Avançado)."
     }

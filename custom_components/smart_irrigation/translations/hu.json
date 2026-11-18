@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "A Smart Irrigation a saját paneljén állítható be: nyisd meg a Smart Irrigationt az oldalsávban. A hely, amelyre az időjárás vonatkozik: Időjárás › Időjárás-szolgáltatás (mód: Haladó)."
     }

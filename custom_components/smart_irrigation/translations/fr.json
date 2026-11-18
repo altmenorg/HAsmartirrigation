@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "Smart Irrigation se règle dans son propre panneau : ouvre Smart Irrigation dans la barre latérale. Le lieu pour lequel la météo est lue se trouve dans Météo › Service météo (mode : Avancé)."
     }

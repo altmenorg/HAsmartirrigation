@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "O Smart Irrigation configura-se no seu próprio painel: abra o Smart Irrigation na barra lateral. A localização para a qual o tempo é lido está em Tempo › Serviço meteorológico (modo: Avançado)."
     }

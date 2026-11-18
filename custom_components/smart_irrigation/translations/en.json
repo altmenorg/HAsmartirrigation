@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "Smart Irrigation is set up in its own panel: open Smart Irrigation in the sidebar. The location the weather is read for is under Weather › Weather service (mode: Advanced)."
     }

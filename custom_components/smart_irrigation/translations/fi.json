@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "Smart Irrigation määritetään sen omassa paneelissa: avaa Smart Irrigation sivupalkista. Sijainti, jolle sää haetaan, löytyy kohdasta Sää › Sääpalvelu (tila: Edistynyt)."
     }

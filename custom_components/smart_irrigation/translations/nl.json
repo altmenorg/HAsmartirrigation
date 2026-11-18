@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "Smart Irrigation stel je in via het eigen paneel: open Smart Irrigation in de zijbalk. De locatie waarvoor het weer wordt opgehaald staat onder Weer › Weerdienst (modus: Geavanceerd)."
     }

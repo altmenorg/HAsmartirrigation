@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "Smart Irrigation se nastavi v lastni plošči: odprite Smart Irrigation v stranski vrstici. Lokacija, za katero se bere vreme, je v Vreme › Vremenska storitev (način: Napredno)."
     }

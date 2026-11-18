@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "Smart Irrigation stilles inn i sitt eget panel: åpne Smart Irrigation i sidepanelet. Stedet været hentes for, finner du under Vær › Værtjeneste (modus: Avansert)."
     }

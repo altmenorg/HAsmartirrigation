@@ -138,6 +138,11 @@
     }
   },
   "options": {
+    "step": {
+      "init": {
+        "title": "Smart Irrigation"
+      }
+    },
     "abort": {
       "use_panel": "Smart Irrigation ställs in i sin egen panel: öppna Smart Irrigation i sidofältet. Platsen som vädret hämtas för finns under Väder › Vädertjänst (läge: Avancerat)."
     }
