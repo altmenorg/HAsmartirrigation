@@ -1,5 +1,4 @@
 ---
-layout: default
 title: "Manual coordinates"
 ---
 # Manual Coordinate Configuration

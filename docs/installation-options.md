@@ -1,11 +1,7 @@
 ---
-layout: default
 title: "Installation: Options"
 ---
 # Installation: Options
-
-> Main page: [Installation](installation.md)<br/>
-> Next: [Updating the installed version](installation-updating.md)
 
 Everything is set in the Smart Irrigation panel, in the sidebar. The integration's **Configure** button (Settings > Devices & services > Smart Irrigation) only says so.
 
@@ -13,6 +9,3 @@ Everything is set in the Smart Irrigation panel, in the sidebar. The integration
 - **The weather service and its API key**: see [Configuring the weather service](installation-weatherservice.md).
 
 > Up to 2026.11.0, **Configure** asked for manual coordinates, but what it saved was never used: the weather was always read for the coordinates of the panel's card. If you set coordinates there, set them again on the card.
-
-> Main page: [Installation](installation.md)<br/>
-> Next: [Updating the installed version](installation-updating.md)

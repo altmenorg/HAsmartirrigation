@@ -1,12 +1,7 @@
 ---
-layout: default
 title: "Usage: Full controller"
 ---
 # Full controller
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Off-the-shelf controllers](usage-controllers.md)<br/>
-> Next: [Coming from Irrigation Unlimited](usage-from-irrigation-unlimited.md)
 
 By default Smart Irrigation decides **how long** each zone waters and leaves the running of the valves to you: an automation, a controller, [Irrigation Unlimited](usage-enhanced-scheduling-integration.md). The **full controller** is an option for those who would rather have it do both. It runs the whole watering itself: when, in what order, with which pump, for how long, and what to do when you want it to stop.
 
@@ -240,5 +235,3 @@ A **Sonoff SWV on ZHA** is opened with one command, ZHA's *on with timed off*, w
 ## What it is not
 
 It is not a pressure controller, a master-valve scheduler for a whole farm, or a replacement for a controller that already does its job. If a Rain Bird, Hydrawise, Rachio, OpenSprinkler or B-hyve runs your valves, [its blueprint](usage-controllers.md) is the right way and the full controller has nothing to add to it.
-
-> Next: [Coming from Irrigation Unlimited](usage-from-irrigation-unlimited.md)

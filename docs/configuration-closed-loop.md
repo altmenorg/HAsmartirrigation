@@ -1,10 +1,7 @@
 ---
-layout: default
 title: "Closed-loop watering"
 ---
 # Closed-loop watering
-
-> Main page: [Configuration](configuration.md)
 
 By default Smart Irrigation runs **open loop**: it calculates a duration and fires an event, but it does not know whether (or how much) watering actually happened, so you reset the water balance from an automation. The closed-loop features remove that guesswork. They are all opt-in and configured in the panel under **General**.
 
@@ -127,7 +124,6 @@ When Smart Irrigation waters, it fires events you can use to notify or react, so
 
 Example: a single end-of-watering report for all zones.
 
-{% raw %}
 ```yaml
 alias: Watering report
 triggers:
@@ -151,7 +147,6 @@ actions:
         {{ l.t | join("\n") }}
 mode: single
 ```
-{% endraw %}
 
 > If you previously had one automation per zone that opened the valve and called `set_bucket` or `reset_bucket`, remove them once you choose **Calculate and water**: Smart Irrigation now opens the valves and credits the water balance itself, so the old automations would double up. Keep only report/notification automations like the one above.
 
@@ -162,5 +157,3 @@ The legacy `smart_irrigation_start_irrigation_all_zones` event still fires too (
 Irrigation starts on a single **active trigger**, chosen in **General** under the start triggers. The triggers you define are the pool of options; only the selected one starts watering, so a run happens once per day.
 
 The default, **Default: done by sunrise**, times the run so it finishes right at sunrise. Add custom triggers (sunset, solar azimuth, offsets) below and pick one as the active trigger if you prefer.
-
-> Main page: [Configuration](configuration.md)

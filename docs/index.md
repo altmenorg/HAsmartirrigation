@@ -1,5 +1,4 @@
 ---
-layout: default
 title: "Introduction"
 ---
 <p align="center">

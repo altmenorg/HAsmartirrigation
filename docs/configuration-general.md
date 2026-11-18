@@ -1,12 +1,7 @@
 ---
-layout: default
 title: "Configuration: General"
 ---
 # General configuration
-
-> Main page: [Configuration](configuration.md)<br/>
-> Previous: [Guided setup](configuration-setup.md)<br/>
-> Next: [Weather configuration](configuration-weather.md)
 
 **Settings > General** holds the global settings. Under the master switch, they come in three sections:
 
@@ -167,8 +162,3 @@ Smart Irrigation automatically detects and responds to changes in your Home Assi
 * No restart or integration reload is required
 
 This ensures seamless transitions between unit systems without losing your configuration data.
-
-
-> Main page: [Configuration](configuration.md)<br/>
-> Previous: [Guided setup](configuration-setup.md)<br/>
-> Next: [Weather configuration](configuration-weather.md)

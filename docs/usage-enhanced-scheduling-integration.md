@@ -67,6 +67,8 @@ data:
 
 ## Irrigation Unlimited Integration
 
+<a id="overview-1"></a>
+
 ### Overview
 
 Smart Irrigation calculates how long each zone should water, and Irrigation Unlimited runs the valves. The two do not talk to each other directly: the duration is handed over by a [blueprint](usage-automations.md) or an automation that calls Irrigation Unlimited's own `adjust_time` action. There is nothing to enable in either integration, and no `configuration.yaml` block to add for Smart Irrigation, which is UI-only (adding one causes a setup error on restart).

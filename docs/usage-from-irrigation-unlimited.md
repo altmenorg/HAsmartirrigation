@@ -1,12 +1,7 @@
 ---
-layout: default
 title: "Usage: Coming from Irrigation Unlimited"
 ---
 # Coming from Irrigation Unlimited
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Full controller](usage-full-controller.md)<br/>
-> Next: [Troubleshooting](usage-troubleshooting.md)
 
 [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) (IU) is a scheduler and a sequencer of valves with no water model: it does not know the weather, the evapotranspiration or how much water a zone has lost. Smart Irrigation does, and until now the two were joined by two automations written by hand (`adjust_time` into IU, `reset_bucket` at the end).
 
@@ -89,8 +84,6 @@ If you would rather rebuild than import:
 4. Add a schedule to each. If IU ran it to finish at sunrise, take *Sunrise*, *must be done*.
 5. Switch IU's own schedules off, and remove the two automations that handed it durations and reset the water balance.
 6. Look at the **Planning** card: it shows the next days (3, 7 or 14, as you pick on the chart). Compare it with what IU would have done before you remove IU.
-
-> Previous: [Full controller](usage-full-controller.md)
 
 ## Not in Smart Irrigation
 

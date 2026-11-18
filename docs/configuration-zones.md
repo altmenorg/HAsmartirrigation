@@ -1,12 +1,7 @@
 ---
-layout: default
 title: "Configuration: Zones"
 ---
 # Zone configuration
-
-> Main page: [Configuration](configuration.md)<br/>
-> Previous: [Weather configuration](configuration-weather.md)<br/>
-> Next: [Module configuration](configuration-modules.md)
 
 Specify one or more irrigation zones here. The integration calculates irrigation duration per zone, depending on size, throughput, state, [module](configuration-modules.md) and [sensor group](configuration-sensor-groups.md). A zone can be:
 * **disabled**: The zone is then not calculated and duration will be set to 0.
@@ -120,7 +115,3 @@ open_resends: 0
 
 - `safety_off_state_key: state_l1`, the [safety off state key](configuration-closed-loop.md#hardware-auto-off-mqtt-on_time-dead-man) (empty is `state`);
 - `open_resends: 0`, how often [the open is sent again](configuration-closed-loop.md#when-smart-irrigation-runs-the-valves) while the valve has not confirmed (0 to 10; empty is the default).
-
-> Main page: [Configuration](configuration.md)<br/>
-> Previous: [Weather configuration](configuration-weather.md)<br/>
-> Next: [Module configuration](configuration-modules.md)

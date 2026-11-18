@@ -1,12 +1,7 @@
 ---
-layout: default
 title: "Usage: Entities"
 ---
 # Entities
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Dashboard card](usage-card.md)<br/>
-> Next: [Services](usage-services.md)
 
 Each [zone](configuration-zones.md) you configure will be added as a sensor entity to Home Assistant. The sensor will be named as follows: `sensor.smart_irrigation_[zone_name]`. So if you have a zone called 'lawn' then the sensor would be named `sensor.smart_irrigation_lawn`.
 
@@ -103,7 +98,3 @@ A program has no on and off switch of its own: it starts on its own through its 
 These entities are **additive**: nothing was removed. The duration sensor keeps its `entity_id`, recorded history and attributes, so existing dashboards, automations and templates keep working. A one-time registry migration moves the duration sensor's internal `unique_id` to a stable per-zone scheme; the `entity_id` and history carry over.
 
 The per-zone device/entity layout is inspired by [JustChr's Smart Irrigation fork](https://github.com/JustChr/HAsmartirrigation) (MIT).
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Dashboard card](usage-card.md)<br/>
-> Next: [Services](usage-services.md)

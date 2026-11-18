@@ -1,12 +1,7 @@
 ---
-layout: default
 title: "Installation: Migration"
 ---
 # Installation: Migration from V1 (0.0.X) to V2 (202X.X.X)
-
-> Main page: [Installation](installation.md)<br/>
-> Previous: [Updating the integration](installation-updating.md)<br/>
-> Next: [Uninstalling the integration](installation-uninstalling.md)
 
 Version 2 (202X.X.X) presents a complete rewrite of the integration compared to V1 (0.0.X). Everything was done from scratch. Many bugs present in V1 are fixed in V2. On top of that V2 provides multi zone support and overall better performance, more accurate results and more flexibility to configure the system to your needs.
 Also, in version 2 only one instance of Smart Irrigation is allowed. In V1, if you wanted multiple zones you needed to install multiple instances of Smart Irrigation.
@@ -96,8 +91,3 @@ Please follow the procedure below for each installed instance of V1, before upgr
 - sensor groups are where you decide what sources to use (Open Weather Map, Sensors, Static values (new in V2) or a mix). Use the true/false values and sensors from your diagnostics file to figure out what set up you had.
 
 If you need help, please reach out by [opening an issue](https://github.com/altmenorg/HAsmartirrigation/issues).
-
-
-> Main page: [Installation](installation.md)<br/>
-> Previous: [Updating the integration](installation-updating.md)<br/>
-> Next: [Uninstalling the integration](installation-uninstalling.md)

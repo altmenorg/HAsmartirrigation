@@ -1,11 +1,7 @@
 ---
-layout: default
 title: "From nothing to a watered garden"
 ---
 # From nothing to a watered garden
-
-> Main page: [Introduction](index.md)<br/>
-> Next: [Installation](installation.md)
 
 This is the whole path, for somebody who has none of it yet: a machine, a valve, Home Assistant, Smart Irrigation, and a zone that waters itself on what the weather took out of the soil. Half an hour of work, most of it waiting for downloads.
 

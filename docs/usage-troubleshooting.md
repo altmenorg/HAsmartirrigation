@@ -1,11 +1,7 @@
 ---
-layout: default
 title: "Usage: Troubleshooting"
 ---
 # Troubleshooting
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Coming from Irrigation Unlimited](usage-from-irrigation-unlimited.md)<br/>
 
 In order to troubleshoot this integration or get help, it's important to check two sources:
 - the diagnostic file / storage file. You can either generate a diagnostic file or get the `smart_irrigation.storage` file from the `configuration/.storage` folder. To download a diagnostics file, in Home Assistant, go to Settings >Devices&Services > Integrations >Smart Irrigation, or use this [link](https://my.home-assistant.io/redirect/integration/?domain=smart_irrigation). Click the 'three vertical dots' menu and select 'download diagnostics'.
@@ -70,6 +66,3 @@ measured or estimated, net radiation, ET0) and the resulting water balance, dura
 two days can simply be diffed against each other. The most recent records are also included in
 the diagnostics download (coordinates rounded, entity ids removed), which makes them easy to
 attach to an issue.
-
-> Main page: [Usage](usage.md)<br/>
-> Previous: [Coming from Irrigation Unlimited](usage-from-irrigation-unlimited.md)<br/>

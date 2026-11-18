@@ -1,12 +1,7 @@
 ---
-layout: default
 title: "Configuration: Sensor groups"
 ---
 # Sensor group configuration
-
-> Main page: [Configuration](configuration.md)<br/>
-> Previous: [Module configuration](configuration-modules.md)<br/>
-> Next: [Usage](usage.md)
 
 Sensor groups define what sources provide the weather data to be collected and calculated on to determine irrigation duration. You can use any numeric Home Assistant sensor, regardless of its source. Additionally, if you [configured a weather service](installation-weatherservice.md) in this integration, you can retrieve the data from that as well.
 
@@ -66,7 +61,7 @@ Please note:
        sensors:
          wind_at_2m:
            friendly_name: Wind Speed at 2m
-           value_template: {% raw %}"{{states('[name of your wind speed sensor (WSmeasured)]')|float()*(4.87/log((67.8*[height the wind speed was measured on in meters (H)])-5.42))}}"{% endraw %}
+           value_template: "{{states('[name of your wind speed sensor (WSmeasured)]')|float()*(4.87/log((67.8*[height the wind speed was measured on in meters (H)])-5.42))}}"
    ```
 - Total precipitation is the total amount of precipitation you want to take into account for the calculations. Use the 'Delta' aggregation type along with a sensor source that accumulates over a time period, usually named something like 'daily rain', 'weekly rain', or 'total rain'. The delta aggregation will correctly handle value resets (such as daily rain becoming zero at midnight). Keep in mind that the total precipitation is expected to be a total over the time period, not the current precipitation rate.
 - Current precipitation is a *rate* (mm/h or in/h), while total precipitation is a *depth* (mm or in) accumulated over the interval. They are two different quantities and only one of them feeds the water balance: total precipitation is used when it has a value, and current precipitation is only used when it does not. That way a rain rate sensor is never counted on top of a rain gauge.
@@ -97,6 +92,3 @@ Use the button at the bottom to delete a sensor group. Note you can only delete 
 
 
 Now you are ready to [use the integration](usage.md)!
-> Main page: [Configuration](configuration.md)<br/>
-> Previous: [Module configuration](configuration-modules.md)<br>
-> Next: [Usage](usage.md)

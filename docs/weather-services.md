@@ -1,5 +1,4 @@
 ---
-layout: default
 title: "Weather services"
 ---
 # Weather services
