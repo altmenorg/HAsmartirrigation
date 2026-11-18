@@ -60,7 +60,9 @@ It works out, zone by zone, how much water the plants lost to [evapotranspiratio
 
 **Via HACS (recommended).** Smart Irrigation is in the HACS default store, so there is no repository to add:
 
-1. In [HACS](https://hacs.xyz), search for **Smart Irrigation** and click **Download**.
+[![Open Smart Irrigation in HACS on your Home Assistant](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/_change/?redirect=marketplace_repository%2F%3Fowner%3Daltmenorg%26repository%3DHAsmartirrigation%26category%3Dintegration)
+
+1. Open it in HACS with the button above (it asks for your Home Assistant address), or search for **Smart Irrigation** in [HACS](https://hacs.xyz), and click **Download**.
 2. **Restart Home Assistant**, then add it from *Settings → Devices & Services → Add Integration → Smart Irrigation*.
 
 **Manually.** Download the [latest release](https://github.com/altmenorg/HAsmartirrigation/releases) and extract it into `custom_components/smart_irrigation/`, then restart Home Assistant.
