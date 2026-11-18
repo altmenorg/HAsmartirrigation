@@ -1369,6 +1369,7 @@
     "schedule_months": "Meseci",
     "schedule_months_help": "Nič označeno: vsak mesec.",
     "schedule_yaml_only": "Nastavi se v YAML (Uredi v YAML, na vrhu programa): prikazano tukaj, ker ga ta urnik uporablja.",
+    "yaml_only_set": "Nastavi se v YAML (Uredi v YAML, na vrhu programa): prikazano tukaj, ker je nastavljeno.",
     "schedule_from": "Od",
     "schedule_until": "Do",
     "schedule_period_help": "Obdobje leta, ki lahko poteka čez novo leto (od novembra do marca). Prazno: vse leto.",

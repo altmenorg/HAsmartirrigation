@@ -23,7 +23,7 @@ Then choose where your weather data comes from:
 
 Also in this section:
 
-4. [Options: using manual coordinates](installation-options.md)
+4. [Options: the Configure button](installation-options.md)
 5. [Updating to the latest or specific version](installation-updating.md)
 6. [Migration from V1 (v0.0.X) to V2 (202X.X.X)](installation-migration.md)
 7. [Uninstalling the integration](installation-uninstalling.md)

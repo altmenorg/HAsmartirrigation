@@ -553,6 +553,17 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </h1>
         ${r1}</ha-card
       >`;
+      // How often the weather is read: every hour, as it is out of the box,
+      // suits everybody. The advanced mode only, unless it was changed (off,
+      // another interval, a delay), so that a setting in use is never hidden.
+      const advanced = this.config.ui_mode === "advanced";
+      const showAutoUpdate =
+        advanced ||
+        this.config.autoupdateenabled === false ||
+        Number(this.config.autoupdateinterval ?? 1) !== 1 ||
+        (this.config.autoupdateschedule ?? AUTO_UPDATE_SCHEDULE_HOURLY) !==
+          AUTO_UPDATE_SCHEDULE_HOURLY ||
+        Number(this.config.autoupdatedelay ?? 0) !== 0;
       let r2 = html`<div class="card-content">
         <div class="setting-row">
           <div class="setting-label">
@@ -642,7 +653,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             </div>
           </div>`;
       }
-      if (this.data.autoupdateenabled) {
+      // The delay before the first update is a developer's setting: the
+      // advanced mode only, unless it is set.
+      if (
+        this.data.autoupdateenabled &&
+        (advanced || Number(this.config.autoupdatedelay ?? 0) !== 0)
+      ) {
         r2 = html`${r2}
           <div class="card-content">
             ${this._numRow(
@@ -697,7 +713,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ></ha-switch>
         </div>
       </div>`;
-      if (this.data.continuousupdates) {
+      // The debounce is a developer's setting: the advanced mode only, unless
+      // it was changed from its 100 ms.
+      if (
+        this.data.continuousupdates &&
+        (advanced || Number(this.config.sensor_debounce ?? 100) !== 100)
+      ) {
         r4 = html`${r4}
           <div class="card-content">
             ${this._numRow(
@@ -735,8 +756,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Weather-based Skip Card
       const r6 = this.renderWeatherSkipCard();
 
-      // Coordinate Configuration Card
-      const r7 = this.renderCoordinateCard();
+      // Coordinate Configuration Card: Home Assistant's location is right for
+      // nearly everybody. The advanced mode only, and always once manual
+      // coordinates are on, so the weather is never read out of sight for
+      // somewhere else.
+      const r7 =
+        advanced || this.data.manual_coordinates_enabled
+          ? this.renderCoordinateCard()
+          : html``;
 
       // Days Between Irrigation Card
       const r8 = this.renderDaysBetweenIrrigationCard();
@@ -744,11 +771,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Observed Watering (closed-loop bucket) Card
       const r9 = this.renderObservedWateringCard();
 
-      // Calculation audit log Card
-      const r10 = this.renderCalculationLogCard();
+      // Calculation audit log Card: for chasing a calculation down, the
+      // advanced mode only, unless it is on (it writes a file).
+      const r10 =
+        advanced || this.config.calc_log_enabled
+          ? this.renderCalculationLogCard()
+          : html``;
 
-      // Whether the bundled blueprints are copied (#930).
-      const r16 = this.renderBlueprintsCard();
+      // Whether the bundled blueprints are copied (#930): on out of the box,
+      // the advanced mode only, unless it was turned off.
+      const r16 =
+        advanced || this.config.install_blueprints === false
+          ? this.renderBlueprintsCard()
+          : html``;
 
       // How much of the panel to show.
       const r11 = this.renderPanelModeCard();
@@ -773,7 +808,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
       // Below the weather service: where it is read for, and how often.
       if (this.section === "weather") {
-        return html`${r7}${r2}`;
+        return html`${r7}${showAutoUpdate ? r2 : ""}`;
       }
       // Above the sensor groups: recording their sensors at every change
       // decides how each group's readings are combined, so it sits with them.
@@ -2048,7 +2083,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 0,
               )}
               ${this._numRow(
-                t("min_seconds"),
+                html`${t("min_seconds")}<si-info
+                    >${t("step_bounds_help")}</si-info
+                  >`,
                 localize("common.units.seconds", lang),
                 step.min_seconds ?? 0,
                 (v) =>
@@ -2075,31 +2112,41 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     )}
                   </div>`
                 : ""}
-              ${this._numRow(
-                html`${t("adjust_seconds")}<si-info
-                    >${t("step_bounds_help")}</si-info
-                  >`,
-                localize("common.units.seconds", lang),
-                step.adjust_seconds ?? 0,
-                (v) =>
-                  patchStep({
-                    adjust_seconds: Math.max(
-                      -21600,
-                      Math.min(21600, Math.round(num(v))),
-                    ),
-                  }),
-              )}
-              ${this._numRow(
-                html`${t("min_deficit_mm")}<si-info
-                    >${t("min_deficit_mm_help")}</si-info
-                  >`,
-                "mm",
-                step.min_deficit_mm ?? 0,
-                (v) => patchStep({ min_deficit_mm: Math.max(0, num(v)) }),
-                1,
-                false,
-                0,
-              )}
+              ${
+                // The time added or removed and the deficit a step waits for
+                // are set in YAML: shown here only on a step that uses them,
+                // so that nothing acts on the watering out of sight.
+                (step.adjust_seconds ?? 0) !== 0
+                  ? this._numRow(
+                      html`${t("adjust_seconds")}<si-info
+                          >${t("yaml_only_set")}</si-info
+                        >`,
+                      localize("common.units.seconds", lang),
+                      step.adjust_seconds ?? 0,
+                      (v) =>
+                        patchStep({
+                          adjust_seconds: Math.max(
+                            -21600,
+                            Math.min(21600, Math.round(num(v))),
+                          ),
+                        }),
+                    )
+                  : ""
+              }
+              ${(step.min_deficit_mm ?? 0) > 0
+                ? this._numRow(
+                    html`${t("min_deficit_mm")}<si-info
+                        >${t("min_deficit_mm_help")}
+                        ${t("yaml_only_set")}</si-info
+                      >`,
+                    "mm",
+                    step.min_deficit_mm ?? 0,
+                    (v) => patchStep({ min_deficit_mm: Math.max(0, num(v)) }),
+                    1,
+                    false,
+                    0,
+                  )
+                : ""}
               ${this._textRow(
                 html`${t("step_delay")}<si-info
                     >${t("step_delay_help")}</si-info
@@ -2433,17 +2480,24 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     every_n_days: Math.max(1, Math.round(num(v, 1))),
                   }),
               )}
-              ${(schedule.every_n_days ?? 1) > 1
-                ? this._numRow(
-                    t("schedule_every_offset"),
-                    t("schedule_days"),
-                    schedule.every_offset ?? 0,
-                    (v) =>
-                      patchSchedule({
-                        every_offset: Math.max(0, Math.round(num(v))),
-                      }),
-                  )
-                : ""}
+              ${
+                // The shift lets programs take turns on "every N days": set in
+                // YAML, shown here only on a schedule that uses it.
+                (schedule.every_n_days ?? 1) > 1 &&
+                (schedule.every_offset ?? 0) > 0
+                  ? this._numRow(
+                      html`${t("schedule_every_offset")}<si-info
+                          >${t("schedule_yaml_only")}</si-info
+                        >`,
+                      t("schedule_days"),
+                      schedule.every_offset ?? 0,
+                      (v) =>
+                        patchSchedule({
+                          every_offset: Math.max(0, Math.round(num(v))),
+                        }),
+                    )
+                  : ""
+              }
               ${
                 // Even or odd days, days of the month and months are set in
                 // YAML: shown here only on a schedule that uses them, so that
@@ -2565,53 +2619,60 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 monthName,
                 (v) => patchSchedule({ until_date: v }),
               )}
-              ${schedule.type === "sun"
-                ? html`
-                    ${this._selectRow(
-                      html`${t("schedule_fallback_time")}<si-info
-                          >${t("schedule_fallback_time_help")}</si-info
-                        >`,
-                      html`
-                        <option value="" ?selected=${!schedule.fallback_time}>
-                          ${t("schedule_fallback_skip")}
-                        </option>
-                        <option
-                          value="previous"
-                          ?selected=${schedule.fallback_time === "previous"}
-                        >
-                          ${t("schedule_fallback_previous")}
-                        </option>
-                        <option
-                          value="at"
-                          ?selected=${!!schedule.fallback_time &&
-                          schedule.fallback_time !== "previous"}
-                        >
-                          ${t("schedule_fallback_at")}
-                        </option>
-                      `,
-                      (e: Event) => {
-                        const choice = (e.target as HTMLSelectElement).value;
-                        const fixed =
-                          schedule.fallback_time &&
-                          schedule.fallback_time !== "previous"
-                            ? schedule.fallback_time
-                            : "06:00";
-                        patchSchedule({
-                          fallback_time:
-                            choice === "at" ? fixed : choice || null,
-                        });
-                      },
-                    )}
-                    ${schedule.fallback_time &&
-                    schedule.fallback_time !== "previous"
-                      ? this._timeRow(
-                          t("schedule_time"),
-                          schedule.fallback_time,
-                          (v) => patchSchedule({ fallback_time: v || null }),
-                        )
-                      : ""}
-                  `
-                : ""}
+              ${
+                // What a day without a sunrise or sunset does (polar days) is
+                // set in YAML: shown here only on a schedule that has one, so
+                // that nothing acts on the watering out of sight. Left out,
+                // that day is skipped.
+                schedule.type === "sun" && schedule.fallback_time
+                  ? html`
+                      ${this._selectRow(
+                        html`${t("schedule_fallback_time")}<si-info
+                            >${t("schedule_fallback_time_help")}
+                            ${t("schedule_yaml_only")}</si-info
+                          >`,
+                        html`
+                          <option value="" ?selected=${!schedule.fallback_time}>
+                            ${t("schedule_fallback_skip")}
+                          </option>
+                          <option
+                            value="previous"
+                            ?selected=${schedule.fallback_time === "previous"}
+                          >
+                            ${t("schedule_fallback_previous")}
+                          </option>
+                          <option
+                            value="at"
+                            ?selected=${!!schedule.fallback_time &&
+                            schedule.fallback_time !== "previous"}
+                          >
+                            ${t("schedule_fallback_at")}
+                          </option>
+                        `,
+                        (e: Event) => {
+                          const choice = (e.target as HTMLSelectElement).value;
+                          const fixed =
+                            schedule.fallback_time &&
+                            schedule.fallback_time !== "previous"
+                              ? schedule.fallback_time
+                              : "06:00";
+                          patchSchedule({
+                            fallback_time:
+                              choice === "at" ? fixed : choice || null,
+                          });
+                        },
+                      )}
+                      ${schedule.fallback_time &&
+                      schedule.fallback_time !== "previous"
+                        ? this._timeRow(
+                            t("schedule_time"),
+                            schedule.fallback_time,
+                            (v) => patchSchedule({ fallback_time: v || null }),
+                          )
+                        : ""}
+                    `
+                  : ""
+              }
               ${schedule.anchor === "end"
                 ? html`
                     <div class="setting-row">
@@ -2866,20 +2927,28 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       </div>
                       <div class="fold-section">${t("schedules_title")}</div>
                       ${renderSchedules(program, index)}
-                      ${this._numRow(
-                        html`${t("tours")}<si-info
-                            >${t("tours_help")}</si-info
-                          >`,
-                        "",
-                        program.tours ?? 1,
-                        (v) =>
-                          patch(index, {
-                            tours: Math.max(1, Math.round(num(v, 1))),
-                          }),
-                        1,
-                        false,
-                        1,
-                      )}
+                      ${
+                        // Rounds are set in YAML: shown here only on a
+                        // program that waters in more than one, so that
+                        // nothing acts on the watering out of sight.
+                        (program.tours ?? 1) > 1
+                          ? this._numRow(
+                              html`${t("tours")}<si-info
+                                  >${t("tours_help")}
+                                  ${t("yaml_only_set")}</si-info
+                                >`,
+                              "",
+                              program.tours ?? 1,
+                              (v) =>
+                                patch(index, {
+                                  tours: Math.max(1, Math.round(num(v, 1))),
+                                }),
+                              1,
+                              false,
+                              1,
+                            )
+                          : ""
+                      }
                       ${renderNotify(program, index)} ${adjustBlock(program)}
                       ${
                         // The last program cannot be deleted (the backend
@@ -2951,30 +3020,39 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             )}
           </div>
         </div>
-        <div class="card-content">
-          <!-- The order, passes and pause of a one-off run of every zone (the
-               "Irrigate all zones" button of the hub device, for automations):
-               no program has them, so they are kept here, folded, for that run
-               alone. Titled as the settings they are: it read as a button. -->
-          <details
-            class="more"
-            ?open=${this._isOpen("all_zones_now")}
-            @toggle=${(e: Event) =>
-              this._setOpen(
-                "all_zones_now",
-                (e.target as HTMLDetailsElement).open,
-              )}
-          >
-            <summary>
-              ${t("all_zones_button_title")}<si-info
-                >${t("all_zones_now_help")}</si-info
-              >
-            </summary>
-            <div class="more-body">
-              ${this.renderExecutionSettings(lang, true)}
-            </div>
-          </details>
-        </div>
+        ${
+          // The order, passes and pause of a one-off run of every zone (the
+          // "Irrigate all zones" button of the hub device, for automations):
+          // no program has them, so they are kept here, folded, for that run
+          // alone. Titled as the settings they are: it read as a button. The
+          // advanced mode only, unless one of them was changed, so that the
+          // way that run waters is never hidden.
+          this.config.ui_mode === "advanced" ||
+          this.config.zone_sequencing === "parallel" ||
+          Number(this.config.watering_passes ?? 1) > 1 ||
+          Number(this.config.pause_between_zones ?? 0) > 0
+            ? html`<div class="card-content">
+                <details
+                  class="more"
+                  ?open=${this._isOpen("all_zones_now")}
+                  @toggle=${(e: Event) =>
+                    this._setOpen(
+                      "all_zones_now",
+                      (e.target as HTMLDetailsElement).open,
+                    )}
+                >
+                  <summary>
+                    ${t("all_zones_button_title")}<si-info
+                      >${t("all_zones_now_help")}</si-info
+                    >
+                  </summary>
+                  <div class="more-body">
+                    ${this.renderExecutionSettings(lang, true)}
+                  </div>
+                </details>
+              </div>`
+            : ""
+        }
       </ha-card>
     `;
   }
@@ -3077,20 +3155,31 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 supply.delay_after,
                 (v) => patch(index, { delay_after: seconds(v) }),
               )}
-              ${this._numRow(
-                html`${t("kick_seconds")}<si-info
-                    >${t("kick_seconds_help")}</si-info
-                  >`,
-                localize("common.units.seconds", lang),
-                supply.kick_seconds ?? 0,
-                (v) =>
-                  patch(index, {
-                    kick_seconds: Math.max(0, Math.min(60, Number(v) || 0)),
-                  }),
-                1,
-                false,
-                0,
-              )}
+              ${
+                // The power cut is for one kind of pump: the advanced panel
+                // only (a supply has no YAML), unless it is set, so that it
+                // never acts out of sight.
+                this.config?.ui_mode === "advanced" ||
+                (supply.kick_seconds ?? 0) > 0
+                  ? this._numRow(
+                      html`${t("kick_seconds")}<si-info
+                          >${t("kick_seconds_help")}</si-info
+                        >`,
+                      localize("common.units.seconds", lang),
+                      supply.kick_seconds ?? 0,
+                      (v) =>
+                        patch(index, {
+                          kick_seconds: Math.max(
+                            0,
+                            Math.min(60, Number(v) || 0),
+                          ),
+                        }),
+                      1,
+                      false,
+                      0,
+                    )
+                  : ""
+              }
               <div class="si-actions">
                 ${this._actionBtn(
                   mdiDelete,

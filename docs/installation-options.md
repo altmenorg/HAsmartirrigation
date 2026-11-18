@@ -2,21 +2,17 @@
 layout: default
 title: "Installation: Options"
 ---
-# Installation: Options (manual coordinates)
+# Installation: Options
 
 > Main page: [Installation](installation.md)<br/>
 > Next: [Updating the installed version](installation-updating.md)
 
-The integration's **Configure** dialog is used to set **manual coordinates** — useful when you want Smart Irrigation to use a location different from your Home Assistant home location.
+Everything is set in the Smart Irrigation panel, in the sidebar. The integration's **Configure** button (Settings > Devices & services > Smart Irrigation) only says so.
 
-1. In Home Assistant go to **Settings > Devices & services**.
-2. Select the **Smart Irrigation** card.
-3. ![](assets/images/installation-options-1.png) Under 'Integration entities' click `Configure`.
-4. Toggle **Use manual coordinates** on to enter a latitude, longitude and elevation; leave it off to inherit your Home Assistant location.
+- **The location the weather is read for** is Home Assistant's, unless you give other coordinates on the **Location coordinates** card, on the **Weather service** page of the **Weather** tab. The card shows in the [advanced mode](configuration-general.md), or whenever manual coordinates are on. See [manual coordinates](MANUAL_COORDINATES.md).
+- **The weather service and its API key**: see [Configuring the weather service](installation-weatherservice.md).
 
-The [manual coordinates page](MANUAL_COORDINATES.md) explains the fields, the order in which the coordinates are chosen and the checks on the values.
-
-> To change the **weather service** or update an API key, use the **Weather service** settings in the Smart Irrigation panel instead — see [Configuring the weather service](installation-weatherservice.md).
+> Up to 2026.11.0, **Configure** asked for manual coordinates, but what it saved was never used: the weather was always read for the coordinates of the panel's card. If you set coordinates there, set them again on the card.
 
 > Main page: [Installation](installation.md)<br/>
 > Next: [Updating the installed version](installation-updating.md)

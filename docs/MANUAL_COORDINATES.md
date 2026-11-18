@@ -17,14 +17,11 @@ By default, Smart Irrigation uses your Home Assistant's configured location coor
 
 ## Configuration
 
-### Initial Setup (Options Flow)
+### Where
 
-The **Configure** dialog of the integration (Settings > Devices & services > Smart Irrigation) holds only the coordinates. The weather service and its API key are set in the Smart Irrigation panel (see [Configuring the weather service](installation-weatherservice.md)).
+On the **Weather service** page of the **Weather** tab of the Smart Irrigation panel, under the weather service, the **Location coordinates** card. It shows in the advanced mode (Settings > General, how much of the panel to show), or whenever manual coordinates are on, so coordinates in use are never out of sight.
 
-1. Open **Configure** on the Smart Irrigation integration.
-2. **Choose Coordinate Source**:
-   - **Use Home Assistant location** (default): Uses your HA's configured coordinates
-   - **Use manual coordinates**: Allows you to specify custom coordinates
+> The integration's **Configure** button (Settings > Devices & services) does not set them: up to 2026.11.0 it asked for coordinates, but what it saved was never used. It now only points to the panel.
 
 ### Manual Coordinate Fields
 
@@ -34,9 +31,7 @@ When manual coordinates are enabled, you can configure:
 - **Longitude**: Decimal degrees, range -180 to 180 (e.g., -74.0060 for New York)  
 - **Elevation**: Meters above sea level, range -1000 to 9000 (optional, defaults to 0)
 
-### Panel UI
-
-On the **Weather service** page of the **Weather** tab, under the weather service, you'll find a "Location Coordinates" card where you can:
+### On the card
 
 - Toggle between manual coordinates and Home Assistant location
 - View current Home Assistant coordinates when manual mode is disabled
@@ -104,8 +99,8 @@ The coordinate configuration feature is localized in the 20 languages of the pan
 ### Common Issues
 
 **Coordinates not taking effect:**
-- Restart Home Assistant after changing coordinates
-- Check that manual coordinates are enabled in both options flow and general settings
+- They are used from the next weather update: no restart is needed
+- Check that **Use manual coordinates** is on, on the Location coordinates card
 
 **Weather data seems wrong:**
 - Verify coordinates are correct (use a mapping service to confirm)
@@ -114,7 +109,7 @@ The coordinate configuration feature is localized in the 20 languages of the pan
 
 **UI shows default coordinates:**
 - Manual coordinates may not be enabled
-- Check the toggle in the general settings coordinate card
+- Check the toggle on the Location coordinates card (Weather > Weather service)
 
 ### Logging
 

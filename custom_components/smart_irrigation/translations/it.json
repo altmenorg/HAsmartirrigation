@@ -138,20 +138,8 @@
     }
   },
   "options": {
-    "error": {
-      "invalid_coordinates": "Coordinate non valide. Controlla i valori di latitudine (da -90 a 90) e longitudine (da -180 a 180)."
-    },
-    "step": {
-      "coordinates": {
-        "title": "Coordinate della posizione",
-        "description": "Configura le coordinate della posizione per il recupero dei dati meteo. Se necessario, puoi usare coordinate manuali diverse dalla posizione di Home Assistant.",
-        "data": {
-          "manual_coordinates_enabled": "Usa coordinate manuali invece della posizione di Home Assistant",
-          "manual_latitude": "Latitudine (gradi decimali, da -90 a 90)",
-          "manual_longitude": "Longitudine (gradi decimali, da -180 a 180)",
-          "manual_elevation": "Altitudine sul livello del mare (metri, opzionale)"
-        }
-      }
+    "abort": {
+      "use_panel": "Smart Irrigation si configura nel suo pannello: apri Smart Irrigation nella barra laterale. La posizione per cui viene letto il meteo è in Meteo › Servizio meteo (modalità: Avanzato)."
     }
   },
   "services": {

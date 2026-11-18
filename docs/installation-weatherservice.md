@@ -22,7 +22,7 @@ To set it up:
 
 If you turn the weather service **off**, forecasting is unavailable and you must provide all weather data from another source, such as your own weather station sensors, configured in your [sensor groups](configuration-sensor-groups.md).
 
-Make sure your Home Assistant home location is set correctly so the data matches your location, or set [manual coordinates](installation-options.md).
+Make sure your Home Assistant home location is set correctly so the data matches your location, or set [manual coordinates](MANUAL_COORDINATES.md).
 
 ## Getting Open Weather Map API Key
 

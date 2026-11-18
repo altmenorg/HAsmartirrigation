@@ -62,7 +62,8 @@ calculated, so it shows no such problem.
 ## "The calculated duration looks wrong"
 The diagnostic file shows the current state, not how it was reached. To find out why a
 particular day watered the way it did, switch on the
-[calculation log](configuration-general.md) in the general settings. From then on every
+[calculation log](configuration-general.md) in the general settings (turn on the advanced mode
+first: the card is there). From then on every
 calculation appends one line to `config/smart_irrigation/calc_log.jsonl` with the sensor
 records and their aggregation, the module intermediates (solar radiation and whether it was
 measured or estimated, net radiation, ET0) and the resulting water balance, duration and volume - so

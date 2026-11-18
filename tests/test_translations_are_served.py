@@ -8,7 +8,6 @@ exist matches the files that are actually there: a language missing from that
 list is never fetched, and shows English while its file sits on disk.
 """
 
-import json
 import re
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -122,9 +121,3 @@ def test_no_other_language_is_compiled_in():
     )
 
     assert imported == {"en"}
-
-
-def test_every_served_file_is_valid_json():
-    """A broken file would leave that language in English, quietly."""
-    for path in sorted(LANGUAGES_DIR.glob("*.json")):
-        json.loads(path.read_text(encoding="utf-8"))

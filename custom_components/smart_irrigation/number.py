@@ -215,7 +215,7 @@ class SmartIrrigationPrecipitationThresholdNumber(NumberEntity):
     _attr_has_entity_name = True
     _attr_should_poll = False
     _attr_translation_key = "precipitation_threshold"
-    # A setting of the Skip on weather page: listed under Configuration.
+    # A setting of the Weather > Skip watering page: listed under Configuration.
     _attr_entity_category = EntityCategory.CONFIG
     _attr_device_class = NumberDeviceClass.PRECIPITATION
     _attr_mode = NumberMode.BOX

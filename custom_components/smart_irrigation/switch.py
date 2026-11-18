@@ -76,7 +76,7 @@ class SmartIrrigationSkipOnPrecipitationSwitch(SwitchEntity):
     _attr_has_entity_name = True
     _attr_should_poll = False
     _attr_translation_key = "skip_on_precipitation"
-    # A setting of the Skip on weather page: listed under Configuration.
+    # A setting of the Weather > Skip watering page: listed under Configuration.
     _attr_entity_category = EntityCategory.CONFIG
     _attr_icon = "mdi:weather-pouring"
     # The setting it stands for, and its value when it was never set.

@@ -1214,9 +1214,17 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         source === MAPPING_CONF_SOURCE_STATIC_VALUE)
         ? this.renderPressureTypeSelect(index, value, mappingline)
         : ""}
-      ${value === MAPPING_WINDSPEED && source === MAPPING_CONF_SOURCE_SENSOR
-        ? this.renderWindHeightInput(index, value, mappingline)
-        : ""}
+      ${
+        // The anemometer height is for a station that stands well above 2 m:
+        // the advanced panel only, unless it is set, so that a height in use
+        // is never out of sight.
+        value === MAPPING_WINDSPEED &&
+        source === MAPPING_CONF_SOURCE_SENSOR &&
+        (this.config?.ui_mode === "advanced" ||
+          Number.isFinite(mappingline[MAPPING_CONF_WIND_HEIGHT]))
+          ? this.renderWindHeightInput(index, value, mappingline)
+          : ""
+      }
       ${source === MAPPING_CONF_SOURCE_SENSOR ||
       source === MAPPING_CONF_SOURCE_ILLUMINANCE
         ? this.renderAggregateSelect(index, value, mappingline)

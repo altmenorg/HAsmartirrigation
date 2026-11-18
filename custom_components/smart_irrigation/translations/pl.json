@@ -138,20 +138,8 @@
     }
   },
   "options": {
-    "error": {
-      "invalid_coordinates": "Podano nieprawidłowe współrzędne. Sprawdź wartości szerokości geograficznej (-90 do 90) i długości geograficznej (-180 do 180)."
-    },
-    "step": {
-      "coordinates": {
-        "title": "Współrzędne lokalizacji",
-        "description": "Skonfiguruj współrzędne lokalizacji na potrzeby pobierania danych pogodowych. W razie potrzeby możesz użyć ręcznych współrzędnych różnych od lokalizacji Home Assistant.",
-        "data": {
-          "manual_coordinates_enabled": "Użyj ręcznych współrzędnych zamiast lokalizacji Home Assistant",
-          "manual_latitude": "Szerokość geograficzna (stopnie dziesiętne, -90 do 90)",
-          "manual_longitude": "Długość geograficzna (stopnie dziesiętne, -180 do 180)",
-          "manual_elevation": "Wysokość nad poziomem morza (metry, opcjonalnie)"
-        }
-      }
+    "abort": {
+      "use_panel": "Smart Irrigation konfiguruje się we własnym panelu: otwórz Smart Irrigation na pasku bocznym. Lokalizacja, dla której pobierana jest pogoda, jest w Pogoda › Usługa pogodowa (tryb: Zaawansowany)."
     }
   },
   "services": {

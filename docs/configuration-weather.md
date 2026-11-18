@@ -19,10 +19,12 @@ The tab was called **Data** before; its pages keep their addresses.
 ## Weather service
 
 ### Location
-The weather is read for Home Assistant's location unless you give other coordinates on the **Location coordinates** card: see [manual coordinates](MANUAL_COORDINATES.md).
+The weather is read for Home Assistant's location unless you give other coordinates on the **Location coordinates** card (advanced mode; once manual coordinates are on, the card shows in every mode): see [manual coordinates](MANUAL_COORDINATES.md).
 
 ### Automatic weather data update
-If enabled, specify how often sensor update should happen (minutes, hours, days). You can also set up an update delay to be used to delay the first update. This is useful in case your sensors do not provide a value immediately after Home Assistant starts.
+The weather is read every hour out of the box, which suits nearly every installation, so this card is in the advanced mode (Settings > General, how much of the panel to show). Once changed (switched off, another interval or a delay), it shows in every mode, so a setting in use is never hidden.
+
+If enabled, specify how often sensor update should happen (minutes, hours, days). You can also set up an update delay to be used to delay the first update (advanced mode, or shown once it is not 0). This is useful in case your sensors do not provide a value immediately after Home Assistant starts.
 
 As calculation needs weatherdata make sure to update your weather data at least once before calculating.
 
@@ -69,7 +71,7 @@ On the **Skip watering** page, the **Days between irrigation** card (under **Set
 
 The value is the length of the watering cycle in calendar days: set to *N*, irrigation happens every *N* days.
 
-**Different days for one zone:** a zone can have its own number of days, in the **Days between irrigation** field of the [zone settings](configuration-zones.md) (advanced mode). The card lists the zones that have days of their own, each a link to its zone. That number *replaces* this general setting for that zone alone, so a lawn can wait three days while the flower beds are watered every day. Leave the zone's field empty to follow this setting. The general counter only restarts when a zone that follows it is watered, so a zone with days of its own, watered every day, does not keep the others from ever being due. The day is only skipped as a whole when every zone is still within its days; otherwise the run goes ahead for the zones that are due and the others sit it out.
+**Different days for one zone:** a zone can have its own number of days, in the **Days between irrigation** field of the [zone settings](configuration-zones.md) (advanced mode; once set, the field shows in every mode). The card lists the zones that have days of their own, each a link to its zone. That number *replaces* this general setting for that zone alone, so a lawn can wait three days while the flower beds are watered every day. Leave the zone's field empty to follow this setting. The general counter only restarts when a zone that follows it is watered, so a zone with days of its own, watered every day, does not keep the others from ever being due. The day is only skipped as a whole when every zone is still within its days; otherwise the run goes ahead for the zones that are due and the others sit it out.
 
 **Example scenarios:**
 * Set to 1: Allow irrigation every day (one calendar day between events)

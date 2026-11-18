@@ -1369,6 +1369,7 @@
     "schedule_months": "Månader",
     "schedule_months_help": "Lämna alla månader omarkerade för att köra programmet året om.",
     "schedule_yaml_only": "Ställs in i YAML (Redigera i YAML, överst i programmet): visas här eftersom det här schemat använder det.",
+    "yaml_only_set": "Ställs in i YAML (Redigera i YAML, överst i programmet): visas här eftersom det är inställt.",
     "schedule_from": "Från",
     "schedule_until": "Till",
     "schedule_period_help": "En period av året, som kan gå över nyår (från november till mars). Tomt: hela året.",

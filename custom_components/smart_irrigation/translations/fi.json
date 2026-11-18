@@ -138,20 +138,8 @@
     }
   },
   "options": {
-    "error": {
-      "invalid_coordinates": "Annetut koordinaatit ovat virheellisiä. Tarkista leveysaste (-90...90) ja pituusaste (-180...180)."
-    },
-    "step": {
-      "coordinates": {
-        "title": "Sijainnin koordinaatit",
-        "description": "Määritä sijainnin koordinaatit säätietojen hakua varten. Voit tarvittaessa käyttää Home Assistant -sijainnista poikkeavia manuaalisia koordinaatteja.",
-        "data": {
-          "manual_coordinates_enabled": "Käytä manuaalisia koordinaatteja Home Assistant -sijainnin sijaan",
-          "manual_latitude": "Leveysaste (desimaaliasteet, -90...90)",
-          "manual_longitude": "Pituusaste (desimaaliasteet, -180...180)",
-          "manual_elevation": "Korkeus merenpinnasta (metreinä, valinnainen)"
-        }
-      }
+    "abort": {
+      "use_panel": "Smart Irrigation määritetään sen omassa paneelissa: avaa Smart Irrigation sivupalkista. Sijainti, jolle sää haetaan, löytyy kohdasta Sää › Sääpalvelu (tila: Edistynyt)."
     }
   },
   "services": {

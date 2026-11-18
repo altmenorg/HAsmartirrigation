@@ -101,7 +101,7 @@ The same adjustments can be created from automations with the `set_seasonal_adju
 ### Calculation log
 Two days with what looks like nearly identical weather can produce very different watering
 volumes, and once a calculation has run there is normally no way to see why. Enable
-**Calculation log** to append one record per zone calculation to
+**Calculation log** (a card of the advanced mode; once it is on, the card shows in every mode) to append one record per zone calculation to
 `config/smart_irrigation/calc_log.jsonl` (one JSON object per line, in metric units), so days
 can be compared afterwards instead of reconstructed by hand.
 
@@ -154,7 +154,7 @@ The **Panel** card has the **Advanced settings** switch, which shows the extra s
 
 ### Blueprints
 
-Smart Irrigation copies its [example blueprints](usage-automations.md#blueprints-we-provide) into your `blueprints/` folder when it starts, each one once: a blueprint you delete is not put back. Switch off **Install the example blueprints** to copy none at all. The ones already in the folder are left as they are; delete them by hand if you do not want them.
+Smart Irrigation copies its [example blueprints](usage-automations.md#blueprints-we-provide) into your `blueprints/` folder when it starts, each one once: a blueprint you delete is not put back. Switch off **Install the example blueprints** to copy none at all: the card is in the advanced mode, and shows in every mode once it is off. The ones already in the folder are left as they are; delete them by hand if you do not want them.
 
 ### Language
 The panel and the configuration flow are available in 20 languages, all complete. The French is written with "tu".

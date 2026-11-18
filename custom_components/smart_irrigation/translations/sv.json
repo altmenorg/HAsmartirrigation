@@ -138,20 +138,8 @@
     }
   },
   "options": {
-    "error": {
-      "invalid_coordinates": "Ogiltiga koordinater. Kontrollera att latituden ligger mellan -90 och 90 och longituden mellan -180 och 180."
-    },
-    "step": {
-      "coordinates": {
-        "title": "Platskoordinater",
-        "description": "Ange koordinaterna för den plats som väderdata ska hämtas för. Du kan välja en annan plats än den som angetts i Home Assistant.",
-        "data": {
-          "manual_coordinates_enabled": "Ange koordinater manuellt i stället för att använda platsen i Home Assistant",
-          "manual_latitude": "Latitud (decimalgrader, -90 till 90)",
-          "manual_longitude": "Longitud (decimalgrader, -180 till 180)",
-          "manual_elevation": "Höjd över havet (meter, valfritt)"
-        }
-      }
+    "abort": {
+      "use_panel": "Smart Irrigation ställs in i sin egen panel: öppna Smart Irrigation i sidofältet. Platsen som vädret hämtas för finns under Väder › Vädertjänst (läge: Avancerat)."
     }
   },
   "services": {

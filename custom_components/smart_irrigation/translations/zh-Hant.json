@@ -138,20 +138,8 @@
     }
   },
   "options": {
-    "error": {
-      "invalid_coordinates": "提供的座標無效。請檢查緯度（-90 至 90）與經度（-180 至 180）的值。"
-    },
-    "step": {
-      "coordinates": {
-        "title": "位置座標",
-        "description": "設定用於取得氣象資料的位置座標。如有需要，你可以手動輸入與 Home Assistant 位置不同的座標。",
-        "data": {
-          "manual_coordinates_enabled": "使用手動座標，而非 Home Assistant 位置",
-          "manual_latitude": "緯度（十進位度數，-90 至 90）",
-          "manual_longitude": "經度（十進位度數，-180 至 180）",
-          "manual_elevation": "海拔高度（公尺，選填）"
-        }
-      }
+    "abort": {
+      "use_panel": "Smart Irrigation 在其自己的面板中設定：在側邊欄開啟 Smart Irrigation。讀取天氣所用的位置在 氣象 › 氣象服務（模式：進階）。"
     }
   },
   "services": {

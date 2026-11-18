@@ -138,20 +138,8 @@
     }
   },
   "options": {
-    "error": {
-      "invalid_coordinates": "Ugyldige koordinater angivet. Kontrollér venligst breddegrad (-90 til 90) og længdegrad (-180 til 180)."
-    },
-    "step": {
-      "coordinates": {
-        "title": "Placeringskoordinater",
-        "description": "Konfigurér placeringskoordinater til hentning af vejrdata. Du kan om nødvendigt bruge manuelle koordinater, der adskiller sig fra din Home Assistant-placering.",
-        "data": {
-          "manual_coordinates_enabled": "Brug manuelle koordinater i stedet for Home Assistant-placering",
-          "manual_latitude": "Breddegrad (decimalgrader, -90 til 90)",
-          "manual_longitude": "Længdegrad (decimalgrader, -180 til 180)",
-          "manual_elevation": "Højde over havets overflade (meter, valgfrit)"
-        }
-      }
+    "abort": {
+      "use_panel": "Smart Irrigation indstilles i sit eget panel: åbn Smart Irrigation i sidepanelet. Stedet, som vejret hentes for, findes under Vejr › Vejrtjeneste (tilstand: Avanceret)."
     }
   },
   "services": {

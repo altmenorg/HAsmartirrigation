@@ -138,20 +138,8 @@
     }
   },
   "options": {
-    "error": {
-      "invalid_coordinates": "Invalid coordinates provided. Please check latitude (-90 to 90) and longitude (-180 to 180) values."
-    },
-    "step": {
-      "coordinates": {
-        "title": "Location coordinates",
-        "description": "Configure location coordinates for weather data retrieval. You can use manual coordinates different from your Home Assistant location if needed.",
-        "data": {
-          "manual_coordinates_enabled": "Use manual coordinates instead of Home Assistant location",
-          "manual_latitude": "Latitude (decimal degrees, -90 to 90)",
-          "manual_longitude": "Longitude (decimal degrees, -180 to 180)",
-          "manual_elevation": "Elevation above sea level (meters, optional)"
-        }
-      }
+    "abort": {
+      "use_panel": "Smart Irrigation is set up in its own panel: open Smart Irrigation in the sidebar. The location the weather is read for is under Weather › Weather service (mode: Advanced)."
     }
   },
   "services": {

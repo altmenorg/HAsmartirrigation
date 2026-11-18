@@ -1369,6 +1369,7 @@
     "schedule_months": "Monate",
     "schedule_months_help": "Keiner angehakt: jeder Monat.",
     "schedule_yaml_only": "Wird in YAML eingestellt (In YAML bearbeiten, oben im Programm): hier angezeigt, weil dieser Zeitplan es nutzt.",
+    "yaml_only_set": "Wird in YAML eingestellt (In YAML bearbeiten, oben im Programm): hier angezeigt, weil es gesetzt ist.",
     "schedule_from": "Von",
     "schedule_until": "Bis",
     "schedule_period_help": "Ein Zeitraum im Jahr, der über Neujahr gehen kann (von November bis März). Leer: das ganze Jahr.",

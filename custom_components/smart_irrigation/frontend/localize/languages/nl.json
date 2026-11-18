@@ -1369,6 +1369,7 @@
     "schedule_months": "Maanden",
     "schedule_months_help": "Niets aangevinkt: elke maand.",
     "schedule_yaml_only": "Wordt in YAML ingesteld (Bewerken in YAML, bovenaan het programma): hier getoond omdat dit schema het gebruikt.",
+    "yaml_only_set": "Wordt in YAML ingesteld (Bewerken in YAML, bovenaan het programma): hier getoond omdat het is ingesteld.",
     "schedule_from": "Vanaf",
     "schedule_until": "Tot",
     "schedule_period_help": "Een periode van het jaar, die over Nieuwjaar mag lopen (van november tot maart). Leeg: het hele jaar.",

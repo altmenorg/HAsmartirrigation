@@ -138,20 +138,8 @@
     }
   },
   "options": {
-    "error": {
-      "invalid_coordinates": "Ungültige Koordinaten. Prüfe die Werte für Breitengrad (-90 bis 90) und Längengrad (-180 bis 180)."
-    },
-    "step": {
-      "coordinates": {
-        "title": "Standortkoordinaten",
-        "description": "Lege die Standortkoordinaten für den Abruf der Wetterdaten fest. Bei Bedarf kannst du eigene Koordinaten verwenden, die vom Standort deines Home Assistant abweichen.",
-        "data": {
-          "manual_coordinates_enabled": "Manuelle Koordinaten anstelle des Home Assistant-Standorts verwenden",
-          "manual_latitude": "Breitengrad (Dezimalgrad, -90 bis 90)",
-          "manual_longitude": "Längengrad (Dezimalgrad, -180 bis 180)",
-          "manual_elevation": "Höhe über dem Meeresspiegel (Meter, optional)"
-        }
-      }
+    "abort": {
+      "use_panel": "Smart Irrigation wird in einem eigenen Panel eingerichtet: Öffne Smart Irrigation in der Seitenleiste. Der Ort, für den das Wetter gelesen wird, steht unter Wetter › Wetterdienst (Modus: Erweitert)."
     }
   },
   "services": {

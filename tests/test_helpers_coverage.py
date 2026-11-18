@@ -50,43 +50,6 @@ class TestHelperExceptions:
 class TestTimeFunctions:
     """Test time-related helper functions."""
 
-    def test_check_time_valid_format(self):
-        """Test time validation with valid formats."""
-        assert check_time("12:30") is True
-        assert check_time("00:00") is True
-        assert check_time("23:59") is True
-        assert check_time("01:01") is True
-        assert check_time("6:30") is True
-        assert check_time("06:30") is True
-
-    def test_check_time_invalid_format(self):
-        """Test time validation with invalid formats."""
-        assert check_time("25:00") is False
-        assert check_time("12:60") is False
-        assert check_time("invalid") is False
-        assert check_time("") is False
-        assert check_time("12") is False
-        assert check_time(":30") is False
-
-    def test_check_time_edge_cases(self):
-        """Test time validation edge cases."""
-        assert check_time("24:00") is False
-        assert check_time("-1:30") is False
-        assert check_time("12:30:45") is False  # Too many parts
-        assert check_time("12:") is False
-        assert check_time(":12") is False
-
-    def test_check_time_boundary_values(self):
-        """Test time validation at boundaries."""
-        # Valid boundaries
-        assert check_time("00:00") is True
-        assert check_time("23:59") is True
-
-        # Invalid boundaries
-        assert check_time("24:00") is False
-        assert check_time("00:60") is False
-        assert check_time("23:60") is False
-
     def test_check_time_current_behavior_whitespace(self):
         """Test current behavior with whitespace (documenting as-is)."""
         # Currently the function accepts whitespace in many cases
@@ -168,6 +131,8 @@ class TestRobustness:
             "23:00",
             "23:30",
             "23:59",
+            "6:30",
+            "06:30",
         ]
 
         for time_str in valid_times:
@@ -186,6 +151,13 @@ class TestRobustness:
             "ab:cd",
             "12:ab",
             "ab:30",
+            "23:60",
+            "invalid",
+            "",
+            "12",
+            ":30",
+            "12:",
+            ":12",
         ]
 
         for time_str in invalid_times:
@@ -241,6 +213,7 @@ class TestDocumentedBehavior:
 
         # Function now handles list types gracefully (bug fixed)
         assert check_time([12, 30]) is False
+        assert check_time({"hour": 12, "minute": 30}) is False
 
     def test_time_function_whitespace_handling(self):
         """Document current whitespace handling."""
@@ -248,6 +221,7 @@ class TestDocumentedBehavior:
         assert check_time("  12:30  ") is True
         assert check_time("\t12:30\t") is True
         assert check_time("\n12:30\n") is True
+        assert check_time("   ") is False
 
 
 class TestCoverageBooster:

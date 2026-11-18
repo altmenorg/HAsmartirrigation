@@ -1369,6 +1369,7 @@
     "schedule_months": "Mois",
     "schedule_months_help": "Aucun coché : tous les mois.",
     "schedule_yaml_only": "Se règle en YAML (Modifier en YAML, en haut du programme) : affiché ici parce que cet horaire l'utilise.",
+    "yaml_only_set": "Se règle en YAML (Modifier en YAML, en haut du programme) : affiché ici parce qu'il est renseigné.",
     "schedule_from": "Du",
     "schedule_until": "Au",
     "schedule_period_help": "Une période de l'année, qui peut passer le Nouvel An (de novembre à mars). Vide : toute l'année.",

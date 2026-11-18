@@ -1369,6 +1369,7 @@
     "schedule_months": "Kuukaudet",
     "schedule_months_help": "Yhtään ei valittu: joka kuukausi.",
     "schedule_yaml_only": "Asetetaan YAML-muodossa (Muokkaa YAML-muodossa, ohjelman yläosassa): näytetään tässä, koska tämä ajastus käyttää sitä.",
+    "yaml_only_set": "Asetetaan YAML-muodossa (Muokkaa YAML-muodossa, ohjelman yläosassa): näytetään tässä, koska se on asetettu.",
     "schedule_from": "Alkaen",
     "schedule_until": "Asti",
     "schedule_period_help": "Vuoden jakso, joka voi ulottua uudenvuoden yli (marraskuusta maaliskuuhun). Tyhjä: koko vuosi.",

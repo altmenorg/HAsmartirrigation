@@ -1369,6 +1369,7 @@
     "schedule_months": "月份",
     "schedule_months_help": "都不勾选：每个月。",
     "schedule_yaml_only": "在 YAML 中设置（程序顶部的“以 YAML 编辑”）：因为此计划使用了它，所以在此显示。",
+    "yaml_only_set": "在 YAML 中设置（程序顶部的“以 YAML 编辑”）：因已设置而显示在此处。",
     "schedule_from": "从",
     "schedule_until": "到",
     "schedule_period_help": "一年中的一段时间，可以跨越新年（从十一月到三月）。留空：全年。",

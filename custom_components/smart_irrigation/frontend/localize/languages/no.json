@@ -1369,6 +1369,7 @@
     "schedule_months": "Måneder",
     "schedule_months_help": "Ingen avmerket: hver måned.",
     "schedule_yaml_only": "Stilles inn i YAML (Rediger i YAML, øverst i programmet): vises her fordi denne tidsplanen bruker det.",
+    "yaml_only_set": "Stilles inn i YAML (Rediger i YAML, øverst i programmet): vises her fordi det er satt.",
     "schedule_from": "Fra",
     "schedule_until": "Til",
     "schedule_period_help": "En periode av året, som kan gå over nyttår (fra november til mars). Tom: hele året.",

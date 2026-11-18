@@ -68,3 +68,30 @@ def test_no_language_asks_for_a_name(path):
     config = json.loads(path.read_text("utf-8"))["config"]
     assert "data" not in config["step"]["user"]
     assert "name" not in config.get("error", {})
+
+
+async def test_configure_points_to_the_panel(hass):
+    """The integration page's Configure says where the settings are.
+
+    It asked for manual coordinates that nothing ever read (the weather uses
+    the panel's, from the store), so it now only points to the panel.
+    """
+    from custom_components.smart_irrigation.options_flow import (
+        SmartIrrigationOptionsFlowHandler,
+    )
+
+    entry = MockConfigEntry(domain=const.DOMAIN, data={})
+    flow = SmartIrrigationOptionsFlowHandler(entry)
+    flow.hass = hass
+
+    result = await flow.async_step_init()
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "use_panel"
+
+
+@pytest.mark.parametrize("path", sorted(TRANSLATIONS.glob("*.json")), ids=str)
+def test_every_language_says_where_the_settings_are(path):
+    texts = json.loads(path.read_text(encoding="utf-8"))
+    assert texts["options"]["abort"]["use_panel"].strip()
+    assert "step" not in texts["options"]

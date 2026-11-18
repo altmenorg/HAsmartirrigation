@@ -1369,6 +1369,7 @@
     "schedule_months": "月份",
     "schedule_months_help": "未勾選：每個月。",
     "schedule_yaml_only": "在 YAML 中設定（程式頂部的「以 YAML 編輯」）：因為此排程使用了它，所以在此顯示。",
+    "yaml_only_set": "在 YAML 中設定（程式頂部的「以 YAML 編輯」）：因已設定而顯示於此。",
     "schedule_from": "從",
     "schedule_until": "到",
     "schedule_period_help": "一年中的某段期間，可以跨越新年（例如從 11 月到 3 月）。留空：全年。",

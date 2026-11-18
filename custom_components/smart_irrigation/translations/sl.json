@@ -138,20 +138,8 @@
     }
   },
   "options": {
-    "error": {
-      "invalid_coordinates": "Neveljavne koordinate. Preveri zemljepisno širino (-90 do 90) in dolžino (-180 do 180)."
-    },
-    "step": {
-      "coordinates": {
-        "title": "Koordinate lokacije",
-        "description": "Nastavi koordinate lokacije za pridobivanje vremenskih podatkov. Po potrebi lahko uporabiš ročne koordinate, ki se razlikujejo od lokacije v Home Assistant.",
-        "data": {
-          "manual_coordinates_enabled": "Uporabi ročne koordinate namesto lokacije Home Assistant",
-          "manual_latitude": "Zemljepisna širina (decimalne stopinje, -90 do 90)",
-          "manual_longitude": "Zemljepisna dolžina (decimalne stopinje, -180 do 180)",
-          "manual_elevation": "Nadmorska višina (metri, neobvezno)"
-        }
-      }
+    "abort": {
+      "use_panel": "Smart Irrigation se nastavi v lastni plošči: odprite Smart Irrigation v stranski vrstici. Lokacija, za katero se bere vreme, je v Vreme › Vremenska storitev (način: Napredno)."
     }
   },
   "services": {

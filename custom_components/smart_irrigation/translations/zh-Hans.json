@@ -138,20 +138,8 @@
     }
   },
   "options": {
-    "error": {
-      "invalid_coordinates": "提供的坐标无效。请检查纬度（-90 至 90）和经度（-180 至 180）的值。"
-    },
-    "step": {
-      "coordinates": {
-        "title": "位置坐标",
-        "description": "配置用于获取天气数据的位置坐标。如有需要，您可以使用与 Home Assistant 位置不同的手动坐标。",
-        "data": {
-          "manual_coordinates_enabled": "使用手动坐标而非 Home Assistant 位置",
-          "manual_latitude": "纬度（十进制度，-90 至 90）",
-          "manual_longitude": "经度（十进制度，-180 至 180）",
-          "manual_elevation": "海拔高度（米，可选）"
-        }
-      }
+    "abort": {
+      "use_panel": "Smart Irrigation 在其自己的面板中设置：在侧边栏打开 Smart Irrigation。读取天气所用的位置在 天气 › 天气服务（模式：高级）。"
     }
   },
   "services": {

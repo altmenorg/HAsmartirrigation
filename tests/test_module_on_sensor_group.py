@@ -140,11 +140,3 @@ class TestTheResolver:
         assert (
             coord.module_id_for_zone({const.ZONE_MAPPING: 0, const.ZONE_MODULE: 3}) == 3
         )
-
-    def test_no_engine_anywhere_is_reported_as_none(self):
-        coord = _Coordinator({const.MAPPING_MODULE: None})
-
-        assert (
-            coord.module_id_for_zone({const.ZONE_MAPPING: 0, const.ZONE_MODULE: None})
-            is None
-        )

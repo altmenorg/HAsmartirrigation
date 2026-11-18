@@ -138,20 +138,8 @@
     }
   },
   "options": {
-    "error": {
-      "invalid_coordinates": "Byly zadány neplatné souřadnice. Zkontrolujte hodnoty zeměpisné šířky (-90 až 90) a zeměpisné délky (-180 až 180)."
-    },
-    "step": {
-      "coordinates": {
-        "title": "Souřadnice polohy",
-        "description": "Nakonfigurujte souřadnice polohy pro získávání meteorologických dat. V případě potřeby můžete použít ruční souřadnice odlišné od polohy vašeho Home Assistant.",
-        "data": {
-          "manual_coordinates_enabled": "Použít ruční souřadnice namísto polohy Home Assistant",
-          "manual_latitude": "Zeměpisná šířka (desetinné stupně, -90 až 90)",
-          "manual_longitude": "Zeměpisná délka (desetinné stupně, -180 až 180)",
-          "manual_elevation": "Nadmořská výška (metry, volitelné)"
-        }
-      }
+    "abort": {
+      "use_panel": "Smart Irrigation se nastavuje ve vlastním panelu: otevřete Smart Irrigation v postranním panelu. Místo, pro které se čte počasí, je v Počasí › Meteorologická služba (režim: Pokročilý)."
     }
   },
   "services": {

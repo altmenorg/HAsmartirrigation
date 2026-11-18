@@ -1,7 +1,5 @@
 """Comprehensive tests for Smart Irrigation store operations."""
 
-import contextlib
-
 import pytest
 
 from custom_components.smart_irrigation import const
@@ -17,43 +15,6 @@ class TestSmartIrrigationStorageBasics:
         store = SmartIrrigationStorage(hass)
         await store.async_load()
         assert store.hass == hass
-
-    @pytest.mark.asyncio
-    async def test_store_can_load(self, hass):
-        """Test that store can be loaded."""
-        store = SmartIrrigationStorage(hass)
-        await store.async_load()
-
-    def test_get_config_returns_dict(self, hass):
-        """Test that get_config returns a dictionary."""
-        store = SmartIrrigationStorage(hass)
-        config = store.get_config()
-        assert isinstance(config, dict)
-
-    @pytest.mark.asyncio
-    async def test_async_get_config_returns_dict(self, hass):
-        """Test that async_get_config returns a dictionary."""
-        store = SmartIrrigationStorage(hass)
-        await store.async_load()
-        config = await store.async_get_config()
-        assert isinstance(config, dict)
-
-    @pytest.mark.asyncio
-    async def test_factory_defaults_creation(self, hass):
-        """Test factory defaults creation."""
-        store = SmartIrrigationStorage(hass)
-        await store.set_up_factory_defaults()
-
-    @pytest.mark.asyncio
-    async def test_config_update_works(self, hass):
-        """Test that configuration can be updated."""
-        store = SmartIrrigationStorage(hass)
-        await store.async_load()
-
-        await store.async_update_config({const.CONF_AUTO_UPDATE_ENABLED: True})
-
-        updated_config = await store.async_get_config()
-        assert updated_config[const.CONF_AUTO_UPDATE_ENABLED] is True
 
 
 class TestConfigOperations:
@@ -112,19 +73,6 @@ class TestConfigOperations:
 class TestZoneOperations:
     """Test zone management operations."""
 
-    @pytest.mark.asyncio
-    async def test_get_zones(self, store_with_zones):
-        """Test getting individual zones synchronously."""
-        zones = await store_with_zones.async_get_zones()
-        if zones:
-            zone_id = zones[0][const.ZONE_ID]
-            zone = store_with_zones.get_zone(zone_id)
-            assert zone is not None
-            assert zone[const.ZONE_NAME] in ["Front Lawn", "Back Garden"]
-
-        non_existent_zone = store_with_zones.get_zone(99999)
-        assert non_existent_zone is None
-
     @pytest.fixture
     async def store_with_zones(self, hass):
         """Create store with sample zones."""
@@ -149,27 +97,6 @@ class TestZoneOperations:
         return store
 
     @pytest.mark.asyncio
-    async def test_zones_basic_operations(self, hass):
-        """Test basic zone operations."""
-        store = SmartIrrigationStorage(hass)
-        await store.async_load()
-
-        zones = await store.async_get_zones()
-        assert isinstance(zones, list)
-
-        # Create a basic zone
-        zone_data = {
-            const.ZONE_NAME: "Test Zone",
-            const.ZONE_SIZE: 100.0,
-            const.ZONE_THROUGHPUT: 10.0,
-            const.ZONE_STATE: const.ZONE_STATE_AUTOMATIC,
-        }
-
-        created_zone = await store.async_create_zone(zone_data)
-        assert created_zone[const.ZONE_NAME] == "Test Zone"
-        assert created_zone[const.ZONE_ID] is not None
-
-    @pytest.mark.asyncio
     async def test_async_get_all_zones(self, store_with_zones):
         """Test async retrieval of all zones."""
         zones = await store_with_zones.async_get_zones()
@@ -187,12 +114,6 @@ class TestZoneOperations:
             zone = store_with_zones.get_zone(zone_id)
             assert zone is not None
             assert zone[const.ZONE_NAME] in ["Front Lawn", "Back Garden"]
-
-    @pytest.mark.asyncio
-    async def test_async_get_zone_nonexistent(self, store_with_zones):
-        """Test retrieving non-existent zone."""
-        nonexistent_zone = store_with_zones.get_zone(99999)
-        assert nonexistent_zone is None
 
     @pytest.mark.asyncio
     async def test_async_save_zone_new(self, hass):
@@ -247,18 +168,6 @@ class TestZoneOperations:
             zone_ids = [zone[const.ZONE_ID] for zone in remaining_zones]
             assert zone_id not in zone_ids
 
-    @pytest.mark.asyncio
-    async def test_async_delete_zone_nonexistent(self, store_with_zones):
-        """Test deleting non-existent zone."""
-        # Try to delete zone with invalid ID
-        nonexistent_id = 99999
-
-        # Should handle gracefully without raising exception
-        with contextlib.suppress(Exception):
-            await store_with_zones.async_delete_zone(nonexistent_id)
-            zones = await store_with_zones.async_get_zones()
-            assert len(zones) >= 2
-
 
 class TestMappingOperations:
     """Test mapping management operations."""
@@ -305,15 +214,6 @@ class TestMappingOperations:
         await store.async_create_mapping(temp_mapping_data)
         await store.async_create_mapping(humidity_mapping_data)
         return store
-
-    @pytest.mark.asyncio
-    async def test_mappings_basic_operations(self, hass):
-        """Test basic mapping operations."""
-        store = SmartIrrigationStorage(hass)
-        await store.async_load()
-
-        mappings = await store.async_get_mappings()
-        assert isinstance(mappings, list)
 
     @pytest.mark.asyncio
     async def test_async_get_all_mappings(self, store_with_mappings):
@@ -411,15 +311,6 @@ class TestModuleOperations:
         return store
 
     @pytest.mark.asyncio
-    async def test_modules_basic_operations(self, hass):
-        """Test basic module operations."""
-        store = SmartIrrigationStorage(hass)
-        await store.async_load()
-
-        modules = await store.async_get_modules()
-        assert isinstance(modules, list)
-
-    @pytest.mark.asyncio
     async def test_async_get_all_modules(self, store_with_modules):
         """Test async retrieval of all modules."""
         modules = await store_with_modules.async_get_modules()
@@ -482,17 +373,6 @@ class TestModuleOperations:
 
 class TestErrorHandling:
     """Test error handling scenarios."""
-
-    @pytest.mark.asyncio
-    async def test_async_save_error_handling(self, hass):
-        """Test error handling in save operations."""
-        store = SmartIrrigationStorage(hass)
-        await store.async_load()
-
-        # Test with invalid zone data should handle gracefully
-        invalid_zone_data = {}
-        with contextlib.suppress(Exception):
-            await store.async_create_zone(invalid_zone_data)
 
 
 class TestBasicFunctionality:

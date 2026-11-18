@@ -1369,6 +1369,7 @@
     "schedule_months": "Hónapok",
     "schedule_months_help": "Egy sincs kipipálva: minden hónap.",
     "schedule_yaml_only": "YAML-ben állítható (Szerkesztés YAML-ben, a program tetején): azért látszik itt, mert ez az ütemezés használja.",
+    "yaml_only_set": "YAML-ben állítható (Szerkesztés YAML-ben, a program tetején): azért látszik itt, mert be van állítva.",
     "schedule_from": "Ettől",
     "schedule_until": "Eddig",
     "schedule_period_help": "Az év egy időszaka, amely átnyúlhat az újéven (novembertől márciusig). Üres: az egész év.",

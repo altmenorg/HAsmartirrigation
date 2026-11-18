@@ -138,20 +138,8 @@
     }
   },
   "options": {
-    "error": {
-      "invalid_coordinates": "Coordonnées invalides. Vérifie la latitude (-90 à 90) et la longitude (-180 à 180)."
-    },
-    "step": {
-      "coordinates": {
-        "title": "Coordonnées de localisation",
-        "description": "Configure les coordonnées de localisation pour la récupération des données météo. Tu peux utiliser des coordonnées manuelles différentes de l'emplacement de ton Home Assistant si nécessaire.",
-        "data": {
-          "manual_coordinates_enabled": "Utiliser des coordonnées manuelles au lieu de l'emplacement de Home Assistant",
-          "manual_latitude": "Latitude (degrés décimaux, -90 à 90)",
-          "manual_longitude": "Longitude (degrés décimaux, -180 à 180)",
-          "manual_elevation": "Altitude au-dessus du niveau de la mer (mètres, optionnel)"
-        }
-      }
+    "abort": {
+      "use_panel": "Smart Irrigation se règle dans son propre panneau : ouvre Smart Irrigation dans la barre latérale. Le lieu pour lequel la météo est lue se trouve dans Météo › Service météo (mode : Avancé)."
     }
   },
   "services": {

@@ -1000,15 +1000,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     `;
   }
 
-  /**
-   * A field only the advanced panel shows.
-   *
-   * The standard panel keeps what a zone is (its name, what it waters with,
-   * where its weather comes from, what it is short of) and leaves out what
-   * tunes the model: the drainage law, the thresholds, the multiplier, the
-   * lead time. Those have sound defaults, and meeting them by accident is how
-   * a working installation gets broken.
-   */
   /** Whether the zone's valve has a timer of its own that Smart Irrigation
    * can set: a duration entity, an MQTT topic, or a ZHA valve. Only then is
    * "skip the watering without it" offered: for any other valve it would mean
@@ -1021,8 +1012,22 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     return Boolean(linked && registry?.[linked]?.platform === "zha");
   }
 
-  private _adv(content: TemplateResult | string): TemplateResult | string {
-    return this.config?.ui_mode === "advanced" ? content : "";
+  /**
+   * A field only the advanced panel shows, unless it is set.
+   *
+   * The standard panel keeps what a zone is (its name, what it waters with,
+   * where its weather comes from, what it is short of) and leaves out what
+   * tunes the model: the drainage law, the thresholds, the multiplier, the
+   * lead time. Those have sound defaults, and meeting them by accident is how
+   * a working installation gets broken. A value that holds the zone's runs
+   * back is shown once set, whatever the mode: the Skip watering page lists
+   * it and links here, so it must be there to find.
+   */
+  private _adv(
+    content: TemplateResult | string,
+    set = false,
+  ): TemplateResult | string {
+    return set || this.config?.ui_mode === "advanced" ? content : "";
   }
 
   private handleEditZone(
@@ -1878,7 +1883,15 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 zone.linked_entity
                   ? this._adv(html`
                       ${this._numRow(
-                        localize("panels.zones.labels.confirm-timeout", lang),
+                        html`${localize(
+                            "panels.zones.labels.confirm-timeout",
+                            lang,
+                          )}<si-info
+                            >${localize(
+                              "panels.zones.labels.confirm-timeout-help",
+                              lang,
+                            )}</si-info
+                          >`,
                         "s",
                         zone.confirm_timeout,
                         (v) => {
@@ -1893,30 +1906,36 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                         },
                         1,
                       )}
-                      ${this._numRow(
-                        html`${localize(
-                            "panels.zones.labels.open-resends",
-                            lang,
-                          )}<si-info
-                            >${localize(
-                              "panels.zones.labels.confirm-timeout-help",
-                              lang,
-                            )}</si-info
-                          >`,
-                        "",
-                        zone.open_resends,
-                        (v) => {
-                          // Empty keeps the default; 0 never sends it again.
-                          const times = parseInt(v, 10);
-                          this.handleEditZone(index, {
-                            ...zone,
-                            [ZONE_OPEN_RESENDS]: isNaN(times)
-                              ? null
-                              : Math.min(10, Math.max(0, times)),
-                          });
-                        },
-                        1,
-                      )}
+                      ${
+                        // The wait is the one setting a slow valve needs, and
+                        // its help covers the resends too. The resends come
+                        // next to it once the wait is set (a cloud valve such
+                        // as Gardena wants a long wait and none), or when a
+                        // count of its own is set, so it never acts out of
+                        // sight; empty goes back to the default.
+                        typeof zone.open_resends === "number" ||
+                        typeof zone.confirm_timeout === "number"
+                          ? this._numRow(
+                              localize(
+                                "panels.zones.labels.open-resends",
+                                lang,
+                              ),
+                              "",
+                              zone.open_resends,
+                              (v) => {
+                                // Empty keeps the default; 0 never sends it again.
+                                const times = parseInt(v, 10);
+                                this.handleEditZone(index, {
+                                  ...zone,
+                                  [ZONE_OPEN_RESENDS]: isNaN(times)
+                                    ? null
+                                    : Math.min(10, Math.max(0, times)),
+                                });
+                              },
+                              1,
+                            )
+                          : ""
+                      }
                       ${this._entityRow(
                         html`${localize(
                             "panels.zones.labels.safety-off-entity",
@@ -2456,6 +2475,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     },
                     1,
                   )}`,
+                  typeof zone.days_between_irrigation === "number",
                 )}
                 ${this._adv(
                   this._entityRow(
@@ -2473,6 +2493,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       lang,
                     ),
                   ),
+                  Boolean(zone.soil_moisture_sensor),
                 )}
                 ${zone.soil_moisture_sensor
                   ? this._numRow(

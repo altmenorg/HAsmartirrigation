@@ -1369,6 +1369,7 @@
     "schedule_months": "Mesiace",
     "schedule_months_help": "Nič nezaškrtnuté: každý mesiac.",
     "schedule_yaml_only": "Nastavuje sa v YAML (Upraviť v YAML, hore v programe): zobrazené tu, pretože ho tento plán používa.",
+    "yaml_only_set": "Nastavuje sa v YAML (Upraviť v YAML, hore v programe): zobrazené tu, pretože je nastavené.",
     "schedule_from": "Od",
     "schedule_until": "Do",
     "schedule_period_help": "Obdobie roka, ktoré môže prechádzať cez Nový rok (od novembra do marca). Prázdne: celý rok.",

@@ -1369,6 +1369,7 @@
     "schedule_months": "Miesiące",
     "schedule_months_help": "Nic nie zaznaczono: każdy miesiąc.",
     "schedule_yaml_only": "Ustawiane w YAML (Edytuj w YAML, u góry programu): pokazane tutaj, bo ten harmonogram tego używa.",
+    "yaml_only_set": "Ustawiane w YAML (Edytuj w YAML, u góry programu): widoczne tutaj, ponieważ jest ustawione.",
     "schedule_from": "Od",
     "schedule_until": "Do",
     "schedule_period_help": "Okres roku, który może przechodzić przez Nowy Rok (od listopada do marca). Puste: cały rok.",

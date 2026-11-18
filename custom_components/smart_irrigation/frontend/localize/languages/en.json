@@ -1369,6 +1369,7 @@
     "schedule_months": "Months",
     "schedule_months_help": "None ticked: every month.",
     "schedule_yaml_only": "Set in YAML (Edit in YAML, at the top of the program): shown here because this schedule uses it.",
+    "yaml_only_set": "Set in YAML (Edit in YAML, at the top of the program): shown here because it is set.",
     "schedule_from": "From",
     "schedule_until": "Until",
     "schedule_period_help": "A period of the year, which may run over New Year (from November to March). Empty: the whole year.",

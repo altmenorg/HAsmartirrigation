@@ -138,20 +138,8 @@
     }
   },
   "options": {
-    "error": {
-      "invalid_coordinates": "Ongeldige coördinaten. Controleer breedtegraad (-90 tot 90) en lengtegraad (-180 tot 180) waarden."
-    },
-    "step": {
-      "coordinates": {
-        "title": "Locatie coördinaten",
-        "description": "Configureer locatie coördinaten voor het ophalen van weergegevens. Je kunt handmatige coördinaten gebruiken die verschillen van je Home Assistant locatie indien nodig.",
-        "data": {
-          "manual_coordinates_enabled": "Gebruik handmatige coördinaten in plaats van Home Assistant locatie",
-          "manual_latitude": "Breedtegraad (decimale graden, -90 tot 90)",
-          "manual_longitude": "Lengtegraad (decimale graden, -180 tot 180)",
-          "manual_elevation": "Hoogte boven zeeniveau (meters, optioneel)"
-        }
-      }
+    "abort": {
+      "use_panel": "Smart Irrigation stel je in via het eigen paneel: open Smart Irrigation in de zijbalk. De locatie waarvoor het weer wordt opgehaald staat onder Weer › Weerdienst (modus: Geavanceerd)."
     }
   },
   "services": {

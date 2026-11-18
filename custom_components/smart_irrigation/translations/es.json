@@ -138,20 +138,8 @@
     }
   },
   "options": {
-    "error": {
-      "invalid_coordinates": "Coordenadas inválidas. Verifique los valores de latitud (-90 a 90) y longitud (-180 a 180)."
-    },
-    "step": {
-      "coordinates": {
-        "title": "Coordenadas de ubicación",
-        "description": "Configure las coordenadas de ubicación para obtener datos meteorológicos. Puede usar coordenadas manuales diferentes a la ubicación de Home Assistant si es necesario.",
-        "data": {
-          "manual_coordinates_enabled": "Usar coordenadas manuales en lugar de la ubicación de Home Assistant",
-          "manual_latitude": "Latitud (grados decimales, -90 a 90)",
-          "manual_longitude": "Longitud (grados decimales, -180 a 180)",
-          "manual_elevation": "Elevación sobre el nivel del mar (metros, opcional)"
-        }
-      }
+    "abort": {
+      "use_panel": "Smart Irrigation se configura en su propio panel: abre Smart Irrigation en la barra lateral. La ubicación para la que se lee el tiempo está en Tiempo › Servicio meteorológico (modo: Avanzado)."
     }
   },
   "services": {
