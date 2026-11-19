@@ -262,6 +262,8 @@
             "calc-when-start": "Imediatamente antes de cada início",
             "calc-when-manual": "Só quando eu pedir",
             "calc-when-hint": "Mesmo antes de cada início: quando começa um programa ou o evento de início, com o tempo mais recente; a escolha certa quando é o Smart Irrigation a iniciar a rega. A uma hora fixa: todos os dias à hora indicada abaixo, quando outra coisa inicia a rega e lê as durações quando quer. Só a pedido: nada é calculado sozinho, use os botões de cálculo ou as ações.",
+            "calc-when-start-event": "Imediatamente antes do evento de início",
+            "calc-when-hint-calc-only": "Imediatamente antes do evento de início: quando o gatilho de início dispara, com o tempo mais recente, para que o que rega nesse evento tenha durações atualizadas. A uma hora fixa: todos os dias à hora indicada abaixo, quando a sua própria automação ou controlador lê as durações quando quer. Só a pedido: nada é calculado sozinho, use os botões de cálculo ou as ações.",
             "calc-time": "Calcular às",
             "calc-time-hint": "O cálculo diário: a água perdida é somada ao balanço hídrico de cada zona e as durações da rega são definidas.",
             "hourly-calculation": "Calcular a evapotranspiração hora a hora",

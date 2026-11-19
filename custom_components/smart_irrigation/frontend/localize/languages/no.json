@@ -262,6 +262,8 @@
             "calc-when-start": "Rett før hver start",
             "calc-when-manual": "Bare når jeg ber om det",
             "calc-when-hint": "Rett før hver start: når et program eller starthendelsen begynner, med det ferskeste været; riktig valg når Smart Irrigation starter vanningen. På fast tidspunkt: hver dag på tidspunktet nedenfor, når noe annet starter vanningen og leser varighetene når det vil. Bare når jeg ber om det: ingenting beregnes av seg selv, bruk beregningsknappene eller handlingene.",
+            "calc-when-start-event": "Rett før starthendelsen",
+            "calc-when-hint-calc-only": "Rett før starthendelsen: når startutløseren utløses, med det ferskeste været, slik at det som vanner på den hendelsen får oppdaterte varigheter. På fast tidspunkt: hver dag på tidspunktet nedenfor, når din egen automatisering eller styring leser varighetene når den vil. Bare når jeg ber om det: ingenting beregnes av seg selv, bruk beregningsknappene eller handlingene.",
             "calc-time": "Beregn kl.",
             "calc-time-hint": "Den daglige beregningen: vanntapet legges til vannbalansen for hver sone, og vanningsvarighetene settes.",
             "hourly-calculation": "Beregn fordamping time for time",

@@ -262,6 +262,8 @@
             "calc-when-start": "Közvetlenül minden indítás előtt",
             "calc-when-manual": "Csak kérésre",
             "calc-when-hint": "Közvetlenül minden indítás előtt: amikor egy program vagy az indítási esemény elindul, a legfrissebb időjárással; a jó választás, ha a Smart Irrigation indítja az öntözést. Fix időpontban: minden nap a lent megadott időben, ha más indítja az öntözést, és akkor olvassa ki az időket, amikor akarja. Csak kérésre: semmi nem számolódik magától, használd a számítás gombjait vagy a műveleteket.",
+            "calc-when-start-event": "Közvetlenül az indítási esemény előtt",
+            "calc-when-hint-calc-only": "Közvetlenül az indítási esemény előtt: amikor az indítási trigger elsül, a legfrissebb időjárással, hogy ami erre az eseményre öntöz, naprakész időket kapjon. Fix időpontban: minden nap a lent megadott időben, ha a saját automatizálásod vagy vezérlőd akkor olvassa ki az időket, amikor akarja. Csak kérésre: semmi nem számolódik magától, használd a számítás gombjait vagy a műveleteket.",
             "calc-time": "Számítás ekkor",
             "calc-time-hint": "A napi számítás: az elvesztett víz hozzáadódik minden zóna vízmérlegéhez, és beállítódnak az öntözési időtartamok.",
             "hourly-calculation": "Az evapotranszpiráció számítása óránként",

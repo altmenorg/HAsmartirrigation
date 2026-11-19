@@ -262,6 +262,8 @@
             "calc-when-start": "Tik pred vsakim zagonom",
             "calc-when-manual": "Samo ko zahtevam",
             "calc-when-hint": "Tik pred vsakim zagonom: ko se začne program ali dogodek zagona, z najsvežejšim vremenom; prava izbira, ko zalivanje zažene Smart Irrigation. Ob fiksni uri: vsak dan ob spodnji uri, ko zalivanje zažene nekaj drugega in bere čase, kadar želi. Samo na zahtevo: nič se ne izračuna samo, uporabi gumbe za izračun ali dejanja.",
+            "calc-when-start-event": "Tik pred dogodkom zagona",
+            "calc-when-hint-calc-only": "Tik pred dogodkom zagona: ko se sproži sprožilec zagona, z najsvežejšim vremenom, da ima to, kar zaliva ob tem dogodku, posodobljene čase. Ob fiksni uri: vsak dan ob spodnji uri, ko tvoja lastna avtomatizacija ali krmilnik bere čase, kadar želi. Samo na zahtevo: nič se ne izračuna samo, uporabi gumbe za izračun ali dejanja.",
             "calc-time": "Izračunaj ob",
             "calc-time-hint": "Dnevni izračun: izgubljena voda se prišteje vodni bilanci vsake cone in nastavijo se trajanja zalivanja.",
             "hourly-calculation": "Izračunaj evapotranspiracijo uro za uro",

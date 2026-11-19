@@ -262,6 +262,8 @@
             "calc-when-start": "Kurz vor jedem Start",
             "calc-when-manual": "Nur auf Anfrage",
             "calc-when-hint": "Direkt vor jedem Start: wenn ein Programm oder das Startereignis beginnt, mit dem aktuellsten Wetter; die richtige Wahl, wenn Smart Irrigation die Bewässerung startet. Zu fester Uhrzeit: täglich zur unten angegebenen Zeit, wenn etwas anderes die Bewässerung startet und die Dauern liest, wann es will. Nur auf Anforderung: nichts wird von selbst berechnet, nutze die Berechnungsschaltflächen oder die Aktionen.",
+            "calc-when-start-event": "Kurz vor dem Startereignis",
+            "calc-when-hint-calc-only": "Kurz vor dem Startereignis: wenn der Startauslöser auslöst, mit dem aktuellsten Wetter, damit alles, was auf dieses Ereignis hin bewässert, aktuelle Dauern bekommt. Zu fester Uhrzeit: täglich zur unten angegebenen Zeit, wenn deine eigene Automatisierung oder Steuerung die Dauern liest, wann sie will. Nur auf Anforderung: nichts wird von selbst berechnet, nutze die Berechnungsknöpfe oder die Aktionen.",
             "calc-time": "Berechnen um",
             "calc-time-hint": "Die tägliche Berechnung: das verlorene Wasser wird der Wasserbilanz jeder Zone hinzugefügt und die Bewässerungsdauern werden festgelegt.",
             "hourly-calculation": "Evapotranspiration Stunde für Stunde berechnen",

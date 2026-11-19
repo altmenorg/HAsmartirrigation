@@ -262,6 +262,8 @@
             "calc-when-start": "Těsně před každým startem",
             "calc-when-manual": "Jen na požádání",
             "calc-when-hint": "Těsně před každým startem: když začne program nebo událost startu, s nejčerstvějším počasím; správná volba, když zavlažování spouští Smart Irrigation. V pevný čas: každý den v čase uvedeném níže, když zavlažování spouští něco jiného a čte doby, kdy chce. Jen na požádání: nic se nepočítá samo, použij tlačítka výpočtu nebo akce.",
+            "calc-when-start-event": "Těsně před událostí startu",
+            "calc-when-hint-calc-only": "Těsně před událostí startu: když se spustí spouštěč startu, s nejčerstvějším počasím, aby to, co na tuto událost zavlažuje, mělo aktuální doby. V pevný čas: každý den v čase uvedeném níže, když tvoje vlastní automatizace nebo řídicí jednotka čte doby, kdy chce. Jen na požádání: nic se nepočítá samo, použij tlačítka výpočtu nebo akce.",
             "calc-time": "Vypočítat v",
             "calc-time-hint": "Denní výpočet: ztracená voda se přičte k vodní bilanci každé zóny a nastaví se doby zavlažování.",
             "hourly-calculation": "Počítat evapotranspiraci hodinu po hodině",

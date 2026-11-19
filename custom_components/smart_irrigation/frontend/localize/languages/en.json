@@ -262,6 +262,8 @@
             "calc-when-start": "Just before each start",
             "calc-when-manual": "Only when I ask",
             "calc-when-hint": "Just before each start: when a program or the start event begins, with the freshest weather; the right choice when Smart Irrigation starts the watering. At a fixed time: every day at the time below, when something else starts the watering and reads the durations when it wants. Only when I ask: nothing is calculated on its own, use the calculation buttons or the actions.",
+            "calc-when-start-event": "Just before the start event",
+            "calc-when-hint-calc-only": "Just before the start event: when the start trigger fires, with the freshest weather, so whatever waters on that event gets up-to-date durations. At a fixed time: every day at the time below, when your own automation or controller reads the durations whenever it wants. Only when I ask: nothing is calculated on its own, use the calculation buttons or the actions.",
             "calc-time": "Calculate at",
             "calc-time-hint": "The daily calculation: the water lost is added to the water balance of each zone and the watering durations are set.",
             "hourly-calculation": "Calculate evapotranspiration hour by hour",

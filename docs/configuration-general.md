@@ -44,10 +44,12 @@ Stopping is not the same as postponing: a postponement holds the automatic water
 
 ### Calculating the watering duration
 
+With **Calculate and water**, the durations are worked out just before each start, and the choice below is not shown: when Smart Irrigation starts the watering, there is no reason to calculate at any other moment. It shows with **Calculate only**, and in every mode when another moment is stored, so that it can be put back.
+
 One choice, **Watering duration calculated**, says when the durations are worked out:
 
 - **At a fixed time.** Every day at **Calculate at** (23:00 unless you change it), the water lost is added to each zone's water balance and the durations are set. Use it when something other than Smart Irrigation starts the watering and reads the durations whenever it likes (Irrigation Unlimited, or a schedule of your own).
-- **Just before each start.** The zones are calculated again when a program or the start trigger begins, with the freshest weather. There is no time to choose. Use it when Smart Irrigation itself starts the watering (Calculate and water, or the start event of Calculate only). With no evening calculation to set the durations, the start is placed from the live estimate of the run's length, and placed again at every weather reading. See [Just before each start](#just-before-each-start).
+- **Just before each start** (**Just before the start event** with Calculate only, which has no programs). The zones are calculated again when a program or the start trigger begins, with the freshest weather. There is no time to choose. Use it when Smart Irrigation itself starts the watering (Calculate and water, or the start event of Calculate only). With no evening calculation to set the durations, the start is placed from the live estimate of the run's length, and placed again at every weather reading. See [Just before each start](#just-before-each-start).
 - **Only when I ask.** Nothing is calculated by itself. Use the calculate buttons or the [services](usage-services.md).
 
 What starts the watering is decided elsewhere: the programs' schedules with Calculate and water, the [start trigger](#start-triggers) with Calculate only. **Calculate evapotranspiration hour by hour**, under the choice, changes the form of the equation, not the moment of the calculation.
@@ -65,6 +67,10 @@ The water balance itself is left alone by that. It is a running balance: waterin
 The run still starts at the time it was scheduled for. A start that must be done by sunrise works back from the duration known at calculation time, so a run shortened by rain finishes early rather than starting late.
 
 #### Calculate evapotranspiration hour by hour
+
+!!! advanced
+
+    The switch is on the advanced panel, and shows in every mode while it is off.
 
 **On for a new installation, off for one that already existed.** A fresh installation starts on it, because it is the better arithmetic. An installation set up before it arrived keeps the daily equation until its owner switches, because the two give different numbers and nobody's watering should change on an update without being asked.
 

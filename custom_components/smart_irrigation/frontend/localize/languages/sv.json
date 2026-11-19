@@ -262,6 +262,8 @@
             "calc-when-start": "Strax före varje start",
             "calc-when-manual": "På begäran",
             "calc-when-hint": "Precis före varje start: när ett program eller starthändelsen börjar, med det färskaste vädret; rätt val när Smart Irrigation startar bevattningen. Vid en fast tid: varje dag vid tiden nedan, när något annat startar bevattningen och läser tiderna när det vill. Bara när jag ber om det: inget beräknas av sig självt, använd beräkningsknapparna eller åtgärderna.",
+            "calc-when-start-event": "Strax före starthändelsen",
+            "calc-when-hint-calc-only": "Strax före starthändelsen: när startutlösaren utlöses, med det färskaste vädret, så att det som bevattnar på den händelsen får aktuella tider. Vid en fast tid: varje dag vid tiden nedan, när din egen automatisering eller styrenhet läser tiderna när den vill. Bara när jag ber om det: inget beräknas av sig självt, använd beräkningsknapparna eller åtgärderna.",
             "calc-time": "Beräkna kl.",
             "calc-time-hint": "Vid den dagliga beräkningen justeras varje zons vattenbalans för vattenförlusten och bevattningstiden beräknas.",
             "hourly-calculation": "Beräkna evapotranspirationen timme för timme",

@@ -262,6 +262,8 @@
             "calc-when-start": "Subito prima di ogni avvio",
             "calc-when-manual": "Solo su mia richiesta",
             "calc-when-hint": "Subito prima di ogni avvio: quando parte un programma o l'evento di avvio, con il meteo più recente; la scelta giusta quando è Smart Irrigation ad avviare l'irrigazione. A un'ora fissa: ogni giorno all'ora indicata sotto, quando è altro ad avviare l'irrigazione e a leggere le durate quando vuole. Solo su richiesta: niente viene calcolato da solo, usa i pulsanti di calcolo o le azioni.",
+            "calc-when-start-event": "Subito prima dell'evento di avvio",
+            "calc-when-hint-calc-only": "Subito prima dell'evento di avvio: quando scatta il trigger di avvio, con il meteo più recente, così ciò che irriga su quell'evento ha durate aggiornate. A un'ora fissa: ogni giorno all'ora indicata sotto, quando la tua automazione o il tuo programmatore legge le durate quando vuole. Solo su richiesta: niente viene calcolato da solo, usa i pulsanti di calcolo o le azioni.",
             "calc-time": "Calcola alle",
             "calc-time-hint": "Il calcolo giornaliero: l'acqua persa viene aggiunta al bilancio idrico di ogni zona e vengono impostate le durate dell'irrigazione.",
             "hourly-calculation": "Calcolare l'evapotraspirazione ora per ora",

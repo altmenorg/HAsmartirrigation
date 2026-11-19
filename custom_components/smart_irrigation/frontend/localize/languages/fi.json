@@ -262,6 +262,8 @@
             "calc-when-start": "Juuri ennen jokaista aloitusta",
             "calc-when-manual": "Vain pyydettäessä",
             "calc-when-hint": "Juuri ennen jokaista aloitusta: kun ohjelma tai aloitustapahtuma alkaa, tuoreimmalla säällä; oikea valinta, kun Smart Irrigation aloittaa kastelun. Kiinteään aikaan: joka päivä alla olevaan aikaan, kun jokin muu aloittaa kastelun ja lukee kestot milloin haluaa. Vain pyynnöstä: mitään ei lasketa itsestään, käytä laskentapainikkeita tai toimintoja.",
+            "calc-when-start-event": "Juuri ennen aloitustapahtumaa",
+            "calc-when-hint-calc-only": "Juuri ennen aloitustapahtumaa: kun aloituksen laukaisin laukeaa, tuoreimmalla säällä, jotta se, mikä kastelee tämän tapahtuman perusteella, saa ajantasaiset kestot. Kiinteään aikaan: joka päivä alla olevaan aikaan, kun oma automaatiosi tai ohjaimesi lukee kestot milloin haluaa. Vain pyynnöstä: mitään ei lasketa itsestään, käytä laskentapainikkeita tai toimintoja.",
             "calc-time": "Laske kello",
             "calc-time-hint": "Päivittäinen laskenta: menetetty vesi lisätään kunkin vyöhykkeen vesitaseeseen ja kastelun kestot asetetaan.",
             "hourly-calculation": "Laske haihdunta tunti tunnilta",

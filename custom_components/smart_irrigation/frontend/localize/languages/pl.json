@@ -262,6 +262,8 @@
             "calc-when-start": "Tuż przed każdym startem",
             "calc-when-manual": "Tylko na moje żądanie",
             "calc-when-hint": "Tuż przed każdym startem: gdy rusza program lub zdarzenie startu, z najświeższą pogodą; właściwy wybór, gdy podlewanie uruchamia Smart Irrigation. O stałej godzinie: codziennie o godzinie podanej niżej, gdy podlewanie uruchamia coś innego i odczytuje czasy, kiedy chce. Tylko na żądanie: nic nie liczy się samo, użyj przycisków obliczania lub akcji.",
+            "calc-when-start-event": "Tuż przed zdarzeniem startu",
+            "calc-when-hint-calc-only": "Tuż przed zdarzeniem startu: gdy zadziała wyzwalacz startu, z najświeższą pogodą, aby to, co podlewa na to zdarzenie, miało aktualne czasy. O stałej godzinie: codziennie o godzinie podanej niżej, gdy twoja własna automatyzacja lub sterownik odczytuje czasy, kiedy chce. Tylko na żądanie: nic nie liczy się samo, użyj przycisków obliczania lub akcji.",
             "calc-time": "Oblicz o",
             "calc-time-hint": "Obliczenie dzienne: utracona woda jest dodawana do bilansu wodnego każdej strefy i ustawiane są czasy podlewania.",
             "hourly-calculation": "Obliczaj evapotranspirację godzina po godzinie",

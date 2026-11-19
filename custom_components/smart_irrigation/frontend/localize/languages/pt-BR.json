@@ -262,6 +262,8 @@
             "calc-when-start": "Logo antes de cada início",
             "calc-when-manual": "Somente quando eu pedir",
             "calc-when-hint": "Logo antes de cada início: quando um programa ou o evento de início começa, com o tempo mais recente; a escolha certa quando é o Smart Irrigation que inicia a irrigação. Em horário fixo: todo dia no horário indicado abaixo, quando outra coisa inicia a irrigação e lê as durações quando quiser. Só quando eu pedir: nada é calculado sozinho, use os botões de cálculo ou as ações.",
+            "calc-when-start-event": "Logo antes do evento de início",
+            "calc-when-hint-calc-only": "Logo antes do evento de início: quando o gatilho de início dispara, com o tempo mais recente, para que o que irriga nesse evento tenha durações atualizadas. Em horário fixo: todo dia no horário indicado abaixo, quando sua própria automação ou controlador lê as durações quando quiser. Só quando eu pedir: nada é calculado sozinho, use os botões de cálculo ou as ações.",
             "calc-time": "Calcular às",
             "calc-time-hint": "O cálculo diário: a água perdida é somada ao balanço hídrico de cada zona e as durações da irrigação são definidas.",
             "hourly-calculation": "Calcular a evapotranspiração hora a hora",

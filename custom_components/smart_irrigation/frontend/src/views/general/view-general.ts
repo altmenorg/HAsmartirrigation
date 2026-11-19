@@ -446,32 +446,58 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         : this.config.autocalcenabled
           ? "time"
           : "manual";
-      let r1 = html`<div class="card-content">
-        ${this._selectRow(
-          html`${localize(`${base}.calc-when`, this.hass.language)}
-            <si-info>
-              ${localize(`${base}.calc-when-hint`, this.hass.language)}
-            </si-info>`,
-          html`
-            <option value="time" ?selected=${calcWhen === "time"}>
-              ${localize(`${base}.calc-when-time`, this.hass.language)}
-            </option>
-            <option value="start" ?selected=${calcWhen === "start"}>
-              ${localize(`${base}.calc-when-start`, this.hass.language)}
-            </option>
-            <option value="manual" ?selected=${calcWhen === "manual"}>
-              ${localize(`${base}.calc-when-manual`, this.hass.language)}
-            </option>
-          `,
-          (e: Event) => {
-            const value = (e.target as HTMLSelectElement).value;
-            this.handleConfigChange({
-              autocalcenabled: value === "time",
-              recalculate_before_start: value === "start",
-            });
-          },
-        )}
-      </div>`;
+      // When Smart Irrigation waters, the duration is best worked out just
+      // before each start, with the freshest weather: there is nothing to
+      // choose, in any mode. The choice matters when something else starts
+      // the watering ("Calculate only"), and stays in sight when another
+      // moment was stored, so that it can be put back.
+      const advancedMode = this.config.ui_mode === "advanced";
+      // "Calculate only" has no program: its start is the start event.
+      const calcOnly = this.config.full_controller !== true;
+      const showCalcWhen = calcOnly || calcWhen !== "start";
+      // The hourly equation is on for a new installation; the daily one is
+      // there for the older ones. The advanced mode only, unless it is off.
+      const showHourly = advancedMode || !this.config.hourly_calculation;
+      const showEffectiveRain = advancedMode || !this.config.effective_rain;
+      const showCalcLog = advancedMode || !!this.config.calc_log_enabled;
+      let r1 = html`${showCalcWhen
+        ? html`<div class="card-content">
+            ${this._selectRow(
+              html`${localize(`${base}.calc-when`, this.hass.language)}
+                <si-info>
+                  ${localize(
+                    calcOnly
+                      ? `${base}.calc-when-hint-calc-only`
+                      : `${base}.calc-when-hint`,
+                    this.hass.language,
+                  )}
+                </si-info>`,
+              html`
+                <option value="time" ?selected=${calcWhen === "time"}>
+                  ${localize(`${base}.calc-when-time`, this.hass.language)}
+                </option>
+                <option value="start" ?selected=${calcWhen === "start"}>
+                  ${localize(
+                    calcOnly
+                      ? `${base}.calc-when-start-event`
+                      : `${base}.calc-when-start`,
+                    this.hass.language,
+                  )}
+                </option>
+                <option value="manual" ?selected=${calcWhen === "manual"}>
+                  ${localize(`${base}.calc-when-manual`, this.hass.language)}
+                </option>
+              `,
+              (e: Event) => {
+                const value = (e.target as HTMLSelectElement).value;
+                this.handleConfigChange({
+                  autocalcenabled: value === "time",
+                  recalculate_before_start: value === "start",
+                });
+              },
+            )}
+          </div>`
+        : ""}`;
       if (calcWhen === "time") {
         r1 = html`${r1}
           <div class="card-content">
@@ -484,105 +510,115 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </div>`;
       }
       // The form of the equation, which has nothing to do with the moment.
+      const showRows = showHourly || showEffectiveRain || showCalcLog;
       r1 = html`${r1}
-        <div class="card-content">
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize(
-                `${base}.hourly-calculation`,
-                this.hass.language,
-              )}<si-info
-                >${localize(
-                  `${base}.hourly-calculation-hint`,
-                  this.hass.language,
-                )}</si-info
-              >
-            </div>
-            <ha-switch
-              .checked=${this.config.hourly_calculation}
-              @change=${(e: Event) =>
-                this.handleConfigChange({
-                  hourly_calculation: (e.target as any).checked,
-                })}
-            ></ha-switch>
-          </div>
-          ${
-            // On for a new installation, and not a decision anybody has to take:
-            // a light shower does not reach the roots. It acts on the rain that
-            // fell, in every calculation, which is why it lives here and not
-            // with the forecast. The advanced mode only, unless it was turned
-            // off, so that is not hidden.
-            this.config.ui_mode === "advanced" || !this.config.effective_rain
+      ${showRows
+        ? html`<div class="card-content">
+            ${showHourly
               ? html`<div class="setting-row">
                   <div class="setting-label">
                     ${localize(
-                      "weather_skip.effective_rain_label",
+                      `${base}.hourly-calculation`,
                       this.hass.language,
                     )}<si-info
                       >${localize(
-                        "weather_skip.effective_rain_description",
+                        `${base}.hourly-calculation-hint`,
                         this.hass.language,
                       )}</si-info
                     >
                   </div>
                   <ha-switch
-                    .checked=${!!this.config.effective_rain}
+                    .checked=${this.config.hourly_calculation}
                     @change=${(e: Event) =>
                       this.handleConfigChange({
-                        effective_rain: (e.target as any).checked,
+                        hourly_calculation: (e.target as any).checked,
                       })}
                   ></ha-switch>
                 </div>`
-              : ""
-          }
-          ${
-            // The calculation audit log, for chasing a calculation down: a
-            // row of this card rather than a card of its own (#1056). The
-            // advanced mode only, unless it is on (it writes a file).
-            this.config.ui_mode === "advanced" || this.config.calc_log_enabled
-              ? html`<div class="setting-row">
-                  <div class="setting-label">
-                    ${localize(
-                      "calculation_log.title",
-                      this.hass.language,
-                    )}<si-info
-                      >${localize(
-                        "calculation_log.description",
-                        this.hass.language,
-                      )}
+              : ""}
+            ${
+              // On for a new installation, and not a decision anybody has to take:
+              // a light shower does not reach the roots. It acts on the rain that
+              // fell, in every calculation, which is why it lives here and not
+              // with the forecast. The advanced mode only, unless it was turned
+              // off, so that is not hidden.
+              showEffectiveRain
+                ? html`<div class="setting-row">
+                    <div class="setting-label">
                       ${localize(
-                        "calculation_log.file_hint",
+                        "weather_skip.effective_rain_label",
                         this.hass.language,
-                      )}</si-info
-                    >
-                  </div>
-                  <ha-switch
-                    .checked=${!!this.config.calc_log_enabled}
-                    @change=${(e: Event) =>
-                      this.handleConfigChange({
-                        calc_log_enabled: (e.target as any).checked,
-                      })}
-                  ></ha-switch>
-                </div>`
-              : ""
-          }
-        </div>`;
-      r1 = html`<ha-card
-        ><h1 class="card-header">
-          <span
-            >${localize(
-              "panels.general.cards.automatic-duration-calculation.header",
-              this.hass.language,
-            )}<si-info
-              >${localize(
-                "panels.general.cards.automatic-duration-calculation.description",
-                this.hass.language,
-              )}</si-info
-            ></span
-          >
-        </h1>
-        ${r1}</ha-card
-      >`;
+                      )}<si-info
+                        >${localize(
+                          "weather_skip.effective_rain_description",
+                          this.hass.language,
+                        )}</si-info
+                      >
+                    </div>
+                    <ha-switch
+                      .checked=${!!this.config.effective_rain}
+                      @change=${(e: Event) =>
+                        this.handleConfigChange({
+                          effective_rain: (e.target as any).checked,
+                        })}
+                    ></ha-switch>
+                  </div>`
+                : ""
+            }
+            ${
+              // The calculation audit log, for chasing a calculation down: a
+              // row of this card rather than a card of its own (#1056). The
+              // advanced mode only, unless it is on (it writes a file).
+              showCalcLog
+                ? html`<div class="setting-row">
+                    <div class="setting-label">
+                      ${localize(
+                        "calculation_log.title",
+                        this.hass.language,
+                      )}<si-info
+                        >${localize(
+                          "calculation_log.description",
+                          this.hass.language,
+                        )}
+                        ${localize(
+                          "calculation_log.file_hint",
+                          this.hass.language,
+                        )}</si-info
+                      >
+                    </div>
+                    <ha-switch
+                      .checked=${!!this.config.calc_log_enabled}
+                      @change=${(e: Event) =>
+                        this.handleConfigChange({
+                          calc_log_enabled: (e.target as any).checked,
+                        })}
+                    ></ha-switch>
+                  </div>`
+                : ""
+            }
+          </div>`
+        : ""}`;
+      // Nothing left to choose (Calculate and water, every value at its
+      // default): no card with a title and nothing under it.
+      const showCalcCard = showCalcWhen || showRows;
+      r1 = !showCalcCard
+        ? html``
+        : html`<ha-card
+            ><h1 class="card-header">
+              <span
+                >${localize(
+                  "panels.general.cards.automatic-duration-calculation.header",
+                  this.hass.language,
+                )}<si-info
+                  >${localize(
+                    "panels.general.cards.automatic-duration-calculation.description",
+                    this.hass.language,
+                  )}</si-info
+                ></span
+              >
+            </h1>
+            ${r1}</ha-card
+          >`;
       // How often the weather is read: every hour, as it is out of the box,
       // suits everybody. The advanced mode only, unless it was changed (off,
       // another interval, a delay), so that a setting in use is never hidden.
