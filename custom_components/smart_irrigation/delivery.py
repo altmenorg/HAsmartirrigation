@@ -27,6 +27,23 @@ GAP_NO_AUTOMATIC_ZONE = "no_automatic_zone"
 GAP_NO_VALVE_PATH = "no_valve_path"
 
 
+def daily_calculation_on(config) -> bool:
+    """Whether the zones are calculated every day at the calculation time.
+
+    "Just before each start" keeps the daily calculation too. Alone, the
+    buffer would wait for the next start to be read: a weekly schedule, or a
+    program only ever started by hand, outlasts the week the buffer keeps, and
+    the zones' water balance would stand still between two starts. The
+    calculation before a start is skipped when the daily one ran within the
+    hour, so the two do not repeat each other.
+    """
+    config = config or {}
+    return bool(
+        config.get(const.CONF_AUTO_CALC_ENABLED, True)
+        or config.get(const.CONF_RECALCULATE_BEFORE_START, False)
+    )
+
+
 def delivery_gap(config: dict, zones) -> str | None:
     """The reason nothing would water, or None when something will.
 
@@ -34,12 +51,7 @@ def delivery_gap(config: dict, zones) -> str | None:
     zone to water, then no valve this integration can open itself.
     """
     config = config or {}
-    # The evening calculation off is a choice when the zones are calculated
-    # again just before the first start: that calculation is the one that
-    # counts, and the start is what runs it.
-    if not config.get(const.CONF_AUTO_CALC_ENABLED, True) and not config.get(
-        const.CONF_RECALCULATE_BEFORE_START, False
-    ):
+    if not daily_calculation_on(config):
         return GAP_AUTO_CALC_OFF
 
     zones = list(zones or [])
@@ -135,7 +147,7 @@ def stale_zones(config: dict, zones, now=None) -> list:
     and a fresh installation before its first run is not a fault.
     """
     config = config or {}
-    if not config.get(const.CONF_AUTO_CALC_ENABLED, True):
+    if not daily_calculation_on(config):
         return []
 
     now = now or datetime.datetime.now()

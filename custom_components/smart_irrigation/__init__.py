@@ -65,6 +65,7 @@ from .calc_problem import (
 )
 from .calculation import CalculationMixin
 from .card import async_register_card
+from .delivery import daily_calculation_on
 from .deprecated_actions import deprecated
 from .engine_binding import EngineBindingMixin
 from .entity import device_by_identifier
@@ -782,7 +783,7 @@ class SmartIrrigationCoordinator(
         # move was made again at every start.
         if the_config[const.CONF_AUTO_UPDATE_ENABLED]:
             hass.loop.create_task(self.set_up_auto_update_time(the_config, save=False))
-        if the_config[const.CONF_AUTO_CALC_ENABLED]:
+        if daily_calculation_on(the_config):
             hass.loop.create_task(self.set_up_auto_calc_time(the_config, save=False))
         if the_config[const.CONF_AUTO_CLEAR_ENABLED]:
             hass.loop.create_task(self.set_up_auto_clear_time(the_config, save=False))
@@ -1843,7 +1844,8 @@ class SmartIrrigationCoordinator(
         # changed raised a KeyError with the nightly calculation already gone,
         # and nothing re-registered it until a restart (#844).
         settings = self._settings(data)
-        enabled = settings.get(const.CONF_AUTO_CALC_ENABLED)
+        # "Just before each start" keeps the daily calculation as well.
+        enabled = daily_calculation_on(settings)
         calc_time = settings.get(const.CONF_CALC_TIME)
         # unsubscribe from any existing track_time_changes
         if self._track_auto_calc_time_unsub:
