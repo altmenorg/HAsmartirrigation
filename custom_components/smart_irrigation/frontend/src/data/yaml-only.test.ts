@@ -12,7 +12,8 @@ import {
 const texts: Record<string, string> = {
   tours: "Rounds",
   adjust_seconds: "Time added",
-  min_deficit_mm: "Minimum deficit",
+  min_deficit_mm: "Only water when the deficit is at least",
+  min_deficit_short: "Minimum deficit",
   schedule_every_offset: "Shifted by",
   schedule_parity: "Days of the month",
   parity_even: "Even days",
@@ -121,6 +122,15 @@ describe("hiddenOptions, standard mode", () => {
       },
       { owner: "Step 3", items: ["Time added: -15 s"], advanced: true },
     ]);
+  });
+
+  it("writes the minimum deficit as the number setting does", () => {
+    const groups = hiddenOptions(
+      program({ steps: [step({ min_deficit_mm: 1.5 })] }),
+      STD,
+      { ...text, num: (v: number) => String(v).replace(".", ",") },
+    );
+    expect(groups[0].items).toEqual(["Minimum deficit: 1,5 mm"]);
   });
 
   it("lists each of a schedule's options, named by its place", () => {

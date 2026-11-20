@@ -63,6 +63,7 @@ import {
   withSchedule,
   withStep,
 } from "../../data/yaml-only";
+import { formatNumber } from "../../number-format";
 import "../../dialogs/trigger-dialog";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import {
@@ -498,7 +499,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             )}
           </div>`
         : ""}`;
-      if (calcWhen === "time") {
+      // "Just before each start" keeps the daily calculation too, at this
+      // time, so the water balance moves between two starts.
+      if (calcWhen === "time" || (calcWhen === "start" && showCalcWhen)) {
         r1 = html`${r1}
           <div class="card-content">
             ${this._timeRow(
@@ -1964,6 +1967,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         monthName,
         days: (count) =>
           localize("programs.days_count", lang, "{count}", count),
+        num: (value) =>
+          formatNumber(
+            value,
+            Number.isInteger(value) ? 0 : 1,
+            this.hass?.locale,
+            lang,
+          ),
       });
       if (!groups.length) return "";
       const id = program.id ?? "";

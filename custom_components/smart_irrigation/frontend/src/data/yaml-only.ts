@@ -62,6 +62,8 @@ export interface HiddenText {
   monthName: (month: number) => string;
   /** A count of days, singular or plural as the language has it. */
   days: (count: number) => string;
+  /** A number as the user's number setting writes it ("1,5" in German). */
+  num?: (value: number) => string;
 }
 
 /**
@@ -109,7 +111,10 @@ function programHidden(
 }
 
 /** A step's options the standard form does not show, when set. */
-function stepHidden(step: SmartIrrigationStep, { t }: HiddenText): Hidden[] {
+function stepHidden(
+  step: SmartIrrigationStep,
+  { t, num }: HiddenText,
+): Hidden[] {
   const items: Hidden[] = [];
   const adjust = step.adjust_seconds ?? 0;
   if (adjust !== 0)
@@ -120,7 +125,13 @@ function stepHidden(step: SmartIrrigationStep, { t }: HiddenText): Hidden[] {
     );
   if ((step.min_deficit_mm ?? 0) > 0)
     items.push(
-      advancedItem(item(t, t("min_deficit_mm"), `${step.min_deficit_mm} mm`)),
+      advancedItem(
+        item(
+          t,
+          t("min_deficit_short"),
+          `${(num ?? String)(step.min_deficit_mm!)} mm`,
+        ),
+      ),
     );
   return items;
 }
