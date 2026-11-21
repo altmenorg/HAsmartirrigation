@@ -263,7 +263,7 @@ Good to know: the weather holds work on the zones' calculated durations, which a
 
 A schedule that comes due while its program is already running or waiting starts nothing and counts no watering day; the days between irrigations are only reset for the zones that really start. A program deleted or suspended while it runs stops before its next step. Deleting a program or a schedule also clears what was remembered of its last run, so a new schedule never inherits it.
 
-An occurrence counts as fired as soon as it comes due, whatever happens next: a schedule that is suspended, whose program is already running, or that the weather holds back is not tried again for that occurrence. A scheduled run that is waiting for its turn when Home Assistant restarts is not kept (only a queued manual run is, see below): it is lost until the schedule's next occurrence.
+An occurrence counts as fired as soon as it comes due, whatever happens next: a schedule that is suspended, whose program is already running, that the weather holds back, or that comes while everything is [stopped](configuration-general.md#stop-everything) is not tried again for that occurrence. A scheduled run that is waiting for its turn when Home Assistant restarts is not kept (only a queued manual run is, see below): it is lost until the schedule's next occurrence.
 
 The Smart Irrigation schedules are armed when a setting changes, after a calculation and at a new day, like the start trigger.
 

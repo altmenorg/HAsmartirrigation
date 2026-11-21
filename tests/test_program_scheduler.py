@@ -306,6 +306,43 @@ async def test_a_start_that_has_gone_by_in_time_starts_at_once(armed, freezer):
     assert not [t for t in armed.times if t < _utc(2, 0)]
 
 
+async def test_a_start_caught_up_while_switched_off_is_let_go_once(armed, freezer):
+    freezer.move_to(_utc(1, 6, 1))
+    scheduler = Scheduler([_program([{"time": "06:00"}])])
+    scheduler.store.config.irrigation_enabled = False
+
+    await scheduler.register_program_schedules()
+    for _ in range(30):
+        await asyncio.sleep(0)
+
+    assert armed.times == [_utc(2, 6)]
+    scheduler.async_run_program.assert_not_awaited()
+    scheduler._prepare_watering_for_today.assert_not_awaited()
+    assert scheduler.store.config.program_last_runs == {
+        "evening:schedule_1": "2026-06-01T04:00:00+00:00"
+    }
+
+
+async def test_a_schedule_due_while_switched_off_is_let_go_once(armed, freezer):
+    yesterday = {"evening:schedule_1": "2026-05-31T04:00:00+00:00"}
+    scheduler = Scheduler([_program([{"time": "06:00"}])], last_runs=yesterday)
+    scheduler.store.config.irrigation_enabled = False
+    await scheduler.register_program_schedules()
+    callback, when = armed.calls[0]
+    freezer.move_to(_utc(1, 6))
+
+    callback(when)
+    for _ in range(30):
+        await asyncio.sleep(0)
+
+    assert armed.times == [_utc(1, 6), _utc(2, 6)]
+    scheduler.async_run_program.assert_not_awaited()
+    scheduler._prepare_watering_for_today.assert_not_awaited()
+    assert scheduler.store.config.program_last_runs == {
+        "evening:schedule_1": "2026-06-01T04:00:00+00:00"
+    }
+
+
 async def test_a_reload_cancels_a_scheduled_run_under_way(armed):
     scheduler = Scheduler([_program([{"time": "06:00"}])])
     started = asyncio.Event()
