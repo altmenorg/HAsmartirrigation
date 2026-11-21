@@ -962,11 +962,6 @@ export class SmartIrrigationViewIuImport extends LitElement {
         color: var(--secondary-text-color);
         font-size: 0.9em;
       }
-      .si-form-actions {
-        gap: 12px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
       .error {
         color: var(--error-color, #b71c1c);
         margin-top: 8px;

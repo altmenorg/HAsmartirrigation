@@ -744,7 +744,10 @@ export const siStyle = css`
   }
   .si-form-actions {
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-end;
+    align-items: center;
+    gap: var(--si-space-3);
     padding-top: var(--si-space-2);
   }
 

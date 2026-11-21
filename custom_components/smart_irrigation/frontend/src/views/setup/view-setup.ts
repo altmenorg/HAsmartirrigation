@@ -1129,10 +1129,6 @@ class SmartIrrigationViewSetup extends LitElement {
       }
       /* The shared row justifies to the end and sets no gap, which is right
          for a single button and too tight for three items. */
-      .si-form-actions {
-        gap: 12px;
-        align-items: center;
-      }
 
       .review div {
         padding: 4px 0;

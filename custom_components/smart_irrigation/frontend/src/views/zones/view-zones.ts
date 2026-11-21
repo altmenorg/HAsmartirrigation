@@ -3590,21 +3590,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         box-sizing: border-box;
       }
 
-      .setting-row:last-child {
-        border-bottom: 0;
-      }
-
-      /* keep native up/down spinners (they respect the per-field step) */
-      /* number field with clean HA +/- steppers */
-      .num-field {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        flex: 0 0 auto;
-        width: 360px;
-        max-width: 100%;
-      }
-
       .zone-actions {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -3693,20 +3678,8 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       }
 
       @media (max-width: 600px) {
-        /* A switch stays on the right of its title (#1049), and a value
-           sits right after its label, not on a line of its own (#1048). */
-        .setting-row:has(> ha-switch) {
-          flex-direction: row;
-          align-items: center;
-          gap: 12px;
-        }
-        .setting-row > ha-switch {
-          flex: 0 0 auto;
-        }
-        .setting-row:has(> ha-switch) > .setting-label {
-          flex: 1 1 auto;
-          min-width: 0;
-        }
+        /* A value sits right after its label, not on a line of its own
+           (#1048). A switch keeps its title's line in the shared sheet. */
         .setting-row.value-row {
           flex-direction: row;
           flex-wrap: wrap;

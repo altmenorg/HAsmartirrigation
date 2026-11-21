@@ -383,11 +383,6 @@ export class SmartIrrigationIuCutover extends LitElement {
       a {
         color: var(--primary-color);
       }
-      .si-form-actions {
-        gap: 12px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
       ha-card + ha-card {
         margin-top: 16px;
       }
