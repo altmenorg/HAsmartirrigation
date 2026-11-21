@@ -689,7 +689,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
 
     return html`
       <div class="si-subgroup">
-        <div class="si-subgroup-title">
+        <div class="si-section">
           ${localize(
             `panels.mappings.cards.mapping.items.${value.toLowerCase()}`,
             this.hass.language,
@@ -2165,7 +2165,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         justify-content: flex-end;
         margin: 8px;
       }
-      /* .si-subgroup / .si-subgroup-title now live in modern-style (shared) */
+      /* .si-subgroup / .si-section live in the shared sheet */
       /* source radios laid out inline like the other field controls */
       .radio-group {
         display: flex;

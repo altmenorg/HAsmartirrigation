@@ -128,6 +128,23 @@ export const modernStyle = css`
     font-size: 0.85em;
   }
 
+  /* --- Section title: a part of a card (a zone's "What it needs", a
+     program's "Schedules", the rain forecast of Skip watering). One look on
+     every page (#1059). --- */
+  .si-section {
+    font-size: 1.15rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--primary-text-color);
+    margin: 24px 0 8px;
+  }
+  .si-section:first-child {
+    margin-top: 0;
+  }
+  .si-section:last-child {
+    margin-bottom: 0;
+  }
+
   /* --- Text building blocks: one look each, on every page (#1059) ---
      A hint is a line of small grey text under a label or a field. A note is
      a sentence or two that explains, in the flow of a card. A box is a note
@@ -293,10 +310,6 @@ export const modernStyle = css`
   .si-actions:not(:last-child) {
     margin-bottom: 12px;
   }
-  .fold-section {
-    font-weight: 500;
-    margin: 16px 0 4px 0;
-  }
   .fold-title {
     font-weight: 500;
   }
@@ -336,27 +349,14 @@ export const modernStyle = css`
   .si-subgroup:last-child {
     border-bottom: 0;
   }
-  .si-subgroup-title {
-    /* same font as the field labels below (.setting-label), just a touch larger
-       and heavier so the section reads as a heading. em is relative to the
-       surrounding body text, so it stays "a bit bigger than Source" whatever
-       the base size is. */
-    font-size: 1.05em;
-    font-weight: 600;
-    color: var(--primary-text-color);
-    margin-bottom: 4px;
-  }
   /* A sub-group's title with its switch (the rain sensor, freeze and wind
      checks): it borrowed the collapsible card's head, padding included, so
      each one sat indented inside 24 px of empty space more than its rows
      (#1048). It is a line of the card, not a card's head. */
-  .si-subgroup-title.si-head {
+  .si-section.si-head {
     padding: 0;
     cursor: auto;
     user-select: auto;
-  }
-  .si-subgroup-title:last-child {
-    margin-bottom: 0;
   }
   /* Inside a card's content, whose own padding is room enough. */
   .card-content > .si-subgroup:first-child {

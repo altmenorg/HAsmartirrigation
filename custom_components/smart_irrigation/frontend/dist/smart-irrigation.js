@@ -1173,6 +1173,23 @@ function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
     font-size: 0.85em;
   }
 
+  /* --- Section title: a part of a card (a zone's "What it needs", a
+     program's "Schedules", the rain forecast of Skip watering). One look on
+     every page (#1059). --- */
+  .si-section {
+    font-size: 1.15rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--primary-text-color);
+    margin: 24px 0 8px;
+  }
+  .si-section:first-child {
+    margin-top: 0;
+  }
+  .si-section:last-child {
+    margin-bottom: 0;
+  }
+
   /* --- Text building blocks: one look each, on every page (#1059) ---
      A hint is a line of small grey text under a label or a field. A note is
      a sentence or two that explains, in the flow of a card. A box is a note
@@ -1338,10 +1355,6 @@ function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
   .si-actions:not(:last-child) {
     margin-bottom: 12px;
   }
-  .fold-section {
-    font-weight: 500;
-    margin: 16px 0 4px 0;
-  }
   .fold-title {
     font-weight: 500;
   }
@@ -1381,27 +1394,14 @@ function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
   .si-subgroup:last-child {
     border-bottom: 0;
   }
-  .si-subgroup-title {
-    /* same font as the field labels below (.setting-label), just a touch larger
-       and heavier so the section reads as a heading. em is relative to the
-       surrounding body text, so it stays "a bit bigger than Source" whatever
-       the base size is. */
-    font-size: 1.05em;
-    font-weight: 600;
-    color: var(--primary-text-color);
-    margin-bottom: 4px;
-  }
   /* A sub-group's title with its switch (the rain sensor, freeze and wind
      checks): it borrowed the collapsible card's head, padding included, so
      each one sat indented inside 24 px of empty space more than its rows
      (#1048). It is a line of the card, not a card's head. */
-  .si-subgroup-title.si-head {
+  .si-section.si-head {
     padding: 0;
     cursor: auto;
     user-select: auto;
-  }
-  .si-subgroup-title:last-child {
-    margin-bottom: 0;
   }
   /* Inside a card's content, whose own padding is room enough. */
   .card-content > .si-subgroup:first-child {
@@ -2077,7 +2077,7 @@ function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
           />
         </div>
       `},d=t=>this.hass.callService(gs,"adjust_program",Object.assign({program_id:e.id},t)).then(()=>this._fetchLive(!1));return V`
-        <div class="fold-section">${a("adjust_title")}</div>
+        <div class="si-section">${a("adjust_title")}</div>
         <div class="si-note">${r}</div>
         ${o?V`<div class="si-actions">
               ${this._actionBtn(Ra,a("adjust_reset"),async()=>{await this._ask(a("confirm_reset_adjustment"),!0)&&d({reset:!0})},!0)}
@@ -2142,12 +2142,12 @@ function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
               .lang=${i}
             ></si-program-timeline>`}
       `},A=(e,t)=>{var s;const i=null!==(s=e.id)&&void 0!==s?s:"";if(!this._isOpen(t))return V``;const n=this._preview(i,e);return V`
-        <div class="fold-section">
+        <div class="si-section">
           ${a("preview_title")}<si-info>${a("preview_help")}</si-info>
         </div>
         ${n?O(e,n.timeline):V`<div class="si-note">…</div>`}
       `},C=e=>void 0!==no[e],H=async(e,t)=>{await $e().catch(()=>{}),no[e]={initial:t,value:t,valid:!0},this._yamlPreview(e,t,e?n.find(t=>t.id===e):void 0),this._scheduleUpdate()},E=e=>{delete no[e],this._scheduleUpdate()},D=(e,t)=>{const s=no[e],i=null===t?void 0:n[t],r=s.preview,l=r?[...r.unknown_zone_names.map(e=>`"${e}"`),...r.unknown_zones.map(e=>`#${e}`)]:[],d=(null==r?void 0:r.zones_not_watered)||[],c=(null==r?void 0:r.chain_loop)||null,u=(null==r?void 0:r.unknown_after_programs)||[];return V`
-        <div class="fold-section">YAML<si-info>${a("yaml_help")}</si-info></div>
+        <div class="si-section">YAML<si-info>${a("yaml_help")}</si-info></div>
         <ha-yaml-editor
           .hass=${this.hass}
           .defaultValue=${s.initial}
@@ -2462,7 +2462,7 @@ function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
         ${this._actionBtn(Ya,a("add_schedule"),()=>r(t,{schedules:[...e.schedules||[],{id:this._openNew("schedule","schedule_"+y()),enabled:!0,type:"time",time:"06:00",event:"sunrise",offset_minutes:0,anchor:"start",weekdays:[],every_n_days:1,every_offset:0,parity:"any",months:[],from_date:null,until_date:null,weather:!0}]}))}
       </div>
     `,B=(e,t)=>{var s;const i=null!==(s=e.notify)&&void 0!==s?s:{targets:[],when:"finish",start:!1},n=(e=>{var t;const s=Object.keys(e.states||{}).filter(e=>e.startsWith("notify.")).map(t=>{var s,i;return{id:t,name:(null===(i=null===(s=e.states[t])||void 0===s?void 0:s.attributes)||void 0===i?void 0:i.friendly_name)||t}}),i=new Map(s.map(e=>[e.id,e.name])),a=Object.keys((null===(t=e.services)||void 0===t?void 0:t.notify)||{}).filter(e=>!Nn.has(e)).map(e=>`notify.${e}`),n=new Set(a),o=e=>`notify.mobile_app_${e.slice(7)}`,r=a.filter(e=>!i.has(e)).map(e=>{const t=s.find(t=>o(t.id)===e);return{id:e,name:t?t.name:e}});return[{id:"persistent_notification",name:"persistent_notification"},...[...s.filter(e=>!n.has(o(e.id))),...r].sort((e,t)=>e.name.localeCompare(t.name))]})(this.hass),o=new Set(n.map(e=>e.id));for(const e of i.targets)o.has(e)||n.push({id:e,name:e});const l=e=>{const s=Object.assign(Object.assign({},i),e);r(t,{notify:s.targets.length?s:void 0})};return V`
-        <div class="fold-section">
+        <div class="si-section">
           ${a("notify_title")}<si-info>${a("notify_help")}</si-info>
         </div>
         ${n.map(e=>V`
@@ -2525,12 +2525,12 @@ function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                       ${I(e)} ${f(e)}
                       ${this._textRow(a("name"),"",e.name,e=>r(t,{name:e}))}
                       ${A(e,`program:${e.id}`)}
-                      <div class="fold-section">${a("steps_title")}</div>
+                      <div class="si-section">${a("steps_title")}</div>
                       ${(e.steps||[]).map((s,i)=>L(e,t,s,i))}
                       <div class="si-actions">
                         ${this._actionBtn(Ya,a("add_step"),()=>r(t,{steps:[...e.steps||[],{id:this._openNew("step","step_"+y()),zones:[],mode:"calculated",percent:100,seconds:0,passes:1,max_litres:0,min_seconds:0,max_seconds:0,adjust_seconds:0,delay:null,enabled:!0}]}))}
                       </div>
-                      <div class="fold-section">${a("schedules_title")}</div>
+                      <div class="si-section">${a("schedules_title")}</div>
                       ${U(e,t)}
                       ${j?this._numRow(V`${a("tours")}<si-info
                                   >${a("tours_help")}</si-info
@@ -2811,7 +2811,7 @@ function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
       </div>
     `,a=(e,t,s,i)=>V`
       <div class="si-subgroup">
-        ${i?this._switchTitle(V`${e}<si-info>${t}</si-info>`,!!this.config[i],e=>this.handleConfigChange({[i]:e})):V`<div class="si-subgroup-title">
+        ${i?this._switchTitle(V`${e}<si-info>${t}</si-info>`,!!this.config[i],e=>this.handleConfigChange({[i]:e})):V`<div class="si-section">
               ${e}<si-info>${t}</si-info>
             </div>`}
         ${s}
@@ -2990,7 +2990,7 @@ function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
         .checked=${t}
         @change=${e=>s(e.target.checked)}
       ></ha-switch>
-    </h1>`}_switchTitle(e,t,s){return V`<div class="si-subgroup-title si-head">
+    </h1>`}_switchTitle(e,t,s){return V`<div class="si-section si-head">
       <span>${e}</span>
       <ha-switch
         .checked=${t}
@@ -3706,7 +3706,7 @@ s.version="2.31.0",i(ii),s.fn=vn,s.min=ri,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
 
               ${null!=e.id&&this._yamlEdits.has(e.id)?this._zoneYamlBlock(e,y):V`<div class="settings">
                     ${this._zoneHiddenNotice(e,y)}
-                    <div class="zone-section">
+                    <div class="si-section">
                       ${ds("panels.zones.sections.zone",y)}
                     </div>
                     ${this._textRow(ds("panels.zones.labels.name",y),"",e.name,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[ui]:s})))}
@@ -3816,7 +3816,7 @@ s.version="2.31.0",i(ii),s.fn=vn,s.min=ri,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
                           `:"")}
                     ${this._adv(this._numRow(ds("panels.zones.labels.lead-time",y),"s",e.lead_time,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[bi]:parseInt(s,10)})),1))}
                     ${this._adv(this._numRow(ds("panels.zones.labels.maximum-duration",y),"s",e.maximum_duration,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[$i]:parseInt(s,10)})),1))}
-                    <div class="zone-section">
+                    <div class="si-section">
                       ${ds("panels.zones.sections.need",y)}
                     </div>
                     ${this._selectRow(this._labelWithHint("state",y),V`
@@ -3891,7 +3891,7 @@ s.version="2.31.0",i(ii),s.fn=vn,s.min=ri,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
                           >`,ds("panels.zones.labels.days",y),e.days_between_irrigation,s=>{const i=parseInt(s,10);this.handleEditZone(t,Object.assign(Object.assign({},e),{[Mi]:isNaN(i)?null:Math.max(0,i)}))},1)}`,"number"==typeof e.days_between_irrigation)}
                     ${this._adv(this._entityRow(ds("panels.zones.labels.soil-moisture-sensor",y),ds("panels.zones.labels.optional",y),e.soil_moisture_sensor,["sensor"],s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Bi]:s||void 0})),ds("panels.zones.labels.soil-moisture-sensor-hint",y)),Boolean(e.soil_moisture_sensor))}
                     ${e.soil_moisture_sensor?this._numRow(ds("panels.zones.labels.soil-moisture-threshold",y),"%",null!==(_=e.soil_moisture_threshold)&&void 0!==_?_:50,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Fi]:parseFloat(s)})),1):""}
-                    <div class="zone-section">
+                    <div class="si-section">
                       ${ds("panels.zones.sections.status",y)}
                     </div>
                     ${this._bucketRow(e,t,y)}
@@ -4074,7 +4074,7 @@ s.version="2.31.0",i(ii),s.fn=vn,s.min=ri,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
         >${ds("programs.yaml_edit",t)}</ha-button
       >
     </ha-alert>`}_zoneYamlBlock(e,t){const s=e.id,i=this._yamlEdits.get(s),a=i.valid?((e,t)=>{const s=An(e);if(!s)return{error:"not_a_zone"};const i=Object.keys(s).filter(e=>!yo.has(e));if(i.length)return{error:"not_settings",keys:i};const a=t,n={};for(const e of _o){let t;if(e in s)t=void 0===s[e]?null:s[e];else{if(!wo.has(e))continue;t=null}const i=a[e];bo(t)&&bo(i)||JSON.stringify(t)!==JSON.stringify(i)&&(n[e]=t)}return{changes:n}})(i.value,e):null,n=i.valid?a&&"error"in a?"not_a_zone"===a.error?ds("panels.zones.yaml.not_a_zone",t):ds("panels.zones.yaml.not_settings",t).replace("{keys}",a.keys.join(", ")):i.error:ds("programs.yaml_invalid",t);return V`<div class="settings">
-      <div class="zone-section">
+      <div class="si-section">
         YAML<si-info>${ds("panels.zones.yaml.help",t)}</si-info>
       </div>
       <ha-yaml-editor
@@ -4419,18 +4419,6 @@ s.version="2.31.0",i(ii),s.fn=vn,s.min=ri,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
       }
       /* The open zone in three parts: what it is, what it needs, where it
          stands (#982). */
-      .zone-section {
-        font-size: 13px;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--secondary-text-color);
-        padding: 20px 0 4px;
-        border-bottom: 1px solid var(--divider-color);
-      }
-      .zone-section:first-child {
-        padding-top: 4px;
-      }
       .value-field {
         display: flex;
         align-items: center;
@@ -4582,7 +4570,7 @@ s.version="2.31.0",i(ii),s.fn=vn,s.min=ri,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
       </div>
     `}handleAddMapping(){var e;if(!this.mappingNameInput.value.trim())return;const t=!!(null===(e=this.config)||void 0===e?void 0:e.use_weather_service),s=e=>{var s;return function(e,t,s){const i=e===Ms||e===Ds||e===Cs||e===Hs&&Ps.includes(null!=s?s:"");return t?i?qs:Us:Bs}(e,t,null===(s=this.config)||void 0===s?void 0:s.weather_service)},i=Object.fromEntries([Ss,Ms,Ts,Cs,Hs,Es,Ds,Ns,Is].map(e=>[e,{[Js]:s(e),[Ks]:"",[Qs]:""}])),a={name:this.mappingNameInput.value.trim(),mappings:i};this.mappings=[...this.mappings,a],this.isSaving=!0,this.saveToHA(a).then(()=>(this.mappingNameInput.value="",this.newMappingName="",this._addOpen=!1,this.showAllMappings=!0,this._fetchData())).catch(e=>{console.error("Failed to add mapping:",e),this.mappings=this.mappings.slice(0,-1)}).finally(()=>{this.isSaving=!1,this._scheduleUpdate()})}async handleRemoveMapping(e,t){var s,i,a;const n=this.mappings[t].id;if(null==n)return;const o=ds("confirm.delete_mapping",null!==(i=null===(s=this.hass)||void 0===s?void 0:s.language)&&void 0!==i?i:"en").replace("{name}",null!==(a=this.mappings[t].name)&&void 0!==a?a:"");if(!await Zn(this.hass,{text:o,destructive:!0}))return;const r=[...this.mappings];var l,d;(this.mappings=this.mappings.filter((e,s)=>s!==t),this.mappingCache.delete(n.toString()),this.hass)&&(this.isSaving=!0,(l=this.hass,d=n.toString(),l.callApi("POST",gs+"/mappings",{id:d,remove:!0})).catch(e=>{console.error("Failed to delete mapping:",e),this.mappings=r,this._fetchData().catch(e=>{console.error("Failed to refresh data after delete error:",e)})}).finally(()=>{this.isSaving=!1,this._scheduleUpdate()}))}handleEditMapping(e,t){this.mappings[e]=t,t.id&&this.mappingCache.delete(t.id.toString()),void 0!==t.id&&this._pendingMappings.set(t.id,t),this.globalDebounceTimer&&clearTimeout(this.globalDebounceTimer),this.globalDebounceTimer=window.setTimeout(()=>{const e=[...this._pendingMappings.values()];this._pendingMappings.clear(),this.isSaving=!0,this._suppressNextConfigUpdate=!0,Promise.all(e.map(e=>this.saveToHA(e))).catch(e=>{this._suppressNextConfigUpdate=!1,console.error("Failed to save mapping:",e)}).finally(()=>{this.isSaving=!1,this._scheduleUpdate()}),this.globalDebounceTimer=null},500),this._scheduleUpdate()}async saveToHA(e){var t;if(!this.hass)throw new Error("Home Assistant connection not available");const s=[],i=this.hass.states;for(const t in e.mappings){const a=e.mappings[t].sensorentity;if(a&&""!==a.trim()){const n=a.trim();e.mappings[t].sensorentity=n,n in i||s.push(n)}}if(s.length>0){const e=null===(t=this.shadowRoot)||void 0===t?void 0:t.querySelector("ha-card");throw e&&va({body:{message:ds("panels.mappings.cards.mapping.errors.source_does_not_exist",this.hass.language)+": "+s.join(", ")},error:ds("panels.mappings.cards.mapping.errors.invalid_source",this.hass.language)},e),new Error("Invalid sensor entities found")}const{id:a,name:n,mappings:o,greenhouse:r}=e;await rn(this.hass,{id:a,name:n,mappings:o,greenhouse:r})}consumedSources(e){var t;if(void 0===e.module||null===e.module)return null;const s=this.modules.find(t=>t.id===e.module);return null!==(t=null==s?void 0:s.consumes)&&void 0!==t?t:null}requiredSources(e){var t;if(!e||void 0===e.module||null===e.module)return null;const s=this.modules.find(t=>t.id===e.module);return null!==(t=null==s?void 0:s.requires)&&void 0!==t?t:null}renderMappingSetting(e,t){var s,i;const a=this.mappings[e];if(!a||!this.hass)return V``;const n=a.mappings[t],o=t===Ms?this.etUseOfZones(a.id):{provided:0,calculated:0},r=o.calculated>0&&0===o.provided,l=o.provided>0&&0===o.calculated;return V`
       <div class="si-subgroup">
-        <div class="si-subgroup-title">
+        <div class="si-section">
           ${ds(`panels.mappings.cards.mapping.items.${t.toLowerCase()}`,this.hass.language)}
         </div>
         ${this.renderSourceHint(t)}

@@ -1718,7 +1718,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 ? this._zoneYamlBlock(zone, lang)
                 : html`<div class="settings">
                     ${this._zoneHiddenNotice(zone, lang)}
-                    <div class="zone-section">
+                    <div class="si-section">
                       ${localize("panels.zones.sections.zone", lang)}
                     </div>
                     ${this._textRow(
@@ -2161,7 +2161,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                         1,
                       ),
                     )}
-                    <div class="zone-section">
+                    <div class="si-section">
                       ${localize("panels.zones.sections.need", lang)}
                     </div>
                     ${this._selectRow(
@@ -2554,7 +2554,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           1,
                         )
                       : ""}
-                    <div class="zone-section">
+                    <div class="si-section">
                       ${localize("panels.zones.sections.status", lang)}
                     </div>
                     ${this._bucketRow(zone, index, lang)}
@@ -3165,7 +3165,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       }
     };
     return html`<div class="settings">
-      <div class="zone-section">
+      <div class="si-section">
         YAML<si-info>${localize("panels.zones.yaml.help", lang)}</si-info>
       </div>
       <ha-yaml-editor
@@ -3690,18 +3690,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       }
       /* The open zone in three parts: what it is, what it needs, where it
          stands (#982). */
-      .zone-section {
-        font-size: 13px;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--secondary-text-color);
-        padding: 20px 0 4px;
-        border-bottom: 1px solid var(--divider-color);
-      }
-      .zone-section:first-child {
-        padding-top: 4px;
-      }
       .value-field {
         display: flex;
         align-items: center;

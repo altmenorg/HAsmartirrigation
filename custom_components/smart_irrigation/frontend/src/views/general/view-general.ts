@@ -1518,7 +1518,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ...data,
         }).then(() => this._fetchLive(false));
       return html`
-        <div class="fold-section">${t("adjust_title")}</div>
+        <div class="si-section">${t("adjust_title")}</div>
         <div class="si-note">${summary}</div>
         ${active
           ? html`<div class="si-actions">
@@ -1782,7 +1782,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       if (!this._isOpen(foldKey)) return html``;
       const data = this._preview(id, program);
       return html`
-        <div class="fold-section">
+        <div class="si-section">
           ${t("preview_title")}<si-info>${t("preview_help")}</si-info>
         </div>
         ${data
@@ -1836,7 +1836,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         toast(t("yaml_applied"));
       };
       return html`
-        <div class="fold-section">YAML<si-info>${t("yaml_help")}</si-info></div>
+        <div class="si-section">YAML<si-info>${t("yaml_help")}</si-info></div>
         <ha-yaml-editor
           .hass=${this.hass}
           .defaultValue=${edit.initial}
@@ -2805,7 +2805,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         });
       };
       return html`
-        <div class="fold-section">
+        <div class="si-section">
           ${t("notify_title")}<si-info>${t("notify_help")}</si-info>
         </div>
         ${choices.map(
@@ -2935,7 +2935,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         patch(index, { name: v }),
                       )}
                       ${preview(program, `program:${program.id}`)}
-                      <div class="fold-section">${t("steps_title")}</div>
+                      <div class="si-section">${t("steps_title")}</div>
                       ${(program.steps || []).map((step, stepIndex) =>
                         renderStep(program, index, step, stepIndex),
                       )}
@@ -2962,7 +2962,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                           }),
                         )}
                       </div>
-                      <div class="fold-section">${t("schedules_title")}</div>
+                      <div class="si-section">${t("schedules_title")}</div>
                       ${renderSchedules(program, index)}
                       ${
                         // Rounds: the advanced mode (the standard one lists
@@ -3927,7 +3927,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               !!(this.config as any)[key],
               (on) => this.handleConfigChange({ [key]: on }),
             )
-          : html`<div class="si-subgroup-title">
+          : html`<div class="si-section">
               ${title}<si-info>${description}</si-info>
             </div>`}
         ${body}
@@ -4514,7 +4514,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     checked: boolean,
     onChange: (checked: boolean) => void,
   ): TemplateResult {
-    return html`<div class="si-subgroup-title si-head">
+    return html`<div class="si-section si-head">
       <span>${title}</span>
       <ha-switch
         .checked=${checked}
