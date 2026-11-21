@@ -1326,20 +1326,23 @@ function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
   details.fold > summary::-webkit-details-marker {
     display: none;
   }
-  /* The chevron of the "more" lines below, for every fold (#1059). */
-  details.fold > summary::before {
+  /* The chevron of a collapsible card (.si-chevron): grey, on the right,
+     pointing down while closed and up once open (#1059). */
+  details.fold > summary::after {
     content: "";
     flex: 0 0 auto;
-    width: 6px;
-    height: 6px;
-    margin-left: 2px;
-    border-right: 2px solid var(--primary-color);
-    border-bottom: 2px solid var(--primary-color);
-    transform: rotate(-45deg);
-    transition: transform 0.15s;
-  }
-  details.fold[open] > summary::before {
+    order: 99;
+    width: 7px;
+    height: 7px;
+    margin: 0 8px 4px 4px;
+    border-right: 2px solid var(--secondary-text-color);
+    border-bottom: 2px solid var(--secondary-text-color);
     transform: rotate(45deg);
+    transition: transform 0.2s ease;
+  }
+  details.fold[open] > summary::after {
+    margin-bottom: -4px;
+    transform: rotate(-135deg);
   }
   /* A summary line with a switch on its right (a step's or a schedule's
      "on"): the text takes the room, the switch keeps its own. */
