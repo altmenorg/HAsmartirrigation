@@ -599,6 +599,7 @@
       "title": "Érzékelőcsoportok",
       "weather-records": {
         "title": "Időjárási feljegyzések",
+        "kept": "Amit a következő számítás beolvas, és az utolsó nap, amelyre szintén szüksége van. A régebbi mérések a beszámításuk után eltűnnek.",
         "timestamp": "Idő",
         "temperature": "Hőm.",
         "humidity": "Páratartalom",

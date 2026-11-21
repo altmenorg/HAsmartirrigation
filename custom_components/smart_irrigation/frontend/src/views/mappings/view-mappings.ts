@@ -132,26 +132,9 @@ const RECORD_FIELDS: {
     decimals: 2,
   },
 ];
-// A week of readings is what a group keeps; the table shows one range of it,
-// kept by this browser like the planning's days. Storage can be refused.
-const RECORD_HOURS = [24, 72, 168];
+// What a group keeps: the readings its zones have not read yet, and the last
+// day, the calculation's context. At most a week.
 const RECORD_LIMIT = 200;
-const RECORD_HOURS_KEY = "smart_irrigation.record_hours";
-function readRecordHours(): number {
-  try {
-    const hours = Number(window.localStorage.getItem(RECORD_HOURS_KEY));
-    return RECORD_HOURS.includes(hours) ? hours : 24;
-  } catch {
-    return 24;
-  }
-}
-function saveRecordHours(hours: number): void {
-  try {
-    window.localStorage.setItem(RECORD_HOURS_KEY, String(hours));
-  } catch {
-    // Not kept: the next visit shows 24 h.
-  }
-}
 
 @customElement("smart-irrigation-view-mappings")
 class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
@@ -178,7 +161,6 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
   private newMappingName = "";
   // Whether the field to add a group is open (always, with no group yet).
   @state() private _addOpen = false;
-  @state() private _recordHours = readRecordHours();
 
   // True once the first data load has completed. Avoids tearing the whole view
   // down to a "loading" card on every background refresh (focus/scroll loss).
@@ -370,14 +352,9 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
       return html``;
     }
     const lang = this.hass.language;
-    const all =
+    // Everything the group keeps, newest first.
+    const records =
       mapping.id !== undefined ? this.weatherRecords.get(mapping.id) || [] : [];
-    // The readings of the chosen range, newest first.
-    const since = Date.now() - this._recordHours * 3600 * 1000;
-    const records = all.filter((record: any) => {
-      const time = new Date(record.timestamp).getTime();
-      return isNaN(time) || time >= since;
-    });
     // Only the values this group has: a group of three sensors gets three
     // columns, not eleven.
     const fields = RECORD_FIELDS.filter((field) =>
@@ -389,24 +366,9 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     const columns = ["auto", ...fields.map(() => "auto")].join(" ");
     return html`
       <div class="weather-records">
-        <div class="records-head">
-          <h4>${localize("panels.mappings.weather-records.title", lang)}</h4>
-          <div class="si-segmented" role="group">
-            ${RECORD_HOURS.map(
-              (hours) =>
-                html`<button
-                  class=${hours === this._recordHours ? "on" : ""}
-                  @click=${() => {
-                    this._recordHours = hours;
-                    saveRecordHours(hours);
-                  }}
-                >
-                  ${hours === 24
-                    ? "24 h"
-                    : localize("week.days", lang, "{n}", hours / 24)}
-                </button>`,
-            )}
-          </div>
+        <h4>${localize("panels.mappings.weather-records.title", lang)}</h4>
+        <div class="si-hint records-kept">
+          ${localize("panels.mappings.weather-records.kept", lang)}
         </div>
         ${records.length === 0
           ? html`<div class="si-box">
@@ -2194,15 +2156,11 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     return css`
       ${siStyle}
 
-      .records-head {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0 12px;
-      }
-      .records-head h4 {
+      .weather-records h4 {
         margin: 0;
+      }
+      .records-kept {
+        margin-bottom: 8px;
       }
 
       .add-group-bar {

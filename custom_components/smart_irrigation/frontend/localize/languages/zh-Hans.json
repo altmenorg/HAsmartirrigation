@@ -599,6 +599,7 @@
       "title": "传感器组",
       "weather-records": {
         "title": "天气记录",
+        "kept": "下一次计算将读取的数据，以及它同样需要的最近一天。较早的读数在计入后即被清除。",
         "timestamp": "时间",
         "temperature": "温度",
         "humidity": "湿度",

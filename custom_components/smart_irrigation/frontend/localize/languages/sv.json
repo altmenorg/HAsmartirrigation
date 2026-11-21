@@ -599,6 +599,7 @@
       "title": "Sensorgrupper",
       "weather-records": {
         "title": "Väderposter",
+        "kept": "Det som nästa beräkning kommer att läsa, och det senaste dygnet, som den också behöver. Äldre mätvärden försvinner när de är räknade.",
         "timestamp": "Tid",
         "temperature": "Temp",
         "humidity": "Luftfuktighet",

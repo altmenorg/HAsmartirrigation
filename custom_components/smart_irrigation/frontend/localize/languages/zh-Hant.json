@@ -599,6 +599,7 @@
       "title": "感測器群組",
       "weather-records": {
         "title": "氣象記錄",
+        "kept": "下一次計算將讀取的資料，以及它同樣需要的最近一天。較早的讀數在計入後即被清除。",
         "timestamp": "時間",
         "temperature": "溫度",
         "humidity": "濕度",

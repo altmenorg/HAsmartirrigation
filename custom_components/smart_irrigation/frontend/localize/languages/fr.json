@@ -599,6 +599,7 @@
       "title": "Groupes de capteurs",
       "weather-records": {
         "title": "Relevés météo",
+        "kept": "Ce que le prochain calcul lira, et la dernière journée, dont il a aussi besoin. Les relevés plus anciens partent une fois comptés.",
         "timestamp": "Heure",
         "temperature": "Temp.",
         "humidity": "Humidité",
