@@ -4941,7 +4941,7 @@ s.version="2.31.0",i(ii),s.fn=vn,s.min=ri,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
         justify-content: flex-end;
         margin: 8px;
       }
-      /* .si-subgroup / .si-subgroup-title now live in modern-style (shared) */
+      /* .si-subgroup / .si-section live in the shared sheet */
       /* source radios laid out inline like the other field controls */
       .radio-group {
         display: flex;
