@@ -656,14 +656,17 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       }
       return html`
         ${this._numRow(
-          localize("panels.zones.labels.forecast-days", lang),
+          html`${localize("panels.zones.labels.forecast-days", lang)}<si-info
+              >${localize("panels.zones.labels.forecast-days-help", lang)}
+              ${localize(
+                "panels.zones.labels.engine-shared-help",
+                lang,
+              )}</si-info
+            >`,
           "",
           config.forecast_days ?? 0,
           (v) => save({ forecast_days: parseInt(v, 10) || 0 }),
-        )}<si-info
-          >${localize("panels.zones.labels.forecast-days-help", lang)}
-          ${localize("panels.zones.labels.engine-shared-help", lang)}</si-info
-        >
+        )}
         <div class="setting-row">
           <div class="setting-label">
             ${localize("panels.zones.labels.coastal", lang)}<si-info

@@ -2842,7 +2842,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           : ""}
         ${notify.targets.length
           ? html`
-              <div class="setting-row">
+              <div class="setting-row after-list">
                 <div class="setting-label">${t("notify_when")}</div>
                 <div class="select-wrap">
                   <select
@@ -5185,10 +5185,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       /* A card that is only a way somewhere (the setup assistant, the
          Irrigation Unlimited import): the button on the title's line, not on
          a row of its own under a divider (#1056). */
+      /* A card that is only its title and a button: as much room under
+         the title as above it, so both sit in the middle (#1059). */
       .card-header.header-action {
         align-items: center;
         gap: 12px;
-        padding-bottom: 12px;
+        padding-top: 16px;
+        padding-bottom: 16px;
+      }
+      /* A row that follows a list of check boxes: the room a row has under
+         a field, not glued to the last box (#1059). */
+      .setting-row.after-list {
+        margin-top: 12px;
       }
       .card-header.header-action > span {
         flex: 1 1 auto;
