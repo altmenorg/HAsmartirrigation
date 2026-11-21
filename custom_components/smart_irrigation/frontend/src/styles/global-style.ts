@@ -34,46 +34,6 @@ export const globalStyle = css`
     margin-top: 20px;
   }
 
-  div.checkbox-row {
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-  }
-
-  div.checkbox-row ha-switch {
-    margin-right: 20px;
-  }
-
-  div.checkbox-row.right ha-switch {
-    margin-left: 20px;
-    position: absolute;
-    right: 0px;
-  }
-
-  div.entity-row {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    margin: 10px 0px;
-  }
-  div.entity-row .info {
-    margin-left: 16px;
-    flex: 1 0 60px;
-  }
-  div.entity-row .info,
-  div.entity-row .info > * {
-    color: var(--primary-text-color);
-    transition: color 0.2s ease-in-out;
-  }
-  div.entity-row .secondary {
-    display: block;
-    color: var(--secondary-text-color);
-    transition: color 0.2s ease-in-out;
-  }
-  div.entity-row state-badge {
-    flex: 0 0 40px;
-  }
-
   ha-dialog div.wrapper {
     margin-bottom: -20px;
   }
@@ -100,10 +60,6 @@ export const globalStyle = css`
     display: none;
   }
 
-  .shortinput {
-    width: 50px;
-  }
-
   .loading-indicator {
     text-align: center;
     padding: 20px;
@@ -114,13 +70,6 @@ export const globalStyle = css`
   .saving {
     opacity: 0.6;
     cursor: not-allowed;
-  }
-
-  .saving-indicator {
-    color: var(--primary-color);
-    font-style: italic;
-    margin-top: 8px;
-    font-size: 0.9em;
   }
 
   /* Disabled input styling */
@@ -223,31 +172,6 @@ export const globalStyle = css`
     margin-right: 15px;
   }
 
-  /* Common header styles */
-  .subheader,
-  .mappingsettingname {
-    font-weight: bold;
-  }
-
-  /* Load more button styling */
-  .load-more {
-    text-align: center;
-    padding: 16px;
-  }
-
-  .load-more button {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .load-more button:hover {
-    background: var(--primary-color-dark, var(--primary-color));
-  }
-
   /* Strikethrough utility */
   .strikethrough {
     text-decoration: line-through;
@@ -323,148 +247,6 @@ export const globalStyle = css`
     color: white;
     border-radius: 4px;
     font-size: 0.8em;
-  }
-
-  /* Zone info table styles */
-  .zone-info-table {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 4px;
-    margin-bottom: 16px;
-  }
-
-  .zone-info-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    padding: 6px 8px;
-    border-bottom: 1px solid var(--divider-color);
-    font-size: 0.9em;
-  }
-
-  .zone-info-label {
-    color: var(--primary-text-color);
-    font-weight: 500;
-  }
-
-  .zone-info-value {
-    color: var(--secondary-text-color);
-    text-align: right;
-  }
-
-  /* Info item styles */
-  .info-item {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    align-items: center;
-    margin-bottom: 8px;
-    padding: 6px 8px;
-    border-bottom: 1px solid var(--divider-color);
-    font-size: 0.9em;
-  }
-
-  .info-item label {
-    font-weight: 500;
-    min-width: 120px;
-    color: var(--primary-text-color);
-  }
-
-  .info-item .value {
-    color: var(--secondary-text-color);
-    font-family: monospace;
-    text-align: right;
-    justify-self: end;
-  }
-
-  .info-item.explanation {
-    grid-template-columns: 1fr;
-    align-items: flex-start;
-  }
-
-  .explanation-text {
-    background: var(--card-background-color);
-    border: 1px solid var(--divider-color);
-    border-radius: 4px;
-    padding: 8px;
-    font-size: 0.9em;
-    line-height: 1.4;
-    white-space: pre-wrap;
-    margin-top: 4px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  /* Action button containers for zones page */
-  .action-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 16px;
-    padding: 12px 8px;
-    border-top: 1px solid var(--divider-color);
-  }
-
-  .action-buttons-left,
-  .action-buttons-right {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  /* Labeled action button - generic class for all pages */
-  .action-button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-
-  .action-button:hover {
-    background-color: var(--secondary-background-color);
-  }
-
-  /* For zones page - left column has label on right of icon */
-  .action-button-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    flex-direction: row;
-  }
-
-  /* For zones page - right column has label on left of icon */
-  .action-button-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    text-align: right;
-    justify-content: flex-end;
-  }
-
-  .action-button-left:hover,
-  .action-button-right:hover {
-    background-color: var(--secondary-background-color);
-  }
-
-  .action-button svg {
-    flex-shrink: 0;
-  }
-
-  .action-button-label {
-    font-size: 0.85em;
-    color: var(--primary-text-color);
-    white-space: nowrap;
   }
 `;
 

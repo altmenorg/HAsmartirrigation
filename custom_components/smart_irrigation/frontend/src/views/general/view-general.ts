@@ -5216,10 +5216,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       .card-content.si-subgroup {
         padding: 12px 16px;
       }
-      .settings-section-sub {
-        margin-top: 2px;
-        color: var(--secondary-text-color);
-      }
+
       .reading-source ha-button {
         margin-top: 4px;
       }

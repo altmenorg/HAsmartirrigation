@@ -85,13 +85,6 @@ export const modernStyle = css`
     );
   }
 
-  /* --- meta summary row --- */
-  .si-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 28px;
-    padding: 4px 0 12px;
-  }
   .meta-item {
     display: flex;
     flex-direction: column;

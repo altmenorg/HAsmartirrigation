@@ -1503,23 +1503,6 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
         min-height: 1em;
       }
 
-      .info-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        min-height: 44px;
-        padding: 2px 0;
-      }
-      .info-item label {
-        color: var(--secondary-text-color);
-      }
-      .info-item .value {
-        color: var(--primary-text-color);
-        font-weight: 500;
-        text-align: right;
-      }
-
       /* A remark under a value, not an alert: the shared style paints
          .info-note as a warning banner, which read as something wrong. */
       .postpone {

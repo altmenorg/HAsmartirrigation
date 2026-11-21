@@ -81,6 +81,7 @@ import {
   linkedValveDomains,
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
+import { modernStyle } from "../../styles/modern-style";
 import {
   LiveState,
   remainingDuration,
@@ -3482,7 +3483,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle}
+      ${globalStyle} ${modernStyle}
 
       /* --- Modern zone cards (HA-native look) --- */
       /* own collapsible: a plain ha-card (white surface like every HA card)
@@ -3522,26 +3523,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         flex: 0 1 auto;
         min-width: 0;
       }
-      /* native HA state pill (ha-label), tinted by zone state */
-      ha-label.state-label {
-        flex: 0 0 auto;
-        --ha-label-background-color: rgba(
-          var(--rgb-disabled-text-color, 120, 120, 120),
-          0.15
-        );
-      }
-      ha-label.state-label--automatic {
-        --ha-label-background-color: rgba(
-          var(--rgb-success-color, 67, 160, 71),
-          0.18
-        );
-      }
-      ha-label.state-label--manual {
-        --ha-label-background-color: rgba(
-          var(--rgb-warning-color, 255, 166, 0),
-          0.22
-        );
-      }
+
       .zone-sub {
         font-size: 0.85em;
         color: var(--secondary-text-color);
@@ -3580,26 +3562,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         gap: 8px 28px;
         padding: 4px 0 12px;
       }
-      .meta-item {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-      .meta-label {
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--secondary-text-color);
-      }
-      .meta-value {
-        color: var(--primary-text-color);
-        font-weight: 500;
-      }
 
-      .settings {
-        display: flex;
-        flex-direction: column;
-      }
       /* One sentence per zone, and a colour that says the same thing. */
       .zone-status {
         display: flex;
@@ -3670,16 +3633,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         white-space: nowrap;
       }
 
-      .setting-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        min-height: 52px;
-        padding: 4px 0;
-        border-bottom: 1px solid var(--divider-color);
-      }
-
       .month-grid {
         display: grid;
         grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -3715,68 +3668,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       .setting-help:last-child {
         border-bottom: 0;
       }
-      .setting-label {
-        color: var(--primary-text-color);
-        font-weight: 500;
-      }
-      .setting-label .unit {
-        color: var(--secondary-text-color);
-        font-weight: 400;
-        font-size: 0.85em;
-      }
-      /* one unified field style for BOTH inputs and selects, themed with the
-         same MDC variables HA's own ha-textfield/ha-select use (native feel) */
-      .setting-hint {
-        font-size: 0.8rem;
-        font-weight: normal;
-        color: var(--secondary-text-color);
-        margin-top: 2px;
-        max-width: 460px;
-      }
-      /* HA entity picker: sized like the other controls, but it brings its own
-         input chrome, so it must NOT get the .field text-input background. */
-      .entity-field {
-        flex: 0 0 auto;
-        width: 360px;
-        max-width: 100%;
-      }
-      .field {
-        flex: 0 0 auto;
-        width: 360px;
-        max-width: 100%;
-        height: 44px;
-        box-sizing: border-box;
-        padding: 0 12px;
-        border: none;
-        border-bottom: 1px solid
-          var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
-        border-radius: 4px 4px 0 0;
-        background: var(
-          --mdc-text-field-fill-color,
-          var(--input-fill-color, rgba(0, 0, 0, 0.04))
-        );
-        color: var(--primary-text-color);
-        font-size: 1rem;
-        font-family: var(--paper-font-body1_-_font-family, inherit);
-        line-height: normal;
-        transition:
-          border-color 0.15s,
-          background 0.15s;
-      }
-      .field:hover {
-        border-bottom-color: var(
-          --mdc-text-field-hover-line-color,
-          var(--primary-text-color)
-        );
-      }
-      .field:focus {
-        outline: none;
-        border-bottom: 2px solid var(--mdc-theme-primary, var(--primary-color));
-      }
-      input.field[readonly] {
-        opacity: 0.55;
-        cursor: not-allowed;
-      }
+
       /* keep native up/down spinners (they respect the per-field step) */
       /* number field with clean HA +/- steppers */
       .num-field {
@@ -3786,44 +3678,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         flex: 0 0 auto;
         width: 360px;
         max-width: 100%;
-      }
-      .num-field .num-input {
-        flex: 1 1 auto;
-        width: auto;
-        min-width: 0;
-        max-width: none;
-        /* text on the left, like the fields without steppers */
-        text-align: left;
-      }
-      .num-field .step-btn {
-        display: none;
-      }
-      /* native select wrapped so we can draw a themed chevron */
-      .select-wrap {
-        position: relative;
-        flex: 0 0 auto;
-        width: 360px;
-        max-width: 100%;
-        display: inline-flex;
-      }
-      .select-wrap .field {
-        width: 100%;
-        max-width: 100%;
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        padding-right: 36px;
-        cursor: pointer;
-      }
-      .select-wrap .chev {
-        position: absolute;
-        right: 8px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 24px;
-        height: 24px;
-        pointer-events: none;
-        fill: var(--secondary-text-color);
       }
 
       .zone-actions {
@@ -3933,11 +3787,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       }
 
       @media (max-width: 600px) {
-        .setting-row {
-          flex-direction: column;
-          align-items: stretch;
-          gap: 6px;
-        }
         /* A switch stays on the right of its title (#1049), and a value
            sits right after its label, not on a line of its own (#1048). */
         .setting-row:has(> ha-switch) {
