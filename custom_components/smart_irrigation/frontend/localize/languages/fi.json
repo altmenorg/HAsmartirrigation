@@ -192,6 +192,7 @@
       "history": {
         "title": "Historia",
         "refresh": "Päivitä",
+        "see-groups": "Kunkin anturiryhmän lukemat, palvelusta tai antureistasi, ovat sen taulukossa.",
         "last-update": "Viimeisin päivitys",
         "time": "Haettu",
         "sensor-group": "Anturiryhmä",
@@ -597,7 +598,7 @@
       "no_items": "Anturiryhmiä ei ole vielä määritetty.",
       "title": "Anturiryhmät",
       "weather-records": {
-        "title": "Säätietueet (viimeiset 10)",
+        "title": "Säätietueet",
         "timestamp": "Aika",
         "temperature": "Lämpö",
         "humidity": "Kosteus",

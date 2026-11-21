@@ -192,6 +192,7 @@
       "history": {
         "title": "Historique",
         "refresh": "Actualiser",
+        "see-groups": "Les relevés de chaque groupe de capteurs, venus du service ou de tes capteurs, sont dans son tableau.",
         "last-update": "Dernière mise à jour",
         "time": "Récupéré le",
         "sensor-group": "Groupe de capteurs",
@@ -597,7 +598,7 @@
       "no_items": "Il n'y a pas encore de groupe de capteurs définis.",
       "title": "Groupes de capteurs",
       "weather-records": {
-        "title": "Relevés météo (10 derniers)",
+        "title": "Relevés météo",
         "timestamp": "Heure",
         "temperature": "Temp.",
         "humidity": "Humidité",

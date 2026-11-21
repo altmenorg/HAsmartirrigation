@@ -2,7 +2,6 @@ import { TemplateResult, LitElement, html, css, CSSResultGroup } from "lit";
 import { property, customElement, state } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
 import { mdiMenuDown, mdiRefresh } from "@mdi/js";
-import moment from "moment";
 import { localize } from "../../../localize/localize";
 import { siStyle } from "../../styles/si-style";
 import { loadHaForm } from "../../load-ha-elements";
@@ -10,7 +9,9 @@ import { exportPath, Path } from "../../common/navigation";
 import {
   formatNumber,
   groupsWithRainFromService,
+  localizedDateTime,
   navigate,
+  runStartOptions,
 } from "../../helpers";
 import {
   MAPPING_CURRENT_PRECIPITATION,
@@ -45,28 +46,6 @@ import {
   WeatherServiceHistory,
   WeatherServiceInfo,
 } from "../../data/websockets";
-
-// How the weather values are shown in the history table. The values are stored
-// in metric internally (see helpers.convert_mapping_to_metric), whatever the
-// unit system of the panel is.
-const HISTORY_FIELD_DISPLAY: Record<
-  string,
-  { unit: string; decimals: number }
-> = {
-  [MAPPING_TEMPERATURE]: { unit: UNIT_DEGREES_C, decimals: 1 },
-  [MAPPING_MIN_TEMP]: { unit: UNIT_DEGREES_C, decimals: 1 },
-  [MAPPING_MAX_TEMP]: { unit: UNIT_DEGREES_C, decimals: 1 },
-  [MAPPING_DEWPOINT]: { unit: UNIT_DEGREES_C, decimals: 1 },
-  [MAPPING_HUMIDITY]: { unit: UNIT_PERCENT, decimals: 0 },
-  [MAPPING_PRESSURE]: { unit: UNIT_HPA, decimals: 0 },
-  [MAPPING_WINDSPEED]: { unit: UNIT_MS, decimals: 1 },
-  [MAPPING_SOLRAD]: { unit: UNIT_MJ_DAY_M2, decimals: 2 },
-  [MAPPING_PRECIPITATION]: { unit: UNIT_MM, decimals: 2 },
-  [MAPPING_CURRENT_PRECIPITATION]: { unit: UNIT_MMH, decimals: 2 },
-  [MAPPING_EVAPOTRANSPIRATION]: { unit: UNIT_MM, decimals: 2 },
-};
-
-const HISTORY_LIMIT = 20;
 
 @customElement("smart-irrigation-view-weatherservice")
 export class SmartIrrigationViewWeatherService extends LitElement {
@@ -131,10 +110,7 @@ export class SmartIrrigationViewWeatherService extends LitElement {
     }
     this._historyLoading = true;
     try {
-      this._history = await fetchWeatherServiceHistory(
-        this.hass,
-        HISTORY_LIMIT,
-      );
+      this._history = await fetchWeatherServiceHistory(this.hass, 1);
       this._historyError = "";
     } catch (e) {
       this._historyError = this._errText(e);
@@ -427,33 +403,24 @@ export class SmartIrrigationViewWeatherService extends LitElement {
     `;
   }
 
-  /** Past retrievals of the weather service: when, and what came back. */
+  /** When the service was last read, and a way to read it again: the
+   *  readings themselves are in each sensor group's table. */
   private _renderHistory(lang: string): TemplateResult {
-    const records = this._history?.records || [];
-    // Only keep the columns that actually carry a value, so a setup that takes
-    // just temperature from the service does not get nine empty columns.
-    const fields = (this._history?.fields || []).filter((field) =>
-      records.some(
-        (record) =>
-          record.values &&
-          record.values[field] !== undefined &&
-          record.values[field] !== null,
-      ),
-    );
-    // The sensor group only matters when more than one takes weather data.
-    const showGroup =
-      new Set(records.map((record) => record.mapping_name)).size > 1;
-    const columns = [
-      "minmax(120px, auto)",
-      ...(showGroup ? ["minmax(100px, auto)"] : []),
-      ...fields.map(() => "minmax(76px, 1fr)"),
-    ].join(" ");
-    const lastRetrieved = records.length ? this._formatTime(records[0]) : "";
-
+    const last = this._history?.records?.[0];
     return html`
       <div class="card-content ws-history">
         <div class="ws-history-head">
-          <h4>${localize("panels.weatherservice.history.title", lang)}</h4>
+          <span>
+            ${this._historyError
+              ? this._historyError
+              : last
+                ? html`${localize(
+                    "panels.weatherservice.history.last-update",
+                    lang,
+                  )}:
+                  ${this._formatTime(last)}`
+                : localize("panels.weatherservice.history.no-data", lang)}
+          </span>
           <ha-button
             appearance="plain"
             ?disabled=${this._historyLoading}
@@ -463,77 +430,20 @@ export class SmartIrrigationViewWeatherService extends LitElement {
             ${localize("panels.weatherservice.history.refresh", lang)}
           </ha-button>
         </div>
-        ${lastRetrieved
-          ? html`<div class="si-note ws-history-last">
-              ${localize("panels.weatherservice.history.last-update", lang)}:
-              ${lastRetrieved}
-            </div>`
-          : ""}
-        ${this._historyError
-          ? html`<div class="ws-msg ws-msg--error">${this._historyError}</div>`
-          : records.length === 0
-            ? html`<div class="si-note">
-                ${this._historyLoading
-                  ? localize("common.loading-messages.general", lang) + "..."
-                  : localize("panels.weatherservice.history.no-data", lang)}
-              </div>`
-            : html`
-                <div class="ws-history-scroll">
-                  <div
-                    class="weather-table"
-                    style="grid-template-columns: ${columns};"
-                  >
-                    <div class="weather-header">
-                      <span
-                        >${localize(
-                          "panels.weatherservice.history.time",
-                          lang,
-                        )}</span
-                      >
-                      ${showGroup
-                        ? html`<span
-                            >${localize(
-                              "panels.weatherservice.history.sensor-group",
-                              lang,
-                            )}</span
-                          >`
-                        : ""}
-                      ${fields.map(
-                        (field) =>
-                          html`<span
-                            >${localize(
-                              "panels.mappings.cards.mapping.items." +
-                                field.toLowerCase(),
-                              lang,
-                            )}
-                            <span class="ws-history-unit"
-                              >${HISTORY_FIELD_DISPLAY[field]?.unit || ""}</span
-                            ></span
-                          >`,
-                      )}
-                    </div>
-                    ${records.map(
-                      (record) => html`
-                        <div class="weather-row">
-                          <span>${this._formatTime(record)}</span>
-                          ${showGroup
-                            ? html`<span>${record.mapping_name || "-"}</span>`
-                            : ""}
-                          ${fields.map(
-                            (field) =>
-                              html`<span
-                                >${this._formatValue(
-                                  field,
-                                  record.values?.[field],
-                                )}</span
-                              >`,
-                          )}
-                        </div>
-                      `,
-                    )}
-                  </div>
-                </div>
-              `}
+        <div class="si-hint">
+          ${localize("panels.weatherservice.history.see-groups", lang)}
+          <a
+            href=${exportPath("mappings")}
+            @click=${(e: Event) => {
+              e.preventDefault();
+              navigate(this, exportPath("mappings"));
+            }}
+            >${localize(
+              "panels.weatherservice.actions.open-sensor-groups",
+              lang,
+            )}</a
+          >
+        </div>
       </div>
     `;
   }
@@ -542,15 +452,11 @@ export class SmartIrrigationViewWeatherService extends LitElement {
     if (!record.retrieved) {
       return "-";
     }
-    const stamp = moment(record.retrieved);
-    return stamp.isValid() ? stamp.format("YYYY-MM-DD HH:mm") : "-";
-  }
-
-  private _formatValue(field: string, value?: number): string {
-    if (value === undefined || value === null || isNaN(value)) {
-      return "-";
-    }
-    return this._n(value, HISTORY_FIELD_DISPLAY[field]?.decimals ?? 1);
+    return localizedDateTime(
+      record.retrieved,
+      this.hass,
+      runStartOptions(record.retrieved),
+    );
   }
 
   static get styles(): CSSResultGroup {
@@ -604,27 +510,6 @@ export class SmartIrrigationViewWeatherService extends LitElement {
       .ws-history-last {
         margin-top: 0;
         margin-bottom: 8px;
-      }
-      /* The table grows a column per weather value, so let it scroll sideways
-         instead of squeezing the panel on a phone. */
-      .ws-history-scroll {
-        overflow-x: auto;
-      }
-      .ws-history-scroll .weather-table {
-        min-width: 100%;
-        width: max-content;
-      }
-      /* The unit is a span inside the header cell, so the global
-         ".weather-header span" rule drew a second, narrower underline under it
-         (#870). Only the cell itself is underlined. */
-      .weather-header .ws-history-unit {
-        display: block;
-        padding: 0;
-        background: none;
-        border-bottom: none;
-        font-weight: 400;
-        font-size: 0.85em;
-        color: var(--secondary-text-color);
       }
     `;
   }

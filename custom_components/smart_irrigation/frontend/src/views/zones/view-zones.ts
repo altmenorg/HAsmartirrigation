@@ -45,7 +45,6 @@ import {
   resetAllBuckets,
   clearAllWeatherdata,
   fetchWateringCalendar,
-  fetchMappingWeatherRecords,
   fetchIrrigationInfo,
   putBackZone,
 } from "../../data/websockets";
@@ -59,7 +58,6 @@ import {
   SmartIrrigationZoneState,
   SmartIrrigationModule,
   SmartIrrigationMapping,
-  WeatherRecord,
 } from "../../types";
 import {
   changedFields,
@@ -188,9 +186,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
   @property({ type: Map })
   private wateringCalendars = new Map<number, any>();
-
-  @property({ type: Map })
-  private weatherRecords = new Map<number, WeatherRecord[]>();
 
   // What each zone will water at the next start, forecast rain credited, as
   // the Info page and the planning count it (zone id -> seconds).
@@ -429,9 +424,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
       // Fetch watering calendars for each zone
       this._fetchWateringCalendars();
-
-      // Fetch weather records for each zone that has a mapping
-      this._fetchWeatherRecords();
 
       // Not awaited: the estimates take a few seconds when nothing is cached.
       this._fetchPlannedDurations();
@@ -1249,23 +1241,11 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
   }
 
   private handleViewWeatherInfo(index: number): void {
-    // Use direct array access instead of Object.values() to ensure correct zone mapping
-    const zone = this.zones[index];
-    if (!zone || zone.mapping == undefined) {
+    // A zone's readings are its sensor group's: one table, on that page.
+    if (this.zones[index]?.mapping == undefined) {
       return;
     }
-
-    // Toggle weather data display by updating the zone's weather visibility state
-    const selector = `#weather-section-${zone.id}`;
-    const weatherSection = this.shadowRoot?.querySelector(selector);
-
-    if (weatherSection) {
-      if (weatherSection.hasAttribute("hidden")) {
-        weatherSection.removeAttribute("hidden");
-      } else {
-        weatherSection.setAttribute("hidden", "");
-      }
-    }
+    navigate(this, `/${DOMAIN}/mappings`);
   }
 
   private handleViewWateringCalendar(index: number): void {
@@ -1286,32 +1266,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         calendarSection.setAttribute("hidden", "");
       }
     }
-  }
-
-  private async _fetchWeatherRecords(): Promise<void> {
-    if (!this.hass) {
-      return;
-    }
-
-    // Fetch weather records for each zone that has a mapping
-    for (const zone of this.zones) {
-      if (zone.id !== undefined && zone.mapping !== undefined) {
-        try {
-          const records = await fetchMappingWeatherRecords(
-            this.hass,
-            zone.mapping.toString(),
-            10,
-          );
-          this.weatherRecords.set(zone.id, records);
-        } catch (error) {
-          console.error(
-            `Failed to fetch weather records for zone ${zone.id} (mapping ${zone.mapping}):`,
-            error,
-          );
-        }
-      }
-    }
-    this._scheduleUpdate();
   }
 
   private async _fetchWateringCalendars(): Promise<void> {
@@ -1339,102 +1293,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     this._scheduleUpdate();
   }
 
-  private renderWeatherRecords(zone: SmartIrrigationZone): TemplateResult {
-    if (!this.hass || typeof zone.id !== "number") {
-      return html``;
-    }
-
-    const records = this.weatherRecords.get(zone.id) || [];
-
-    return html`
-      <div class="weather-records">
-        <h4>
-          ${localize(
-            "panels.mappings.weather-records.title",
-            this.hass.language,
-          )}
-        </h4>
-        ${records.length === 0
-          ? html`
-              <div class="si-box">
-                ${localize(
-                  "panels.mappings.weather-records.no-data",
-                  this.hass.language,
-                )}
-              </div>
-            `
-          : html`
-              <div class="weather-table">
-                <div class="weather-header">
-                  <span
-                    >${localize(
-                      "panels.mappings.weather-records.timestamp",
-                      this.hass.language,
-                    )}</span
-                  >
-                  <span
-                    >${localize(
-                      "panels.mappings.weather-records.temperature",
-                      this.hass.language,
-                    )}</span
-                  >
-                  <span
-                    >${localize(
-                      "panels.mappings.weather-records.humidity",
-                      this.hass.language,
-                    )}</span
-                  >
-                  <span
-                    >${localize(
-                      "panels.mappings.weather-records.precipitation",
-                      this.hass.language,
-                    )}</span
-                  >
-                  <span
-                    >${localize(
-                      "panels.mappings.weather-records.retrieval-time",
-                      this.hass.language,
-                    )}</span
-                  >
-                </div>
-                ${records.slice(0, 10).map(
-                  (record) => html`
-                    <div class="weather-row">
-                      <span
-                        >${moment(record.timestamp).format("MM-DD HH:mm")}</span
-                      >
-                      <span
-                        >${record.temperature !== null &&
-                        record.temperature !== undefined
-                          ? this._n(record.temperature, 1) + "°C"
-                          : "-"}</span
-                      >
-                      <span
-                        >${record.humidity !== null &&
-                        record.humidity !== undefined
-                          ? this._n(record.humidity, 1) + "%"
-                          : "-"}</span
-                      >
-                      <span
-                        >${record.precipitation !== null &&
-                        record.precipitation !== undefined
-                          ? this._n(record.precipitation, 1) + "mm"
-                          : "-"}</span
-                      >
-                      <span
-                        >${record.retrieval_time
-                          ? moment(record.retrieval_time).format("MM-DD HH:mm")
-                          : "-"}</span
-                      >
-                    </div>
-                  `,
-                )}
-              </div>
-            `}
-      </div>
-    `;
-  }
-
   private renderWateringCalendar(zone: SmartIrrigationZone): TemplateResult {
     if (!this.hass || typeof zone.id !== "number") {
       return html``;
@@ -1458,8 +1316,8 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 : t("none")}
             </div>
           `
-        : html` <div class="calendar-table">
-              <div class="calendar-header">
+        : html` <div class="si-table calendar-table">
+              <div class="si-thead">
                 <span>${t("month")}</span>
                 <span
                   >${t("et")} (${output_unit(this.config, ZONE_BUCKET)})</span
@@ -1479,7 +1337,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
               </div>
               ${monthlyEstimates.map(
                 (estimate) => html`
-                  <div class="calendar-row">
+                  <div class="si-tr">
                     <span
                       >${estimate.month_name ||
                       `Month ${estimate.month}` ||
@@ -2676,9 +2534,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 : ""}
               <div id="calendar-section-${zone.id}" hidden>
                 ${this.renderWateringCalendar(zone)}
-              </div>
-              <div id="weather-section-${zone.id}" hidden>
-                ${this.renderWeatherRecords(zone)}
               </div>
             </div>`
           : ""}

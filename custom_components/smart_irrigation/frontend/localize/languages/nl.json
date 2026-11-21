@@ -192,6 +192,7 @@
       "history": {
         "title": "Geschiedenis",
         "refresh": "Verversen",
+        "see-groups": "De metingen van elke sensorgroep, van de dienst of van je sensoren, staan in haar tabel.",
         "last-update": "Laatste update",
         "time": "Opgehaald",
         "sensor-group": "Sensorgroep",
@@ -597,7 +598,7 @@
       "no_items": "Er zijn nog geen sensorgroepen.",
       "title": "Sensorgroepen",
       "weather-records": {
-        "title": "Weerregistraties (laatste 10)",
+        "title": "Weerregistraties",
         "timestamp": "Tijd",
         "temperature": "Temp.",
         "humidity": "Vochtigheid",

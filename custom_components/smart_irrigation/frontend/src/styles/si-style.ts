@@ -203,45 +203,8 @@ export const siStyle = css`
     color: var(--primary-text-color);
   }
 
-  .calendar-table,
-  .weather-table {
-    display: grid;
-    gap: var(--si-space-2);
-    font-size: 0.85em;
-  }
-
   .calendar-table {
     grid-template-columns: 1fr 0.8fr 1fr 0.8fr 0.8fr;
-  }
-
-  .weather-table {
-    grid-template-columns: 1fr 0.8fr 0.8fr 0.8fr 1fr;
-  }
-
-  .calendar-header,
-  .weather-header {
-    display: contents;
-    font-weight: 500;
-    color: var(--primary-text-color);
-  }
-
-  .calendar-header span,
-  .weather-header span {
-    padding: var(--si-space-1);
-    background: var(--card-background-color);
-    border-bottom: 2px solid var(--primary-color);
-  }
-
-  .calendar-row,
-  .weather-row {
-    display: contents;
-    color: var(--secondary-text-color);
-  }
-
-  .calendar-row span,
-  .weather-row span {
-    padding: var(--si-space-1);
-    border-bottom: 1px solid var(--divider-color);
   }
 
   .calendar-info {
@@ -395,6 +358,82 @@ export const siStyle = css`
     margin-bottom: 0;
   }
 
+  /* --- A choice of a few views or ranges, side by side (the planning's
+     3, 7 or 14 days, a group's 24 h, 3 or 7 days of readings). --- */
+  .si-segmented {
+    display: inline-flex;
+    border: 1px solid var(--divider-color);
+    border-radius: 16px;
+    overflow: hidden;
+    margin: var(--si-space-1) 0 var(--si-space-2);
+  }
+  .si-segmented button {
+    border: 0;
+    background: none;
+    color: var(--primary-text-color);
+    font: inherit;
+    font-size: 0.85em;
+    padding: var(--si-space-1) var(--si-space-3);
+    cursor: pointer;
+  }
+  .si-segmented button.on {
+    background: var(--primary-color);
+    color: var(--text-primary-color, #fff);
+  }
+
+  /* --- A data table, as Home Assistant draws one: a quiet header kept in
+     sight, rows on a hairline, every other one lightly banded, numbers
+     aligned on the right. A grid whose header and rows are
+     display: contents; the columns are set by the table's own class. --- */
+  .si-table-scroll {
+    overflow: auto;
+  }
+  .si-table-scroll.tall {
+    max-height: 420px;
+  }
+  .si-table {
+    display: grid;
+    width: max-content;
+    min-width: 100%;
+    font-size: 0.9em;
+    font-variant-numeric: tabular-nums;
+  }
+  .si-table .si-thead,
+  .si-table .si-tr {
+    display: contents;
+  }
+  .si-table .si-thead > span {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: var(--si-space-2) var(--si-space-3);
+    background: var(--card-background-color, #fff);
+    border-bottom: 1px solid var(--divider-color);
+    color: var(--secondary-text-color);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .si-table .si-tr > span {
+    padding: var(--si-space-2) var(--si-space-3);
+    border-bottom: 1px solid var(--divider-color);
+    color: var(--primary-text-color);
+  }
+  .si-table .si-tr:nth-child(odd) > span {
+    background: rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.03);
+  }
+  .si-table .num {
+    text-align: end;
+    white-space: nowrap;
+  }
+  .si-table .muted {
+    color: var(--secondary-text-color);
+  }
+  .si-table .si-thead .unit {
+    display: block;
+    font-weight: 400;
+    font-size: 0.85em;
+  }
+
   /* --- Text building blocks: one look each, on every page (#1059) ---
      A hint is a line of small grey text under a label or a field. A note is
      a sentence or two that explains, in the flow of a card. A box is a note
@@ -425,7 +464,8 @@ export const siStyle = css`
   /* A hint or a note about the row above it: under it, as close as a hint
      under a label, and the row gives up its line. */
   .setting-row:has(+ .si-hint),
-  .setting-row:has(+ .si-note) {
+  .setting-row:has(+ .si-note),
+  .setting-row:has(+ .si-box) {
     border-bottom: 0;
   }
   .setting-row + .si-hint,

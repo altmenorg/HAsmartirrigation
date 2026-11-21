@@ -1733,7 +1733,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         (s) => s.enabled !== false,
       );
       return html`
-        <div class="run-views" role="group">
+        <div class="si-segmented" role="group">
           ${(["flow", "timeline"] as const).map(
             (v) =>
               html`<button
@@ -5129,26 +5129,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         margin-top: 16px;
       }
 
-      .run-views {
-        display: inline-flex;
-        border: 1px solid var(--divider-color);
-        border-radius: 16px;
-        overflow: hidden;
-        margin: 4px 0 8px;
-      }
-      .run-views button {
-        border: 0;
-        background: none;
-        color: var(--primary-text-color);
-        font: inherit;
-        font-size: 0.85em;
-        padding: 4px 12px;
-        cursor: pointer;
-      }
-      .run-views button.on {
-        background: var(--primary-color);
-        color: var(--text-primary-color, #fff);
-      }
       .settings-section {
         display: flex;
         align-items: flex-start;

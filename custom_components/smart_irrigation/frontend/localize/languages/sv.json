@@ -192,6 +192,7 @@
       "history": {
         "title": "Historik",
         "refresh": "Uppdatera",
+        "see-groups": "Varje sensorgrupps mätvärden, från tjänsten eller dina sensorer, finns i dess tabell.",
         "last-update": "Senaste uppdatering",
         "time": "Hämtat",
         "sensor-group": "Sensorgrupp",
@@ -597,7 +598,7 @@
       "no_items": "Det finns inga sensorgrupper definierade ännu.",
       "title": "Sensorgrupper",
       "weather-records": {
-        "title": "Väderposter (senaste 10)",
+        "title": "Väderposter",
         "timestamp": "Tid",
         "temperature": "Temp",
         "humidity": "Luftfuktighet",

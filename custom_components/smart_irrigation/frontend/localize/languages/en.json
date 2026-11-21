@@ -192,6 +192,7 @@
       "history": {
         "title": "History",
         "refresh": "Refresh",
+        "see-groups": "The readings of each sensor group, from the service or from your sensors, are in its table.",
         "last-update": "Last update",
         "time": "Retrieved",
         "sensor-group": "Sensor group",
@@ -597,7 +598,7 @@
       "no_items": "There are no sensor group defined yet.",
       "title": "Sensor groups",
       "weather-records": {
-        "title": "Weather records (last 10)",
+        "title": "Weather records",
         "timestamp": "Time",
         "temperature": "Temp",
         "humidity": "Humidity",

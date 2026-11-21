@@ -192,6 +192,7 @@
       "history": {
         "title": "Verlauf",
         "refresh": "Aktualisieren",
+        "see-groups": "Die Messwerte jeder Sensorgruppe, vom Dienst oder von deinen Sensoren, stehen in ihrer Tabelle.",
         "last-update": "Letzte Aktualisierung",
         "time": "Abgerufen",
         "sensor-group": "Sensorgruppe",
@@ -597,7 +598,7 @@
       "no_items": "Es ist noch keine Sensorgruppe angelegt.",
       "title": "Sensorgruppen",
       "weather-records": {
-        "title": "Wetteraufzeichnungen (letzte 10)",
+        "title": "Wetteraufzeichnungen",
         "timestamp": "Zeit",
         "temperature": "Temp.",
         "humidity": "Luftfeuchtigkeit",

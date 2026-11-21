@@ -192,6 +192,7 @@
       "history": {
         "title": "歷史記錄",
         "refresh": "重新整理",
+        "see-groups": "每個感測器群組的讀數（來自服務或你的感測器）都在它的表格中。",
         "last-update": "上次更新",
         "time": "取得時間",
         "sensor-group": "感測器群組",
@@ -597,7 +598,7 @@
       "no_items": "尚未定義任何感測器群組。",
       "title": "感測器群組",
       "weather-records": {
-        "title": "氣象記錄（最近 10 筆）",
+        "title": "氣象記錄",
         "timestamp": "時間",
         "temperature": "溫度",
         "humidity": "濕度",

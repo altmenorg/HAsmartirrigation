@@ -192,6 +192,7 @@
       "history": {
         "title": "Zgodovina",
         "refresh": "Osveži",
+        "see-groups": "Meritve vsake skupine senzorjev, iz storitve ali iz tvojih senzorjev, so v njeni tabeli.",
         "last-update": "Zadnja posodobitev",
         "time": "Pridobljeno",
         "sensor-group": "Skupina senzorjev",
@@ -597,7 +598,7 @@
       "no_items": "Nobena skupina senzorjev še ni določena.",
       "title": "Skupine senzorjev",
       "weather-records": {
-        "title": "Vremenski zapisi (zadnjih 10)",
+        "title": "Vremenski zapisi",
         "timestamp": "Čas",
         "temperature": "Temp.",
         "humidity": "Vlažnost",

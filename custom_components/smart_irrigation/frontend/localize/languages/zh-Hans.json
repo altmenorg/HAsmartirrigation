@@ -192,6 +192,7 @@
       "history": {
         "title": "历史",
         "refresh": "刷新",
+        "see-groups": "每个传感器组的读数（来自服务或你的传感器）都在它的表格中。",
         "last-update": "上次更新",
         "time": "获取时间",
         "sensor-group": "传感器组",
@@ -597,7 +598,7 @@
       "no_items": "尚未定义任何传感器组。",
       "title": "传感器组",
       "weather-records": {
-        "title": "天气记录（最近 10 条）",
+        "title": "天气记录",
         "timestamp": "时间",
         "temperature": "温度",
         "humidity": "湿度",

@@ -192,6 +192,7 @@
       "history": {
         "title": "Historia",
         "refresh": "Odśwież",
+        "see-groups": "Odczyty każdej grupy czujników, z usługi lub z twoich czujników, są w jej tabeli.",
         "last-update": "Ostatnia aktualizacja",
         "time": "Pobrano",
         "sensor-group": "Grupa czujników",
@@ -597,7 +598,7 @@
       "no_items": "Nie zdefiniowano jeszcze żadnej grupy czujników.",
       "title": "Grupy czujników",
       "weather-records": {
-        "title": "Zapisy pogodowe (ostatnie 10)",
+        "title": "Zapisy pogodowe",
         "timestamp": "Czas",
         "temperature": "Temp.",
         "humidity": "Wilgotność",

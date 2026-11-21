@@ -192,6 +192,7 @@
       "history": {
         "title": "Historik",
         "refresh": "Opdater",
+        "see-groups": "Målingerne fra hver sensorgruppe, fra tjenesten eller dine sensorer, står i dens tabel.",
         "last-update": "Sidste opdatering",
         "time": "Hentet",
         "sensor-group": "Sensorgruppe",
@@ -597,7 +598,7 @@
       "no_items": "Der er endnu ikke defineret nogen sensorgruppe.",
       "title": "Sensorgrupper",
       "weather-records": {
-        "title": "Vejrregistreringer (seneste 10)",
+        "title": "Vejrregistreringer",
         "timestamp": "Tidspunkt",
         "temperature": "Temp",
         "humidity": "Luftfugtighed",

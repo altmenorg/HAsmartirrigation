@@ -192,6 +192,7 @@
       "history": {
         "title": "Historie",
         "refresh": "Obnovit",
+        "see-groups": "Měření každé skupiny senzorů, ze služby nebo z tvých senzorů, jsou v její tabulce.",
         "last-update": "Poslední aktualizace",
         "time": "Získáno",
         "sensor-group": "Skupina senzorů",
@@ -597,7 +598,7 @@
       "no_items": "Zatím nejsou definovány žádné skupiny senzorů.",
       "title": "Skupiny senzorů",
       "weather-records": {
-        "title": "Meteorologické záznamy (posledních 10)",
+        "title": "Meteorologické záznamy",
         "timestamp": "Čas",
         "temperature": "Teplota",
         "humidity": "Vlhkost",

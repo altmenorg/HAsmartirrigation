@@ -269,8 +269,8 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
               </div>`
             : html`
                 <div class="history-scroll">
-                  <div class="history-table">
-                    <div class="history-header">
+                  <div class="si-table history-table">
+                    <div class="si-thead">
                       <span
                         >${localize("panels.history.table.start", lang)}</span
                       >
@@ -290,7 +290,7 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
                     </div>
                     ${rows.map(
                       (record) => html`
-                        <div class="history-row">
+                        <div class="si-tr">
                           <span>${this._formatStart(record.start)}</span>
                           <span
                             >${record.zone_name || "-"}${this._source(record)
@@ -518,40 +518,20 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
       .history-table {
         display: grid;
         grid-template-columns: auto minmax(64px, 1fr) auto auto;
-        gap: 8px;
-        font-size: 0.85em;
         width: 100%;
         min-width: min-content;
       }
-      .history-row span:not(:nth-child(2)) {
+      .history-table .si-tr > span:not(:nth-child(2)) {
         white-space: nowrap;
       }
-      .history-row span:last-child,
-      .history-header span:last-child {
+      .history-table .si-tr > span:last-child,
+      .history-table .si-thead > span:last-child {
         text-align: end;
       }
       .history-source {
         display: block;
         font-size: 0.85em;
         color: var(--secondary-text-color);
-      }
-      .history-header {
-        display: contents;
-        font-weight: 500;
-        color: var(--primary-text-color);
-      }
-      .history-header span {
-        padding: 4px;
-        background: var(--card-background-color);
-        border-bottom: 2px solid var(--primary-color);
-      }
-      .history-row {
-        display: contents;
-        color: var(--secondary-text-color);
-      }
-      .history-row span {
-        padding: 4px;
-        border-bottom: 1px solid var(--divider-color);
       }
       .history-unit {
         font-weight: 400;

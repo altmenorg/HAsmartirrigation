@@ -192,6 +192,7 @@
       "history": {
         "title": "Előzmények",
         "refresh": "Frissítés",
+        "see-groups": "Minden érzékelőcsoport mérései, a szolgáltatástól vagy az érzékelőidtől, a saját táblázatában vannak.",
         "last-update": "Utolsó frissítés",
         "time": "Lekérés ideje",
         "sensor-group": "Érzékelőcsoport",
@@ -597,7 +598,7 @@
       "no_items": "Még nincs definiált érzékelőcsoport.",
       "title": "Érzékelőcsoportok",
       "weather-records": {
-        "title": "Időjárási feljegyzések (utolsó 10)",
+        "title": "Időjárási feljegyzések",
         "timestamp": "Idő",
         "temperature": "Hőm.",
         "humidity": "Páratartalom",

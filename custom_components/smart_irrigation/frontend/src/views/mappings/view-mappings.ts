@@ -70,6 +70,8 @@ import {
   displayName,
   formatNumber,
   getOptionsForMappingType,
+  localizedDateTime,
+  runStartOptions,
   handleError,
   newGroupSource,
   noneAllowed,
@@ -83,8 +85,73 @@ import {
   mdiPlus,
   mdiMinus,
 } from "@mdi/js";
-import moment from "moment";
 import { readingsNotNeeded } from "./readings";
+
+// The readings table: which values, how they read. Values are stored in
+// metric units, as the calculation uses them.
+const RECORD_FIELDS: {
+  key: string;
+  label: string;
+  unit: string;
+  decimals: number;
+}[] = [
+  { key: "temperature", label: "temperature", unit: "°C", decimals: 1 },
+  {
+    key: "min_temperature",
+    label: "minimum temperature",
+    unit: "°C",
+    decimals: 1,
+  },
+  {
+    key: "max_temperature",
+    label: "maximum temperature",
+    unit: "°C",
+    decimals: 1,
+  },
+  { key: "dewpoint", label: "dewpoint", unit: "°C", decimals: 1 },
+  { key: "humidity", label: "humidity", unit: "%", decimals: 0 },
+  { key: "pressure", label: "pressure", unit: "hPa", decimals: 0 },
+  { key: "wind_speed", label: "windspeed", unit: "m/s", decimals: 1 },
+  {
+    key: "solar_radiation",
+    label: "solar radiation",
+    unit: "MJ/m²/d",
+    decimals: 2,
+  },
+  { key: "precipitation", label: "precipitation", unit: "mm", decimals: 1 },
+  {
+    key: "current_precipitation",
+    label: "current precipitation",
+    unit: "mm/h",
+    decimals: 1,
+  },
+  {
+    key: "evapotranspiration",
+    label: "evapotranspiration",
+    unit: "mm",
+    decimals: 2,
+  },
+];
+// A week of readings is what a group keeps; the table shows one range of it,
+// kept by this browser like the planning's days. Storage can be refused.
+const RECORD_HOURS = [24, 72, 168];
+const RECORD_LIMIT = 200;
+const RECORD_HOURS_KEY = "smart_irrigation.record_hours";
+function readRecordHours(): number {
+  try {
+    const hours = Number(window.localStorage.getItem(RECORD_HOURS_KEY));
+    return RECORD_HOURS.includes(hours) ? hours : 24;
+  } catch {
+    return 24;
+  }
+}
+function saveRecordHours(hours: number): void {
+  try {
+    window.localStorage.setItem(RECORD_HOURS_KEY, String(hours));
+  } catch {
+    // Not kept: the next visit shows 24 h.
+  }
+}
 
 @customElement("smart-irrigation-view-mappings")
 class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
@@ -111,6 +178,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
   private newMappingName = "";
   // Whether the field to add a group is open (always, with no group yet).
   @state() private _addOpen = false;
+  @state() private _recordHours = readRecordHours();
 
   // True once the first data load has completed. Avoids tearing the whole view
   // down to a "loading" card on every background refresh (focus/scroll loss).
@@ -275,10 +343,11 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     for (const mapping of this.mappings) {
       if (mapping.id !== undefined) {
         try {
+          // A week of hourly readings at most: the range is chosen on screen.
           const records = await fetchMappingWeatherRecords(
             this.hass,
             mapping.id.toString(),
-            10,
+            RECORD_LIMIT,
           );
           this.weatherRecords.set(mapping.id, records);
         } catch (error) {
@@ -300,127 +369,97 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     if (!this.hass) {
       return html``;
     }
-
-    const records =
+    const lang = this.hass.language;
+    const all =
       mapping.id !== undefined ? this.weatherRecords.get(mapping.id) || [] : [];
+    // The readings of the chosen range, newest first.
+    const since = Date.now() - this._recordHours * 3600 * 1000;
+    const records = all.filter((record: any) => {
+      const time = new Date(record.timestamp).getTime();
+      return isNaN(time) || time >= since;
+    });
+    // Only the values this group has: a group of three sensors gets three
+    // columns, not eleven.
+    const fields = RECORD_FIELDS.filter((field) =>
+      records.some(
+        (record: any) =>
+          record[field.key] !== null && record[field.key] !== undefined,
+      ),
+    );
+    const columns = ["auto", ...fields.map(() => "auto")].join(" ");
     return html`
       <div class="weather-records">
-        <h4>
-          ${localize(
-            "panels.mappings.weather-records.title",
-            this.hass.language,
-          )}
-        </h4>
+        <div class="records-head">
+          <h4>${localize("panels.mappings.weather-records.title", lang)}</h4>
+          <div class="si-segmented" role="group">
+            ${RECORD_HOURS.map(
+              (hours) =>
+                html`<button
+                  class=${hours === this._recordHours ? "on" : ""}
+                  @click=${() => {
+                    this._recordHours = hours;
+                    saveRecordHours(hours);
+                  }}
+                >
+                  ${hours === 24
+                    ? "24 h"
+                    : localize("week.days", lang, "{n}", hours / 24)}
+                </button>`,
+            )}
+          </div>
+        </div>
         ${records.length === 0
-          ? html`
-              <div class="si-box">
-                ${localize(
-                  "panels.mappings.weather-records.no-data",
-                  this.hass.language,
-                )}
-              </div>
-            `
-          : html`
-              <div class="weather-table">
-                <div class="weather-header">
+          ? html`<div class="si-box">
+              ${localize("panels.mappings.weather-records.no-data", lang)}
+            </div>`
+          : html`<div class="si-table-scroll tall">
+              <div class="si-table" style="grid-template-columns: ${columns};">
+                <div class="si-thead">
                   <span
                     >${localize(
                       "panels.mappings.weather-records.timestamp",
-                      this.hass.language,
+                      lang,
                     )}</span
                   >
-                  <span
-                    >${localize(
-                      "panels.mappings.weather-records.temperature",
-                      this.hass.language,
-                    )}</span
-                  >
-                  <span
-                    >${localize(
-                      "panels.mappings.weather-records.humidity",
-                      this.hass.language,
-                    )}</span
-                  >
-                  <span
-                    >${localize(
-                      "panels.mappings.weather-records.precipitation",
-                      this.hass.language,
-                    )}</span
-                  >
-                  <span
-                    >${localize(
-                      "panels.mappings.weather-records.retrieval-time",
-                      this.hass.language,
-                    )}</span
-                  >
+                  ${fields.map(
+                    (field) =>
+                      html`<span class="num"
+                        >${localize(
+                          `panels.mappings.cards.mapping.items.${field.label}`,
+                          lang,
+                        )}<span class="unit">${field.unit}</span></span
+                      >`,
+                  )}
                 </div>
-                ${records.slice(0, 10).map((record) => {
-                  // Safely format timestamps with error handling
-                  let timestampFormatted = "-";
-                  let retrievalTimeFormatted = "-";
-
-                  try {
-                    if (record.timestamp && record.timestamp !== null) {
-                      const timestampMoment = moment(record.timestamp);
-                      if (timestampMoment.isValid()) {
-                        timestampFormatted =
-                          timestampMoment.format("MM-DD HH:mm");
-                      }
-                    }
-                  } catch (error) {
-                    console.warn(
-                      "Error formatting timestamp:",
-                      record.timestamp,
-                      error,
-                    );
-                  }
-
-                  try {
-                    if (
-                      record.retrieval_time &&
-                      record.retrieval_time !== null
-                    ) {
-                      const retrievalMoment = moment(record.retrieval_time);
-                      if (retrievalMoment.isValid()) {
-                        retrievalTimeFormatted =
-                          retrievalMoment.format("MM-DD HH:mm");
-                      }
-                    }
-                  } catch (error) {
-                    console.warn(
-                      "Error formatting retrieval_time:",
-                      record.retrieval_time,
-                      error,
-                    );
-                  }
-
-                  return html`
-                    <div class="weather-row">
-                      <span>${timestampFormatted}</span>
-                      <span
-                        >${record.temperature !== null &&
-                        record.temperature !== undefined
-                          ? this._n(record.temperature, 1) + "°C"
+                ${records.map(
+                  (record: any) => html`
+                    <div class="si-tr">
+                      <span class="muted"
+                        >${record.timestamp
+                          ? localizedDateTime(
+                              record.timestamp,
+                              this.hass,
+                              runStartOptions(record.timestamp),
+                            )
                           : "-"}</span
                       >
-                      <span
-                        >${record.humidity !== null &&
-                        record.humidity !== undefined
-                          ? this._n(record.humidity, 1) + "%"
-                          : "-"}</span
-                      >
-                      <span
-                        >${record.precipitation !== null &&
-                        record.precipitation !== undefined
-                          ? this._n(record.precipitation, 1) + "mm"
-                          : "-"}</span
-                      >
-                      <span>${retrievalTimeFormatted}</span>
+                      ${fields.map(
+                        (field) =>
+                          html`<span class="num"
+                            >${record[field.key] === null ||
+                            record[field.key] === undefined
+                              ? ""
+                              : this._n(
+                                  record[field.key],
+                                  field.decimals,
+                                )}</span
+                          >`,
+                      )}
                     </div>
-                  `;
-                })}
+                  `,
+                )}
               </div>
-            `}
+            </div>`}
       </div>
     `;
   }
@@ -692,9 +731,8 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
           ${localize(
             `panels.mappings.cards.mapping.items.${value.toLowerCase()}`,
             this.hass.language,
-          )}
+          )}${this.renderSourceHint(value)}
         </div>
-        ${this.renderSourceHint(value)}
         ${
           // Never locked: the note below says it is not used, and a source
           // that cannot be changed is a setting nobody can fix (#909).
@@ -758,8 +796,8 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     return { provided, calculated };
   }
 
-  // One plain sentence under the title of a source: what it is, and what
-  // happens when it is left to the weather service.
+  // What a source is, and what happens when it is left to the weather
+  // service: behind the "i" of its title, as on the other pages.
   private renderSourceHint(value: string): TemplateResult {
     if (!this.hass) return html``;
     // The usual rain hint says the weather service provides it, which a
@@ -776,7 +814,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         : `panels.mappings.cards.mapping.hints.${value.toLowerCase()}`,
       this.hass.language,
     );
-    return hint ? html`<div class="si-hint">${hint}</div>` : html``;
+    return hint ? html`<si-info>${hint}</si-info>` : html``;
   }
 
   private renderSimpleRadioOptions(
@@ -1985,7 +2023,12 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
                     ${localize(
                       "panels.mappings.cards.mapping.greenhouse",
                       lang,
-                    )}
+                    )}<si-info
+                      >${localize(
+                        "panels.mappings.cards.mapping.greenhouse_description",
+                        lang,
+                      )}</si-info
+                    >
                   </div>
                   <ha-switch
                     .checked=${!!mapping.greenhouse}
@@ -1996,14 +2039,6 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
                       })}
                   ></ha-switch>
                 </div>
-                ${mapping.greenhouse
-                  ? html`<div class="si-box">
-                      ${localize(
-                        "panels.mappings.cards.mapping.greenhouse_description",
-                        lang,
-                      )}
-                    </div>`
-                  : ""}
                 ${this.renderMappingSettings(mapping, index)}
               </div>
               ${this.renderWeatherRecords(mapping)}
@@ -2158,6 +2193,17 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return css`
       ${siStyle}
+
+      .records-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0 12px;
+      }
+      .records-head h4 {
+        margin: 0;
+      }
 
       .add-group-bar {
         display: flex;

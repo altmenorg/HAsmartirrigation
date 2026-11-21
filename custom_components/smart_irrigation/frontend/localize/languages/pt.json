@@ -192,6 +192,7 @@
       "history": {
         "title": "Histórico",
         "refresh": "Atualizar",
+        "see-groups": "As leituras de cada grupo de sensores, do serviço ou dos teus sensores, estão na sua tabela.",
         "last-update": "Última atualização",
         "time": "Obtido",
         "sensor-group": "Grupo de sensores",
@@ -597,7 +598,7 @@
       "no_items": "Ainda não existem grupos de sensores definidos.",
       "title": "Grupos de sensores",
       "weather-records": {
-        "title": "Registos meteorológicos (últimos 10)",
+        "title": "Registos meteorológicos",
         "timestamp": "Hora",
         "temperature": "Temp",
         "humidity": "Humidade",
