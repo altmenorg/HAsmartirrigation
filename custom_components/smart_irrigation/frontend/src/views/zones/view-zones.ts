@@ -80,8 +80,7 @@ import {
   notOwnEntity,
   linkedValveDomains,
 } from "../../helpers";
-import { globalStyle } from "../../styles/global-style";
-import { modernStyle } from "../../styles/modern-style";
+import { siStyle } from "../../styles/si-style";
 import {
   LiveState,
   remainingDuration,
@@ -3481,7 +3480,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle} ${modernStyle}
+      ${siStyle}
 
       /* A zone's card is the shared collapsible card (.si-card). */
       .zone-head-action {

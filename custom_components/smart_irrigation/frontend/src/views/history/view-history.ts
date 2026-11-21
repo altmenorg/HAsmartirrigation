@@ -12,8 +12,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { mdiRefresh } from "@mdi/js";
 import moment from "moment";
 import { localize } from "../../../localize/localize";
-import { globalStyle } from "../../styles/global-style";
-import { modernStyle } from "../../styles/modern-style";
+import { siStyle } from "../../styles/si-style";
 import { loadHaForm } from "../../load-ha-elements";
 import { SubscribeMixin } from "../../subscribe-mixin";
 import { Path } from "../../common/navigation";
@@ -488,7 +487,7 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle} ${modernStyle}
+      ${siStyle}
 
       .history-intro {
         color: var(--primary-text-color);

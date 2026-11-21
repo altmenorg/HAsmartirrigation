@@ -14,8 +14,7 @@ import {
   iuImportSources,
 } from "../../data/websockets";
 import { SmartIrrigationZone } from "../../types";
-import { globalStyle } from "../../styles/global-style";
-import { modernStyle } from "../../styles/modern-style";
+import { siStyle } from "../../styles/si-style";
 import { localize } from "../../../localize/localize";
 import { exportPath } from "../../common/navigation";
 import { navigate } from "../../helpers";
@@ -852,7 +851,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle} ${modernStyle}
+      ${siStyle}
 
       h3 {
         margin: 16px 0 4px;

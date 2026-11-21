@@ -28,8 +28,7 @@ import {
   output_unit,
   unit_text,
 } from "../../helpers";
-import { globalStyle } from "../../styles/global-style";
-import { modernStyle } from "../../styles/modern-style";
+import { siStyle } from "../../styles/si-style";
 import { localize } from "../../../localize/localize";
 import { DOMAIN, ZONE_BUCKET, ZONE_WATER_VOLUME } from "../../const";
 import { nextRuns } from "../../data/next-runs";
@@ -1365,7 +1364,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle} ${modernStyle}
+      ${siStyle}
 
       .card-content {
         display: flex;

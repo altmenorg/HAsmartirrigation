@@ -23,8 +23,7 @@ import {
   SmartIrrigationModule,
   WeatherRecord,
 } from "../../types";
-import { globalStyle } from "../../styles/global-style";
-import { modernStyle } from "../../styles/modern-style";
+import { siStyle } from "../../styles/si-style";
 import { localize } from "../../../localize/localize";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import {
@@ -2158,7 +2157,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle} ${modernStyle}
+      ${siStyle}
 
       .add-group-bar {
         display: flex;

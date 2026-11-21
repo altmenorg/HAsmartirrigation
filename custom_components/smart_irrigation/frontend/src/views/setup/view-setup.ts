@@ -34,8 +34,7 @@ import {
   splitChosen,
   suggestSources,
 } from "../../helpers";
-import { globalStyle } from "../../styles/global-style";
-import { modernStyle } from "../../styles/modern-style";
+import { siStyle } from "../../styles/si-style";
 import { localize } from "../../../localize/localize";
 import { NEW_PROGRAM, placeNewZone } from "../../data/setup-program";
 import {
@@ -1085,7 +1084,7 @@ class SmartIrrigationViewSetup extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle} ${modernStyle}
+      ${siStyle}
 
       h3 {
         margin: 12px 0 4px;

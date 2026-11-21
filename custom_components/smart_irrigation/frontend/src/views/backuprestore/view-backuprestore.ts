@@ -3,8 +3,7 @@ import { property, customElement, state } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
 import { mdiDownload, mdiUpload, mdiAlertOutline } from "@mdi/js";
 import { localize } from "../../../localize/localize";
-import { globalStyle } from "../../styles/global-style";
-import { modernStyle } from "../../styles/modern-style";
+import { siStyle } from "../../styles/si-style";
 import { loadHaForm } from "../../load-ha-elements";
 import { Path } from "../../common/navigation";
 import { exportConfig, restoreConfig } from "../../data/websockets";
@@ -249,8 +248,7 @@ export class SmartIrrigationViewBackupRestore extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle} ${modernStyle}
-
+      ${siStyle}
 
       .br-actions {
         display: flex;

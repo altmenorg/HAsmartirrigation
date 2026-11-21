@@ -1,16 +1,258 @@
 import { css } from "lit";
 
 /**
- * Shared "modern HA-native" styling used across the Smart Irrigation panels.
- * Validated on the Zones view; reused (general/mappings/modules) for a
- * consistent look:
- *  - collapsible white cards (.si-card / .si-head / .si-body)
- *  - HA-native filled fields (.field) + native <select> with themed chevron
- *  - number fields with +/- steppers (.num-field)
- *  - native ha-button action buttons (tonal) in a 2-col grid (.si-actions)
- *  - state pills via ha-label (.state-label)
+ * The panel's one shared sheet (#1059): every page loads it, and styles here
+ * what more than one page uses. A page keeps in its own styles only what is
+ * its own (a chart, a timeline). The building blocks:
+ *  - spacing on a 4 px scale (--si-space-1 to --si-space-5);
+ *  - cards: HA's ha-card, and the collapsible .si-card / .si-head / .si-body;
+ *  - a part of a card: .si-section (its title), .si-subgroup;
+ *  - settings: .setting-row, .setting-label, the fields (.field, .select-wrap,
+ *    .num-field, .entity-field);
+ *  - text: .si-hint (under a label), .si-note (a sentence that explains),
+ *    .si-box (a note set apart);
+ *  - folds: details.fold (a program, a step, a schedule), details.more;
+ *  - buttons: .si-actions, .si-form-actions.
  */
-export const modernStyle = css`
+export const siStyle = css`
+  :host {
+    --si-space-1: 4px;
+    --si-space-2: 8px;
+    --si-space-3: 12px;
+    --si-space-4: 16px;
+    --si-space-5: 24px;
+  }
+
+  /* Existing common styles */
+  ha-card {
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+    max-width: calc(100vw - 10px);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+  }
+  .card-header .name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  span.dialog-header {
+    font-size: 24px;
+    letter-spacing: -0.012em;
+    line-height: 48px;
+    padding: var(--si-space-3) var(--si-space-4) var(--si-space-4);
+    display: block;
+    margin-block: 0px;
+    font-weight: 400;
+  }
+
+  div.warning {
+    color: var(--error-color);
+    margin-top: 20px;
+  }
+
+  ha-dialog div.wrapper {
+    margin-bottom: -20px;
+  }
+
+  ha-textfield {
+    min-width: 220px;
+  }
+
+  a,
+  a:visited {
+    color: var(--primary-color);
+  }
+  ha-card settings-row:first-child,
+  ha-card settings-row:first-of-type {
+    border-top: 0px;
+  }
+
+  ha-card > ha-card {
+    margin: 10px;
+  }
+
+  /* Common utility classes shared across views */
+  .hidden {
+    display: none;
+  }
+
+  .loading-indicator {
+    text-align: center;
+    padding: 20px;
+    color: var(--primary-text-color);
+    font-style: italic;
+  }
+
+  .saving {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Disabled input styling */
+  button:disabled,
+  select:disabled,
+  input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Common line/row layouts */
+  .zoneline,
+  .mappingsettingline,
+  .schemaline {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--si-space-3);
+    align-items: center;
+    margin-left: 0;
+    margin-top: var(--si-space-2);
+    padding: 6px var(--si-space-2);
+    border-bottom: 1px solid var(--divider-color);
+    font-size: 0.9em;
+  }
+
+  .zoneline label,
+  .mappingsettingline label,
+  .schemaline label {
+    color: var(--primary-text-color);
+    font-weight: 500;
+  }
+
+  .zoneline input,
+  .zoneline select,
+  .mappingsettingline input,
+  .mappingsettingline select,
+  .schemaline input,
+  .schemaline select {
+    justify-self: end;
+  }
+
+  /* Common container styles */
+  .zone,
+  .mapping {
+    margin-top: 25px;
+    margin-bottom: 25px;
+  }
+
+  /* Mapping-specific container */
+  .mappingline {
+    margin-top: var(--si-space-4);
+    padding: var(--si-space-2);
+    border: 1px solid var(--divider-color);
+    border-radius: 4px;
+  }
+
+  /* Radio button group styling */
+  .radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--si-space-3);
+    margin: var(--si-space-2) 0;
+  }
+
+  .radio-group label {
+    display: flex;
+    align-items: center;
+    gap: var(--si-space-1);
+    cursor: pointer;
+  }
+
+  .radio-group input[type="radio"] {
+    margin: 0;
+  }
+
+  input[type="radio"] {
+    margin-right: 5px;
+    margin-left: 10px;
+  }
+
+  input[type="radio"] + label {
+    margin-right: 15px;
+  }
+
+  /* Strikethrough utility */
+  .strikethrough {
+    text-decoration: line-through;
+  }
+
+  /* Information text styling */
+  .information {
+    margin-left: 20px;
+    margin-top: 5px;
+  }
+
+  /* Calendar and weather table styles */
+  .watering-calendar,
+  .weather-records {
+    margin-top: var(--si-space-4);
+    padding-top: var(--si-space-4);
+    border-top: 1px solid var(--divider-color);
+  }
+
+  .watering-calendar h4,
+  .weather-records h4 {
+    margin: 0 0 var(--si-space-3) 0;
+    font-size: 1em;
+    font-weight: 500;
+    color: var(--primary-text-color);
+  }
+
+  .calendar-table,
+  .weather-table {
+    display: grid;
+    gap: var(--si-space-2);
+    font-size: 0.85em;
+  }
+
+  .calendar-table {
+    grid-template-columns: 1fr 0.8fr 1fr 0.8fr 0.8fr;
+  }
+
+  .weather-table {
+    grid-template-columns: 1fr 0.8fr 0.8fr 0.8fr 1fr;
+  }
+
+  .calendar-header,
+  .weather-header {
+    display: contents;
+    font-weight: 500;
+    color: var(--primary-text-color);
+  }
+
+  .calendar-header span,
+  .weather-header span {
+    padding: var(--si-space-1);
+    background: var(--card-background-color);
+    border-bottom: 2px solid var(--primary-color);
+  }
+
+  .calendar-row,
+  .weather-row {
+    display: contents;
+    color: var(--secondary-text-color);
+  }
+
+  .calendar-row span,
+  .weather-row span {
+    padding: var(--si-space-1);
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .calendar-info {
+    margin-top: var(--si-space-2);
+    padding: var(--si-space-1) var(--si-space-2);
+    background: var(--info-color, var(--primary-color));
+    color: white;
+    border-radius: 4px;
+    font-size: 0.8em;
+  }
+
   /* --- collapsible card: a plain ha-card with a clickable header --- */
   .si-card {
     overflow: hidden;
@@ -18,8 +260,8 @@ export const modernStyle = css`
   .si-head {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
+    gap: var(--si-space-3);
+    padding: var(--si-space-3) var(--si-space-4);
     cursor: pointer;
     user-select: none;
   }
@@ -60,7 +302,7 @@ export const modernStyle = css`
     transform: rotate(180deg);
   }
   .si-body {
-    padding: 12px 16px 16px;
+    padding: var(--si-space-3) var(--si-space-4) var(--si-space-4);
     border-top: 1px solid var(--divider-color);
   }
 
@@ -68,8 +310,8 @@ export const modernStyle = css`
   .si-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 28px;
-    padding: 4px 0 12px;
+    gap: var(--si-space-2) 28px;
+    padding: var(--si-space-1) 0 var(--si-space-3);
   }
 
   /* --- native HA state pill (ha-label), tinted by state --- */
@@ -118,9 +360,9 @@ export const modernStyle = css`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: var(--si-space-4);
     min-height: 52px;
-    padding: 4px 0;
+    padding: var(--si-space-1) 0;
     border-bottom: 1px solid var(--divider-color);
   }
   .setting-row:last-child {
@@ -144,7 +386,7 @@ export const modernStyle = css`
     font-weight: 500;
     line-height: 1.4;
     color: var(--primary-text-color);
-    margin: 24px 0 8px;
+    margin: var(--si-space-5) 0 var(--si-space-2);
   }
   .si-section:first-child {
     margin-top: 0;
@@ -172,7 +414,7 @@ export const modernStyle = css`
     font-weight: normal;
     line-height: 1.4;
     color: var(--secondary-text-color);
-    margin: 8px 0;
+    margin: var(--si-space-2) 0;
   }
   .si-note:first-child {
     margin-top: 0;
@@ -188,14 +430,14 @@ export const modernStyle = css`
   }
   .setting-row + .si-hint,
   .setting-row + .si-note {
-    margin: -4px 0 12px;
+    margin: -4px 0 var(--si-space-3);
   }
   .si-box {
     display: flex;
-    gap: 12px;
+    gap: var(--si-space-3);
     align-items: flex-start;
-    padding: 12px;
-    margin: 8px 0;
+    padding: var(--si-space-3);
+    margin: var(--si-space-2) 0;
     border-radius: 8px;
     background: var(--secondary-background-color);
     color: var(--secondary-text-color);
@@ -227,8 +469,8 @@ export const modernStyle = css`
   details.fold {
     border: 1px solid var(--divider-color);
     border-radius: 8px;
-    margin: 8px 0;
-    padding: 0 12px;
+    margin: var(--si-space-2) 0;
+    padding: 0 var(--si-space-3);
   }
   details.fold > summary {
     cursor: pointer;
@@ -236,7 +478,7 @@ export const modernStyle = css`
     list-style: none;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--si-space-2);
   }
   details.fold > summary::-webkit-details-marker {
     display: none;
@@ -264,7 +506,7 @@ export const modernStyle = css`
     min-width: 0;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: var(--si-space-3);
   }
   details.fold > summary .fold-head-text {
     flex: 1;
@@ -272,12 +514,12 @@ export const modernStyle = css`
   }
   details.fold[open] > summary {
     border-bottom: 1px solid var(--divider-color);
-    margin-bottom: 8px;
+    margin-bottom: var(--si-space-2);
   }
   /* "More options" inside a step or a schedule: lighter than a fold, a line
      to open and the rarely used settings under it. */
   details.more {
-    margin: 8px 0;
+    margin: var(--si-space-2) 0;
   }
   /* A chevron, as Home Assistant's own expandable rows have, rather than the
      browser's triangle: that one reads as a play icon, and sat right above the
@@ -289,7 +531,7 @@ export const modernStyle = css`
     list-style: none;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--si-space-2);
   }
   details.more > summary::-webkit-details-marker {
     display: none;
@@ -309,14 +551,14 @@ export const modernStyle = css`
   }
   details.more > .more-body {
     border-left: 2px solid var(--divider-color);
-    padding-left: 12px;
+    padding-left: var(--si-space-3);
   }
   /* Inside a folded block: room under its last buttons, and titled sections. */
   .fold-body {
-    padding-bottom: 12px;
+    padding-bottom: var(--si-space-3);
   }
   .si-actions:not(:last-child) {
-    margin-bottom: 12px;
+    margin-bottom: var(--si-space-3);
   }
   .fold-title {
     font-weight: 500;
@@ -326,7 +568,7 @@ export const modernStyle = css`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: var(--si-space-3);
   }
   /* The title wraps, the switch keeps its size and its line. */
   .si-head > span:first-child,
@@ -351,7 +593,7 @@ export const modernStyle = css`
 
   /* --- per-field sub-group: section heading + its controls (shared by views) --- */
   .si-subgroup {
-    padding: 12px 0;
+    padding: var(--si-space-3) 0;
     border-bottom: 1px solid var(--divider-color);
   }
   .si-subgroup:last-child {
@@ -387,7 +629,7 @@ export const modernStyle = css`
     max-width: 100%;
     height: 44px;
     box-sizing: border-box;
-    padding: 0 12px;
+    padding: 0 var(--si-space-3);
     border: none;
     border-bottom: 1px solid
       var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
@@ -472,9 +714,9 @@ export const modernStyle = css`
   .si-actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 16px;
-    padding-top: 16px;
+    gap: var(--si-space-2);
+    margin-top: var(--si-space-4);
+    padding-top: var(--si-space-4);
     border-top: 1px solid var(--divider-color);
   }
   /* a variant without the top border/margin (e.g. standalone action cards) */
@@ -503,7 +745,7 @@ export const modernStyle = css`
   .si-form-actions {
     display: flex;
     justify-content: flex-end;
-    padding-top: 8px;
+    padding-top: var(--si-space-2);
   }
 
   @media (max-width: 600px) {
@@ -520,11 +762,11 @@ export const modernStyle = css`
     .setting-row:has(> ha-switch) {
       flex-direction: row;
       align-items: center;
-      gap: 12px;
+      gap: var(--si-space-3);
       min-height: 44px;
     }
     .card-content > .si-subgroup {
-      padding: 8px 0;
+      padding: var(--si-space-2) 0;
     }
     .card-content > .si-subgroup:first-child {
       padding-top: 0;
@@ -538,5 +780,34 @@ export const modernStyle = css`
       width: 100%;
       max-width: 100%;
     }
+  }
+`;
+
+export const dialogStyle = css`
+  /* ha-dialog styles */
+  ha-dialog {
+    --mdc-dialog-min-width: 400px;
+    --mdc-dialog-max-width: 600px;
+    --mdc-dialog-heading-ink-color: var(--primary-text-color);
+    --mdc-dialog-content-ink-color: var(--primary-text-color);
+    --justify-action-buttons: space-between;
+  }
+  /* make dialog fullscreen on small screens */
+  @media all and (max-width: 450px), all and (max-height: 500px) {
+    ha-dialog {
+      --mdc-dialog-min-width: calc(
+        100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+      );
+      --mdc-dialog-max-width: calc(
+        100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+      );
+      --mdc-dialog-min-height: 100%;
+      --mdc-dialog-max-height: 100%;
+      --vertial-align-dialog: flex-end;
+      --ha-dialog-border-radius: 0px;
+    }
+  }
+  ha-dialog div.description {
+    margin-bottom: 10px;
   }
 `;

@@ -4,8 +4,7 @@ import { HomeAssistant } from "custom-card-helpers";
 import { mdiMenuDown, mdiRefresh } from "@mdi/js";
 import moment from "moment";
 import { localize } from "../../../localize/localize";
-import { globalStyle } from "../../styles/global-style";
-import { modernStyle } from "../../styles/modern-style";
+import { siStyle } from "../../styles/si-style";
 import { loadHaForm } from "../../load-ha-elements";
 import { exportPath, Path } from "../../common/navigation";
 import {
@@ -556,8 +555,7 @@ export class SmartIrrigationViewWeatherService extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle} ${modernStyle}
-
+      ${siStyle}
 
       .ws-actions {
         display: flex;

@@ -77,8 +77,7 @@ import {
   IrrigationStartTrigger,
   SkipEvaluation,
 } from "../../types";
-import { globalStyle } from "../../styles/global-style";
-import { modernStyle } from "../../styles/modern-style";
+import { siStyle } from "../../styles/si-style";
 import { Path } from "../../common/navigation";
 import {
   AUTO_UPDATE_SCHEDULE_DAILY,
@@ -5110,7 +5109,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle} ${modernStyle} /* View-specific styles only - most common styles are now in globalStyle */
+      ${siStyle}
 
       /* Drop the clickable (i) toggles and just always show the section
          descriptions (they're short and not in the way). */

@@ -5,8 +5,7 @@ import { mdiClose } from "@mdi/js";
 import { localize } from "../../localize/localize";
 import { askConfirmation } from "./confirmation-dialog";
 import { IrrigationStartTrigger, TriggerType } from "../types";
-import { dialogStyle } from "../styles/global-style";
-import { modernStyle } from "../styles/modern-style";
+import { dialogStyle, siStyle } from "../styles/si-style";
 import {
   TRIGGER_TYPE_SUNRISE,
   TRIGGER_TYPE_SUNSET,
@@ -530,7 +529,7 @@ export class TriggerDialog extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       dialogStyle,
-      modernStyle,
+      siStyle,
       css`
         .wrapper {
           color: var(--primary-text-color);

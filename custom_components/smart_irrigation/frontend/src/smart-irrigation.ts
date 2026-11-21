@@ -22,7 +22,7 @@ import "./views/info/view-info.ts";
 import "./views/setup/view-setup.ts";
 import "./views/iuimport/view-iuimport.ts";
 
-import { commonStyle } from "./styles";
+import { siStyle } from "./styles/si-style";
 import { VERSION, PLATFORM, DOMAIN } from "./const";
 import { fetchConfig } from "./data/websockets";
 import { languageLoaded, loadLanguage, localize } from "../localize/localize";
@@ -598,7 +598,7 @@ export class SmartIrrigationPanel extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      commonStyle,
+      siStyle,
       css`
         :host {
           color: var(--primary-text-color);

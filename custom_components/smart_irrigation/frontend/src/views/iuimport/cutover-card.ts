@@ -13,8 +13,7 @@ import {
   iuImportCutover,
   iuImportStatus,
 } from "../../data/websockets";
-import { globalStyle } from "../../styles/global-style";
-import { modernStyle } from "../../styles/modern-style";
+import { siStyle } from "../../styles/si-style";
 import { localize } from "../../../localize/localize";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import { navigate } from "../../helpers";
@@ -312,7 +311,7 @@ export class SmartIrrigationIuCutover extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle} ${modernStyle}
+      ${siStyle}
 
       h3 {
         margin: 16px 0 4px;
