@@ -325,17 +325,6 @@ class ProgramSchedulerMixin:
         ):
             await self.register_program_schedules()
             return
-        if watering_off(config):
-            # Placed again for its next occurrence, which may find it switched
-            # on; this one does not run.
-            _LOGGER.info(
-                "Program %s: schedule %s reached but Smart Irrigation is switched "
-                "off; not run",
-                program_id,
-                schedule_id,
-            )
-            await self.register_program_schedules()
-            return
         suspended = self.is_suspended(const.SUSPEND_PROGRAM, program_id)
         # Before anything else: whatever happens next, this occurrence has run.
         fired[key] = target
@@ -344,6 +333,14 @@ class ProgramSchedulerMixin:
         await self.store.async_update_config({const.CONF_PROGRAM_LAST_RUNS: last_runs})
         await self.register_program_schedules()
 
+        if watering_off(config):
+            _LOGGER.info(
+                "Program %s: schedule %s reached but Smart Irrigation is switched "
+                "off; not run",
+                program_id,
+                schedule_id,
+            )
+            return
         await self._start_scheduled_run(
             program_id, program, schedule, schedule_id, target, suspended
         )
