@@ -821,6 +821,10 @@ export class SmartIrrigationPanel extends LitElement {
           min-height: 0;
           display: flex;
           justify-content: center;
+          /* A page is as tall as its content, not stretched to the view's
+             height: stretched, its content overflowed it and the room under
+             the last card was lost on every page. */
+          align-items: flex-start;
           overflow-y: auto;
         }
 

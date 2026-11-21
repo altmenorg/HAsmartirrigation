@@ -7450,6 +7450,10 @@ s.version="2.31.0",i(ii),s.fn=fn,s.min=oi,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
           min-height: 0;
           display: flex;
           justify-content: center;
+          /* A page is as tall as its content, not stretched to the view's
+             height: stretched, its content overflowed it and the room under
+             the last card was lost on every page. */
+          align-items: flex-start;
           overflow-y: auto;
         }
 
