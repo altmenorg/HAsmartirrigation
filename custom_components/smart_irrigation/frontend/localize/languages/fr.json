@@ -576,7 +576,7 @@
             "none": "Aucun",
             "none_et": "Aucun (Smart Irrigation la calcule)",
             "none_estimated": "Aucun (estimé)",
-            "weather_service": "Weather service",
+            "weather_service": "Service météo",
             "weather_service_et": "ET₀ toute faite du service météo",
             "sensor": "Capteur",
             "static": "Valeur statique",

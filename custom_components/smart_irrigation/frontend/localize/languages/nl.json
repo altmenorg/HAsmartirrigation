@@ -576,7 +576,7 @@
             "none": "Geen",
             "none_et": "Geen (Smart Irrigation berekent het)",
             "none_estimated": "Geen (geschat)",
-            "weather_service": "Weather service",
+            "weather_service": "Weerdienst",
             "weather_service_et": "Kant-en-klare ET₀ van de weerdienst",
             "sensor": "Sensor",
             "static": "Vaste waarde",

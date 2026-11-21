@@ -576,7 +576,7 @@
             "none": "Ingen",
             "none_et": "Ingen (Smart Irrigation beregner den)",
             "none_estimated": "Ingen (estimert)",
-            "weather_service": "Weather service",
+            "weather_service": "Værtjeneste",
             "weather_service_et": "Ferdig ET₀ fra værtjenesten",
             "sensor": "Sensor",
             "static": "Statisk verdi",

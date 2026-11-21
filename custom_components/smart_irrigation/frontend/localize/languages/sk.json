@@ -576,7 +576,7 @@
             "none": "Nie je",
             "none_et": "Žiadny (Smart Irrigation ho vypočíta)",
             "none_estimated": "Nie je (odhad)",
-            "weather_service": "Weather service",
+            "weather_service": "Meteorologická služba",
             "weather_service_et": "Hotová hodnota ET₀ z meteorologickej služby",
             "sensor": "Snímač",
             "static": "Statická hodnota",
