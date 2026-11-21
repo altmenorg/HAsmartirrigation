@@ -268,7 +268,7 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
                 ${localize("panels.history.no-data", lang)}
               </div>`
             : html`
-                <div class="history-scroll">
+                <div class="si-table-scroll tall">
                   <div class="si-table history-table">
                     <div class="si-thead">
                       <span
@@ -277,21 +277,25 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
                       <span
                         >${localize("panels.history.table.zone", lang)}</span
                       >
-                      <span
+                      <span class="num"
                         >${localize(
                           "panels.history.table.duration",
                           lang,
                         )}</span
                       >
-                      <span
-                        >${localize("panels.history.table.water", lang)}
-                        <span class="history-unit">(${unit})</span></span
+                      <span class="num"
+                        >${localize("panels.history.table.water", lang)}<span
+                          class="unit"
+                          >${unit}</span
+                        ></span
                       >
                     </div>
                     ${rows.map(
                       (record) => html`
                         <div class="si-tr">
-                          <span>${this._formatStart(record.start)}</span>
+                          <span class="muted"
+                            >${this._formatStart(record.start)}</span
+                          >
                           <span
                             >${record.zone_name || "-"}${this._source(record)
                               ? html`<span class="history-source"
@@ -299,8 +303,10 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
                                 >`
                               : ""}</span
                           >
-                          <span>${formatDuration(record.duration)}</span>
-                          <span
+                          <span class="num"
+                            >${formatDuration(record.duration)}</span
+                          >
+                          <span class="num"
                             >${this._n(
                               displayVolume(record.water_used, this._config),
                               1,
@@ -510,31 +516,13 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
         color: var(--error-color);
       }
 
-      /* Four columns fit a phone: the zone takes what is left and wraps. The
-         table scrolls sideways only if even that is too wide. */
-      .history-scroll {
-        overflow-x: auto;
-      }
+      /* The shared data table (.si-table): four columns. */
       .history-table {
-        display: grid;
-        grid-template-columns: auto minmax(64px, 1fr) auto auto;
-        width: 100%;
-        min-width: min-content;
-      }
-      .history-table .si-tr > span:not(:nth-child(2)) {
-        white-space: nowrap;
-      }
-      .history-table .si-tr > span:last-child,
-      .history-table .si-thead > span:last-child {
-        text-align: end;
+        grid-template-columns: auto auto auto auto;
       }
       .history-source {
         display: block;
         font-size: 0.85em;
-        color: var(--secondary-text-color);
-      }
-      .history-unit {
-        font-weight: 400;
         color: var(--secondary-text-color);
       }
 

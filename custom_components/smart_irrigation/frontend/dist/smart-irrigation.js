@@ -5104,7 +5104,7 @@ s.version="2.31.0",i(ii),s.fn=fn,s.min=oi,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
           ${0===t.length?V`<div class="si-note">
                 ${ds("panels.history.no-data",e)}
               </div>`:V`
-                <div class="history-scroll">
+                <div class="si-table-scroll tall">
                   <div class="si-table history-table">
                     <div class="si-thead">
                       <span
@@ -5113,24 +5113,30 @@ s.version="2.31.0",i(ii),s.fn=fn,s.min=oi,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
                       <span
                         >${ds("panels.history.table.zone",e)}</span
                       >
-                      <span
+                      <span class="num"
                         >${ds("panels.history.table.duration",e)}</span
                       >
-                      <span
-                        >${ds("panels.history.table.water",e)}
-                        <span class="history-unit">(${s})</span></span
+                      <span class="num"
+                        >${ds("panels.history.table.water",e)}<span
+                          class="unit"
+                          >${s}</span
+                        ></span
                       >
                     </div>
                     ${t.map(e=>V`
                         <div class="si-tr">
-                          <span>${this._formatStart(e.start)}</span>
+                          <span class="muted"
+                            >${this._formatStart(e.start)}</span
+                          >
                           <span
                             >${e.zone_name||"-"}${this._source(e)?V`<span class="history-source"
                                   >${this._source(e)}</span
                                 >`:""}</span
                           >
-                          <span>${ra(e.duration)}</span>
-                          <span
+                          <span class="num"
+                            >${ra(e.duration)}</span
+                          >
+                          <span class="num"
                             >${this._n(da(e.water_used,this._config),1)}</span
                           >
                         </div>
@@ -5229,31 +5235,13 @@ s.version="2.31.0",i(ii),s.fn=fn,s.min=oi,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
         color: var(--error-color);
       }
 
-      /* Four columns fit a phone: the zone takes what is left and wraps. The
-         table scrolls sideways only if even that is too wide. */
-      .history-scroll {
-        overflow-x: auto;
-      }
+      /* The shared data table (.si-table): four columns. */
       .history-table {
-        display: grid;
-        grid-template-columns: auto minmax(64px, 1fr) auto auto;
-        width: 100%;
-        min-width: min-content;
-      }
-      .history-table .si-tr > span:not(:nth-child(2)) {
-        white-space: nowrap;
-      }
-      .history-table .si-tr > span:last-child,
-      .history-table .si-thead > span:last-child {
-        text-align: end;
+        grid-template-columns: auto auto auto auto;
       }
       .history-source {
         display: block;
         font-size: 0.85em;
-        color: var(--secondary-text-color);
-      }
-      .history-unit {
-        font-weight: 400;
         color: var(--secondary-text-color);
       }
 
