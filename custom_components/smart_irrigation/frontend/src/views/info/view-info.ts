@@ -1280,27 +1280,42 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
             : html`
                 ${rows.map((zone) => {
                   const estimate = estimates[String(zone.id)];
+                  const noValve = withoutValve.has(Number(zone.id));
+                  const duration = noValve ? 0 : Number(estimate.duration) || 0;
                   return html`
                     <div class="zone-info">
                       <div class="zone-header">
-                        <label class="zone-name">${zone.name}</label>
+                        <span class="zone-name">${zone.name}</span>
+                        <span class="si-chip ${duration ? "on" : ""}">
+                          ${duration
+                            ? html`${this.t(
+                                "cards.estimate.labels.would-water",
+                              )}
+                              ${this.formatDuration(duration)}`
+                            : noValve
+                              ? html`${this.t(
+                                  "cards.estimate.labels.would-water",
+                                )}
+                                ${this.t("cards.estimate.no-valve")}`
+                              : localize("week.nothing", this._lang)}
+                        </span>
                       </div>
-                      <div class="zone-details">
-                        <div class="pair">
-                          <span class="label"
-                            >${this.t("cards.estimate.labels.now")}:</span
+                      <div class="si-meta">
+                        <div class="meta-item">
+                          <span class="meta-label"
+                            >${this.t("cards.estimate.labels.now")}</span
                           >
-                          <span class="value"
+                          <span class="meta-value"
                             >${this._n(Number(estimate.bucket), 1)}
                             ${unit}</span
                           >
                         </div>
-                        <div class="pair">
-                          <span class="label"
+                        <div class="meta-item">
+                          <span class="meta-label"
                             >${this.t(
                               "cards.estimate.labels.at-last-calculation",
                             )}${zone.last_calculated
-                              ? ` (${localizedDateTime(
+                              ? ` · ${localizedDateTime(
                                   zone.last_calculated,
                                   this.hass,
                                   {
@@ -1308,34 +1323,20 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                                     hour: "2-digit",
                                     minute: "2-digit",
                                   },
-                                )})`
-                              : ""}:</span
+                                )}`
+                              : ""}</span
                           >
-                          <span class="value"
+                          <span class="meta-value"
                             >${this._n(Number(zone.bucket), 1)} ${unit}</span
                           >
                         </div>
-                        <div class="pair">
-                          <span class="label"
-                            >${this.t(
-                              "cards.estimate.labels.would-water",
-                            )}:</span
-                          >
-                          <span class="value"
-                            >${withoutValve.has(Number(zone.id))
-                              ? this.t("cards.estimate.no-valve")
-                              : estimate.duration
-                                ? this.formatDuration(estimate.duration)
-                                : this.t("cards.estimate.nothing")}</span
-                          >
-                        </div>
-                        <div class="pair">
-                          <span class="label"
+                        <div class="meta-item">
+                          <span class="meta-label"
                             >${this.t(
                               "cards.estimate.labels.last-irrigation",
-                            )}:</span
+                            )}</span
                           >
-                          <span class="value"
+                          <span class="meta-value"
                             >${zone.last_irrigation
                               ? localizedDateTime(
                                   zone.last_irrigation,
@@ -1608,39 +1609,33 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       }
 
       /* one zone reads as a section, as on the other pages */
+      /* One zone: its name and what it would water, then its figures as
+         a zone's card shows them (.si-meta). */
       .zone-info {
         padding: 12px 0;
         border-bottom: 1px solid var(--divider-color);
+      }
+      .zone-info:first-child {
+        padding-top: 0;
       }
       .zone-info:last-of-type {
         border-bottom: 0;
       }
       .zone-header {
-        margin-bottom: 4px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 4px 12px;
+        margin-bottom: 8px;
       }
       .zone-name {
         font-size: 1.05em;
         font-weight: 600;
         color: var(--primary-text-color);
       }
-      .zone-details {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px 28px;
-        margin-top: 2px;
-      }
-      .pair {
-        display: flex;
-        align-items: baseline;
-        gap: 6px;
-        white-space: nowrap;
-      }
-      .pair .label {
-        color: var(--secondary-text-color);
-      }
-      .pair .value {
-        color: var(--primary-text-color);
-        font-weight: 500;
+      .zone-info .si-meta {
+        padding: 0;
       }
     `;
   }

@@ -277,6 +277,25 @@ export const siStyle = css`
     padding: var(--si-space-1) 0 var(--si-space-3);
   }
 
+  /* A small pill that states something (what a zone would water): tinted
+     when it calls for attention, grey when it does not. */
+  .si-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--si-space-1);
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 500;
+    white-space: nowrap;
+    background: var(--secondary-background-color, #f0f0f0);
+    color: var(--secondary-text-color);
+  }
+  .si-chip.on {
+    background: rgba(var(--rgb-primary-color, 3, 169, 244), 0.14);
+    color: var(--primary-color);
+  }
+
   /* --- native HA state pill (ha-label), tinted by state --- */
   ha-label.state-label {
     flex: 0 0 auto;
