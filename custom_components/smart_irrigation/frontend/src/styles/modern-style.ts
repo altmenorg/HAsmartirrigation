@@ -127,15 +127,77 @@ export const modernStyle = css`
     font-weight: 400;
     font-size: 0.85em;
   }
-  /* The hint of the row above it, set as close to it as a hint under a label.
-     For rows whose control takes the whole line. */
-  .row-hint {
-    margin: -6px 0 12px 0;
+
+  /* --- Text building blocks: one look each, on every page (#1059) ---
+     A hint is a line of small grey text under a label or a field. A note is
+     a sentence or two that explains, in the flow of a card. A box is a note
+     that must be seen (a caveat, a warning), set apart by its background. */
+  .si-hint {
+    font-size: 0.8rem;
+    font-weight: normal;
+    line-height: 1.4;
+    color: var(--secondary-text-color);
+    margin-top: 2px;
   }
-  /* A hint that says a setting will not do what it reads as. */
-  .setting-hint.warning-hint {
+  .si-hint.warn {
     color: var(--warning-color, #ff9800);
   }
+  .si-note {
+    font-size: 0.9rem;
+    font-weight: normal;
+    line-height: 1.4;
+    color: var(--secondary-text-color);
+    margin: 8px 0;
+  }
+  .si-note:first-child {
+    margin-top: 0;
+  }
+  .si-note:last-child {
+    margin-bottom: 0;
+  }
+  /* A hint or a note about the row above it: under it, as close as a hint
+     under a label, and the row gives up its line. */
+  .setting-row:has(+ .si-hint),
+  .setting-row:has(+ .si-note) {
+    border-bottom: 0;
+  }
+  .setting-row + .si-hint,
+  .setting-row + .si-note {
+    margin: -4px 0 12px;
+  }
+  .si-box {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    background: var(--secondary-background-color);
+    color: var(--secondary-text-color);
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  .si-box.warn {
+    background: rgba(var(--rgb-warning-color, 255, 166, 0), 0.12);
+    color: var(--primary-text-color);
+  }
+  .si-box > ha-icon,
+  .si-box > ha-svg-icon {
+    flex: none;
+  }
+  .si-box.warn > ha-icon,
+  .si-box.warn > ha-svg-icon {
+    color: var(--warning-color, #ffa600);
+  }
+  .si-note code,
+  .si-hint code {
+    font-family: var(--ha-font-family-code, monospace);
+    background: var(--secondary-background-color);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--primary-text-color);
+  }
+
   /* Folded blocks of the Programs page: a program, a step, a schedule. */
   details.fold {
     border: 1px solid var(--divider-color);
@@ -257,13 +319,7 @@ export const modernStyle = css`
   .fold-head > ha-switch {
     flex: 0 0 auto;
   }
-  .setting-hint {
-    font-size: 0.8rem;
-    font-weight: normal;
-    color: var(--secondary-text-color);
-    margin-top: 2px;
-    max-width: 460px;
-  }
+
   /* HA entity picker: sized like the other controls, but it brings its own
      input chrome, so it must not get the .field text-input background. */
   .entity-field {

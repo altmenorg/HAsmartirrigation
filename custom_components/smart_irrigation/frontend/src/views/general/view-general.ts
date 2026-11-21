@@ -987,14 +987,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const rows = [
       ...(live.paused
         ? [
-            html`<div class="setting-note">
+            html`<div class="si-note">
               <strong>${pausedText}</strong>
             </div>`,
           ]
         : []),
       ...(live.programs || []).map(
         (p: any) => html`
-          <div class="setting-note">
+          <div class="si-note">
             <strong>${this._programLabel(p.program_id, p.name)}</strong>
             ${p.state === "waiting"
               ? html` - ${t("waiting")}`
@@ -1008,7 +1008,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       ),
       ...liveValves(live).map(
         (v: any) => html`
-          <div class="setting-note">
+          <div class="si-note">
             ${v.zone}: ${left(v.remaining_seconds)} (${v.percent}
             %)${v.passes
               ? `, ${t("pass_of")
@@ -1022,7 +1022,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // the run goes on (UX walk of 13 Nov., Q6, Q18).
       ...(live.soaking || []).map(
         (v: any) => html`
-          <div class="setting-note">
+          <div class="si-note">
             ${v.zone}:
             ${t("soaking")
               .replace(
@@ -1039,7 +1039,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       ),
       ...(live.starting || []).map(
         (v: any) => html`
-          <div class="setting-note">
+          <div class="si-note">
             ${v.zone}: ${t("starting").replace("{supply}", v.supply || "")}
           </div>
         `,
@@ -1519,7 +1519,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         }).then(() => this._fetchLive(false));
       return html`
         <div class="fold-section">${t("adjust_title")}</div>
-        <div class="setting-note">${summary}</div>
+        <div class="si-note">${summary}</div>
         ${active
           ? html`<div class="si-actions">
               ${this._actionBtn(
@@ -1545,7 +1545,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               "0",
             )}
             ${field(t("adjust_hours"), "h", "hours", "")}
-            <div class="setting-hint row-hint">${t("adjust_help")}</div>
+            <div class="si-hint">${t("adjust_help")}</div>
             <div class="si-actions">
               ${this._actionBtn(mdiCheck, t("adjust_apply"), () => {
                 const data: Record<string, unknown> = {};
@@ -1787,7 +1787,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
         ${data
           ? drawRun(program, data.timeline)
-          : html`<div class="setting-note">…</div>`}
+          : html`<div class="si-note">…</div>`}
       `;
     };
     // The program as YAML, in place of the form: what the backend makes of
@@ -1850,26 +1850,22 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           }}
         ></ha-yaml-editor>
         ${!edit.valid
-          ? html`<div class="setting-hint row-hint warning-hint">
-              ${t("yaml_invalid")}
-            </div>`
+          ? html`<div class="si-hint warn">${t("yaml_invalid")}</div>`
           : edit.error
-            ? html`<div class="setting-hint row-hint warning-hint">
-                ${edit.error}
-              </div>`
+            ? html`<div class="si-hint warn">${edit.error}</div>`
             : ""}
         ${problems.length
-          ? html`<div class="setting-hint row-hint warning-hint">
+          ? html`<div class="si-hint warn">
               ${t("yaml_unknown_zones").replace("{zones}", problems.join(", "))}
             </div>`
           : ""}
         ${loop
-          ? html`<div class="setting-hint row-hint warning-hint">
+          ? html`<div class="si-hint warn">
               ${t("yaml_chain_loop").replace("{programs}", loop.join(" → "))}
             </div>`
           : ""}
         ${unknownAfter.length
-          ? html`<div class="setting-hint row-hint warning-hint">
+          ? html`<div class="si-hint warn">
               ${t("yaml_unknown_after").replace(
                 "{programs}",
                 unknownAfter.map((p) => `"${p}"`).join(", "),
@@ -1877,7 +1873,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             </div>`
           : ""}
         ${notWatered.length
-          ? html`<div class="setting-hint row-hint warning-hint">
+          ? html`<div class="si-hint warn">
               ${t("yaml_not_watered").replace(
                 "{zones}",
                 notWatered.map((z) => z.zone ?? `#${z.zone_id}`).join(", "),
@@ -2302,7 +2298,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 0,
               )}
               ${minOverMax
-                ? html`<div class="setting-hint row-hint warning-hint">
+                ? html`<div class="si-hint warn">
                     ${t("min_over_max").replace(
                       "{max}",
                       friendlyDuration(step.max_seconds ?? 0),
@@ -2507,9 +2503,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   }),
               )}
               ${afterIsMissing(programs, schedule)
-                ? html`<div class="setting-hint row-hint warning-hint">
-                    ${t("after_missing")}
-                  </div>`
+                ? html`<div class="si-hint warn">${t("after_missing")}</div>`
                 : ""}
               ${this._numRow(
                 html`${t("schedule_after_offset")}<si-info
@@ -2838,7 +2832,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           `,
         )}
         ${choices.length <= 1
-          ? html`<div class="setting-note">${t("notify_none")}</div>`
+          ? html`<div class="si-note">${t("notify_none")}</div>`
           : ""}
         ${notify.targets.length
           ? html`
@@ -2901,7 +2895,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         ${programs.length
           ? ""
           : html`<div class="card-content">
-              <div class="setting-note">${t("none_yet")}</div>
+              <div class="si-note">${t("none_yet")}</div>
             </div>`}
         ${programs.map(
           (program, index) => html`
@@ -3573,7 +3567,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               </svg>
             </div>
           </div>
-          <div class="trigger-active-hint">
+          <div class="si-hint">
             ${localize(
               "irrigation_start_triggers.active_hint",
               this.hass.language,
@@ -4141,7 +4135,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           }`,
       )
       .join("; ");
-    return html`<div class="setting-hint reading-source">
+    return html`<div class="si-hint reading-source">
       ${from} ${same.length ? t("same", "{groups}", same.join(", ")) : ""}
       ${!same.length && other.length ? t("other", "{groups}", elsewhere) : ""}
       ${!same.length && adoptable
@@ -4674,7 +4668,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           )}
           ${own.length
             ? // Set on the zone, shown here so that none acts out of sight.
-              html`<div class="setting-hint row-hint skip-soil">
+              html`<div class="si-hint skip-soil">
                 ${localize("days_between_irrigation.own", this.hass.language)}
                 ${this._zoneLinks(own)}
               </div>`
@@ -4961,7 +4955,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       this.config.skip_irrigation_on_precipitation ||
       this.config.forecast_rain_credit
     );
-    return html`<div class="setting-hint row-hint ${on ? "warning-hint" : ""}">
+    return html`<div class="si-hint ${on ? "warn" : ""}">
       ${localize(
         on
           ? "weather_skip.forecast_no_service_on"
@@ -5271,27 +5265,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         color: var(--primary-color);
       }
 
-      /* The explanation under a setting: a nested .card-content has no
-         padding of its own, so the text sat on the divider above it. */
-      .setting-note {
-        padding: 10px 0 12px;
-        line-height: 1.4;
-      }
-
-      /* What the switch just above means: set as the hint under a label is
-         (the Panel card), not as a paragraph of its own under a divider. */
-      .setting-row:has(+ .setting-note),
-      .setting-row:has(+ .setting-help) {
-        border-bottom: 0;
-      }
-      .setting-row + .setting-note,
-      .setting-help {
-        font-size: 0.8rem;
-        color: var(--secondary-text-color);
-        line-height: 1.4;
-        padding: 0 0 12px;
-      }
-
       /* number + unit-select on a single line (e.g. update interval) */
       .combo-field {
         display: flex;
@@ -5332,12 +5305,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         font-size: 0.9em;
         line-height: 1.5;
       }
-      .trigger-active-hint {
-        color: var(--secondary-text-color);
-        font-size: 0.85em;
-        line-height: 1.4;
-        margin-top: 6px;
-      }
+
       .trigger-usage code {
         font-family: var(--ha-font-family-code, monospace);
         background: var(--secondary-background-color);

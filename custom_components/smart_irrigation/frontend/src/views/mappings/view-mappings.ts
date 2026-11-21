@@ -314,7 +314,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         </h4>
         ${records.length === 0
           ? html`
-              <div class="weather-note">
+              <div class="si-box">
                 ${localize(
                   "panels.mappings.weather-records.no-data",
                   this.hass.language,
@@ -709,7 +709,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
           )
         }
         ${etUnused
-          ? html`<div class="weather-note">
+          ? html`<div class="si-box">
               ${localize(
                 "panels.mappings.cards.mapping.et_unused",
                 this.hass.language,
@@ -717,7 +717,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             </div>`
           : ""}
         ${etNeeded
-          ? html`<div class="weather-note">
+          ? html`<div class="si-box">
               ${localize(
                 "panels.mappings.cards.mapping.et_needed",
                 this.hass.language,
@@ -728,7 +728,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         this.config?.use_weather_service &&
         this.config?.weather_service === WEATHER_SERVICE_HA &&
         mappingline[MAPPING_CONF_SOURCE] === MAPPING_CONF_SOURCE_WEATHER_SERVICE
-          ? html`<div class="weather-note">
+          ? html`<div class="si-box">
               ${localize(
                 "panels.mappings.cards.mapping.rain_not_from_entity",
                 this.hass.language,
@@ -777,7 +777,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         : `panels.mappings.cards.mapping.hints.${value.toLowerCase()}`,
       this.hass.language,
     );
-    return hint ? html`<div class="setting-hint">${hint}</div>` : html``;
+    return hint ? html`<div class="si-hint">${hint}</div>` : html``;
   }
 
   private renderSimpleRadioOptions(
@@ -1998,7 +1998,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
                   ></ha-switch>
                 </div>
                 ${mapping.greenhouse
-                  ? html`<div class="weather-note">
+                  ? html`<div class="si-box">
                       ${localize(
                         "panels.mappings.cards.mapping.greenhouse_description",
                         lang,
@@ -2010,7 +2010,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
               ${this.renderWeatherRecords(mapping)}
               <div class="si-actions">
                 ${numberofzonesusingthismapping
-                  ? html`<div class="weather-note">
+                  ? html`<div class="si-box">
                       ${localize(
                         "panels.mappings.cards.mapping.errors.cannot-delete-mapping-because-zones-use-it",
                         lang,
@@ -2114,7 +2114,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     // (#984).
     const etNotes = html`
       ${ignoring
-        ? html`<div class="weather-note">
+        ? html`<div class="si-box">
             ${localize(
               "panels.mappings.cards.mapping.et_ignored",
               lang,
@@ -2122,7 +2122,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
           </div>`
         : ""}
       ${waiting
-        ? html`<div class="weather-note">
+        ? html`<div class="si-box">
             ${localize(
               "panels.mappings.cards.mapping.et_missing",
               lang,
@@ -2139,7 +2139,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             : ""}`,
       )}
       ${hidden > 0
-        ? html`<div class="weather-note">
+        ? html`<div class="si-box">
             ${localize(
               "panels.mappings.cards.mapping.hidden_sources",
               lang,

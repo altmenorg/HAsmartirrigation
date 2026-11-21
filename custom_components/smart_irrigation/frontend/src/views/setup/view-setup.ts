@@ -321,10 +321,10 @@ class SmartIrrigationViewSetup extends LitElement {
         <ha-card header="${this.t("title")}">
           <div class="card-content">
             <div class="done">${this.t("done")}</div>
-            <div class="note">${this.t("done-note-zone")}</div>
-            <div class="note">${this.t(next)}</div>
+            <div class="si-note">${this.t("done-note-zone")}</div>
+            <div class="si-note">${this.t(next)}</div>
             ${this.mode === "water"
-              ? html`<div class="note">
+              ? html`<div class="si-note">
                   ${this.placed
                     ? this.t(
                         this.placed.created
@@ -373,7 +373,7 @@ class SmartIrrigationViewSetup extends LitElement {
     return html`
       <ha-card header="${this.t("title")}">
         <div class="card-content">
-          <div class="note">${this.t("description")}</div>
+          <div class="si-note">${this.t("description")}</div>
           ${this.renderStep()}
           ${this.error ? html`<div class="error">${this.error}</div>` : ""}
           <div class="si-form-actions">
@@ -466,7 +466,7 @@ class SmartIrrigationViewSetup extends LitElement {
   private renderZoneStep(): TemplateResult {
     return html`
       <h3>${this.t("steps.zone.question")}</h3>
-      <div class="note">${this.t("steps.zone.help")}</div>
+      <div class="si-note">${this.t("steps.zone.help")}</div>
       <div class="setting-row">
         <div class="setting-label">${this.t("steps.zone.name")}</div>
         <input
@@ -513,7 +513,7 @@ class SmartIrrigationViewSetup extends LitElement {
             (this.zoneThroughput = (e.target as HTMLInputElement).value)}
         />
       </div>
-      <div class="note">${this.t("steps.zone.throughput-help")}</div>
+      <div class="si-note">${this.t("steps.zone.throughput-help")}</div>
       <div class="setting-row">
         <div class="setting-label">
           ${this.t("steps.zone.valve")}${this.mode === "water"
@@ -531,7 +531,7 @@ class SmartIrrigationViewSetup extends LitElement {
             (this.valve = e.detail?.value ?? "")}
         ></ha-entity-picker>
       </div>
-      <div class="note">
+      <div class="si-note">
         ${this.t(
           this.mode === "water"
             ? "steps.zone.valve-help"
@@ -581,7 +581,7 @@ class SmartIrrigationViewSetup extends LitElement {
           )
         : ""}
       ${this.underGlass
-        ? html`<div class="note">
+        ? html`<div class="si-note">
             ${this.t("steps.weather.no-service-indoors")}
           </div>`
         : ""}
@@ -610,7 +610,7 @@ class SmartIrrigationViewSetup extends LitElement {
     if (this.weather === "static") {
       return html`
         <h3>${this.t("steps.sensors.static-question")}</h3>
-        <div class="note">${this.t("steps.sensors.static-help")}</div>
+        <div class="si-note">${this.t("steps.sensors.static-help")}</div>
         <div class="setting-row">
           <div class="setting-label">
             ${this.t("steps.sensors.static-label")}
@@ -630,22 +630,24 @@ class SmartIrrigationViewSetup extends LitElement {
 
     return html`
       <h3>${this.t("steps.sensors.question")}</h3>
-      <div class="note">${this.t("steps.sensors.help")}</div>
+      <div class="si-note">${this.t("steps.sensors.help")}</div>
       ${this.optionalToAsk.length
-        ? html`<div class="note">${this.t("steps.sensors.help-optional")}</div>`
+        ? html`<div class="si-note">
+            ${this.t("steps.sensors.help-optional")}
+          </div>`
         : ""}
       ${this.rainFromSensors.length
-        ? html`<div class="note">
+        ? html`<div class="si-note">
             ${this.t("steps.sensors.rain-help-entity")}
           </div>`
         : ""}
       ${this.suggested.length
-        ? html`<div class="note">
+        ? html`<div class="si-note">
             ${this.t("steps.sensors.suggested-note")}
           </div>`
         : ""}
       ${this.underGlass && this.sensorsToAsk.includes(MAPPING_SOLRAD)
-        ? html`<div class="note">${this.t("steps.sensors.lux-hint")}</div>`
+        ? html`<div class="si-note">${this.t("steps.sensors.lux-hint")}</div>`
         : ""}
       ${this.sensorsToAsk.map(
         (source) => html`
@@ -730,7 +732,7 @@ class SmartIrrigationViewSetup extends LitElement {
           </div>
         </div>
       </div>
-      <div class="note">${this.t("steps.review.help")}</div>
+      <div class="si-note">${this.t("steps.review.help")}</div>
     `;
   }
 
@@ -842,7 +844,7 @@ class SmartIrrigationViewSetup extends LitElement {
     return html`
       <div class="choice ${selected ? "selected" : ""}" @click=${pick}>
         <div class="choice-title">${title}</div>
-        <div class="choice-help">${help}</div>
+        <div class="si-hint">${help}</div>
       </div>
     `;
   }
@@ -1089,12 +1091,7 @@ class SmartIrrigationViewSetup extends LitElement {
         margin: 12px 0 4px;
         color: var(--primary-text-color);
       }
-      .note {
-        color: var(--secondary-text-color);
-        font-size: 0.9em;
-        line-height: 1.4;
-        margin: 4px 0 8px;
-      }
+
       /* The recap's answers: the right-hand side of a row, reading as a
          value rather than as something still editable. */
       .review-value {
@@ -1122,12 +1119,6 @@ class SmartIrrigationViewSetup extends LitElement {
       .choice-title {
         font-weight: 600;
         color: var(--primary-text-color);
-      }
-      .choice-help {
-        color: var(--secondary-text-color);
-        font-size: 0.9em;
-        line-height: 1.4;
-        margin-top: 2px;
       }
 
       /* Which step this is, beside the button that moves to the next one.

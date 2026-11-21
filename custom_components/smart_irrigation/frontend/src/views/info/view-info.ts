@@ -679,7 +679,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
           <ha-icon icon="mdi:water-alert-outline"></ha-icon>
           <div>
             <div class="gap-title">${this.t(`gaps.${gap}.title`)}</div>
-            <div class="info-note">${this.t(`gaps.${gap}.body`)}</div>
+            <div class="si-note">${this.t(`gaps.${gap}.body`)}</div>
           </div>
         </div>
         ${gap === "no_valve_path"
@@ -714,10 +714,10 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
           <ha-icon icon="mdi:clock-alert-outline"></ha-icon>
           <div>
             <div class="gap-title">${this.t("cards.stale.title")}</div>
-            <div class="info-note">${this.t("cards.stale.body")}</div>
+            <div class="si-note">${this.t("cards.stale.body")}</div>
             ${stale.map(
               (entry) => html`
-                <div class="info-note">
+                <div class="si-note">
                   <b>${entry.zone}</b>:
                   ${entry.last_calculated
                     ? localizedDateTime(entry.last_calculated, this.hass, {
@@ -1067,7 +1067,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       >
         <div class="card-content">
           ${!preview
-            ? html`<div class="info-note">
+            ? html`<div class="si-note">
                 ${this.t("cards.decision.unavailable")}
               </div>`
             : preview.should_skip
@@ -1076,7 +1076,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                     ${this.t("cards.decision.will-skip")}
                   </div>
                   ${preview.checks.map((check) => this.renderCheck(check))}
-                  <div class="info-note">
+                  <div class="si-note">
                     ${this.t("cards.decision.preview-note")}
                   </div>
                 `
@@ -1089,7 +1089,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                     </summary>
                     <div class="more-body">
                       ${preview.checks.map((check) => this.renderCheck(check))}
-                      <div class="info-note">
+                      <div class="si-note">
                         ${this.t("cards.decision.preview-note")}
                       </div>
                     </div>
@@ -1277,9 +1277,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       <ha-card header="${this.t("cards.estimate.title")}">
         <div class="card-content">
           ${rows.length === 0
-            ? html`<div class="info-note">
-                ${this.t("cards.estimate.none")}
-              </div>`
+            ? html`<div class="si-note">${this.t("cards.estimate.none")}</div>`
             : html`
                 ${rows.map((zone) => {
                   const estimate = estimates[String(zone.id)];
@@ -1358,7 +1356,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                     </div>
                   `;
                 })}
-                <div class="info-note">${this.t("cards.estimate.note")}</div>
+                <div class="si-note">${this.t("cards.estimate.note")}</div>
               `}
         </div>
       </ha-card>
@@ -1503,8 +1501,6 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
         min-height: 1em;
       }
 
-      /* A remark under a value, not an alert: the shared style paints
-         .info-note as a warning banner, which read as something wrong. */
       .postpone {
         flex-direction: row;
         gap: 12px 16px;
@@ -1537,15 +1533,6 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
 
       .gap-title {
         font-weight: 500;
-      }
-
-      .info-note {
-        background: none;
-        padding: 0;
-        color: var(--secondary-text-color);
-        font-size: 0.9em;
-        line-height: 1.4;
-        margin-top: 4px;
       }
 
       /* the headline answer of the decision card */

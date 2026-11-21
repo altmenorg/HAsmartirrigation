@@ -265,7 +265,7 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
       <ha-card header="${localize("panels.history.table.title", lang)}">
         <div class="card-content">
           ${rows.length === 0
-            ? html`<div class="history-note">
+            ? html`<div class="si-note">
                 ${localize("panels.history.no-data", lang)}
               </div>`
             : html`
@@ -313,7 +313,7 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
                   </div>
                 </div>
                 ${this._records.length > TABLE_LIMIT
-                  ? html`<div class="history-note">
+                  ? html`<div class="si-note">
                       ${localize(
                         "panels.history.table.truncated",
                         lang,
@@ -381,7 +381,7 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
     const unit = output_unit(this._config, ZONE_WATER_VOLUME);
     const peak = Math.max(...buckets.map((bucket) => bucket.value), 0);
     if (peak <= 0) {
-      return html`<div class="history-note">
+      return html`<div class="si-note">
         ${localize("panels.history.charts.no-data", lang)}
       </div>`;
     }
@@ -499,11 +499,7 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
         justify-content: flex-end;
         padding-top: 8px;
       }
-      .history-note {
-        color: var(--secondary-text-color);
-        font-size: 0.9em;
-        margin-top: 8px;
-      }
+
       .history-msg {
         margin-top: 12px;
         padding: 10px 12px;

@@ -141,7 +141,7 @@ export class SmartIrrigationViewBackupRestore extends LitElement {
 
     return html`
       <ha-card header="${localize("panels.backuprestore.title", lang)}">
-        <div class="card-content br-description">
+        <div class="card-content si-note">
           ${localize("panels.backuprestore.description", lang)}
         </div>
       </ha-card>
@@ -150,7 +150,7 @@ export class SmartIrrigationViewBackupRestore extends LitElement {
         header="${localize("panels.backuprestore.cards.backup.title", lang)}"
       >
         <div class="card-content">
-          <div class="br-description">
+          <div class="si-note">
             ${localize("panels.backuprestore.cards.backup.description", lang)}
           </div>
           ${this._message
@@ -173,7 +173,7 @@ export class SmartIrrigationViewBackupRestore extends LitElement {
         header="${localize("panels.backuprestore.cards.restore.title", lang)}"
       >
         <div class="card-content">
-          <div class="br-description">
+          <div class="si-note">
             ${localize("panels.backuprestore.cards.restore.description", lang)}
           </div>
 
@@ -239,7 +239,7 @@ export class SmartIrrigationViewBackupRestore extends LitElement {
                 </ha-button>
               </div>`
             : ""}
-          <div class="br-note">
+          <div class="si-note br-note">
             ${localize("panels.backuprestore.messages.reload-note", lang)}
           </div>
         </div>
@@ -251,11 +251,7 @@ export class SmartIrrigationViewBackupRestore extends LitElement {
     return css`
       ${globalStyle} ${modernStyle}
 
-      .br-description {
-        color: var(--primary-text-color);
-        line-height: 1.4;
-        margin-bottom: 8px;
-      }
+
       .br-actions {
         display: flex;
         justify-content: flex-end;
@@ -279,9 +275,6 @@ export class SmartIrrigationViewBackupRestore extends LitElement {
         display: none;
       }
       .br-note {
-        color: var(--secondary-text-color);
-        font-size: 0.9em;
-        margin-top: 12px;
         text-align: right;
       }
       .br-msg {

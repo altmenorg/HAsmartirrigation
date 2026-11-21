@@ -784,7 +784,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     const unit = unit_text(this.config, ZONE_BUCKET);
     return html`
       <div
-        class="zone-status zone-status--${kind}"
+        class="zone-status zone-status-- ${kind}"
         role=${kind === "problem" ? "alert" : "status"}
       >
         <ha-icon
@@ -1357,7 +1357,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         </h4>
         ${records.length === 0
           ? html`
-              <div class="weather-note">
+              <div class="si-box">
                 ${localize(
                   "panels.mappings.weather-records.no-data",
                   this.hass.language,
@@ -1450,10 +1450,10 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
     return html` <div class="watering-calendar">
       <h4>${t("title")}</h4>
-      <div class="calendar-note">${t("caveat")}</div>
+      <div class="si-box">${t("caveat")}</div>
       ${monthlyEstimates.length === 0
         ? html`
-            <div class="calendar-note">
+            <div class="si-box">
               ${zoneCalendar?.error
                 ? `${t("error")}: ${zoneCalendar.error}`
                 : t("none")}
@@ -1657,7 +1657,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           <div class="zone-head-text">
             <div class="zone-title-row">
               <span class="zone-title">${zone.name || "—"}</span>
-              <ha-label class="state-label state-label--${zone.state}" dense
+              <ha-label class="state-label state-label-- ${zone.state}" dense
                 >${stateLabel}</ha-label
               >
             </div>
@@ -1801,7 +1801,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           ${zone.measured_throughput &&
                           (zone.measured_throughput_samples || 0) >= 3
                             ? html`
-                                <div class="setting-help">
+                                <div class="si-note">
                                   ${localize(
                                     "panels.zones.labels.measured-flow-help",
                                     lang,
@@ -2234,7 +2234,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       ),
                     )}
                     ${this._adv(
-                      html`<div class="setting-help">
+                      html`<div class="si-note">
                         ${localize(
                           `panels.zones.labels.calculation-method-help.${
                             zone.calculation_method ?? "from_weather"
@@ -2587,7 +2587,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     }
                     ${this._durationRow(zone, index, lang, durationReadonly)}
                     ${durationReadonly
-                      ? html`<div class="setting-help">
+                      ? html`<div class="si-note">
                           ${localize(
                             zone.state === SmartIrrigationZoneState.Disabled
                               ? "panels.zones.labels.duration-readonly-disabled"
@@ -3181,9 +3181,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           this._scheduleUpdate();
         }}
       ></ha-yaml-editor>
-      ${problem
-        ? html`<div class="setting-help yaml-problem">${problem}</div>`
-        : ""}
+      ${problem ? html`<div class="si-note yaml-problem">${problem}</div>` : ""}
       <div class="yaml-actions">
         ${this._actionBtn(
           mdiCheck,
@@ -3425,7 +3423,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           <!-- The two that throw data away, apart from the two that refresh
                it (#982): they already ask first, now they also look it. -->
           <div class="bulk-danger">
-            <div class="setting-help">
+            <div class="si-note">
               ${localize(
                 "panels.zones.cards.zone-actions.reset-hint",
                 this.hass.language,
@@ -3655,17 +3653,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         box-sizing: border-box;
       }
 
-      /* One line under a setting, saying what the choice above it means. */
-      .setting-help {
-        color: var(--secondary-text-color);
-        font-size: 0.85em;
-        padding: 6px 0 10px 0;
-        border-bottom: 1px solid var(--divider-color);
-      }
-      .setting-row:last-child,
-      /* A hint closing its block: the actions below draw their own line, and
-         the two lines 16 px apart framed an empty strip (#1048). */
-      .setting-help:last-child {
+      .setting-row:last-child {
         border-bottom: 0;
       }
 
@@ -3735,14 +3723,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         padding-top: 16px;
         border-top: 1px solid var(--divider-color);
       }
-      /* Room between the hint and the buttons, which touched it (#1006,
-         #1017): as much as between the card's title and its first row. */
-      .bulk-danger .setting-help {
-        padding: 0 0 16px;
-        /* The shared .setting-help draws a line under itself, which ran along
-           the top of the buttons: the "line above" of #1019. */
-        border-bottom: none;
-      }
+
       /* Deleting the zone, apart from what it does every day. */
       .zone-danger {
         display: flex;

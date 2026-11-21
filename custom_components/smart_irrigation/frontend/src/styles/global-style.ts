@@ -126,24 +126,6 @@ export const globalStyle = css`
     border-radius: 4px;
   }
 
-  /* Note/alert styles - consolidated */
-  .weather-note,
-  .calendar-note,
-  .info-note {
-    padding: 8px;
-    background: var(--secondary-background-color);
-    color: var(--secondary-text-color);
-    border-radius: 4px;
-    font-size: 0.9em;
-    font-style: italic;
-  }
-
-  .info-note {
-    margin-top: 16px;
-    background: var(--warning-color);
-    color: var(--text-primary-color);
-  }
-
   /* Radio button group styling */
   .radio-group {
     display: flex;

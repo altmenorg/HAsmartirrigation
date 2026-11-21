@@ -264,9 +264,9 @@ export class SmartIrrigationViewIuImport extends LitElement {
     return html`${cutover}
       <ha-card header="${this.t("title")}">
         <div class="card-content">
-          <div class="note">${this.t("description")}</div>
+          <div class="si-note">${this.t("description")}</div>
           ${!this.loaded
-            ? html`<div class="note">${this.t("loading")}</div>`
+            ? html`<div class="si-note">${this.t("loading")}</div>`
             : this.renderStep()}
           <div aria-live="polite">
             ${this.notice ? html`<div class="notice">${this.notice}</div>` : ""}
@@ -372,7 +372,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
         }}
       >
         <div class="choice-title">${title}</div>
-        <div class="choice-help">${help}</div>
+        <div class="si-hint">${help}</div>
       </div>
     `;
   }
@@ -403,9 +403,9 @@ export class SmartIrrigationViewIuImport extends LitElement {
     const first = this.sources.find((s) => !s.error)?.id ?? PASTED;
     return html`
       <h3 id="source-question">${this.t("source.question")}</h3>
-      <div class="note">${this.t("source.help")}</div>
+      <div class="si-note">${this.t("source.help")}</div>
       ${this.importedAt
-        ? html`<div class="note">
+        ? html`<div class="si-note">
             ${this.t(
               "source.previous",
               "at",
@@ -437,7 +437,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
           ),
         )}
         ${this.loaded && !this.sources.some((s) => !s.error)
-          ? html`<div class="note">${this.t("source.none-found")}</div>`
+          ? html`<div class="si-note">${this.t("source.none-found")}</div>`
           : ""}
         ${this.choice(
           this.source === PASTED,
@@ -525,14 +525,14 @@ export class SmartIrrigationViewIuImport extends LitElement {
     if (!preview) return html``;
     if (!preview.zones.length) {
       return html`<h3>${this.t("zones.question")}</h3>
-        <div class="note">${this.t("zones.none")}</div>`;
+        <div class="si-note">${this.t("zones.none")}</div>`;
     }
     const conflicts = zoneConflicts(preview);
     return html`
       <h3>${this.t("zones.question")}</h3>
-      <div class="note">${this.t("zones.help")}</div>
+      <div class="si-note">${this.t("zones.help")}</div>
       ${preview.links
-        ? html`<div class="note">
+        ? html`<div class="si-note">
             ${this.t("zones.links", "count", preview.links)}
           </div>`
         : ""}
@@ -576,7 +576,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
                     : ""}
                 </select>
               </div>
-              <div class="row-help">
+              <div class="si-hint">
                 ${zone.action === "create"
                   ? this.t("zones.creates")
                   : this.t(
@@ -609,7 +609,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
         })}
       </div>
       ${preview.zones_left.length
-        ? html`<div class="note">
+        ? html`<div class="si-note">
             ${this.t(
               "zones.left",
               "zones",
@@ -643,10 +643,10 @@ export class SmartIrrigationViewIuImport extends LitElement {
     if (!preview) return html``;
     return html`
       <h3>${this.t("programs.question")}</h3>
-      <div class="note">${this.t("programs.help")}</div>
+      <div class="si-note">${this.t("programs.help")}</div>
       ${this.renderNameConflicts()}
       ${!preview.programs.length
-        ? html`<div class="note">${this.t("programs.none")}</div>`
+        ? html`<div class="si-note">${this.t("programs.none")}</div>`
         : ""}
       <div class="rows">
         ${preview.programs.map(
@@ -666,7 +666,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
                     </li>`,
                 )}
               </ul>
-              <div class="row-help">
+              <div class="si-hint">
                 ${entry.program.schedules.length
                   ? entry.program.schedules
                       .map((s) => describeSchedule(s, this.lng, this.t))
@@ -682,7 +682,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
         )}
       </div>
       ${preview.removed.programs.length
-        ? html`<div class="note">
+        ? html`<div class="si-note">
             ${this.t(
               "programs.removed",
               "programs",
@@ -696,7 +696,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
         ? html`<h3>${this.t("supplies.title")}</h3>
             ${preview.supplies.map(
               (s) =>
-                html`<div class="note">
+                html`<div class="si-note">
                   ${this.t(
                     `supplies.${s.action}`,
                     "name",
@@ -707,7 +707,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
                 </div>`,
             )}
             ${preview.removed.supplies.length
-              ? html`<div class="note">
+              ? html`<div class="si-note">
                   ${this.t(
                     "supplies.removed",
                     "supplies",
@@ -729,9 +729,9 @@ export class SmartIrrigationViewIuImport extends LitElement {
     const counts = summary(preview);
     return html`
       <h3>${this.t("report.question")}</h3>
-      <div class="note">${this.t("report.help")}</div>
+      <div class="si-note">${this.t("report.help")}</div>
       ${!groups.length
-        ? html`<div class="note">${this.t("report.all-carried")}</div>`
+        ? html`<div class="si-note">${this.t("report.all-carried")}</div>`
         : groups.map(
             (group) => html`
               <h4>${this.t(`report.outcome.${group.outcome}`)}</h4>
@@ -795,7 +795,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
         ? html`<div class="error" role="alert">
             ${this.t("report.blocked")}
           </div>`
-        : html`<div class="note">
+        : html`<div class="si-note">
             ${this.t(
               // IU that is not running waters nothing either: "IU keeps
               // watering until you switch it off" was not so.
@@ -824,7 +824,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
             </li>
             <li>${this.t("done.programs", "count", result.programs.length)}</li>
           </ul>
-          <div class="note">
+          <div class="si-note">
             ${this.t(
               `done.${this.fullController ? "next" : "next-off"}${
                 this.preview?.iu_running === false ? "-iu-off" : ""
@@ -862,12 +862,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
         margin: 12px 0 2px;
         color: var(--primary-text-color);
       }
-      .note {
-        color: var(--secondary-text-color);
-        font-size: 0.9em;
-        line-height: 1.4;
-        margin: 4px 0 8px;
-      }
+
       .notice {
         border-left: 3px solid var(--warning-color, #ffa600);
         padding: 4px 8px;
@@ -892,12 +887,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
         font-weight: 600;
         color: var(--primary-text-color);
       }
-      .choice-help {
-        color: var(--secondary-text-color);
-        font-size: 0.9em;
-        line-height: 1.4;
-        margin-top: 2px;
-      }
+
       textarea.yaml {
         width: 100%;
         box-sizing: border-box;
@@ -950,13 +940,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
         font-size: 0.9em;
         margin-top: 6px;
       }
-      .row-help {
-        color: var(--secondary-text-color);
-        font-size: 0.9em;
-        line-height: 1.4;
-        margin-top: 4px;
-        overflow-wrap: anywhere;
-      }
+
       .badge {
         font-size: 0.8em;
         border: 1px solid var(--divider-color);

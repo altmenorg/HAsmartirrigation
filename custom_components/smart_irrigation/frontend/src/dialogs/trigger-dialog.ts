@@ -6,6 +6,7 @@ import { localize } from "../../localize/localize";
 import { askConfirmation } from "./confirmation-dialog";
 import { IrrigationStartTrigger, TriggerType } from "../types";
 import { dialogStyle } from "../styles/global-style";
+import { modernStyle } from "../styles/modern-style";
 import {
   TRIGGER_TYPE_SUNRISE,
   TRIGGER_TYPE_SUNSET,
@@ -273,7 +274,7 @@ export class TriggerDialog extends LitElement {
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
-          <div class="dialog-help">
+          <div class="si-note">
             ${localize(
               "irrigation_start_triggers.dialog.help",
               this.hass.language,
@@ -529,6 +530,7 @@ export class TriggerDialog extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       dialogStyle,
+      modernStyle,
       css`
         .wrapper {
           color: var(--primary-text-color);
@@ -577,20 +579,6 @@ export class TriggerDialog extends LitElement {
         .form-input:focus {
           outline: none;
           border-bottom: 2px solid var(--primary-color);
-        }
-        .dialog-help {
-          margin-bottom: 16px;
-          color: var(--secondary-text-color);
-          font-size: 0.9em;
-          line-height: 1.5;
-        }
-        .dialog-help code {
-          font-family: var(--ha-font-family-code, monospace);
-          background: var(--secondary-background-color);
-          padding: 1px 6px;
-          border-radius: 4px;
-          color: var(--primary-text-color);
-          white-space: nowrap;
         }
 
         ha-formfield {

@@ -339,7 +339,7 @@ export class SmartIrrigationViewWeatherService extends LitElement {
                           }}
                         ></ha-entity-picker>
                       </div>
-                      <div class="ws-note ws-note--hint">
+                      <div class="si-note">
                         ${localize(
                           "panels.weatherservice.messages.ha-entity-hint",
                           lang,
@@ -347,7 +347,7 @@ export class SmartIrrigationViewWeatherService extends LitElement {
                       </div>`
                   : ""}
                 ${this._service === WEATHER_SERVICE_OWM
-                  ? html`<div class="ws-note ws-note--hint">
+                  ? html`<div class="si-note">
                       ${localize(
                         "panels.weatherservice.messages.owm-onecall-hint",
                         lang,
@@ -355,7 +355,7 @@ export class SmartIrrigationViewWeatherService extends LitElement {
                     </div>`
                   : ""}
               `
-            : html`<div class="ws-note">
+            : html`<div class="si-note">
                 ${localize("panels.weatherservice.messages.no-service", lang)}
               </div>`}
           ${this._error
@@ -416,7 +416,7 @@ export class SmartIrrigationViewWeatherService extends LitElement {
         </ha-button>
       </div>
       ${this._use
-        ? html`<div class="ws-note ws-reload-note">
+        ? html`<div class="si-note ws-reload-note">
             ${localize(
               this._service === WEATHER_SERVICE_HA
                 ? "panels.weatherservice.messages.reload-note-entity"
@@ -465,7 +465,7 @@ export class SmartIrrigationViewWeatherService extends LitElement {
           </ha-button>
         </div>
         ${lastRetrieved
-          ? html`<div class="ws-note ws-history-last">
+          ? html`<div class="si-note ws-history-last">
               ${localize("panels.weatherservice.history.last-update", lang)}:
               ${lastRetrieved}
             </div>`
@@ -473,7 +473,7 @@ export class SmartIrrigationViewWeatherService extends LitElement {
         ${this._historyError
           ? html`<div class="ws-msg ws-msg--error">${this._historyError}</div>`
           : records.length === 0
-            ? html`<div class="ws-note">
+            ? html`<div class="si-note">
                 ${this._historyLoading
                   ? localize("common.loading-messages.general", lang) + "..."
                   : localize("panels.weatherservice.history.no-data", lang)}
@@ -564,11 +564,7 @@ export class SmartIrrigationViewWeatherService extends LitElement {
         justify-content: flex-end;
         padding-top: 12px;
       }
-      .ws-note {
-        color: var(--secondary-text-color);
-        font-size: 0.9em;
-        margin-top: 8px;
-      }
+
       .ws-reload-note {
         text-align: right;
       }

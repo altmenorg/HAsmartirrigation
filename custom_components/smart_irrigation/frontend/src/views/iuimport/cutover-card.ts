@@ -225,7 +225,7 @@ export class SmartIrrigationIuCutover extends LitElement {
             </li>`,
         )}
       </ul>
-      <div class="note">
+      <div class="si-note">
         <a
           href="#"
           @click=${(e: Event) => {
@@ -244,7 +244,7 @@ export class SmartIrrigationIuCutover extends LitElement {
     return html`
       <h3>${this.t("controllers")}</h3>
       ${!status.iu_running
-        ? html`<div class="note">${this.t("iu-not-running")}</div>`
+        ? html`<div class="si-note">${this.t("iu-not-running")}</div>`
         : ""}
       ${status.controllers.length
         ? html`<ul class="lines">
@@ -260,7 +260,7 @@ export class SmartIrrigationIuCutover extends LitElement {
                 </li>`,
             )}
           </ul>`
-        : html`<div class="note">${this.t("no-controllers")}</div>`}
+        : html`<div class="si-note">${this.t("no-controllers")}</div>`}
     `;
   }
 
@@ -269,7 +269,7 @@ export class SmartIrrigationIuCutover extends LitElement {
     return html`
       <ha-card header="${this.t("follow-ups.title")}">
         <div class="card-content">
-          <div class="note">
+          <div class="si-note">
             ${list.length
               ? this.t("follow-ups.help")
               : this.t("follow-ups.none")}
@@ -296,7 +296,7 @@ export class SmartIrrigationIuCutover extends LitElement {
                         >`
                       : ""}
                   </div>
-                  <div class="row-help">
+                  <div class="si-hint">
                     ${f.adjust_time
                       ? this.t("follow-ups.adjust-time")
                       : this.t("follow-ups.uses", "uses", f.uses.join(", "))}
@@ -331,12 +331,7 @@ export class SmartIrrigationIuCutover extends LitElement {
       .who.none {
         border-left-color: var(--error-color, #b71c1c);
       }
-      .note {
-        color: var(--secondary-text-color);
-        font-size: 0.9em;
-        line-height: 1.4;
-        margin: 4px 0 8px;
-      }
+
       .notice {
         border-left: 3px solid var(--warning-color, #ffa600);
         padding: 4px 8px;
@@ -376,13 +371,7 @@ export class SmartIrrigationIuCutover extends LitElement {
         color: var(--primary-text-color);
         overflow-wrap: anywhere;
       }
-      .row-help {
-        color: var(--secondary-text-color);
-        font-size: 0.9em;
-        line-height: 1.4;
-        margin-top: 4px;
-        overflow-wrap: anywhere;
-      }
+
       .badge {
         font-size: 0.75em;
         font-weight: normal;
