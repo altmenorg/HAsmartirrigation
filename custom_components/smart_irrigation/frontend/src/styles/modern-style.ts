@@ -64,6 +64,14 @@ export const modernStyle = css`
     border-top: 1px solid var(--divider-color);
   }
 
+  /* The figures under a card's title (a zone's last calculation...). */
+  .si-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    padding: 4px 0 12px;
+  }
+
   /* --- native HA state pill (ha-label), tinted by state --- */
   ha-label.state-label {
     flex: 0 0 auto;

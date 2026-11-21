@@ -784,7 +784,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     const unit = unit_text(this.config, ZONE_BUCKET);
     return html`
       <div
-        class="zone-status zone-status-- ${kind}"
+        class="zone-status zone-status--${kind}"
         role=${kind === "problem" ? "alert" : "status"}
       >
         <ha-icon
@@ -1640,9 +1640,9 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     const expanded = zone.id != undefined && this._expanded.has(zone.id);
 
     return html`
-      <ha-card class="zone-card" id="zone-${zone.id}">
+      <ha-card class="si-card" id="zone-${zone.id}">
         <div
-          class="zone-head"
+          class="si-head"
           role="button"
           tabindex="0"
           aria-expanded=${expanded ? "true" : "false"}
@@ -1654,27 +1654,27 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
             }
           }}
         >
-          <div class="zone-head-text">
-            <div class="zone-title-row">
-              <span class="zone-title">${zone.name || "—"}</span>
-              <ha-label class="state-label state-label-- ${zone.state}" dense
+          <div class="si-head-text">
+            <div class="si-title-row">
+              <span class="si-title">${zone.name || "—"}</span>
+              <ha-label class="state-label state-label--${zone.state}" dense
                 >${stateLabel}</ha-label
               >
             </div>
             ${zone.state === SmartIrrigationZoneState.Manual
-              ? html`<div class="zone-sub">${durationText}</div>`
+              ? html`<div class="si-sub">${durationText}</div>`
               : ""}
           </div>
           ${this._zoneYamlToggle(zone, lang)}
           <ha-svg-icon
-            class="zone-chevron ${expanded ? "open" : ""}"
+            class="si-chevron ${expanded ? "open" : ""}"
             .path=${mdiChevronDown}
           ></ha-svg-icon>
         </div>
         ${this._zoneStatus(zone, lang)}
         ${expanded
-          ? html` <div class="zone-body">
-              <div class="zone-meta">
+          ? html` <div class="si-body">
+              <div class="si-meta">
                 <div class="meta-item">
                   <span class="meta-label"
                     >${localize(
@@ -3483,49 +3483,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     return css`
       ${globalStyle} ${modernStyle}
 
-      /* --- Modern zone cards (HA-native look) --- */
-      /* own collapsible: a plain ha-card (white surface like every HA card)
-         with a clickable header — no mystery hover/focus tints */
-      .zone-card {
-        overflow: hidden;
-      }
-      .zone-head {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 16px;
-        cursor: pointer;
-        user-select: none;
-      }
-      .zone-head:focus-visible {
-        outline: 2px solid var(--primary-color);
-        outline-offset: -2px;
-      }
-      .zone-head-text {
-        flex: 1 1 auto;
-        min-width: 0;
-      }
-      .zone-title-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        min-width: 0;
-      }
-      .zone-title {
-        font-size: 1.15rem;
-        font-weight: 500;
-        color: var(--primary-text-color);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        flex: 0 1 auto;
-        min-width: 0;
-      }
-
-      .zone-sub {
-        font-size: 0.85em;
-        color: var(--secondary-text-color);
-      }
+      /* A zone's card is the shared collapsible card (.si-card). */
       .zone-head-action {
         flex: 0 0 auto;
         color: var(--primary-color);
@@ -3539,26 +3497,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       }
       .yaml-actions {
         padding: 8px 0;
-      }
-      .zone-chevron {
-        flex: 0 0 auto;
-        color: var(--secondary-text-color);
-        transition: transform 0.2s ease;
-      }
-      .zone-chevron.open {
-        transform: rotate(180deg);
-      }
-
-      .zone-body {
-        padding: 12px 16px 16px;
-        border-top: 1px solid var(--divider-color);
-      }
-
-      .zone-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px 28px;
-        padding: 4px 0 12px;
       }
 
       /* One sentence per zone, and a colour that says the same thing. */
