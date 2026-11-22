@@ -7,6 +7,8 @@ and duration per zone. The methods live on a mixin the coordinator inherits;
 their bodies are unchanged and still use ``self`` to reach coordinator state.
 """
 
+import asyncio
+import functools
 import logging
 import statistics
 from datetime import datetime, timedelta
@@ -132,6 +134,19 @@ _RESET_RATIO = 0.5
 # A drop across midnight to at least this share of the previous total is a
 # revision of the total, not a reset (see _cumulative_change).
 _REVISION_RATIO = 0.9
+
+
+async def _off_the_loop(func, *args, **kwargs):
+    """Run a pass over a sensor group's readings in a worker thread.
+
+    A group fed every minute keeps tens of thousands of readings, and a pass
+    over them takes a while. Run on the event loop it holds up all of Home
+    Assistant meanwhile (#1064). The passes sent here only read what they are
+    given and return what they work out, so a thread can run them.
+    """
+    return await asyncio.get_running_loop().run_in_executor(
+        None, functools.partial(func, *args, **kwargs)
+    )
 
 
 class CalculationMixin:
@@ -446,7 +461,10 @@ class CalculationMixin:
         # Every reading in the buffer now is no later than this, and a reading
         # recorded from here on is not in this window.
         window_end = datetime.now()
-        data = self._readings_after(buffered, since)
+        # Its own list: the passes below run in a worker thread while a new
+        # reading may be added to the store's.
+        buffered = list(buffered) if isinstance(buffered, list) else buffered
+        data = await _off_the_loop(self._readings_after, buffered, since)
         if not data:
             return None
 
@@ -455,11 +473,13 @@ class CalculationMixin:
         # it any more: it belongs to the group, so on a group read by several
         # zones it holds whichever zone calculated last rather than where this
         # zone left off.
-        before = self._latest_before(buffered, since)
+        before = await _off_the_loop(self._latest_before, buffered, since)
         baselines = {key: record.get(key) for key, (_, record) in before.items()}
         baseline_stamps = {key: stamp for key, (stamp, _) in before.items()}
 
-        data_by_sensor, timestamps_by_sensor = self._group_data_by_sensor(data)
+        data_by_sensor, timestamps_by_sensor = await _off_the_loop(
+            self._group_data_by_sensor, data
+        )
         resultdata = {}
         # Calculation audit log (#12): record how the raw sensor records became
         # the aggregate the calculation module is fed. None when the log is off.
@@ -494,8 +514,12 @@ class CalculationMixin:
         if 0 < hour_multiplier * 24.0 < const.DAILY_CONTEXT_MIN_HOURS:
             self._daily_context(mapping, buffered, window_end, resultdata, audit)
         elif hour_multiplier * 24.0 > const.DAILY_SPLIT_MIN_HOURS:
-            days = self._days_of_the_window(
-                mapping, data, window_end, hour_multiplier * 24.0
+            days = await _off_the_loop(
+                self._days_of_the_window,
+                mapping,
+                data,
+                window_end,
+                hour_multiplier * 24.0,
             )
             if days:
                 resultdata[const.MAPPING_DATA_DAYS] = days
@@ -600,26 +624,44 @@ class CalculationMixin:
         without two temperature readings is left out of the average.
         """
         mappings = mapping.get(const.MAPPING_MAPPINGS) or {}
-        days = []
+        slices = []
         remaining = window_hours
         end = window_end
         while remaining > 0:
             hours = min(24.0, remaining)
             start = end - timedelta(hours=hours)
-            records = [
-                record
-                for record in self._readings_after(data, start)
-                if isinstance(record, dict)
-                and (self._stamp_of(record) is None or self._stamp_of(record) <= end)
-            ]
+            slices.append((hours, start, end))
+            remaining -= hours
+            end = start
+        # One pass over the readings, each timestamp read once: a slice is
+        # found from how far a reading is from the end of the window. Reading
+        # the whole buffer again for every slice, its timestamps parsed each
+        # time, took seconds on a week of readings and held up Home Assistant
+        # while the live estimate ran (#1064). A reading whose timestamp
+        # cannot be read goes in every slice, as before.
+        per_slice = [[] for _ in slices]
+        day = timedelta(hours=24)
+        for record in data:
+            if not isinstance(record, dict):
+                continue
+            stamp = self._stamp_of(record)
+            if stamp is None:
+                for records in per_slice:
+                    records.append(record)
+                continue
+            if stamp > window_end:
+                continue
+            index = (window_end - stamp) // day
+            if index < len(slices) and stamp > slices[index][1]:
+                per_slice[index].append(record)
+        days = []
+        for (hours, start, _end), records in zip(slices, per_slice, strict=True):
             weather = self._weather_of_a_day(records, mappings)
             if weather is not None:
                 weather[const.MAPPING_DATA_DAY] = (
                     start + timedelta(hours=hours / 2.0)
                 ).date()
                 days.append((hours, weather))
-            remaining -= hours
-            end = start
         return days if len(days) > 1 else None
 
     @staticmethod
@@ -1648,8 +1690,10 @@ class CalculationMixin:
             if history_keys
             else None
         )
-        result = summed_hourly_eto(
-            mapping.get(const.MAPPING_DATA),
+        # In a worker thread: an hour by hour pass over the whole window.
+        result = await _off_the_loop(
+            summed_hourly_eto,
+            list(mapping.get(const.MAPPING_DATA) or []),
             since,
             now=datetime.now(),
             last_entry=last_entry,
