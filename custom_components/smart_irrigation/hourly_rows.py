@@ -268,6 +268,10 @@ def _naive_local_from_timestamp(stamp, tz=None, tz_offset_h=0.0):
     return local, (local - utc).total_seconds() / 3600.0
 
 
+def _sample_stamp(sample):
+    return sample[0]
+
+
 def _mean_over(samples, start, end, seed=None):
     """Time-weighted mean of a step function over ``[start, end)``.
 
@@ -286,8 +290,9 @@ def _mean_over(samples, start, end, seed=None):
     if not samples:
         return seed
     span = (end - start).total_seconds()
-    stamps = [stamp for stamp, _value in samples]
-    index = bisect.bisect_right(stamps, start)
+    # Searched in place: a list of the stamps built for every hour cost a pass
+    # over a week of readings per hour and field, seconds in all (#1064).
+    index = bisect.bisect_right(samples, start, key=_sample_stamp)
     if index:
         current = samples[index - 1][1]
     elif seed is not None:
@@ -312,9 +317,8 @@ def _has_own_sample(samples, start, end):
     """Whether the interval contains a sample of its own."""
     if not samples:
         return False
-    stamps = [stamp for stamp, _value in samples]
-    index = bisect.bisect_left(stamps, start)
-    return index < len(stamps) and stamps[index] < end
+    index = bisect.bisect_left(samples, start, key=_sample_stamp)
+    return index < len(samples) and samples[index][0] < end
 
 
 def _row_clear_sky(row, latitude, longitude, elevation):

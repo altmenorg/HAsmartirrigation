@@ -623,6 +623,22 @@ class MappingEntry:
     module = attr.ib(type=int, default=None)
 
 
+def mapping_as_dict(entry) -> dict:
+    """A sensor group as a dict, its readings in a list of their own.
+
+    ``attr.asdict`` copies every reading of the buffer, field by field. A group
+    fed every minute keeps tens of thousands of them, and the group was copied
+    so on every reading, every save and every estimate: seconds of Home
+    Assistant's event loop each time (#1064). The list is a new one, so adding
+    to it or replacing it does not touch the store; the readings in it are the
+    store's own, which nothing changes once recorded.
+    """
+    result = attr.asdict(entry, filter=lambda field, _value: field.name != "data")
+    data = entry.data
+    result["data"] = list(data) if isinstance(data, list) else data
+    return result
+
+
 @attr.s(slots=True, frozen=True)
 class IrrigationHistoryEntry:
     """One completed irrigation run, as shown on the panel's History tab.
@@ -1586,7 +1602,7 @@ class SmartIrrigationStorage:
         store_data["zones"] = [attr.asdict(entry) for entry in self.zones.values()]
         store_data["modules"] = [attr.asdict(entry) for entry in self.modules.values()]
         store_data["mappings"] = [
-            attr.asdict(entry) for entry in self.mappings.values()
+            mapping_as_dict(entry) for entry in self.mappings.values()
         ]
         store_data[IRRIGATION_HISTORY] = [
             attr.asdict(entry) for entry in self.irrigation_history
@@ -1809,7 +1825,7 @@ class SmartIrrigationStorage:
         """Get an existing MappingEntry by id."""
         if mapping_id is not None:
             res = self.mappings.get(int(mapping_id))
-            return attr.asdict(res) if res else None
+            return mapping_as_dict(res) if res else None
         return None
 
     async def async_get_mappings(self):
@@ -1819,7 +1835,7 @@ class SmartIrrigationStorage:
         #    res[key] = attr.asdict(val)
         # return res
 
-        return [attr.asdict(val) for val in self.mappings.values()]
+        return [mapping_as_dict(val) for val in self.mappings.values()]
 
     def weather_service_in_use(self) -> str | None:
         """The weather service in use, as the integration runs it, or None.
@@ -1851,7 +1867,7 @@ class SmartIrrigationStorage:
             new_mapping = attr.evolve(new_mapping, id=self.generate_next_id(mappings))
         self.mappings[int(new_mapping.id)] = new_mapping
         self.async_schedule_save()
-        return attr.asdict(new_mapping)
+        return mapping_as_dict(new_mapping)
 
     async def async_delete_mapping(self, mapping_id: str) -> None:
         """Delete MappingEntry."""
@@ -1898,7 +1914,7 @@ class SmartIrrigationStorage:
                         )
         new = self.mappings[mapping_id] = attr.evolve(old, **changes)
         self.async_schedule_save()
-        return attr.asdict(new)
+        return mapping_as_dict(new)
 
     async def async_get_irrigation_history(self):
         """Return every recorded irrigation run, oldest first."""
