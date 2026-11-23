@@ -1,4 +1,4 @@
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-blue.svg?style=flat-square)](https://github.com/hacs/integration)
+[![Marketplace](https://img.shields.io/badge/Marketplace-catalog-blue.svg?style=flat-square)](https://my.home-assistant.io/redirect/hacs_repository/?owner=altmenorg&repository=HAsmartirrigation&category=integration)
 [![release][release-badge]][release-url]
 [![translation status](https://hosted.weblate.org/widget/smart-irrigation/svg-badge.svg)](https://hosted.weblate.org/engage/smart-irrigation/)
 
@@ -58,11 +58,11 @@ It works out, zone by zone, how much water the plants lost to [evapotranspiratio
 
 ## Installation
 
-**Via HACS (recommended).** Smart Irrigation is in the HACS default store, so there is no repository to add:
+**From the Marketplace (recommended).** Smart Irrigation is in the catalog of the Home Assistant Marketplace, so there is no repository to add:
 
-[![Open Smart Irrigation in HACS on your Home Assistant](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/_change/?redirect=marketplace_repository%2F%3Fowner%3Daltmenorg%26repository%3DHAsmartirrigation%26category%3Dintegration)
+[![Open Smart Irrigation in the Marketplace on your Home Assistant](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=altmenorg&repository=HAsmartirrigation&category=integration)
 
-1. Open it in HACS with the button above (it asks for your Home Assistant address), or search for **Smart Irrigation** in [HACS](https://hacs.xyz), and click **Download**.
+1. Open it with the button above (it asks for your Home Assistant address), or search for **Smart Irrigation** in *Settings → Marketplace*, and select **Install**. On Home Assistant 2026.10 or older, the same button opens it in [HACS](https://hacs.xyz), which the Marketplace replaces: click **Download** there.
 2. **Restart Home Assistant**, then add it from *Settings → Devices & Services → Add Integration → Smart Irrigation*.
 
 **Manually.** Download the [latest release](https://github.com/altmenorg/HAsmartirrigation/releases) and extract it into `custom_components/smart_irrigation/`, then restart Home Assistant.

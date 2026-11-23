@@ -10,8 +10,8 @@ If your valves are wired to a commercial controller, you do not have to replace 
 | Rain Bird | [Rain Bird](https://www.home-assistant.io/integrations/rainbird/) (built in) | `rainbird.start_irrigation` | minutes | 1440 min |
 | Hunter Hydrawise | [Hydrawise](https://www.home-assistant.io/integrations/hydrawise/) (built in) | `hydrawise.start_watering` | minutes | 1440 min |
 | Rachio | [Rachio](https://www.home-assistant.io/integrations/rachio/) (built in) | `rachio.start_watering` | minutes | 180 min |
-| OpenSprinkler | [hass-opensprinkler](https://github.com/vinteo/hass-opensprinkler) (HACS) | `opensprinkler.run_station` | seconds | 64800 s |
-| Orbit B-hyve | [bhyve-home-assistant](https://github.com/sebr/bhyve-home-assistant) (HACS) | `bhyve.start_watering` | minutes | 1440 min |
+| OpenSprinkler | [hass-opensprinkler](https://github.com/vinteo/hass-opensprinkler) (Marketplace) | `opensprinkler.run_station` | seconds | 64800 s |
+| Orbit B-hyve | [bhyve-home-assistant](https://github.com/sebr/bhyve-home-assistant) (Marketplace) | `bhyve.start_watering` | minutes | 1440 min |
 
 This is different from **Calculate and water**, where Smart Irrigation opens and closes a `switch` or `valve` entity itself. A controller does not expose its zones that way: you hand it a duration, it starts its own timer and stops on its own. That is what the blueprints do.
 

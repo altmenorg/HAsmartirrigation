@@ -52,14 +52,12 @@ Write the entity id down, `switch.garden_tap` or whatever it is.
 
 ## 3. Smart Irrigation (5 minutes)
 
-Install [HACS](https://hacs.xyz) if you do not have it, then:
-
-1. In **HACS**, search for **Smart Irrigation**, download it.
+1. In **Settings › Marketplace**, search for **Smart Irrigation** and install it (the Marketplace is built into Home Assistant from 2026.11).
 2. Restart Home Assistant.
 3. **Settings › Devices & services › Add integration**, search for **Smart Irrigation**.
 4. Confirm: setup asks nothing. The weather service is chosen later, in the panel: Open-Meteo needs nothing; OpenWeatherMap and Pirate Weather ask for a free API key.
 
-The full version of this step, including the manual install and what to do when HACS does not find it, is on the [installation](installation.md) page.
+The full version of this step, including the manual install and an older Home Assistant, is on the [installation](installation.md) page.
 
 ## 4. The first zone (5 minutes)
 

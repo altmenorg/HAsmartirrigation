@@ -9,7 +9,7 @@ title: "Introduction"
 
 Smart Irrigation works out, zone by zone, how much water your plants lost to evaporation and got back from the rain, and waters the difference. No fixed fifteen minutes, no watering the day after a storm, no guessing in a heatwave. Then it runs the watering itself, as much of it as you want it to: from a duration for your own automation, to programs, schedules and pumps.
 
-It is the official Smart Irrigation integration for Home Assistant, available by default in [HACS](https://hacs.xyz).
+It is the official Smart Irrigation integration for Home Assistant, in the catalog of the Home Assistant Marketplace.
 
 <p align="center">
   <img src="assets/images/panel-home.png" alt="The Home page: the next watering, why, and what could hold it back" width="860">
@@ -59,7 +59,7 @@ Smart Irrigation opens your valves itself only if you choose **Calculate and wat
 ## Start here
 
 - **[Never done any of this?](getting-started-from-scratch.md)** The whole path in half an hour: a machine, a valve, Home Assistant, a zone that waters itself.
-- **[Install it](installation.md)**, which is a HACS download and a restart.
+- **[Install it](installation.md)**, which is an install from the Marketplace and a restart.
 - Prefer to read first? **[How it works](how-it-works.md)** and **[which weather service to use](weather-services.md)**.
 - Rather watch? The [official tutorial videos (English)](https://youtube.com/playlist?list=PLUHIAUPJHMiakbda92--fgb6A0hFReAo7&si=82Xc6mHoLDwFBfCP), and a [community tutorial in German](https://youtu.be/1AYLuIs7_Pw).
 - Something not right? [Troubleshooting](usage-troubleshooting.md), the [discussions](https://github.com/altmenorg/HAsmartirrigation/discussions), or an [issue](https://github.com/altmenorg/HAsmartirrigation/issues) with a diagnostics file.

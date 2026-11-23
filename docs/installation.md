@@ -11,7 +11,7 @@ Smart Irrigation needs Home Assistant 2026.3 or later.
 
 Four steps:
 
-1. **[Download the integration](installation-download.md)** from HACS (one click) or by hand, and restart Home Assistant.
+1. **[Download the integration](installation-download.md)** from the Marketplace (one click) or by hand, and restart Home Assistant.
 2. **Add it** in Settings › Devices & services › Add integration › Smart Irrigation. Setup asks nothing: a new **Smart Irrigation** panel appears in the sidebar.
 
     ![Adding Smart Irrigation in Home Assistant](assets/images/installation-1.png)

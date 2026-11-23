@@ -89,7 +89,7 @@ There is no automatic upgrade path from V1 to V2. Follow these steps for each V1
 
 6. Once you have downloaded and checked a diagnostics file for each instance, remove all instances of Smart Irrigation.
 7. Restart Home Assistant.
-8. Install the current Smart Irrigation with HACS (see [Installation](installation.md)). To keep using OpenWeatherMap, use your API key; your diagnostics file also reminds you which sensors supplied part of the weather data.
+8. Install the current Smart Irrigation from the Marketplace (see [Installation](installation.md)). To keep using OpenWeatherMap, use your API key; your diagnostics file also reminds you which sensors supplied part of the weather data.
 9. Set up your zones in the Smart Irrigation panel, using the diagnostics file. A few things have changed:
    - Reference ET values are no longer needed.
    - Each zone has a **Throughput**: `number_of_sprinklers x flow` from the diagnostics file for that zone.

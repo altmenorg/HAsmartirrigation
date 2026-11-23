@@ -9,6 +9,6 @@ title: "Uninstalling"
 
 1. In **Settings › Devices & services**, open **Smart Irrigation**, then choose **Delete** in the three-dot menu.
 2. Remove the files:
-   - **Installed with HACS**: in HACS, find Smart Irrigation and choose **Remove** in the three-dot menu.
+   - **Installed from the Marketplace**: on Smart Irrigation's page in **Settings › Marketplace**, choose **Uninstall** in the three-dot menu (in HACS, before Home Assistant 2026.11: **Remove**).
    - **Installed by hand**: delete the `custom_components/smart_irrigation` folder.
 3. Restart Home Assistant.

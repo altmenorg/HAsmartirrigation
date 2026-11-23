@@ -1,6 +1,6 @@
 # Contributing to Smart Irrigation
 
-Smart Irrigation is the official integration, listed by default in HACS and used on a lot of real gardens. Contributions are welcome, and they are reviewed: a pull request gets an answer within a few days, and what is merged is credited by name in the release notes.
+Smart Irrigation is the official integration, in the catalog of the Home Assistant Marketplace and used on a lot of real gardens. Contributions are welcome, and they are reviewed: a pull request gets an answer within a few days, and what is merged is credited by name in the release notes.
 
 ## Before you start
 

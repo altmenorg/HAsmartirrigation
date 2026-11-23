@@ -5,14 +5,14 @@ title: "Updating"
 
 ## To the latest version
 
-- **Installed with HACS**: HACS, and the Home Assistant updates, show a notification when a new version is out. Install it from there. To check for an update now, use **Update information** on the repository in HACS.
+- **Installed from the Marketplace** (or HACS before Home Assistant 2026.11): the update shows under **Settings › Updates** when a new version is out. Install it from there.
 - **Installed by hand**: download the [latest release](https://github.com/altmenorg/HAsmartirrigation/releases) as a zip file and extract it into the `custom_components` folder of your Home Assistant configuration, over the previous installation.
 
 Then restart Home Assistant.
 
 ## To a specific version
 
-- **Installed with HACS**: pick the version under **Redownload** in HACS, or call the `update.install` action:
+- **Installed from the Marketplace**: on Smart Irrigation's page in **Settings › Marketplace**, choose **Install another version** in the three-dot menu (in HACS, before Home Assistant 2026.11: **Redownload**), or call the `update.install` action:
 
     ```yaml
     action: update.install
