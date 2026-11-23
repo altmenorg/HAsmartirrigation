@@ -38,6 +38,10 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     target-branch: "dev"
+    # The requirements are minimums (">="), which a new release already meets:
+    # only raise one when the new version falls outside it, not on every
+    # release (it opened a PR for each new Home Assistant and ruff).
+    versioning-strategy: "increase-if-necessary"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
