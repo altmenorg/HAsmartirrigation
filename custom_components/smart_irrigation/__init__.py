@@ -2884,6 +2884,9 @@ class SmartIrrigationCoordinator(
         for unsub in self._track_irrigation_triggers_unsub:
             unsub()
         self._track_irrigation_triggers_unsub.clear()
+        # and the recurring schedules' timers
+        if manager := getattr(self, "recurring_schedule_manager", None):
+            manager.async_unload()
 
         # cancel pending debounced sensor updates: they hold this coordinator
         # and would fire against it after the reload (#805).

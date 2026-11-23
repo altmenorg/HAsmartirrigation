@@ -1,0 +1,600 @@
+{
+ "version": 5,
+ "minor_version": 1,
+ "key": "smart_irrigation.storage",
+ "data": {
+  "config": {
+   "calctime": "23:00",
+   "units": "metric",
+   "use_weather_service": false,
+   "weather_service": "Open-Meteo",
+   "autocalcenabled": true,
+   "autoupdateenabled": true,
+   "autoupdateschedule": "hours",
+   "autoupdatedelay": "0",
+   "autoupdateinterval": "1",
+   "autoclearenabled": true,
+   "cleardatatime": "23:59",
+   "starteventfiredtoday": false,
+   "continuousupdates": false,
+   "hourly_calculation": true,
+   "forecast_rain_credit": false,
+   "effective_rain": true,
+   "recalculate_before_start": false,
+   "ui_mode": "standard",
+   "zone_engines_split": true,
+   "postpone_until": "2026-11-14T09:44:42.842759+00:00",
+   "stored_units": "metric",
+   "sensor_debounce": 100,
+   "calc_log_enabled": false,
+   "install_blueprints": true,
+   "installed_blueprints": [
+    "automation/bhyve.yaml",
+    "automation/esphome.yaml",
+    "automation/hydrawise.yaml",
+    "automation/irrigation-unlimited-adjust-time-sequence.yaml",
+    "automation/irrigation-unlimited-adjust-time-single-zone.yaml",
+    "automation/irrigation-unlimited-reset-bucket.yaml",
+    "automation/opensprinkler.yaml",
+    "automation/rachio.yaml",
+    "automation/rainbird.yaml",
+    "automation/standard-irrigation.yaml",
+    "automation/valve-watchdog.yaml",
+    "automation/weather-responsive-scheduling.yaml",
+    "script/simple-scheduler.yaml"
+   ],
+   "irrigation_start_triggers": [
+    {
+     "type": "sunrise",
+     "name": "Vor Sonnenaufgang",
+     "offset_minutes": 0,
+     "enabled": true,
+     "account_for_duration": true
+    },
+    {
+     "type": "time",
+     "name": "Abends",
+     "at": "20:30",
+     "offset_minutes": 0,
+     "enabled": true,
+     "account_for_duration": false
+    }
+   ],
+   "active_start_trigger": "Vor Sonnenaufgang",
+   "skip_irrigation_on_precipitation": true,
+   "precipitation_threshold_mm": 3.0,
+   "skip_on_freeze": true,
+   "freeze_threshold": 3.0,
+   "freeze_sensor": "sensor.wetter_temperatur",
+   "skip_on_wind": false,
+   "wind_threshold": null,
+   "wind_sensor": null,
+   "skip_on_rain_sensor": true,
+   "rain_sensor": "binary_sensor.regen_erkannt",
+   "rain_history_enabled": false,
+   "days_between_irrigation": 0,
+   "days_since_last_irrigation": 0,
+   "precipitation_skips_in_a_row": 0,
+   "seasonal_adjustments": [
+    {
+     "name": "Sommer",
+     "month_start": 6,
+     "month_end": 8,
+     "multiplier_adjustment": 1.3,
+     "zones": "all",
+     "id": "adjustment_699d3e97"
+    }
+   ],
+   "recurring_schedules": [
+    {
+     "name": "Gemüse Mo/Mi/Fr",
+     "type": "weekly",
+     "time": "07:30",
+     "days_of_week": [
+      "monday",
+      "wednesday",
+      "friday"
+     ],
+     "zones": [
+      2
+     ],
+     "action": "irrigate",
+     "id": "schedule_18c62af5"
+    },
+    {
+     "name": "Tägliche Berechnung",
+     "type": "daily",
+     "time": "22:00",
+     "zones": "all",
+     "action": "calculate",
+     "id": "schedule_b4dbe601"
+    }
+   ],
+   "manual_coordinates_enabled": false,
+   "manual_latitude": null,
+   "manual_longitude": null,
+   "manual_elevation": 0,
+   "observed_watering_enabled": true,
+   "direct_valve_control_enabled": true,
+   "zone_sequencing": "sequential",
+   "watering_passes": 2,
+   "soak_minutes": 10.0,
+   "pause_between_zones": 15.0,
+   "active_valve_runs": []
+  },
+  "zones": [
+   {
+    "id": 0,
+    "name": "Rasen",
+    "size": 120.0,
+    "throughput": 12.0,
+    "state": "automatic",
+    "bucket": -7.958333333333333,
+    "delta": -0.0007879232321072521,
+    "et_deficiency": -0.0007879232321072521,
+    "eto": 0.0007879232321072521,
+    "duration": 2410,
+    "module": 2,
+    "multiplier": 1.0,
+    "explanation": "Beachte: Diese Beschreibung nutzt '.' als Dezimalzeichen und zeigt gerundete Werte.<br/><br/>Das Modul hat das Defizit der Pflanzen-Evapotranspiration Stunde für Stunde summiert ( = Summe der stündlichen et0 * Kc + Niederschlag) über 0.0 h: -0.00 mm. Der Pflanzenfaktor ist 1.0.<br/>Der alte Vorrat war 0.00 mm.<br/>Der maximale Vorrat ist 24.0 mm.<br/>Die Entwässerungsrate bei Sättigung (Bucket am Maximum) beträgt 50.8 mm/h.<br/>Die aktuelle Entwässerung beträgt 0, weil [alter_Vorrat] + [Veränderung] <= 0 (0.00 mm -0.00 mm = -0.00 mm).<br/>Der neue Vorrat ist [alter_Vorrat] + [Veränderung] = 0.00 mm -0.00 mm = -0.00 mm.<br/>Wenn der Vorrat < 0 ist, ist eine Bewässerung nötig..<br/>Für eine exakte Berechnung der Dauer, wurden folgende Schritte durchgeführt:<br/><ol><li>Der Niederschlag ist [Durchfluss] * 60 / [Größe] = 12.0 * 60 / 120.0 = 6.0 mm/h.</li><li>Die Dauer ist abs([Vorrat]) / [Niederschlag] * 3600 = 0.00 / 6.0 * 3600 = 0 s.</li><li>Die maximale Dauer wird angewendet. Diese ist 2400 s.</li><li>Zuletzt wird die Vorlaufzeit angewendet. Die Vorlaufzeit ist 10 s.</li></ol>also ist die Dauer 10 s.",
+    "mapping": 0,
+    "soil_type": null,
+    "plant_type": null,
+    "lead_time": 10.0,
+    "maximum_duration": 2400.0,
+    "maximum_bucket": 24,
+    "last_calculated": "2026-11-14T08:44:29.678168",
+    "last_updated": "2026-11-14T08:44:56.807706",
+    "number_of_data_points": 2,
+    "drainage_rate": 50.8,
+    "current_drainage": 0,
+    "last_irrigation": "2026-11-14T07:45:41.322726+00:00",
+    "water_used": 5.0,
+    "linked_entity": "switch.ventil_rasen",
+    "safety_off_topic": null,
+    "safety_off_state_key": null,
+    "irrigation_threshold": 0.0,
+    "days_between_irrigation": null,
+    "crop_factor_by_month": null,
+    "available_water": null,
+    "allowed_depletion": null,
+    "distribution_efficiency": null,
+    "days_since_irrigation": null,
+    "precipitation_superseded": 0.0,
+    "flow_sensor": "sensor.zaehler_rasen",
+    "soil_moisture_sensor": null,
+    "soil_moisture_threshold": 50.0,
+    "last_consumed_at": "2026-11-14T08:45:16.288396",
+    "measured_throughput": null,
+    "measured_throughput_samples": 0,
+    "input_method": "throughput",
+    "precipitation_rate": null
+   },
+   {
+    "id": 1,
+    "name": "Hecken",
+    "size": 30.0,
+    "throughput": 4.0,
+    "state": "manual",
+    "bucket": 0,
+    "delta": 0,
+    "et_deficiency": 0,
+    "eto": 0,
+    "duration": 600.0,
+    "module": 3,
+    "multiplier": 1,
+    "explanation": null,
+    "mapping": 0,
+    "soil_type": null,
+    "plant_type": null,
+    "lead_time": null,
+    "maximum_duration": 3600,
+    "maximum_bucket": 24,
+    "last_calculated": null,
+    "last_updated": "2026-11-14T08:44:56.807706",
+    "number_of_data_points": 3,
+    "drainage_rate": 50.8,
+    "current_drainage": 0,
+    "last_irrigation": null,
+    "water_used": 0.0,
+    "linked_entity": "switch.ventil_hecken",
+    "safety_off_topic": null,
+    "safety_off_state_key": null,
+    "irrigation_threshold": 0.0,
+    "days_between_irrigation": null,
+    "crop_factor_by_month": null,
+    "available_water": null,
+    "allowed_depletion": null,
+    "distribution_efficiency": null,
+    "days_since_irrigation": null,
+    "precipitation_superseded": 0.0,
+    "flow_sensor": null,
+    "soil_moisture_sensor": null,
+    "soil_moisture_threshold": 50.0,
+    "last_consumed_at": null,
+    "measured_throughput": null,
+    "measured_throughput_samples": 0,
+    "input_method": "throughput",
+    "precipitation_rate": null
+   },
+   {
+    "id": 2,
+    "name": "Beet",
+    "size": 15.0,
+    "throughput": 3.0,
+    "state": "automatic",
+    "bucket": -3,
+    "delta": 1.1273148148148147e-06,
+    "et_deficiency": 2.5,
+    "eto": -2.5,
+    "duration": 0,
+    "module": 4,
+    "multiplier": 1,
+    "explanation": "Beachte: Diese Beschreibung nutzt '.' als Dezimalzeichen und zeigt gerundete Werte.<br/><br/>Das Modul berechnete einen Evapotranspirationsmangel von 0.00 mm. Der Pflanzenfaktor ist 1.0.<br/>Der alte Vorrat war 0.00 mm.<br/>Der maximale Vorrat ist 20.0 mm.<br/>Die Entwässerungsrate bei Sättigung (Bucket am Maximum) beträgt 50.8 mm/h.<br/>Die aktuelle Entwässerung wird berechnet als min([alter_Vorrat] + [Veränderung], [max_bucket]) - (min([alter_Vorrat] + [Veränderung], [max_bucket])^-3 + 3 * [drainage_rate] * [Stunden] / [max_bucket]^4)^(-1/3) = 0.00 - (0.00^-3 + 3 * 50.8 * 0.00 / 20.0^4)^(-1/3) = -0.00 mm.<br/>Der neue Vorrat ist max(0, min([alter_Vorrat] + [Veränderung], max_bucket) - [drainage]) = max(0, min(0.00 mm +0.00 mm, 20.0 mm) - -0.00 mm) = 0.00 mm.<br/>Wenn der Vorrat >= 0 ist, ist keine Bewässerung nötig und die Dauer ist gleich 0 s",
+    "mapping": 0,
+    "soil_type": null,
+    "plant_type": null,
+    "lead_time": null,
+    "maximum_duration": 3600,
+    "maximum_bucket": 20.0,
+    "last_calculated": "2026-11-14T08:44:29.703525",
+    "last_updated": "2026-11-14T08:44:56.807706",
+    "number_of_data_points": 2,
+    "drainage_rate": 50.8,
+    "current_drainage": -8.470329472543003e-22,
+    "last_irrigation": null,
+    "water_used": 0.0,
+    "linked_entity": "switch.ventil_beet",
+    "safety_off_topic": null,
+    "safety_off_state_key": null,
+    "irrigation_threshold": 0.0,
+    "days_between_irrigation": null,
+    "crop_factor_by_month": null,
+    "available_water": null,
+    "allowed_depletion": null,
+    "distribution_efficiency": null,
+    "days_since_irrigation": null,
+    "precipitation_superseded": 0.0,
+    "flow_sensor": null,
+    "soil_moisture_sensor": null,
+    "soil_moisture_threshold": 50.0,
+    "last_consumed_at": "2026-11-14T08:45:16.299335",
+    "measured_throughput": null,
+    "measured_throughput_samples": 0,
+    "input_method": "throughput",
+    "precipitation_rate": null
+   },
+   {
+    "id": 3,
+    "name": "Gemüse",
+    "size": 10.0,
+    "throughput": 2.0,
+    "state": "disabled",
+    "bucket": 0,
+    "delta": 0,
+    "et_deficiency": 0,
+    "eto": 0,
+    "duration": 0,
+    "module": 5,
+    "multiplier": 1,
+    "explanation": null,
+    "mapping": 0,
+    "soil_type": null,
+    "plant_type": null,
+    "lead_time": null,
+    "maximum_duration": 3600,
+    "maximum_bucket": 24,
+    "last_calculated": null,
+    "last_updated": "2026-11-14T08:44:56.807706",
+    "number_of_data_points": 3,
+    "drainage_rate": 50.8,
+    "current_drainage": 0,
+    "last_irrigation": null,
+    "water_used": 0.0,
+    "linked_entity": "switch.ventil_gemuese",
+    "safety_off_topic": null,
+    "safety_off_state_key": null,
+    "irrigation_threshold": 0.0,
+    "days_between_irrigation": null,
+    "crop_factor_by_month": null,
+    "available_water": null,
+    "allowed_depletion": null,
+    "distribution_efficiency": null,
+    "days_since_irrigation": null,
+    "precipitation_superseded": 0.0,
+    "flow_sensor": null,
+    "soil_moisture_sensor": null,
+    "soil_moisture_threshold": 50.0,
+    "last_consumed_at": null,
+    "measured_throughput": null,
+    "measured_throughput_samples": 0,
+    "input_method": "throughput",
+    "precipitation_rate": null
+   }
+  ],
+  "modules": [
+   {
+    "id": 0,
+    "name": "PyETO",
+    "description": "Die vollständige Berechnung aus Ihren eigenen Sensoren: Temperatur, Luftfeuchtigkeit, Luftdruck, Wind und Sonneneinstrahlung. Die genaueste Option, und die anspruchsvollste..",
+    "config": null,
+    "schema": [
+     {
+      "type": "boolean",
+      "name": "coastal",
+      "optional": true,
+      "default": false
+     },
+     {
+      "type": "integer",
+      "name": "forecast_days",
+      "optional": true,
+      "default": 0
+     }
+    ]
+   },
+   {
+    "id": 1,
+    "name": "Static",
+    "description": "Eine feste Verdunstungsmenge pro Tag, die Sie selbst angeben. Keine Sensoren und kein Wetterdienst..",
+    "config": null,
+    "schema": [
+     {
+      "type": "string",
+      "name": "delta",
+      "required": true,
+      "default": 0.0
+     }
+    ]
+   },
+   {
+    "id": 2,
+    "name": "PyETO",
+    "description": null,
+    "config": {},
+    "schema": [
+     {
+      "type": "boolean",
+      "name": "coastal",
+      "optional": true,
+      "default": false
+     },
+     {
+      "type": "integer",
+      "name": "forecast_days",
+      "optional": true,
+      "default": 0
+     }
+    ]
+   },
+   {
+    "id": 3,
+    "name": "PyETO",
+    "description": null,
+    "config": {},
+    "schema": [
+     {
+      "type": "boolean",
+      "name": "coastal",
+      "optional": true,
+      "default": false
+     },
+     {
+      "type": "integer",
+      "name": "forecast_days",
+      "optional": true,
+      "default": 0
+     }
+    ]
+   },
+   {
+    "id": 4,
+    "name": "Static",
+    "description": null,
+    "config": {
+     "delta": 2.5
+    },
+    "schema": [
+     {
+      "type": "string",
+      "name": "delta",
+      "required": true,
+      "default": 0.0
+     }
+    ]
+   },
+   {
+    "id": 5,
+    "name": "PyETO",
+    "description": null,
+    "config": {},
+    "schema": [
+     {
+      "type": "boolean",
+      "name": "coastal",
+      "optional": true,
+      "default": false
+     },
+     {
+      "type": "integer",
+      "name": "forecast_days",
+      "optional": true,
+      "default": 0
+     }
+    ]
+   },
+   {
+    "id": 6,
+    "name": "PyETO",
+    "description": null,
+    "config": {},
+    "schema": [
+     {
+      "type": "boolean",
+      "name": "coastal",
+      "optional": true,
+      "default": false
+     },
+     {
+      "type": "integer",
+      "name": "forecast_days",
+      "optional": true,
+      "default": 0
+     }
+    ]
+   },
+   {
+    "id": 7,
+    "name": "PyETO",
+    "description": null,
+    "config": {},
+    "schema": [
+     {
+      "type": "boolean",
+      "name": "coastal",
+      "optional": true,
+      "default": false
+     },
+     {
+      "type": "integer",
+      "name": "forecast_days",
+      "optional": true,
+      "default": 0
+     }
+    ]
+   },
+   {
+    "id": 8,
+    "name": "Static",
+    "description": null,
+    "config": {
+     "delta": 2.5
+    },
+    "schema": [
+     {
+      "type": "string",
+      "name": "delta",
+      "required": true,
+      "default": 0.0
+     }
+    ]
+   },
+   {
+    "id": 9,
+    "name": "PyETO",
+    "description": null,
+    "config": {},
+    "schema": [
+     {
+      "type": "boolean",
+      "name": "coastal",
+      "optional": true,
+      "default": false
+     },
+     {
+      "type": "integer",
+      "name": "forecast_days",
+      "optional": true,
+      "default": 0
+     }
+    ]
+   }
+  ],
+  "mappings": [
+   {
+    "id": 0,
+    "name": "Garten Sensoren",
+    "mappings": {
+     "Temperature": {
+      "source": "sensor",
+      "sensorentity": "sensor.wetter_temperatur",
+      "unit": "°C"
+     },
+     "Humidity": {
+      "source": "sensor",
+      "sensorentity": "sensor.wetter_feuchte",
+      "unit": "%"
+     },
+     "Pressure": {
+      "source": "sensor",
+      "sensorentity": "sensor.wetter_druck",
+      "unit": "hPa"
+     },
+     "Windspeed": {
+      "source": "sensor",
+      "sensorentity": "sensor.wetter_wind",
+      "unit": "meter/s"
+     },
+     "Solar Radiation": {
+      "source": "sensor",
+      "sensorentity": "sensor.wetter_strahlung",
+      "unit": "W/m2"
+     },
+     "Precipitation": {
+      "source": "sensor",
+      "sensorentity": "sensor.wetter_niederschlag",
+      "unit": "mm"
+     },
+     "Current Precipitation": {
+      "source": "none",
+      "sensorentity": "",
+      "unit": ""
+     },
+     "Dewpoint": {
+      "source": "none",
+      "sensorentity": "",
+      "unit": ""
+     },
+     "Evapotranspiration": {
+      "source": "none",
+      "sensorentity": "",
+      "unit": ""
+     }
+    },
+    "data": [
+     {
+      "Temperature": 14.0,
+      "Humidity": 70.0,
+      "Pressure": 1013.0,
+      "Windspeed": 9.0,
+      "Solar Radiation": 15.552000000000001,
+      "Precipitation": 0.0,
+      "retrieved": "2026-11-14T08:44:06.553316"
+     },
+     {
+      "Temperature": 14.0,
+      "Humidity": 70.0,
+      "Pressure": 1013.0,
+      "Windspeed": 9.0,
+      "Solar Radiation": 15.552000000000001,
+      "Precipitation": 0.0,
+      "retrieved": "2026-11-14T08:44:56.771985"
+     },
+     {
+      "Temperature": 14.0,
+      "Humidity": 70.0,
+      "Pressure": 1013.0,
+      "Windspeed": 9.0,
+      "Solar Radiation": 15.552000000000001,
+      "Precipitation": 0.0,
+      "retrieved": "2026-11-14T08:44:56.807706"
+     }
+    ],
+    "data_last_updated": "2026-11-14T08:44:56.807706",
+    "data_last_entry": {},
+    "data_last_calculation": {
+     "timestamp": "2026-11-14T08:44:29.683921",
+     "Temperature": 14.0,
+     "Humidity": 70.0,
+     "Pressure": 1013.0,
+     "Windspeed": 9.0,
+     "Solar Radiation": 15.552000000000001,
+     "Precipitation": 0.0
+    },
+    "greenhouse": false,
+    "module": null
+   }
+  ],
+  "irrigation_history": []
+ }
+}

@@ -246,6 +246,20 @@ class RecurringScheduleManager:
 
         return async_track_time_interval(self.hass, execute, interval_delta)
 
+    @callback
+    def async_unload(self) -> None:
+        """Stop every schedule's timer.
+
+        Reloading the entry makes a new coordinator, with a manager of its own
+        that sets the timers up again. The old ones were never stopped: each
+        recurring schedule then ran once more per reload, an irrigate schedule
+        watering its zones twice.
+        """
+        for tracker in self._schedule_trackers.values():
+            if tracker:
+                tracker()
+        self._schedule_trackers.clear()
+
     async def _remove_schedule_tracker(self, schedule_id: str) -> None:
         """Remove a schedule tracker."""
         if schedule_id in self._schedule_trackers:
