@@ -17,8 +17,6 @@ class SmartIrrigationConfigFlow(config_entries.ConfigFlow, domain=const.DOMAIN):
     are set up in the panel, by its assistant.
     """
 
-    CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
-
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
         # Only a single instance of the integration
