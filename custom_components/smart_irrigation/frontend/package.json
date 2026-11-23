@@ -24,8 +24,8 @@
   "homepage": "https://github.com/altmenorg/HAsmartirrigation#readme",
   "dependencies": {
     "@mdi/js": "^7.4.47",
-    "custom-card-helpers": "^2.0.0",
-    "intl-messageformat": "^12.1.5",
+    "custom-card-helpers": "^2.2.1",
+    "intl-messageformat": "^12.2.0",
     "lit": "^3.3.3",
     "moment": "^2.29.4"
   },
@@ -43,7 +43,7 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.7",
     "prettier": "3.8.4",
-    "rollup": "^4.68.2",
+    "rollup": "^4.68.7",
     "rollup-plugin-typescript2": "^0.37.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.12"
