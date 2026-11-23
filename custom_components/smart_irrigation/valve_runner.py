@@ -44,7 +44,7 @@ from homeassistant.helpers.start import async_at_started
 
 from . import const
 from .delivery import own_entities
-from .master_switch import watering_off
+from .master_switch import opens_valves, watering_off
 from .observed_watering import NO_FLOW_GRACE
 from .program_runner import ProgramRunnerMixin, program_run_records
 from .program_status import ProgramStatusMixin
@@ -2540,7 +2540,9 @@ class ValveRunnerMixin(
         owed = self._owed_records()
         if not runs and not cycle and not program_run and not owed:
             return
-        if watering_off(self.store):
+        if not opens_valves(self.store):
+            # Switched off, or "Calculate only": no valve is ours to open, so
+            # an interrupted run is closed, not resumed.
             await self._drop_interrupted_runs(runs)
             return
         if runs:
@@ -2575,15 +2577,15 @@ class ValveRunnerMixin(
             self._spawn_valve_run(self._resume_program(record, resumed))
 
     async def _drop_interrupted_runs(self, runs) -> None:
-        """Close what a restart interrupted, rather than resume it (switched off).
+        """Close what a restart interrupted, rather than resume it (not watering).
 
         The valves that were open are closed, and the records of the runs, the
         cycle, the program and the water a pause owed are let go: switched on
         again, Smart Irrigation starts from its next start, not from these.
         """
         _LOGGER.info(
-            "Smart Irrigation is switched off: the %d run(s) a restart interrupted "
-            "are closed, not resumed",
+            "Smart Irrigation does not water (switched off, or calculating only): "
+            "the %d run(s) a restart interrupted are closed, not resumed",
             len(runs),
         )
         for run in runs:

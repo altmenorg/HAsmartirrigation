@@ -44,3 +44,22 @@ def watering_off(config) -> bool:
     else:
         value = getattr(config, const.CONF_WATERING_ENABLED, None)
     return value is False
+
+
+def opens_valves(config) -> bool:
+    """Whether Smart Irrigation may open valves itself.
+
+    Only with direct valve control on ("Calculate and water") and nothing
+    switched off. "Calculate only" has it off: the start event is for an
+    automation of one's own, and no valve is Smart Irrigation's to open, by a
+    program, by hand or by a run a restart interrupted.
+    """
+    if watering_off(config):
+        return False
+    if not isinstance(config, dict) and hasattr(config, "config"):
+        config = getattr(config, "config", None)
+    if isinstance(config, dict):
+        value = config.get(const.CONF_DIRECT_VALVE_CONTROL_ENABLED)
+    else:
+        value = getattr(config, const.CONF_DIRECT_VALVE_CONTROL_ENABLED, None)
+    return value is True

@@ -86,7 +86,7 @@ from .leak_watch import LeakWatchMixin
 from .live_estimate import LiveEstimateMixin
 from .liveness import WeatherLivenessMixin
 from .llm_api import async_sync_llm_api
-from .master_switch import irrigation_off, watering_off
+from .master_switch import irrigation_off, opens_valves
 from .observed_watering import ObservedWateringMixin
 from .one_choice import (
     ISSUE_MOVED,
@@ -1088,7 +1088,7 @@ class SmartIrrigationCoordinator(
         # schedulers below already write the changes to the store.
         was_full = getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is True
         was_off = irrigation_off(self.store)
-        was_watering = not watering_off(self.store)
+        was_watering = opens_valves(self.store)
         # Who starts the main program's cycle (its own schedules, or the start
         # trigger) before and after this change.
         was_scheduled = self.schedules_start_watering()
@@ -1137,9 +1137,12 @@ class SmartIrrigationCoordinator(
         ):
             _LOGGER.debug("calling register start event from async_update_config")
             await self.register_start_event()
-        if was_watering and watering_off(self.store):
+        if was_watering and not opens_valves(self.store):
             # Switched off, or to calculating only: whatever is watering or
-            # waiting stops now.
+            # waiting stops now. "Calculate only" is not "watering off": it
+            # still fires the start event. Asking that alone let the zone that
+            # was watering when "Calculate only" was chosen go on with its
+            # passes, its valve opened again after the soak.
             _LOGGER.info("Smart Irrigation no longer waters: everything watering stops")
             await self.async_stop_watering()
         async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated")
