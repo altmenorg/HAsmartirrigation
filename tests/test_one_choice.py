@@ -5,6 +5,7 @@ from custom_components.smart_irrigation.one_choice import (
     first_program,
     migration_changes,
     schedule_from_trigger,
+    schedules_from_recurring,
 )
 
 
@@ -242,3 +243,105 @@ def test_the_default_active_keeps_the_defined_triggers_switched_off():
         180,
         False,
     )
+
+
+def _recurring(**fields):
+    return {
+        "id": "schedule_1",
+        "name": "Morning",
+        "type": "daily",
+        "time": "6:15",
+        "action": "irrigate",
+        "zones": "all",
+        **fields,
+    }
+
+
+def test_a_recurring_schedule_that_watered_every_zone_waters_from_the_program():
+    """With direct valve control, a recurring schedule irrigating every zone
+    opened the valves through the start trigger's path. After the move that
+    path only fires the event: it would have watered nothing."""
+    weekly = _recurring(
+        id="schedule_2",
+        type="weekly",
+        days_of_week=["Friday", "monday", "someday"],
+        time="07:30",
+    )
+    calculate = _recurring(id="schedule_3", action="calculate")
+    changes = migration_changes(
+        {
+            const.CONF_DIRECT_VALVE_CONTROL_ENABLED: True,
+            const.CONF_ACTIVE_START_TRIGGER: "none",
+            const.CONF_RECURRING_SCHEDULES: [_recurring(), weekly, calculate],
+        }
+    )
+
+    [main] = changes[const.CONF_PROGRAMS]
+    daily, mon_fri = main["schedules"]
+    assert (daily["type"], daily["time"], daily["anchor"], daily["enabled"]) == (
+        "time",
+        "06:15",
+        "start",
+        True,
+    )
+    assert daily["weather"] is True
+    assert "weekdays" not in daily
+    assert (mon_fri["time"], mon_fri["weekdays"]) == ("07:30", [0, 4])
+    # Switched off where they were, as the start trigger is no longer armed;
+    # what they did not do stays as it was.
+    assert [r["enabled"] for r in changes[const.CONF_RECURRING_SCHEDULES][:2]] == [
+        False,
+        False,
+    ]
+    assert changes[const.CONF_RECURRING_SCHEDULES][2] == calculate
+
+
+def test_recurring_schedules_beside_the_trigger_come_after_its_schedule():
+    changes = migration_changes(
+        {
+            const.CONF_DIRECT_VALVE_CONTROL_ENABLED: True,
+            const.CONF_RECURRING_SCHEDULES: [
+                _recurring(type="monthly", day_of_month=15)
+            ],
+        }
+    )
+    [main] = changes[const.CONF_PROGRAMS]
+    sunrise, monthly = main["schedules"]
+    assert (sunrise["event"], sunrise["anchor"]) == ("sunrise", "end")
+    assert monthly["days_of_month"] == [15]
+
+
+def test_recurring_schedules_that_did_not_water_every_zone_stay_as_they_are():
+    left = [
+        _recurring(action="calculate"),
+        _recurring(action="update"),
+        # A list of zones: the event alone, for an automation of the user's.
+        _recurring(zones=[2]),
+        _recurring(enabled=False),
+        # Every few hours, or between dates: no program schedule says that.
+        _recurring(type="interval", interval_hours=6),
+        _recurring(start_date="2026-05-01", end_date="2026-09-30"),
+        _recurring(type="weekly", days_of_week=[]),
+        _recurring(time="late"),
+    ]
+    assert schedules_from_recurring({const.CONF_RECURRING_SCHEDULES: left}) == (
+        [],
+        [],
+    )
+
+
+def test_without_valves_a_recurring_schedule_only_fired_its_event():
+    """Without direct valve control the start path watered nothing, before the
+    move as after it: there is nothing to carry over."""
+    for config in (
+        {const.CONF_FULL_CONTROLLER: True},
+        {},
+        {
+            const.CONF_DIRECT_VALVE_CONTROL_ENABLED: True,
+            const.CONF_WATERING_ENABLED: False,
+        },
+    ):
+        changes = migration_changes(
+            {**config, const.CONF_RECURRING_SCHEDULES: [_recurring()]}
+        )
+        assert const.CONF_RECURRING_SCHEDULES not in changes

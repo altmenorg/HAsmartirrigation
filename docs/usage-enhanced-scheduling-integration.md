@@ -83,6 +83,8 @@ Without `adjustment_id` it creates an adjustment; with it, it changes that one, 
 
     `create_recurring_schedule`, `update_recurring_schedule` and `delete_recurring_schedule` keep working until version 2027.11 at the earliest, and each call raises a repair issue. The programs' schedules do the same, in the panel, under **Watering › Programs** (Calculate and water). See [actions on their way out](usage-services.md#actions-on-their-way-out).
 
+    The panel does not show recurring schedules: while one is switched on, a repair issue names it. With the move to **Calculate and water**, a recurring schedule that irrigated every zone (daily, weekly or monthly, without dates) became a schedule of the **Watering** program, which opens the valves now, and was switched off.
+
     A recurring schedule runs daily, weekly, monthly or every few hours, and either calculates (`calculate`), reads the weather (`update`) or fires the start event (`irrigate`) for the zones it names. It fires `smart_irrigation_recurring_schedule_triggered`. For their debug log:
 
     ```yaml

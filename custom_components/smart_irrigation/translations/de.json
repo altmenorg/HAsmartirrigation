@@ -762,6 +762,10 @@
       "title": "Wiederkehrende Zeitpläne fallen weg: {action}",
       "description": "Eine Automatisierung, ein Skript oder ein Dashboard hat **{action}** aufgerufen. Wiederkehrende Zeitpläne funktionieren noch, werden aber ab Version {version} entfernt, im Winter, außerhalb der Bewässerungszeit.\n\nDie Zeitpläne der Programme tun dasselbe und stehen im Panel: Richte sie unter **Bewässerung** ein und entferne danach die wiederkehrenden Zeitpläne und die Aufrufe von {action}."
     },
+    "recurring_schedules_stored": {
+      "title": "Wiederkehrende Zeitpläne laufen noch und fallen weg",
+      "description": "Diese wiederkehrenden Zeitpläne sind eingeschaltet, und das Panel zeigt sie nicht:\n\n{schedules}\n\nSie laufen noch, werden aber ab Version {version} entfernt, im Winter, außerhalb der Bewässerungszeit. Die Zeitpläne der Programme tun dasselbe und stehen im Panel: Richte sie unter **Bewässerung** ein und entferne danach die wiederkehrenden Zeitpläne mit `smart_irrigation.delete_recurring_schedule`."
+    },
     "zone_set_aside": {
       "title": "Zone {zone} ist zurückgestellt",
       "fix_flow": {

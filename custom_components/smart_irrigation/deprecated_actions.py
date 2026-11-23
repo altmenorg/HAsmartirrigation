@@ -56,6 +56,9 @@ DEPRECATED_ACTIONS: dict[str, str | None] = {
 # Names warned about since start: the log says it once, the repair issue stays.
 _warned: set[str] = set()
 
+# The notice of the recurring schedules that are stored and switched on.
+ISSUE_STORED_RECURRING = "recurring_schedules_stored"
+
 
 def issue_id(action: str) -> str:
     """The repair issue of an old action."""
@@ -101,6 +104,36 @@ def async_notice(hass: HomeAssistant, action: str) -> None:
         severity=ir.IssueSeverity.WARNING,
         translation_key=translation_key,
         translation_placeholders=placeholders,
+        learn_more_url=DOCS_URL,
+    )
+
+
+def async_notice_stored_recurring(hass: HomeAssistant, schedules) -> None:
+    """Say which recurring schedules still run, and that they go.
+
+    A call to one of their actions raised a notice, and nothing else did:
+    schedules created once went on running, shown nowhere in the panel, and
+    would have stopped without a word when the actions go.
+    """
+    running = [
+        str(s.get(const.SCHEDULE_CONF_NAME) or s.get(const.SCHEDULE_CONF_ID) or "?")
+        for s in schedules or []
+        if isinstance(s, dict) and s.get(const.SCHEDULE_CONF_ENABLED, True) is not False
+    ]
+    if not running:
+        ir.async_delete_issue(hass, const.DOMAIN, ISSUE_STORED_RECURRING)
+        return
+    ir.async_create_issue(
+        hass,
+        const.DOMAIN,
+        ISSUE_STORED_RECURRING,
+        is_fixable=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key=ISSUE_STORED_RECURRING,
+        translation_placeholders={
+            "schedules": "\n".join(f"- {name}" for name in running),
+            "version": REMOVED_IN,
+        },
         learn_more_url=DOCS_URL,
     )
 

@@ -762,6 +762,10 @@
       "title": "Recurring schedules are going away: {action}",
       "description": "An automation, a script or a dashboard called **{action}**. Recurring schedules still work, but they will be removed from version {version} on, in winter, outside the watering season.\n\nThe programs' schedules do the same and are in the panel: set them up under **Watering**, then remove the recurring schedules and the calls to {action}."
     },
+    "recurring_schedules_stored": {
+      "title": "Recurring schedules still run, and are going away",
+      "description": "These recurring schedules are switched on, and the panel does not show them:\n\n{schedules}\n\nThey still run, but they will be removed from version {version} on, in winter, outside the watering season. The programs' schedules do the same and are in the panel: set them up under **Watering**, then remove the recurring schedules with `smart_irrigation.delete_recurring_schedule`."
+    },
     "zone_set_aside": {
       "title": "Zone {zone} is set aside",
       "fix_flow": {

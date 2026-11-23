@@ -29,12 +29,17 @@ from unittest.mock import patch
 import pytest
 from homeassistant.core import CoreState, HomeAssistant
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import issue_registry as ir
+from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
     async_fire_time_changed,
 )
 
 from custom_components.smart_irrigation import const
+from custom_components.smart_irrigation.deprecated_actions import (
+    ISSUE_STORED_RECURRING,
+)
 from custom_components.smart_irrigation.store import STORAGE_KEY
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -202,4 +207,76 @@ async def test_after_a_reload_a_recurring_schedule_runs_once(
     await hass.async_block_till_done()
 
     assert events == ["Tägliche Berechnung"]
+    await _unload(hass, entry)
+
+
+@pytest.mark.parametrize(
+    "fixture", ["storage_v2026_10_10.json", "storage_v2026_11_1.json"]
+)
+async def test_a_recurring_schedule_that_watered_every_zone_still_waters(
+    hass: HomeAssistant, hass_storage, fixture, freezer
+):
+    """Before the move, with the valves switched by Smart Irrigation, a
+    recurring schedule irrigating every zone opened them through the start
+    trigger's path. After it, that path only fires the event: such a schedule
+    watered nothing any more, and nothing said so."""
+    document = _stored(fixture)
+    for recurring in document["data"]["config"]["recurring_schedules"]:
+        if recurring["name"] == "Gemüse Mo/Mi/Fr":
+            recurring["zones"] = "all"
+    await hass.config.async_set_time_zone("Europe/Berlin")
+    freezer.move_to("2026-11-23 06:00:00+00:00")  # Monday, 07:00 in Berlin
+
+    entry, coordinator = await _set_up(hass, hass_storage, document)
+    fired = []
+
+    async def fire(program_id, schedule_id, target):
+        fired.append(dt_util.as_local(target).strftime("%a %H:%M"))
+
+    coordinator._fire_program_schedule = fire
+
+    [program] = coordinator.store.config.programs
+    *_, weekly = program["schedules"]
+    assert (weekly["type"], weekly["time"], weekly["weekdays"]) == (
+        "time",
+        "07:30",
+        [0, 2, 4],
+    )
+    assert weekly["enabled"] is True
+    # Monday 07:30: the program starts, as the recurring schedule did.
+    freezer.move_to("2026-11-23 06:30:01+00:00")
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+    assert fired == ["Mon 07:30"]
+    stored = {
+        r["name"]: r.get("enabled", True)
+        for r in coordinator.store.config.recurring_schedules
+    }
+    assert stored == {"Gemüse Mo/Mi/Fr": False, "Tägliche Berechnung": True}
+    # The one still running is named on the Repairs page.
+    issue = ir.async_get(hass).async_get_issue(const.DOMAIN, ISSUE_STORED_RECURRING)
+    assert issue.translation_placeholders["schedules"] == "- Tägliche Berechnung"
+    await _unload(hass, entry)
+
+
+async def test_the_recurring_schedules_that_still_run_are_named_until_none_is_left(
+    hass: HomeAssistant, hass_storage
+):
+    """They are shown nowhere in the panel: a notice names them, and goes
+    with the last one."""
+    entry, coordinator = await _set_up(
+        hass, hass_storage, _stored("storage_v2026_11_1.json")
+    )
+    issues = ir.async_get(hass)
+    issue = issues.async_get_issue(const.DOMAIN, ISSUE_STORED_RECURRING)
+    assert issue.translation_placeholders["schedules"] == (
+        "- Gemüse Mo/Mi/Fr\n- Tägliche Berechnung"
+    )
+
+    manager = coordinator.recurring_schedule_manager
+    await manager.async_delete_schedule("schedule_18c62af5")
+    issue = issues.async_get_issue(const.DOMAIN, ISSUE_STORED_RECURRING)
+    assert issue.translation_placeholders["schedules"] == "- Tägliche Berechnung"
+    await manager.async_update_schedule("schedule_b4dbe601", {"enabled": False})
+    assert issues.async_get_issue(const.DOMAIN, ISSUE_STORED_RECURRING) is None
     await _unload(hass, entry)

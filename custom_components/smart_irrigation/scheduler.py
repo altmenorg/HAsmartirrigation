@@ -13,6 +13,7 @@ from homeassistant.helpers.event import (
 from homeassistant.util import dt as dt_util
 
 from . import const
+from .deprecated_actions import async_notice_stored_recurring
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -52,6 +53,7 @@ class RecurringScheduleManager:
         config = await self.coordinator.store.async_get_config()
         self._schedules = config.get(const.CONF_RECURRING_SCHEDULES, [])
         await self._setup_schedule_trackers()
+        async_notice_stored_recurring(self.hass, self._schedules)
 
     async def async_create_schedule(self, schedule_data: dict[str, Any]) -> None:
         """Create a new recurring schedule."""
@@ -141,6 +143,7 @@ class RecurringScheduleManager:
         await self.coordinator.store.async_update_config(
             {const.CONF_RECURRING_SCHEDULES: self._schedules}
         )
+        async_notice_stored_recurring(self.hass, self._schedules)
 
     async def _setup_schedule_trackers(self) -> None:
         """Set up all schedule trackers."""
