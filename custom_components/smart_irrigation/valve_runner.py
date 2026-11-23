@@ -2917,6 +2917,15 @@ class ValveRunnerMixin(
             self._note_si_valve(
                 zone_id, remaining + confirm_window(self.store.get_zone(zone_id))
             )
+        # Shown from the water it still owes: the record keeps the run's own
+        # start, for its history, but what it delivered before the restart is
+        # the part done. Counted from that start, a run resumed after a while
+        # showed "0 s left, 100 %" for all the time its valve was open again.
+        record = self._active_valve_runs.get(zone_id)
+        if record is not None:
+            record["shown_from"] = (
+                resume_t0 - timedelta(seconds=max(0.0, elapsed))
+            ).isoformat()
         # Re-assert open: the valve should still be on after an HA reboot, but a
         # power cut may have reset it. Confirm before finishing/crediting. The
         # try starts with the open, as in _run_one_pass.

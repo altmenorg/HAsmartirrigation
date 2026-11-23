@@ -147,6 +147,28 @@ async def test_a_resumed_pass_is_owed_the_time_the_valve_was_shut(monkeypatch, f
     assert coord._credit_direct_run.await_args.kwargs["held"] == 20
 
 
+async def test_a_resumed_pass_shows_what_it_still_owes(monkeypatch, freezer):
+    """Counted from its own start, 100 s ago, the pass read "0 s left, 100 %"
+    for the whole time its valve was open again."""
+    hass, coord, sleeps = _setup(monkeypatch, [_program()])
+    coord._credit_direct_run = AsyncMock()
+    coord.store.config.active_valve_runs = [_open_record(100, delivered=5.0)]
+    shown = []
+
+    async def _while_open():
+        shown.append(coord._open_valves())
+
+    sleeps.on(15, _while_open)
+    await coord.async_resume_valve_runs()
+    await asyncio.gather(*list(hass.created), return_exceptions=True)
+
+    [[valve]] = shown
+    assert (valve["remaining_seconds"], valve["percent"]) == (15, 25)
+    # Its history keeps when it began.
+    stored = coord.store.config.active_valve_runs
+    assert all("shown_from" not in run for run in stored or [])
+
+
 async def test_without_a_record_of_the_interruption_the_clock_is_all_there_is(
     monkeypatch, freezer
 ):

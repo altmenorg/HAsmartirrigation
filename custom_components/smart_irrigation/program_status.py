@@ -102,7 +102,11 @@ class ProgramStatusMixin:
         for zone_id, record in (self._active_valve_runs or {}).items():
             if int(zone_id) in held:
                 continue
-            started = dt_util.parse_datetime(record.get("started") or "")
+            # A run resumed after a restart counts from the water it still owes
+            # (valve_runner._resume_claimed), not from its own start.
+            started = dt_util.parse_datetime(
+                record.get("shown_from") or record.get("started") or ""
+            )
             duration = float(record.get("duration") or 0.0)
             if started is None or duration <= 0:
                 continue
