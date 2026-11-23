@@ -21,12 +21,15 @@ jobs:
       - name: Check the links of the docs and the README
         uses: lycheeverse/lychee-action@v2
         with:
+          # Weblate, the HA forum and raspberrypi.com answer 403 to any robot,
+          # so their links are left out rather than accepting 403 everywhere.
           args: >-
             --no-progress
             --max-retries 3
             --accept 200,206,429
             --exclude "^https?://(localhost|127\.0\.0\.1|192\.168\.|homeassistant\.local)"
             --exclude "my\.home-assistant\.io/redirect"
+            --exclude "^https://(hosted\.weblate\.org|community\.home-assistant\.io|www\.raspberrypi\.com)/"
             --root-dir "${{ github.workspace }}/docs"
             "docs/*.md" README.md
           fail: true
