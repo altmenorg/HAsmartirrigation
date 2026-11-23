@@ -402,6 +402,16 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+    // Planning, Programs and Supplies are one page: coming to Programs from
+    // another of them, the weather node's answer is read now, not with the
+    // next planning read 30 s later (#1066).
+    if (
+      changedProps.has("section") &&
+      changedProps.get("section") !== undefined &&
+      this.section === "programs"
+    ) {
+      this._fetchLive(true);
+    }
     const wanted = this.path?.params?.at;
     if (!wanted || wanted === this._scrolledTo) return;
     if (!this.shadowRoot?.querySelector(`#section-${wanted}`)) return;
@@ -499,8 +509,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </div>`
         : ""}`;
       // "Just before each start" keeps the daily calculation too, at this
-      // time, so the water balance moves between two starts.
-      if (calcWhen === "time" || (calcWhen === "start" && showCalcWhen)) {
+      // time, so the water balance moves between two starts. That time stays
+      // in sight with "Calculate and water" too, where the moment itself is
+      // not a choice (#1065).
+      if (calcWhen === "time" || calcWhen === "start") {
         r1 = html`${r1}
           <div class="card-content">
             ${this._timeRow(
