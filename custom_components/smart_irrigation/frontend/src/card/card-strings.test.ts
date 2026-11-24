@@ -59,7 +59,7 @@ describe("card strings", () => {
 
   it("translates a skip reason", async () => {
     const { cardString } = await fresh();
-    expect(cardString("en", "reasons.precipitation")).toBe("rain forecast");
+    expect(cardString("en", "reasons.precipitation")).toBe("expected rainfall");
   });
 
   it("stays in English when the file cannot be read", async () => {

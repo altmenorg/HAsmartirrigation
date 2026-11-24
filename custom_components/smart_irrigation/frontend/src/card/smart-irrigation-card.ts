@@ -435,6 +435,25 @@ export class SmartIrrigationCard extends LitElement {
             }[state],
           );
     const reason = skipped ? this._info.skip_preview?.reason : null;
+    // Say it is the rain expected that holds the run back, and how much.
+    const expected =
+      reason === "precipitation"
+        ? this._info.skip_preview?.checks?.find((c) => c.id === reason)
+            ?.expected_mm
+        : null;
+    const reasonText = !reason
+      ? ""
+      : expected != null
+        ? this._t("reasons.precipitation_amount", {
+            // In mm, as the panel's Info page gives it: the check is in mm.
+            amount: depthLabel(
+              expected,
+              false,
+              this.hass?.locale,
+              this.hass?.language,
+            ),
+          })
+        : this._t(`reasons.${reason}`);
     const held = state !== "start" && state !== "nothing";
     return html`
       <div class="next ${held ? "held" : ""}">
@@ -443,7 +462,7 @@ export class SmartIrrigationCard extends LitElement {
         ></ha-icon>
         <span class="next-label">${this._t("next_start")}</span>
         <span class="next-value"
-          >${label}${reason ? ` (${this._t(`reasons.${reason}`)})` : ""}</span
+          >${label}${reasonText ? ` (${reasonText})` : ""}</span
         >
       </div>
     `;

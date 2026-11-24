@@ -1620,7 +1620,8 @@
     "yesterday": "yesterday",
     "live_since": "Estimated now, from the readings since {when}",
     "reasons": {
-      "precipitation": "rain forecast",
+      "precipitation": "expected rainfall",
+      "precipitation_amount": "expected rainfall: {amount}",
       "days_between": "days between irrigation",
       "rain_sensor": "rain sensor",
       "freeze": "freeze",
