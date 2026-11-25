@@ -920,7 +920,7 @@
       "title": "Import z Irrigation Unlimited",
       "description": "Převezme vaši konfiguraci Irrigation Unlimited: z jeho zón, sekvencí a rozvrhů se zde stanou zóny, programy a jejich rozvrhy. Vše uvidíte dřív, než se cokoli změní, a nic nezavlažuje, dokud rozvrhy nezapnete.",
       "loading": "Hledám konfiguraci Irrigation Unlimited…",
-      "step": "Krok",
+      "step": "krok",
       "back": "Zpět",
       "next": "Další",
       "import": "Importovat",

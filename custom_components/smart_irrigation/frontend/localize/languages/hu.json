@@ -920,7 +920,7 @@
       "title": "Importálás az Irrigation Unlimitedből",
       "description": "Áthozza az Irrigation Unlimited konfigurációdat: a zónáiból, szekvenciáiból és ütemezéseiből itt zónák, programok és ezek ütemezései lesznek. Mindent látsz, mielőtt bármi megváltozna, és semmi sem öntöz, amíg be nem kapcsolod az ütemezéseket.",
       "loading": "Irrigation Unlimited konfiguráció keresése…",
-      "step": "Lépés",
+      "step": "lépés",
       "back": "Vissza",
       "next": "Tovább",
       "import": "Importálás",

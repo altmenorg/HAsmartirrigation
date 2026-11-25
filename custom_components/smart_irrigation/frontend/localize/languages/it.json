@@ -920,7 +920,7 @@
       "title": "Importa da Irrigation Unlimited",
       "description": "Porta qui la tua configurazione di Irrigation Unlimited: le sue zone, sequenze e programmazioni diventano zone, programmi e i loro orari. Vedi tutto prima che cambi qualcosa, e nulla irriga finché non attivi gli orari.",
       "loading": "Ricerca di una configurazione di Irrigation Unlimited…",
-      "step": "Passo",
+      "step": "passo",
       "back": "Indietro",
       "next": "Avanti",
       "import": "Importa",

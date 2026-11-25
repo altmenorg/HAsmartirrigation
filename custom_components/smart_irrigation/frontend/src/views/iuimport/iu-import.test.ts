@@ -276,6 +276,17 @@ describe("reportNote", () => {
     expect(reportNote({ ...item, code: "not_a_code" }, tr)).toBe(item.note);
   });
 
+  it("names what a zone keeps as the zone step does, not by its field", () => {
+    const kept = {
+      ...item,
+      code: "zone_keeps_own",
+      params: { zone: "Potager", kept: "linked_entity, supply_id, unknown" },
+    };
+    expect(reportNote(kept, tr)).toBe(
+      'zone "Potager" keeps its own valve, pump, unknown',
+    );
+  });
+
   it("writes numbers as the language does", () => {
     const german = (de as any).panels.iu_import.notes;
     expect(

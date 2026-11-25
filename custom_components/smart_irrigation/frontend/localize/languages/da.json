@@ -920,7 +920,7 @@
       "title": "Importér fra Irrigation Unlimited",
       "description": "Henter din Irrigation Unlimited-konfiguration over: dens zoner, sekvenser og tidsplaner bliver her til zoner, programmer og deres tidsplaner. Du ser det hele, før noget ændres, og intet vander, før du slår tidsplanerne til.",
       "loading": "Leder efter en Irrigation Unlimited-konfiguration…",
-      "step": "Trin",
+      "step": "trin",
       "back": "Tilbage",
       "next": "Næste",
       "import": "Importér",

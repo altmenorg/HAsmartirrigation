@@ -920,7 +920,7 @@
       "title": "Import from Irrigation Unlimited",
       "description": "Brings your Irrigation Unlimited configuration over: its zones, sequences and schedules become zones, programs and their schedules here. You see everything before anything is changed, and nothing waters until you switch the schedules on.",
       "loading": "Looking for an Irrigation Unlimited configuration…",
-      "step": "Step",
+      "step": "step",
       "back": "Back",
       "next": "Next",
       "import": "Import",

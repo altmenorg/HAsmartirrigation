@@ -269,7 +269,7 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
               </div>`
             : html`
                 <div class="si-table-scroll tall">
-                  <div class="si-table history-table">
+                  <div class="si-table fit history-table">
                     <div class="si-thead">
                       <span
                         >${localize("panels.history.table.start", lang)}</span

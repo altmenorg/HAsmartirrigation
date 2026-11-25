@@ -920,7 +920,7 @@
       "title": "Importer depuis Irrigation Unlimited",
       "description": "Reprend ta configuration Irrigation Unlimited : ses zones, séquences et horaires deviennent ici des zones, des programmes et leurs horaires. Tu vois tout avant que quoi que ce soit change, et rien n'arrose tant que tu n'as pas activé les horaires.",
       "loading": "Recherche d'une configuration Irrigation Unlimited…",
-      "step": "Étape",
+      "step": "étape",
       "back": "Retour",
       "next": "Suivant",
       "import": "Importer",
@@ -1007,9 +1007,9 @@
         },
         "summary-title": "Ce que fait l'import",
         "summary": {
-          "zones": "Zones : {created} nouvelles, {filled} complétées, {used} utilisées telles quelles",
-          "programs": "Programmes : {created} nouveaux, {updated} mis à jour, {removed} supprimés",
-          "supplies": "Pompes et vannes générales : {created} nouvelles, {updated} mises à jour, {removed} supprimées"
+          "zones": "Zones : {created, plural, one {# nouvelle} other {# nouvelles}}, {filled, plural, one {# complétée} other {# complétées}}, {used, plural, one {# utilisée telle quelle} other {# utilisées telles quelles}}",
+          "programs": "Programmes : {created, plural, one {# nouveau} other {# nouveaux}}, {updated} mis à jour, {removed, plural, one {# supprimé} other {# supprimés}}",
+          "supplies": "Pompes et vannes générales : {created, plural, one {# nouvelle} other {# nouvelles}}, {updated, plural, one {# mise à jour} other {# mises à jour}}, {removed, plural, one {# supprimée} other {# supprimées}}"
         },
         "nothing-waters": "L'import n'arrose rien. Irrigation Unlimited continue d'arroser jusqu'à ce que tu le désactives et actives ces horaires.",
         "blocked": "Règle d'abord ce qui est marqué en rouge ; d'ici là, rien ne peut être importé.",
@@ -1033,7 +1033,7 @@
       },
       "done": {
         "title": "Importé.",
-        "zones": "Zones : {created} nouvelles, {updated} complétées",
+        "zones": "Zones : {created, plural, one {# nouvelle} other {# nouvelles}}, {updated, plural, one {# complétée} other {# complétées}}",
         "programs": "{count, plural, one {# programme} other {# programmes}}",
         "next": "Les horaires des nouveaux programmes sont désactivés : c'est donc toujours Irrigation Unlimited qui arrose. Quand tu es prêt, désactive les contrôleurs d'Irrigation Unlimited et active ces horaires, sur la page Programmes.",
         "open-programs": "Ouvrir les programmes",

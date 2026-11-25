@@ -204,16 +204,11 @@ export const siStyle = css`
   }
 
   .calendar-table {
-    grid-template-columns: 1fr 0.8fr 1fr 0.8fr 0.8fr;
+    grid-template-columns: repeat(5, auto);
   }
 
   .calendar-info {
     margin-top: var(--si-space-2);
-    padding: var(--si-space-1) var(--si-space-2);
-    background: var(--info-color, var(--primary-color));
-    color: white;
-    border-radius: 4px;
-    font-size: 0.8em;
   }
 
   /* --- collapsible card: a plain ha-card with a clickable header --- */
@@ -451,6 +446,21 @@ export const siStyle = css`
     display: block;
     font-weight: 400;
     font-size: 0.85em;
+  }
+  /* A table that fits its card: on a phone, the headers, the dates and the
+     long names wrap rather than push the figures out of sight. */
+  .si-table.fit {
+    width: 100%;
+  }
+  @media (max-width: 600px) {
+    .si-table.fit .si-thead > span {
+      white-space: normal;
+      hyphens: auto;
+    }
+    .si-table.fit .si-thead > span,
+    .si-table.fit .si-tr > span {
+      padding-inline: var(--si-space-2);
+    }
   }
 
   /* --- Text building blocks: one look each, on every page (#1059) ---

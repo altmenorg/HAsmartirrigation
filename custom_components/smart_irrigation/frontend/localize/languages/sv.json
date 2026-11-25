@@ -920,7 +920,7 @@
       "title": "Importera från Irrigation Unlimited",
       "description": "Importera zoner, sekvenser och scheman från Irrigation Unlimited som zoner, program och scheman i Smart Irrigation. Du kan granska alla ändringar innan de görs. De importerade programmen börjar vattna först när du aktiverar schemana.",
       "loading": "Letar efter en Irrigation Unlimited-konfiguration…",
-      "step": "Steg",
+      "step": "steg",
       "back": "Tillbaka",
       "next": "Nästa",
       "import": "Importera",

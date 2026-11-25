@@ -212,7 +212,24 @@ export function summary(preview: IuImportPreview): {
 export function reportNote(item: IuImportReportItem, t: Translate): string {
   if (!item.code) return item.note;
   try {
-    const args = Object.entries(item.params ?? {}).flat();
+    const params = { ...(item.params ?? {}) };
+    // What a zone keeps comes as field names ("linked_entity, supply_id"):
+    // each is named as the zone step names it ("valve, pump").
+    if (item.code === "zone_keeps_own" && typeof params.kept === "string") {
+      params.kept = params.kept
+        .split(", ")
+        .map((field) => {
+          const name = t(`zones.fields.${field}`);
+          return typeof name === "string" &&
+            name &&
+            !name.startsWith("Translation") &&
+            name !== `zones.fields.${field}`
+            ? name
+            : field;
+        })
+        .join(", ");
+    }
+    const args = Object.entries(params).flat();
     const text = t(`notes.${item.code}`, ...args);
     if (typeof text === "string" && text && !text.startsWith("Translation"))
       return text;

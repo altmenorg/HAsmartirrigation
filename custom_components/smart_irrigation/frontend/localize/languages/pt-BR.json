@@ -920,7 +920,7 @@
       "title": "Importar do Irrigation Unlimited",
       "description": "Traz a sua configuração do Irrigation Unlimited: as zonas, sequências e agendamentos dele viram aqui zonas, programas e seus agendamentos. Você vê tudo antes de qualquer mudança, e nada irriga até você ativar os agendamentos.",
       "loading": "Procurando uma configuração do Irrigation Unlimited…",
-      "step": "Etapa",
+      "step": "etapa",
       "back": "Voltar",
       "next": "Avançar",
       "import": "Importar",

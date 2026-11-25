@@ -920,7 +920,7 @@
       "title": "Uvoz iz Irrigation Unlimited",
       "description": "Prenese tvojo konfiguracijo Irrigation Unlimited: njegove cone, zaporedja in urniki tukaj postanejo cone, programi in njihovi urniki. Vse vidiš, preden se karkoli spremeni, in nič ne zaliva, dokler ne vklopiš urnikov.",
       "loading": "Iščem konfiguracijo Irrigation Unlimited…",
-      "step": "Korak",
+      "step": "korak",
       "back": "Nazaj",
       "next": "Naprej",
       "import": "Uvozi",

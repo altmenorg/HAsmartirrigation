@@ -920,7 +920,7 @@
       "title": "Importar desde Irrigation Unlimited",
       "description": "Trae tu configuración de Irrigation Unlimited: sus zonas, secuencias y horarios se convierten aquí en zonas, programas y sus horarios. Lo ves todo antes de que cambie nada, y nada riega hasta que actives los horarios.",
       "loading": "Buscando una configuración de Irrigation Unlimited…",
-      "step": "Paso",
+      "step": "paso",
       "back": "Atrás",
       "next": "Siguiente",
       "import": "Importar",

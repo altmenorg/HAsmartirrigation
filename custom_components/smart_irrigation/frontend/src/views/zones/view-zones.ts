@@ -77,6 +77,8 @@ import {
   navigate,
   notOwnEntity,
   linkedValveDomains,
+  localizedDateTime,
+  runStartOptions,
 } from "../../helpers";
 import { siStyle } from "../../styles/si-style";
 import {
@@ -130,7 +132,6 @@ import {
   ZONE_THROUGHPUT,
   ZONE_WATER_VOLUME,
 } from "../../const";
-import moment, { Moment } from "moment";
 
 /** The soils and plantings the panel offers, in the order it offers them. */
 // "default" is a zone still at the value it started with: nobody chose (#982).
@@ -1248,6 +1249,17 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     navigate(this, `/${DOMAIN}/mappings`);
   }
 
+  /** A month of the watering calendar, as the panel's language names it. */
+  private _monthName(estimate: any, lang: string): string {
+    const month = Number(estimate?.month);
+    if (month >= 1 && month <= 12) {
+      return new Date(2024, month - 1, 1).toLocaleDateString(lang, {
+        month: "long",
+      });
+    }
+    return estimate?.month_name || "-";
+  }
+
   private handleViewWateringCalendar(index: number): void {
     // Use direct array access instead of Object.values() to ensure correct zone mapping
     const zone = this.zones[index];
@@ -1316,85 +1328,86 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 : t("none")}
             </div>
           `
-        : html` <div class="si-table calendar-table">
-              <div class="si-thead">
-                <span>${t("month")}</span>
-                <span
-                  >${t("et")} (${output_unit(this.config, ZONE_BUCKET)})</span
-                >
-                <span
-                  >${t("precipitation")}
-                  (${output_unit(this.config, ZONE_BUCKET)})</span
-                >
-                <span
-                  >${t("watering")}
-                  (${output_unit(this.config, ZONE_WATER_VOLUME)})</span
-                >
-                <span
-                  >${t("avg-temp")}
-                  (${this.config?.units === CONF_METRIC ? "°C" : "°F"})</span
-                >
+        : html` <div class="si-table-scroll">
+              <div class="si-table fit calendar-table">
+                <div class="si-thead">
+                  <span>${t("month")}</span>
+                  <span class="num"
+                    >${t("et")} (${output_unit(this.config, ZONE_BUCKET)})</span
+                  >
+                  <span class="num"
+                    >${t("precipitation")}
+                    (${output_unit(this.config, ZONE_BUCKET)})</span
+                  >
+                  <span class="num"
+                    >${t("watering")}
+                    (${output_unit(this.config, ZONE_WATER_VOLUME)})</span
+                  >
+                  <span class="num"
+                    >${t("avg-temp")}
+                    (${this.config?.units === CONF_METRIC ? "°C" : "°F"})</span
+                  >
+                </div>
+                ${monthlyEstimates.map(
+                  (estimate) => html`
+                    <div class="si-tr">
+                      <span>${this._monthName(estimate, lang)}</span>
+                      <span class="num"
+                        >${estimate.estimated_et_mm !== null &&
+                        estimate.estimated_et_mm !== undefined
+                          ? this._n(
+                              displayDepth(
+                                estimate.estimated_et_mm,
+                                this.config,
+                              ),
+                              1,
+                            )
+                          : "-"}</span
+                      >
+                      <span class="num"
+                        >${estimate.average_precipitation_mm !== null &&
+                        estimate.average_precipitation_mm !== undefined
+                          ? this._n(
+                              displayDepth(
+                                estimate.average_precipitation_mm,
+                                this.config,
+                              ),
+                              1,
+                            )
+                          : "-"}</span
+                      >
+                      <span class="num"
+                        >${estimate.estimated_watering_volume_liters !== null &&
+                        estimate.estimated_watering_volume_liters !== undefined
+                          ? this._n(
+                              displayVolume(
+                                estimate.estimated_watering_volume_liters,
+                                this.config,
+                              ),
+                              0,
+                            )
+                          : "-"}</span
+                      >
+                      <span class="num"
+                        >${estimate.average_temperature_c !== null &&
+                        estimate.average_temperature_c !== undefined
+                          ? this._n(
+                              displayTemperature(
+                                estimate.average_temperature_c,
+                                this.config,
+                              ),
+                              1,
+                            )
+                          : "-"}</span
+                      >
+                    </div>
+                  `,
+                )}
               </div>
-              ${monthlyEstimates.map(
-                (estimate) => html`
-                  <div class="si-tr">
-                    <span
-                      >${estimate.month_name ||
-                      `Month ${estimate.month}` ||
-                      "-"}</span
-                    >
-                    <span
-                      >${estimate.estimated_et_mm !== null &&
-                      estimate.estimated_et_mm !== undefined
-                        ? this._n(
-                            displayDepth(estimate.estimated_et_mm, this.config),
-                            1,
-                          )
-                        : "-"}</span
-                    >
-                    <span
-                      >${estimate.average_precipitation_mm !== null &&
-                      estimate.average_precipitation_mm !== undefined
-                        ? this._n(
-                            displayDepth(
-                              estimate.average_precipitation_mm,
-                              this.config,
-                            ),
-                            1,
-                          )
-                        : "-"}</span
-                    >
-                    <span
-                      >${estimate.estimated_watering_volume_liters !== null &&
-                      estimate.estimated_watering_volume_liters !== undefined
-                        ? this._n(
-                            displayVolume(
-                              estimate.estimated_watering_volume_liters,
-                              this.config,
-                            ),
-                            0,
-                          )
-                        : "-"}</span
-                    >
-                    <span
-                      >${estimate.average_temperature_c !== null &&
-                      estimate.average_temperature_c !== undefined
-                        ? this._n(
-                            displayTemperature(
-                              estimate.average_temperature_c,
-                              this.config,
-                            ),
-                            1,
-                          )
-                        : "-"}</span
-                    >
-                  </div>
-                `,
-              )}
             </div>
             ${zoneCalendar?.calculation_method
               ? html`
-                  <div class="calendar-info">
+                  <div class="si-hint calendar-info">
                     ${localize("panels.zones.labels.calculation-method", lang)}:
                     ${localize(
                       `panels.zones.labels.calculation-methods.${zoneCalendar.calculation_method}`,
@@ -1541,7 +1554,11 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                   >
                   <span class="meta-value"
                     >${zone.last_calculated
-                      ? moment(zone.last_calculated).format("YYYY-MM-DD HH:mm")
+                      ? localizedDateTime(
+                          zone.last_calculated,
+                          this.hass,
+                          runStartOptions(zone.last_calculated),
+                        )
                       : "—"}</span
                   >
                 </div>
@@ -1554,7 +1571,11 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                   >
                   <span class="meta-value"
                     >${zone.last_updated
-                      ? moment(zone.last_updated).format("YYYY-MM-DD HH:mm")
+                      ? localizedDateTime(
+                          zone.last_updated,
+                          this.hass,
+                          runStartOptions(zone.last_updated),
+                        )
                       : "—"}</span
                   >
                 </div>

@@ -29,7 +29,10 @@ ROOT = Path(__file__).parent.parent / "custom_components" / "smart_irrigation"
 PANEL_DIR = ROOT / "frontend" / "localize" / "languages"
 BACKEND_DIR = ROOT / "translations"
 
-PLACEHOLDER = re.compile(r"\{[a-zA-Z0-9_]+\}")
+# A value the text is given: "{zone}", or one an ICU format reads
+# ("{count, plural, ...}", "{lead, number}"); a language may write a plural
+# where English needs none, so it is the name that counts.
+PLACEHOLDER = re.compile(r"\{([a-zA-Z0-9_]+)\s*[},]")
 
 
 def _flat(tree: dict, prefix: str = "") -> dict:
@@ -84,8 +87,8 @@ def test_the_placeholders_are_the_ones_english_uses(directory, language):
     for key, value in _load(directory, language).items():
         if key not in english or not isinstance(value, str):
             continue
-        expected = set(PLACEHOLDER.findall(english[key]))
-        found = set(PLACEHOLDER.findall(value))
+        expected = {f"{{{name}}}" for name in PLACEHOLDER.findall(english[key])}
+        found = {f"{{{name}}}" for name in PLACEHOLDER.findall(value)}
         if expected != found:
             wrong.append(f"{key}: expected {sorted(expected)}, found {sorted(found)}")
 

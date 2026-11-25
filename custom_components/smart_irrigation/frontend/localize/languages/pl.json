@@ -920,7 +920,7 @@
       "title": "Import z Irrigation Unlimited",
       "description": "Przenosi twoją konfigurację Irrigation Unlimited: jego strefy, sekwencje i harmonogramy stają się tutaj strefami, programami i ich harmonogramami. Widzisz wszystko, zanim cokolwiek się zmieni, i nic nie podlewa, dopóki nie włączysz harmonogramów.",
       "loading": "Szukanie konfiguracji Irrigation Unlimited…",
-      "step": "Krok",
+      "step": "krok",
       "back": "Wstecz",
       "next": "Dalej",
       "import": "Importuj",

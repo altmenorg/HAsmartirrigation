@@ -920,7 +920,7 @@
       "title": "Importeren uit Irrigation Unlimited",
       "description": "Haalt je configuratie van Irrigation Unlimited over: de zones, reeksen en schema's worden hier zones, programma's en hun schema's. Je ziet alles voordat er iets verandert, en er wordt niets bewaterd tot je de schema's aanzet.",
       "loading": "Zoeken naar een configuratie van Irrigation Unlimited…",
-      "step": "Stap",
+      "step": "stap",
       "back": "Terug",
       "next": "Volgende",
       "import": "Importeren",

@@ -920,7 +920,7 @@
       "title": "从 Irrigation Unlimited 导入",
       "description": "导入你的 Irrigation Unlimited 配置：它的区域、序列和时间表在这里变为区域、程序及其时间表。在任何更改之前你都能看到全部内容，而且在你打开时间表之前不会浇水。",
       "loading": "正在查找 Irrigation Unlimited 配置…",
-      "step": "步骤",
+      "step": "步",
       "back": "上一步",
       "next": "下一步",
       "import": "导入",

@@ -920,7 +920,7 @@
       "title": "Importer fra Irrigation Unlimited",
       "description": "Henter over Irrigation Unlimited-konfigurasjonen din: sonene, sekvensene og tidsplanene blir her til soner, programmer og tidsplanene deres. Du ser alt før noe endres, og ingenting vanner før du slår på tidsplanene.",
       "loading": "Ser etter en Irrigation Unlimited-konfigurasjon…",
-      "step": "Trinn",
+      "step": "steg",
       "back": "Tilbake",
       "next": "Neste",
       "import": "Importer",
