@@ -13,6 +13,7 @@ from homeassistant.helpers.event import (
 from homeassistant.util import dt as dt_util
 
 from . import const
+from .deprecated_actions import async_notice_stored_recurring
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -52,6 +53,7 @@ class RecurringScheduleManager:
         config = await self.coordinator.store.async_get_config()
         self._schedules = config.get(const.CONF_RECURRING_SCHEDULES, [])
         await self._setup_schedule_trackers()
+        async_notice_stored_recurring(self.hass, self._schedules)
 
     async def async_create_schedule(self, schedule_data: dict[str, Any]) -> None:
         """Create a new recurring schedule."""
@@ -141,6 +143,7 @@ class RecurringScheduleManager:
         await self.coordinator.store.async_update_config(
             {const.CONF_RECURRING_SCHEDULES: self._schedules}
         )
+        async_notice_stored_recurring(self.hass, self._schedules)
 
     async def _setup_schedule_trackers(self) -> None:
         """Set up all schedule trackers."""
@@ -245,6 +248,20 @@ class RecurringScheduleManager:
             self._execute_schedule(schedule, now)
 
         return async_track_time_interval(self.hass, execute, interval_delta)
+
+    @callback
+    def async_unload(self) -> None:
+        """Stop every schedule's timer.
+
+        Reloading the entry makes a new coordinator, with a manager of its own
+        that sets the timers up again. The old ones were never stopped: each
+        recurring schedule then ran once more per reload, an irrigate schedule
+        watering its zones twice.
+        """
+        for tracker in self._schedule_trackers.values():
+            if tracker:
+                tracker()
+        self._schedule_trackers.clear()
 
     async def _remove_schedule_tracker(self, schedule_id: str) -> None:
         """Remove a schedule tracker."""

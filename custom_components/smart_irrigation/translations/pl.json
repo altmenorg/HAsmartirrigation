@@ -756,6 +756,10 @@
       "title": "Harmonogramy cykliczne zostaną usunięte: {action}",
       "description": "Automatyzacja, skrypt lub dashboard wywołał **{action}**. Harmonogramy cykliczne nadal działają, ale zostaną usunięte od wersji {version}, zimą, poza sezonem podlewania.\n\nHarmonogramy programów robią to samo i są w panelu: skonfiguruj je w zakładce **Podlewanie**, a potem usuń harmonogramy cykliczne i wywołania {action}."
     },
+    "recurring_schedules_stored": {
+      "title": "Harmonogramy cykliczne wciąż działają i znikną",
+      "description": "Te harmonogramy cykliczne są włączone, a panel ich nie pokazuje:\n\n{schedules}\n\nNadal działają, ale zostaną usunięte od wersji {version}, zimą, poza sezonem podlewania. Harmonogramy programów robią to samo i są w panelu: skonfiguruj je w **Podlewanie**, a potem usuń harmonogramy cykliczne za pomocą `smart_irrigation.delete_recurring_schedule`."
+    },
     "zone_set_aside": {
       "title": "Strefa {zone} jest odłożona",
       "fix_flow": {

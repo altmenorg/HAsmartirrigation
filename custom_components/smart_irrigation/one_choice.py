@@ -12,7 +12,8 @@ program and the main program's own "Program on". Here:
   watering exactly as before: direct valve control alone becomes the full
   controller, the active start trigger becomes a schedule of the main program
   (the other defined triggers become schedules switched off, so none is lost),
-  and a main program switched off becomes one whose schedules are off. The
+  so do the recurring schedules that watered every zone through the trigger's
+  path, and a main program switched off becomes one whose schedules are off. The
   main program it works on is then converted into an ordinary program
   (program_migration.py), so this part only matters to an old store.
 - ``first_program`` gives "Calculate and water" a program when there is none,
@@ -200,6 +201,102 @@ def schedules_from_triggers(config: Any) -> list:
     return schedules
 
 
+_WEEKDAYS = (
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+)
+
+
+def _program_schedule_of_recurring(recurring: dict) -> dict | None:
+    """The program schedule that waters when ``recurring`` did, or None.
+
+    Daily, weekly and monthly at a clock time have one. Every few hours does
+    not (a program schedule has one moment a day), and neither has a range of
+    dates: a schedule's period has no year, so it would come back every year.
+    """
+    if recurring.get(const.SCHEDULE_CONF_START_DATE) or recurring.get(
+        const.SCHEDULE_CONF_END_DATE
+    ):
+        return None
+    clock = str(recurring.get(const.SCHEDULE_CONF_TIME) or "")
+    hours, _, minutes = clock.partition(":")
+    try:
+        hour, minute = int(hours), int(minutes)
+    except ValueError:
+        return None
+    if not (0 <= hour < 24 and 0 <= minute < 60):
+        return None
+    schedule: dict = {
+        const.SCHEDULE_ENABLED: True,
+        const.SCHEDULE_TYPE: "time",
+        const.SCHEDULE_TIME: f"{hour:02d}:{minute:02d}",
+        # The start trigger's path: the moment starts the run, and the weather
+        # is judged.
+        const.SCHEDULE_ANCHOR: "start",
+        const.SCHEDULE_WEATHER: True,
+    }
+    kind = recurring.get(const.SCHEDULE_CONF_TYPE)
+    if kind == const.SCHEDULE_TYPE_DAILY:
+        return schedule
+    if kind == const.SCHEDULE_TYPE_WEEKLY:
+        days = sorted(
+            {
+                _WEEKDAYS.index(str(day).lower())
+                for day in recurring.get(const.SCHEDULE_CONF_DAYS_OF_WEEK) or []
+                if str(day).lower() in _WEEKDAYS
+            }
+        )
+        # No day named: it never ran.
+        return {**schedule, const.SCHEDULE_WEEKDAYS: days} if days else None
+    if kind == const.SCHEDULE_TYPE_MONTHLY:
+        try:
+            day = int(recurring.get(const.SCHEDULE_CONF_DAY_OF_MONTH, 1))
+        except (TypeError, ValueError):
+            return None
+        return {**schedule, const.SCHEDULE_DAYS_OF_MONTH: [day]}
+    return None
+
+
+def schedules_from_recurring(config: Any) -> tuple[list, list]:
+    """The recurring schedules that watered every zone, as program schedules.
+
+    With direct valve control, a recurring schedule that irrigates all zones
+    took the start trigger's path, and that opened the valves. After the move
+    the valves are opened by the programs, and that path only fires the start
+    event: such a schedule went on firing, and watered nothing. They become
+    schedules of the main program, as the start trigger does, and are switched
+    off where they were, as the start trigger is no longer armed.
+
+    Returns the program schedules, and the recurring schedules as they are to
+    be stored ([] when none changes).
+    """
+    stored = [
+        r
+        for r in _value(config, const.CONF_RECURRING_SCHEDULES, []) or []
+        if isinstance(r, dict)
+    ]
+    schedules: list = []
+    kept: list = []
+    for recurring in stored:
+        if (
+            recurring.get(const.SCHEDULE_CONF_ENABLED, True) is not False
+            and recurring.get(const.SCHEDULE_CONF_ACTION) == "irrigate"
+            and recurring.get(const.SCHEDULE_CONF_ZONES, "all") == "all"
+        ):
+            schedule = _program_schedule_of_recurring(recurring)
+            if schedule is not None:
+                schedules.append(schedule)
+                kept.append({**recurring, const.SCHEDULE_CONF_ENABLED: False})
+                continue
+        kept.append(recurring)
+    return schedules, (kept if schedules else [])
+
+
 def first_program(config: Any, zones, programs, language=None) -> list:
     """The programs, or a first one when there is none.
 
@@ -300,6 +397,26 @@ def migration_changes(config: Any) -> dict:
                     else p
                 )
                 for p in _with_legacy_main(programs)
+            ]
+    if valves:
+        # The recurring schedules that opened the valves through the start
+        # trigger's path open them through the main program's now.
+        recurring, stored = schedules_from_recurring(config)
+        if recurring:
+            changes[const.CONF_RECURRING_SCHEDULES] = stored
+            seeded = [
+                (
+                    {
+                        **p,
+                        const.PROGRAM_SCHEDULES: [
+                            *(p.get(const.PROGRAM_SCHEDULES) or []),
+                            *recurring,
+                        ],
+                    }
+                    if p.get(const.PROGRAM_ID) == MAIN_PROGRAM_ID
+                    else p
+                )
+                for p in _with_legacy_main(seeded)
             ]
     if main.get(const.PROGRAM_ENABLED) is False:
         # "Program on" goes for the main program: off, nothing started it on

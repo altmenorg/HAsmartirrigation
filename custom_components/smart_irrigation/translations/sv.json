@@ -756,6 +756,10 @@
       "title": "Återkommande scheman försvinner: {action}",
       "description": "En automation, ett skript eller en instrumentpanel anropade **{action}**. Återkommande scheman fungerar fortfarande, men de tas bort från och med version {version}, på vintern, utanför bevattningssäsongen.\n\nProgrammens scheman gör samma sak och finns i panelen: konfigurera dem under **Bevattning** och ta sedan bort de återkommande schemana och anropen till {action}."
     },
+    "recurring_schedules_stored": {
+      "title": "Återkommande scheman körs fortfarande och försvinner",
+      "description": "Dessa återkommande scheman är på, och panelen visar dem inte:\n\n{schedules}\n\nDe fungerar fortfarande, men tas bort från version {version}, på vintern, utanför bevattningssäsongen. Programmens scheman gör samma sak och finns i panelen: ställ in dem under **Bevattning** och ta sedan bort de återkommande schemana med `smart_irrigation.delete_recurring_schedule`."
+    },
     "zone_set_aside": {
       "title": "Zon {zone} är ställd åt sidan",
       "fix_flow": {

@@ -756,6 +756,10 @@
       "title": "Las programaciones recurrentes van a desaparecer: {action}",
       "description": "Una automatización, un script o un panel ha llamado a **{action}**. Las programaciones recurrentes todavía funcionan, pero se eliminarán a partir de la versión {version}, en invierno, fuera de la temporada de riego.\n\nLos horarios de los programas hacen lo mismo y están en el panel: configúralos en **Riego**, y luego elimina las programaciones recurrentes y las llamadas a {action}."
     },
+    "recurring_schedules_stored": {
+      "title": "Aún hay horarios recurrentes en marcha, y van a desaparecer",
+      "description": "Estos horarios recurrentes están activados y el panel no los muestra:\n\n{schedules}\n\nSiguen funcionando, pero se eliminarán a partir de la versión {version}, en invierno, fuera de la temporada de riego. Los horarios de los programas hacen lo mismo y están en el panel: configúralos en **Riego** y luego elimina los horarios recurrentes con `smart_irrigation.delete_recurring_schedule`."
+    },
     "zone_set_aside": {
       "title": "La zona {zone} está apartada",
       "fix_flow": {

@@ -756,6 +756,10 @@
       "title": "Terugkerende schema's verdwijnen: {action}",
       "description": "Een automatisering, een script of een dashboard heeft **{action}** aangeroepen. Terugkerende schema's werken nog, maar worden verwijderd vanaf versie {version}, in de winter, buiten het bewateringsseizoen.\n\nDe schema's van de programma's doen hetzelfde en staan in het paneel: stel ze in onder **Bewatering**, en verwijder dan de terugkerende schema's en de aanroepen van {action}."
     },
+    "recurring_schedules_stored": {
+      "title": "Terugkerende schema's lopen nog, en verdwijnen",
+      "description": "Deze terugkerende schema's staan aan, en het paneel toont ze niet:\n\n{schedules}\n\nZe werken nog, maar worden verwijderd vanaf versie {version}, in de winter, buiten het beregeningsseizoen. De schema's van de programma's doen hetzelfde en staan in het paneel: stel ze in onder **Bewatering**, en verwijder dan de terugkerende schema's met `smart_irrigation.delete_recurring_schedule`."
+    },
     "zone_set_aside": {
       "title": "Zone {zone} is opzijgezet",
       "fix_flow": {

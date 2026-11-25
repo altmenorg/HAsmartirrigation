@@ -756,6 +756,10 @@
       "title": "Os agendamentos recorrentes vão deixar de existir: {action}",
       "description": "Uma automação, um script ou um painel chamou **{action}**. Os agendamentos recorrentes ainda funcionam, mas serão removidos a partir da versão {version}, no inverno, fora da temporada de irrigação.\n\nOs agendamentos dos programas fazem o mesmo e ficam no painel: configure-os em **Irrigação**, depois remova os agendamentos recorrentes e as chamadas a {action}."
     },
+    "recurring_schedules_stored": {
+      "title": "Ainda há agendamentos recorrentes em execução, e eles vão sair",
+      "description": "Estes agendamentos recorrentes estão ativados e o painel não os mostra:\n\n{schedules}\n\nEles ainda funcionam, mas serão removidos a partir da versão {version}, no inverno, fora da temporada de irrigação. Os horários dos programas fazem o mesmo e estão no painel: configure-os em **Irrigação** e depois remova os agendamentos recorrentes com `smart_irrigation.delete_recurring_schedule`."
+    },
     "zone_set_aside": {
       "title": "A zona {zone} foi deixada de lado",
       "fix_flow": {
