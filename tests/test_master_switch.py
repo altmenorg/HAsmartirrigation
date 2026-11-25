@@ -12,7 +12,15 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
 
 from custom_components.smart_irrigation import SmartIrrigationCoordinator, const
-from custom_components.smart_irrigation.master_switch import irrigation_off
+from custom_components.smart_irrigation.master_switch import (
+    irrigation_off,
+    opens_valves,
+)
+from custom_components.smart_irrigation.one_choice import (
+    MODE_CALCULATE,
+    MODE_WATER,
+    mode_changes,
+)
 from custom_components.smart_irrigation.store import Config
 from custom_components.smart_irrigation.switch import SmartIrrigationEnabledSwitch
 from custom_components.smart_irrigation.triggers import TriggersMixin
@@ -213,8 +221,13 @@ def _switching_coordinator(enabled):
     coordinator = SmartIrrigationCoordinator.__new__(SmartIrrigationCoordinator)
     coordinator.hass = MagicMock()
     coordinator.hass.config.units = METRIC_SYSTEM
+    # An installation whose valves Smart Irrigation opens: switching it off, or
+    # to calculating only, has something to stop.
     config = SimpleNamespace(
-        irrigation_enabled=enabled, full_controller=False, programs=[]
+        irrigation_enabled=enabled,
+        full_controller=False,
+        direct_valve_control_enabled=True,
+        programs=[],
     )
     coordinator.store = MagicMock()
     coordinator.store.config = config
@@ -324,6 +337,94 @@ async def test_choosing_calculate_only_stops_what_is_watering():
 
     coordinator.async_stop_watering.assert_awaited_once()
     coordinator._start_windows_now.assert_not_awaited()
+
+
+def test_only_calculate_and_water_opens_valves():
+    water = {
+        const.CONF_IRRIGATION_ENABLED: True,
+        const.CONF_FULL_CONTROLLER: True,
+        const.CONF_DIRECT_VALVE_CONTROL_ENABLED: True,
+    }
+    assert opens_valves(water)
+    assert opens_valves(SimpleNamespace(config=SimpleNamespace(**water)))
+    # "Calculate only" as the one choice writes it: not "watering off", since
+    # the start event still fires, and yet no valve is ours.
+    calculate = {**water, **mode_changes(MODE_CALCULATE, water)}
+    assert not opens_valves(calculate)
+    assert not opens_valves({**water, const.CONF_IRRIGATION_ENABLED: False})
+    assert not opens_valves({})
+
+
+async def test_choosing_calculate_only_in_the_panel_stops_what_is_watering():
+    """The panel writes the one choice, not the old switch: full controller and
+    direct valve control off, watering_enabled left on. Only "watering off" was
+    asked: the zone watering when "Calculate only" was chosen went on with its
+    passes, its valve opened again after a ten-minute soak."""
+    from unittest.mock import patch
+
+    coordinator = _switching_coordinator(True)
+    coordinator.store.config.full_controller = True
+    coordinator.register_program_schedules = AsyncMock()
+    coordinator.schedules_start_watering = Mock(return_value=True)
+    coordinator.async_setup_zone_unwatered_watch = AsyncMock()
+    coordinator._full_controller_changes = AsyncMock(side_effect=lambda data: data)
+    coordinator._spawn_valve_run = Mock(side_effect=lambda coro: coro.close())
+
+    changes = mode_changes(MODE_CALCULATE, coordinator.store.config)
+    with patch("custom_components.smart_irrigation.async_dispatcher_send"):
+        await coordinator.async_update_config(changes)
+
+    coordinator.async_stop_watering.assert_awaited_once()
+
+
+async def test_a_setting_saved_while_watering_stops_nothing():
+    from unittest.mock import patch
+
+    coordinator = _switching_coordinator(True)
+    coordinator.store.config.full_controller = True
+    coordinator.register_program_schedules = AsyncMock()
+    coordinator.schedules_start_watering = Mock(return_value=True)
+    coordinator._full_controller_changes = AsyncMock(side_effect=lambda data: data)
+
+    for changes in (
+        {const.CONF_CALC_TIME: "22:00"},
+        mode_changes(MODE_WATER, coordinator.store.config),
+    ):
+        with patch("custom_components.smart_irrigation.async_dispatcher_send"):
+            await coordinator.async_update_config(changes)
+
+    coordinator.async_stop_watering.assert_not_awaited()
+
+
+async def test_calculating_only_a_restart_closes_what_it_interrupted_too():
+    """A run in flight when Home Assistant stopped, with "Calculate only"
+    chosen since (or before the restart): resumed, it opened the valve again
+    in a mode where Smart Irrigation opens none."""
+    hass = make_hass()
+    store = make_store([zone(0)])
+    store.config.irrigation_enabled = True
+    store.config.watering_enabled = True
+    store.config.full_controller = False
+    store.config.direct_valve_control_enabled = False
+    store.config.active_valve_runs = [
+        {
+            const.RUN_ZONE_ID: 0,
+            const.RUN_ENTITY_ID: "switch.zone_0",
+            const.RUN_STARTED: datetime.now().isoformat(),
+            const.RUN_DURATION: 1210,
+            const.RUN_DELIVERED: 52,
+        }
+    ]
+    store.config.active_cycle = None
+    store.config.active_program_run = None
+    coord = Coordinator(hass, store)
+
+    await coord.async_resume_valve_runs()
+    await _settle()
+
+    assert hass.calls == [("turn_off", "switch.zone_0")]
+    [changes] = [c.args[0] for c in store.async_update_config.await_args_list]
+    assert changes[const.CONF_ACTIVE_VALVE_RUNS] == []
 
 
 async def test_the_config_view_ignores_the_old_calculate_only_switch():
