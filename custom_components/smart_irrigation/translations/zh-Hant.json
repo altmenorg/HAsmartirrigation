@@ -756,6 +756,10 @@
       "title": "週期排程即將移除：{action}",
       "description": "有自動化、腳本或儀表板呼叫了 **{action}**。週期排程目前仍可運作，但將自 {version} 版起移除，並安排在冬季、非澆水季節進行。\n\n程式的排程功能相同，且位於面板中：請在 **澆水** 下設定，然後移除週期排程與對 {action} 的呼叫。"
     },
+    "recurring_schedules_stored": {
+      "title": "循環排程仍在執行，並將被移除",
+      "description": "以下循環排程已啟用，但面板中不顯示：\n\n{schedules}\n\n它們仍在執行，但將從版本 {version} 起移除，時間在冬季、澆水季之外。程式的排程可達成相同功能並顯示在面板中：在 **澆水** 中設定它們，然後使用 `smart_irrigation.delete_recurring_schedule` 刪除循環排程。"
+    },
     "zone_set_aside": {
       "title": "區域 {zone} 已被擱置",
       "fix_flow": {

@@ -756,6 +756,10 @@
       "title": "Le pianificazioni ricorrenti stanno per essere rimosse: {action}",
       "description": "Un'automazione, uno script o una dashboard ha chiamato **{action}**. Le pianificazioni ricorrenti funzionano ancora, ma verranno rimosse a partire dalla versione {version}, in inverno, fuori dalla stagione irrigua.\n\nGli orari dei programmi fanno la stessa cosa e si trovano nel pannello: configurali in **Irrigazione**, poi rimuovi le pianificazioni ricorrenti e le chiamate a {action}."
     },
+    "recurring_schedules_stored": {
+      "title": "Pianificazioni ricorrenti ancora attive, e in via di rimozione",
+      "description": "Queste pianificazioni ricorrenti sono attive e il pannello non le mostra:\n\n{schedules}\n\nFunzionano ancora, ma saranno rimosse dalla versione {version}, in inverno, fuori dalla stagione irrigua. Le pianificazioni dei programmi fanno lo stesso e sono nel pannello: configurale in **Irrigazione**, poi rimuovi le pianificazioni ricorrenti con `smart_irrigation.delete_recurring_schedule`."
+    },
     "zone_set_aside": {
       "title": "La zona {zone} è messa da parte",
       "fix_flow": {

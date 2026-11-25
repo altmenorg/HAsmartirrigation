@@ -756,6 +756,10 @@
       "title": "Toistuvat aikataulut poistuvat: {action}",
       "description": "Automaatio, skripti tai kojelauta kutsui toimintoa **{action}**. Toistuvat aikataulut toimivat yhä, mutta ne poistetaan versiosta {version} alkaen, talvella, kastelukauden ulkopuolella.\n\nOhjelmien aikataulut tekevät saman, ja ne löytyvät paneelista: määritä ne kohdassa **Kastelu**, poista sitten toistuvat aikataulut ja kutsut toimintoon {action}."
     },
+    "recurring_schedules_stored": {
+      "title": "Toistuvia aikatauluja on yhä käytössä, ja ne poistuvat",
+      "description": "Nämä toistuvat aikataulut ovat päällä, eikä paneeli näytä niitä:\n\n{schedules}\n\nNe toimivat yhä, mutta ne poistetaan versiosta {version} alkaen, talvella, kastelukauden ulkopuolella. Ohjelmien aikataulut tekevät saman ja ovat paneelissa: määritä ne kohdassa **Kastelu** ja poista sitten toistuvat aikataulut toiminnolla `smart_irrigation.delete_recurring_schedule`."
+    },
     "zone_set_aside": {
       "title": "Vyöhyke {zone} on siirretty sivuun",
       "fix_flow": {

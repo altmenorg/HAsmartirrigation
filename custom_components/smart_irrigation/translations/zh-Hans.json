@@ -756,6 +756,10 @@
       "title": "循环时间表即将移除：{action}",
       "description": "某个自动化、脚本或仪表板调用了 **{action}**。循环时间表目前仍然有效，但将从 {version} 版本起移除，时间在冬季、浇水季之外。\n\n程序的时间表可以做同样的事，并且就在面板中：在 **浇水** 下设置它们，然后移除循环时间表以及对 {action} 的调用。"
     },
+    "recurring_schedules_stored": {
+      "title": "循环计划仍在运行，并将被移除",
+      "description": "以下循环计划已启用，但面板中不显示：\n\n{schedules}\n\n它们仍在运行，但将从版本 {version} 起移除，时间在冬季、浇水季之外。程序的计划可实现相同功能并显示在面板中：在 **浇水** 中设置它们，然后使用 `smart_irrigation.delete_recurring_schedule` 删除循环计划。"
+    },
     "zone_set_aside": {
       "title": "区域 {zone} 已被搁置",
       "fix_flow": {

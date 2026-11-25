@@ -756,6 +756,10 @@
       "title": "Les planifications récurrentes vont disparaître : {action}",
       "description": "Une automatisation, un script ou un tableau de bord a appelé **{action}**. Les planifications récurrentes fonctionnent encore, mais elles seront retirées à partir de la version {version}, en hiver, hors de la saison d'arrosage.\n\nLes horaires des programmes font la même chose et se trouvent dans le panneau : configure-les dans **Arrosage**, puis supprime les planifications récurrentes et les appels à {action}."
     },
+    "recurring_schedules_stored": {
+      "title": "Des planifications récurrentes tournent encore, et vont disparaître",
+      "description": "Ces planifications récurrentes sont activées, et le panneau ne les montre pas :\n\n{schedules}\n\nElles fonctionnent encore, mais elles seront retirées à partir de la version {version}, en hiver, hors de la saison d'arrosage. Les horaires des programmes font la même chose et se trouvent dans le panneau : configure-les dans **Arrosage**, puis supprime les planifications récurrentes avec `smart_irrigation.delete_recurring_schedule`."
+    },
     "zone_set_aside": {
       "title": "La zone {zone} est mise de côté",
       "fix_flow": {

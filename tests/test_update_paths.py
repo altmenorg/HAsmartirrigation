@@ -50,8 +50,14 @@ def _stored(name: str) -> dict:
 
 
 @pytest.fixture(autouse=True)
-def _no_panel():
-    """The panel needs the frontend; what is tested here is the setup."""
+def _no_panel(hass: HomeAssistant):
+    """The panel needs the frontend; what is tested here is the setup.
+
+    ``panel_custom``, a dependency, sets the frontend up, which needs the
+    ``hass_frontend`` package: not installed in CI. Counted as set up, it is
+    skipped, and the panel is not registered.
+    """
+    hass.config.components.add("panel_custom")
     with (
         patch("custom_components.smart_irrigation.async_register_panel"),
         patch("custom_components.smart_irrigation.remove_panel"),

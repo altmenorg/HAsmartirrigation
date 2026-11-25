@@ -756,6 +756,10 @@
       "title": "Ponavljajoči se urniki bodo odstranjeni: {action}",
       "description": "Avtomatizacija, skripta ali nadzorna plošča je poklicala **{action}**. Ponavljajoči se urniki še vedno delujejo, a bodo odstranjeni od različice {version} naprej, pozimi, zunaj sezone zalivanja.\n\nUrniki programov naredijo isto in so na plošči: nastavi jih na zavihku **Zalivanje**, nato odstrani ponavljajoče se urnike in klice {action}."
     },
+    "recurring_schedules_stored": {
+      "title": "Ponavljajoči se urniki še tečejo in bodo odstranjeni",
+      "description": "Ti ponavljajoči se urniki so vklopljeni in plošča jih ne prikazuje:\n\n{schedules}\n\nŠe delujejo, vendar bodo odstranjeni od različice {version}, pozimi, zunaj sezone zalivanja. Urniki programov delajo isto in so na plošči: nastavite jih v **Zalivanje**, nato pa ponavljajoče se urnike odstranite z `smart_irrigation.delete_recurring_schedule`."
+    },
     "zone_set_aside": {
       "title": "Območje {zone} je odloženo",
       "fix_flow": {

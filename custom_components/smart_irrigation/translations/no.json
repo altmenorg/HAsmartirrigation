@@ -756,6 +756,10 @@
       "title": "Gjentakende tidsplaner forsvinner: {action}",
       "description": "En automasjon, et skript eller et dashbord kalte **{action}**. Gjentakende tidsplaner virker fortsatt, men de fjernes fra versjon {version}, om vinteren, utenfor vanningssesongen.\n\nProgrammenes tidsplaner gjør det samme og finnes i panelet: sett dem opp under **Vanning**, og fjern deretter de gjentakende tidsplanene og kallene til {action}."
     },
+    "recurring_schedules_stored": {
+      "title": "Gjentakende tidsplaner kjører fortsatt, og forsvinner",
+      "description": "Disse gjentakende tidsplanene er slått på, og panelet viser dem ikke:\n\n{schedules}\n\nDe virker fortsatt, men fjernes fra versjon {version}, om vinteren, utenfor vanningssesongen. Programmenes tidsplaner gjør det samme og ligger i panelet: sett dem opp under **Vanning**, og fjern deretter de gjentakende tidsplanene med `smart_irrigation.delete_recurring_schedule`."
+    },
     "zone_set_aside": {
       "title": "Sone {zone} er satt til side",
       "fix_flow": {

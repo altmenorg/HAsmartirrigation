@@ -756,6 +756,10 @@
       "title": "Az ismétlődő ütemezések megszűnnek: {action}",
       "description": "Egy automatizálás, szkript vagy irányítópult meghívta a(z) **{action}** műveletet. Az ismétlődő ütemezések még működnek, de a(z) {version} verziótól el lesznek távolítva, télen, az öntözési szezonon kívül.\n\nA programok ütemezései ugyanezt teszik, és a panelen vannak: állítsd be őket az **Öntözés** alatt, majd távolítsd el az ismétlődő ütemezéseket és a(z) {action} hívásait."
     },
+    "recurring_schedules_stored": {
+      "title": "Ismétlődő ütemezések még futnak, és megszűnnek",
+      "description": "Ezek az ismétlődő ütemezések be vannak kapcsolva, és a panel nem mutatja őket:\n\n{schedules}\n\nMég működnek, de a(z) {version} verziótól eltávolítjuk őket, télen, az öntözési szezonon kívül. A programok ütemezései ugyanezt teszik, és a panelen vannak: állítsd be őket az **Öntözés** alatt, majd töröld az ismétlődő ütemezéseket ezzel: `smart_irrigation.delete_recurring_schedule`."
+    },
     "zone_set_aside": {
       "title": "{zone} zóna félre van téve",
       "fix_flow": {

@@ -756,6 +756,10 @@
       "title": "Opakované rozvrhy končí: {action}",
       "description": "Automatizace, skript nebo dashboard zavolal **{action}**. Opakované rozvrhy stále fungují, ale od verze {version} budou odstraněny, v zimě, mimo zavlažovací sezónu.\n\nRozvrhy programů dělají totéž a jsou v panelu: nastavte je v sekci **Zavlažování**, pak odstraňte opakované rozvrhy a volání {action}."
     },
+    "recurring_schedules_stored": {
+      "title": "Opakované plány stále běží a zmizí",
+      "description": "Tyto opakované plány jsou zapnuté a panel je nezobrazuje:\n\n{schedules}\n\nStále fungují, ale budou odstraněny od verze {version}, v zimě, mimo zavlažovací sezónu. Plány programů dělají totéž a jsou v panelu: nastavte je v **Zavlažování** a pak opakované plány odstraňte pomocí `smart_irrigation.delete_recurring_schedule`."
+    },
     "zone_set_aside": {
       "title": "Zóna {zone} je odložena",
       "fix_flow": {
