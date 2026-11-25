@@ -1618,6 +1618,7 @@
     "live_since": "Arvioitu nyt, lukemista alkaen {when}",
     "reasons": {
       "precipitation": "sade-ennuste",
+      "precipitation_amount": "sade-ennuste: {amount}",
       "days_between": "päiviä kastelujen välillä",
       "rain_sensor": "sadeanturi",
       "freeze": "pakkanen",

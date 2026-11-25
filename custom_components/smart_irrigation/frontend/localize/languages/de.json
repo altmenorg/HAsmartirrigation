@@ -1618,6 +1618,7 @@
     "live_since": "Jetzt geschätzt, aus den Messwerten seit {when}",
     "reasons": {
       "precipitation": "Regenvorhersage",
+      "precipitation_amount": "Regenvorhersage: {amount}",
       "days_between": "Tage zwischen Bewässerungen",
       "rain_sensor": "Regensensor",
       "freeze": "Frost",

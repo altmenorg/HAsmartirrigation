@@ -1618,6 +1618,7 @@
     "live_since": "Most becsülve, a(z) {when} óta mért adatokból",
     "reasons": {
       "precipitation": "esőelőrejelzés",
+      "precipitation_amount": "esőelőrejelzés: {amount}",
       "days_between": "öntözések közötti napok",
       "rain_sensor": "esőérzékelő",
       "freeze": "fagy",

@@ -1618,6 +1618,7 @@
     "live_since": "Anslået nu, ud fra målingerne siden {when}",
     "reasons": {
       "precipitation": "regnudsigt",
+      "precipitation_amount": "regnudsigt: {amount}",
       "days_between": "dage mellem vandinger",
       "rain_sensor": "regnsensor",
       "freeze": "frost",

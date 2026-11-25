@@ -1618,6 +1618,7 @@
     "live_since": "当前估算，基于自 {when} 以来的读数",
     "reasons": {
       "precipitation": "降雨预报",
+      "precipitation_amount": "降雨预报：{amount}",
       "days_between": "浇水间隔天数",
       "rain_sensor": "雨量传感器",
       "freeze": "霜冻",

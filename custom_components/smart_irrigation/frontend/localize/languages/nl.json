@@ -1618,6 +1618,7 @@
     "live_since": "Nu geschat, op basis van de metingen sinds {when}",
     "reasons": {
       "precipitation": "regenvoorspelling",
+      "precipitation_amount": "regenvoorspelling: {amount}",
       "days_between": "dagen tussen beregeningen",
       "rain_sensor": "regensensor",
       "freeze": "vorst",

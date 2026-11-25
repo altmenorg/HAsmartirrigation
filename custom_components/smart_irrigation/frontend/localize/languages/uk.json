@@ -1618,6 +1618,7 @@
     "live_since": "Оцінка на зараз, за показами з {when}",
     "reasons": {
       "precipitation": "прогноз дощу",
+      "precipitation_amount": "прогноз дощу: {amount}",
       "days_between": "дні між поливами",
       "rain_sensor": "датчик дощу",
       "freeze": "заморозки",

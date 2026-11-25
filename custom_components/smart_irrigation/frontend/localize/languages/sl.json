@@ -1618,6 +1618,7 @@
     "live_since": "Ocenjeno zdaj, iz meritev od {when}",
     "reasons": {
       "precipitation": "napoved dežja",
+      "precipitation_amount": "napoved dežja: {amount}",
       "days_between": "dnevi med namakanji",
       "rain_sensor": "senzor dežja",
       "freeze": "zmrzal",

@@ -1618,6 +1618,7 @@
     "live_since": "Оценка на сейчас, по показаниям с {when}",
     "reasons": {
       "precipitation": "прогноз дождя",
+      "precipitation_amount": "прогноз дождя: {amount}",
       "days_between": "дни между поливами",
       "rain_sensor": "датчик дождя",
       "freeze": "заморозки",

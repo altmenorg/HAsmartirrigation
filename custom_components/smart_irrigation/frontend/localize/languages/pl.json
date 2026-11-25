@@ -1618,6 +1618,7 @@
     "live_since": "Oszacowane teraz, z odczytów od {when}",
     "reasons": {
       "precipitation": "prognoza deszczu",
+      "precipitation_amount": "prognoza deszczu: {amount}",
       "days_between": "dni między podlewaniami",
       "rain_sensor": "czujnik deszczu",
       "freeze": "mróz",

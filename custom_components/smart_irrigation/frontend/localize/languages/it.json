@@ -1618,6 +1618,7 @@
     "live_since": "Stimato ora, dalle letture da {when}",
     "reasons": {
       "precipitation": "pioggia prevista",
+      "precipitation_amount": "pioggia prevista: {amount}",
       "days_between": "giorni tra le irrigazioni",
       "rain_sensor": "sensore pioggia",
       "freeze": "gelo",

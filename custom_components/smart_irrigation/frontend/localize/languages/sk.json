@@ -1618,6 +1618,7 @@
     "live_since": "Odhadnuté teraz z meraní od {when}",
     "reasons": {
       "precipitation": "predpoveď dažďa",
+      "precipitation_amount": "predpoveď dažďa: {amount}",
       "days_between": "dni medzi zavlažovaním",
       "rain_sensor": "senzor dažďa",
       "freeze": "mráz",

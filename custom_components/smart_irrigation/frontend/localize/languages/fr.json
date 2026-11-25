@@ -1618,6 +1618,7 @@
     "live_since": "Estimé maintenant, sur les relevés depuis {when}",
     "reasons": {
       "precipitation": "pluie prévue",
+      "precipitation_amount": "pluie prévue : {amount}",
       "days_between": "jours entre deux arrosages",
       "rain_sensor": "capteur de pluie",
       "freeze": "gel",

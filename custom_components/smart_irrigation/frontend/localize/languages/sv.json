@@ -1618,6 +1618,7 @@
     "live_since": "Uppskattning baserad på mätvärden sedan {when}",
     "reasons": {
       "precipitation": "regnprognos",
+      "precipitation_amount": "regnprognos: {amount}",
       "days_between": "dagar mellan bevattningar",
       "rain_sensor": "regnsensor",
       "freeze": "frost",

@@ -1618,6 +1618,7 @@
     "live_since": "Estimado agora, com as leituras desde {when}",
     "reasons": {
       "precipitation": "previsão de chuva",
+      "precipitation_amount": "previsão de chuva: {amount}",
       "days_between": "dias entre irrigações",
       "rain_sensor": "sensor de chuva",
       "freeze": "geada",

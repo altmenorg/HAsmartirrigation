@@ -1618,6 +1618,7 @@
     "live_since": "依自 {when} 起的讀數即時估計",
     "reasons": {
       "precipitation": "降雨預報",
+      "precipitation_amount": "降雨預報：{amount}",
       "days_between": "灑水間隔天數",
       "rain_sensor": "雨量感測器",
       "freeze": "結冰",
