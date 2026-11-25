@@ -282,7 +282,8 @@
             "auto-update-schedule": "Päivitysaikataulu",
             "auto-update-time": "Päivitä kello",
             "auto-update-interval": "Lue sää välein",
-            "auto-update-delay": "Viive ennen ensimmäistä päivitystä"
+            "auto-update-delay": "Viive ennen ensimmäistä päivitystä",
+            "auto-update-delay-help": "Sekunteja odotusta Home Assistantin käynnistyksen tai tämän kortin tallennuksen jälkeen ennen ensimmäistä säätietojen päivitystä; sen jälkeen päivitykset noudattavat väliä. Antureille tai sääintegraatiolle, jotka käynnistyvät hitaasti. 0, oletus: heti."
           },
           "options": {
             "minutes": "minuuttia",
@@ -295,7 +296,8 @@
           "description": "Yksi asetus kaikille alla oleville anturiryhmille. Se tallentaa jokaisen ryhmän anturin muutoksen yhden päivityskohtaisen lukeman sijaan, joten tuntilaskenta ja sade perustuvat tarkempiin tietoihin: kymmenen minuutin välein raportoiva sademittari luetaan kymmenen minuutin välein. Vyöhykkeitä ei lasketa uudelleen jokaisella muutoksella; ajastettu laskenta tekee sen kerran tallennetuista lukemista. Ryhmässä, joka käyttää myös sääpalvelua, sen anturit tallennetaan niiden muuttuessa ja palvelua luetaan yhä kerran päivitystä kohden, joten se ei aiheuta lisäpyyntöjä.",
           "labels": {
             "continuousupdates": "Ota jatkuvat päivitykset käyttöön",
-            "sensor_debounce": "Anturin debounce"
+            "sensor_debounce": "Anturin debounce",
+            "sensor_debounce_help": "Millisekunteina. Kun jokin ryhmän antureista muuttuu, ryhmä odottaa näin kauan muita muutoksia ennen kuin se päivittää vyöhykkeensä: muutosten sarja antaa yhden päivityksen. Jokainen muutos tallennetaan silti. 0: päivitys jokaisesta muutoksesta."
           }
         },
         "panel-mode": {
@@ -331,7 +333,7 @@
         "control": "Ohjaus",
         "system": "Järjestelmä",
         "calculation-sub": "Kuinka paljon kukin alue tarvitsee ja milloin se lasketaan.",
-        "control-sub": "Mikä avaa venttiilit ja mikä käynnistää kastelun.",
+        "control-sub": "Mitä kastellaan Smart Irrigationin ulkopuolella ja, pelkässä laskennassa, mikä käynnistää kastelun.",
         "system-sub": "Paneeli, blueprintit, asennusavustaja ja siirtyminen Irrigation Unlimitedistä."
       }
     },
@@ -767,7 +769,7 @@
         "available-water-help": "Kuinka paljon vettä tämän alueen maa pidättää kasveille, mm:nä (juuriston syvyys metreinä kertaa se, mitä maa pidättää metriä kohti: noin 50–110 mm hiekalle, 130–180 multamaalle, 120–200 savelle, FAO-56:n mukaan). Jätä tyhjäksi, jos haluat jättää asiat ennalleen. Kun arvo on asetettu, alijäämä ei voi laskea sen alle, ja kun kasvit ovat käyttäneet siitä sallitun osuuden (50 %, ellet muuta sitä), ne ottavat vähemmän vettä, jolloin alijäämä ei enää kasva yhtä nopeasti.",
         "distribution-efficiency": "Jakautumistehokkuus",
         "distribution-efficiency-help": "Suuttimista tulevan veden osuus, joka päätyy kasveille, %:na. Sadettimet tuulessa tai rinteessä menettävät osan, tippukastelu lähes ei mitään. Jätä tyhjäksi arvolle 100 %. Alue arvolla 80 % kastelee 25 % kauemmin samalle vesikerrokselle ja hyvittää vain 80 % siitä, mitä se antaa.",
-        "days-between-irrigation-help": "Jätä tyhjäksi, jos haluat noudattaa yleisasetusta (Sää, Kastelun ohitus). Luku korvaa yleisasetuksen vain tälle alueelle: 1 kastelee sen joka päivä jos se tarvitsee vettä, 3 korkeintaan joka kolmas päivä, 0 poistaa rajoituksen. Päivät lasketaan siitä, kun tätä aluetta kasteltiin viimeksi.",
+        "days-between-irrigation-help": "Tämän vyöhykkeen kahden kastelun välisten päivien vähimmäismäärä viimeisimmästä kastelusta laskien: 1 joka päivä tarvittaessa, 3 enintään joka kolmas päivä; tyhjä tai 0, ei rajaa. Vaje kasvaa odotuksen aikana ja korvataan seuraavassa kastelussa.",
         "soil-moisture-sensor": "Maankosteusanturi",
         "soil-moisture-sensor-hint": "Alue jää kastelun väliin niin kauan kuin maa on rajassa tai sen yli. Vesitase säilytetään.",
         "soil-moisture-threshold": "Ohita arvosta",
@@ -1154,6 +1156,8 @@
     },
     "skip": {
       "title": "Kastelun ohitus",
+      "days-zones": "Päiviä kastelujen välillä, asetettu vyöhykkeelle:",
+      "days": "Kastelujen väliset päivät asetetaan kullekin vyöhykkeelle sen asetuksissa.",
       "soil-moisture": "Maaperän kosteus asetetaan aluekohtaisesti, koska jokaisella alueella on oma anturinsa.",
       "soil-zones": "Maankosteus, asetettu vyöhykkeellä (ohita alkaen):",
       "open-zones": "Avaa alueet"
@@ -1246,7 +1250,6 @@
   },
   "weather_skip": {
     "title": "Sade-ennuste",
-    "description": "Kun sadetta ennustetaan, Smart Irrigation kastelee vähemmän. Tämä ominaisuus edellyttää sääpalvelun määrittämistä.",
     "threshold_label": "Ohita kastelu alkaen",
     "threshold_description": "Tälle päivälle ja huomiselle ennustettu vähimmäissademäärä (millimetreinä), jolla kastelu ohitetaan.",
     "effective_rain_label": "Laske vain juuriin yltävä sade",
@@ -1266,12 +1269,6 @@
     "longitude": "Pituusaste (desimaaliasteet)",
     "elevation": "Korkeus (metriä merenpinnan yläpuolella)",
     "current_ha_coords": "Nykyiset Home Assistant -koordinaatit"
-  },
-  "days_between_irrigation": {
-    "title": "Kastelujen väliset päivät",
-    "description": "Määritä vähimmäismäärä päiviä, joiden on kuluttava kastelujen välillä. Tämä auttaa hallitsemaan kastelutiheyttä veden säästämiseksi ja kasvien terveyden ylläpitämiseksi.\n\nTyypillisiä käytännön käyttötapauksia:\n• Nurmikon hoito: 1–2 päivän välit estävät liikakastelun\n• Kuivuusrajoitukset: 6+ päivän välit viikoittaiseen kasteluun\n• Syväjuuriset kasvit: 3–7 päivän välit harvempaan kasteluun\n• Veden säästö: Mukautettavissa ilmaston ja maaperän olosuhteiden mukaan",
-    "label": "Vähimmäismäärä päiviä kastelujen välillä",
-    "own": "Vyöhykkeet, joilla on omat päivät:"
   },
   "planning": {
     "now": "Kastelu käynnissä",
@@ -1386,7 +1383,7 @@
     "schedule_weather": "Huomioi sää",
     "schedule_hard_deadline": "Katkaise ajo päättymisajankohtana",
     "schedule_hard_deadline_help": "Ajo katkaistaan päättymistavoitteessa: avoimet vyöhykkeet suljetaan ja niille hyvitetään se, minkä ne ehtivät kastella, ja se, mikä ei alkanut, ohitetaan.",
-    "condition_postponed": "Lykätyt päivät (aina päällä)",
+    "condition_postponed": "Siirretyt päivät",
     "condition_rain_sensor": "Sadeanturi",
     "condition_freeze": "Pakkanen",
     "condition_wind": "Tuuli",
@@ -1394,7 +1391,7 @@
     "condition_days_between": "Päiviä edellisestä kastelusta",
     "condition_soil_moisture": "Maaperän kosteus",
     "conditions_subset": "Vain nämä säätarkistukset",
-    "conditions_pick": "Poista valinta tarkistuksista, jotka tämän aikataulun pitää ohittaa, esimerkiksi sade kasvihuoneelle. Lykätyt päivät pätevät aina.",
+    "conditions_pick": "Poista valinta tarkistuksista, jotka tämän aikataulun pitää ohittaa, esimerkiksi sade kasvihuoneelle. Siirretyt päivät, aloitussivun Siirrä-painikkeista, ovat aina voimassa.",
     "schedule_weather_help": "Päällä: kohdan Sää, Kastelun ohitus tarkistukset voivat estää tai lyhentää kastelun: sade, pakkanen, tuuli, kastelujen väliset päivät, märkä maa ja lykätyt päivät. Kytke pois kasvihuoneen tihkuletkulta, jota sää ei koske.",
     "pause": "Tauko",
     "resume": "Jatka",
@@ -1422,12 +1419,13 @@
     "adjust_seconds": "Lisätty (+) tai vähennetty (-) aika",
     "step_bounds_help": "Järjestys: ensin ohjelman ”Säädä kestoja” -prosentti, kun sellainen on voimassa (se asetetaan ohjelmassa, ei tässä), sitten lisätty tai vähennetty aika, sitten minimi ja maksimi. 0 minimille tai maksimille: ei mitään. Vaihe, joka ei tarvitse vettä, jää nollaan: minimi ei koskaan käynnistä sitä.",
     "min_deficit_mm": "Kastele vain, kun vajaus on vähintään",
-    "min_deficit_mm_help": "Millimetreinä, 0 kastelee aina. Asetettuna se korvaa vyöhykkeen oman kynnyksen tässä vaiheessa. Kiinteän keston vaiheet kastellaan aina.",
+    "min_deficit_mm_help": "Millimetreinä. Tyhjä, oletus: kukin vyöhyke pitää oman kastelukynnyksensä. Luku korvaa sen tässä vaiheessa: vyöhyke, jonka vaje on pienempi, jättää vaiheen väliin, ja vyöhyke, jonka vaje on suurempi, kastellaan, vaikka sen oma kynnys odottaisi. Kiinteän keston vaiheet kastellaan aina.",
     "min_deficit_short": "Vähimmäisvajaus",
     "adjust_title": "Säädä kestoja",
     "adjust_none": "Mitään säätöä ei ole voimassa.",
     "adjust_percent": "Prosentti",
     "adjust_hours": "Voimassa",
+    "adjust_hours_help": "Kuinka monta tuntia säätö on voimassa tästä hetkestä. Tyhjä: kunnes se nollataan.",
     "adjust_help": "Saa tämän ohjelman kastelemaan pidempään tai lyhyemmän aikaa asettamisen jälkeen alkavissa ajoissa. Se korvaa edellisen säädön. Tunnit tyhjä: kunnes se nollataan.",
     "adjust_apply": "Käytä",
     "adjust_reset": "Nollaa",
@@ -1504,7 +1502,7 @@
     "cond_days_between": "vähintään {n} päivää",
     "cond_freeze": "{value} tai alle",
     "cond_off": "pois päältä",
-    "cond_postponed": "etusivun Lykkää-painikkeet",
+    "cond_postponed": "aina päällä",
     "cond_precipitation": "{value} ennusteessa alkaen",
     "cond_soil": "{n} aluetta anturilla",
     "cond_soil_one": "{n} alue anturilla",
@@ -1587,7 +1585,6 @@
       "sensor": "Lukee {sensor}.",
       "service": "Lukee sääpalvelun nykyisen arvon.",
       "nothing": "Ei anturia eikä sääpalvelua: tämä tarkistus ei estä mitään.",
-      "same": "Sama lähde kuin anturiryhmällä {groups}, haihduntaa varten.",
       "other": "Haihduntaa varten anturiryhmät lukevat tämän arvon muualta: {groups}.",
       "service-short": "sääpalvelu",
       "static-short": "kiinteä arvo",
@@ -1715,7 +1712,6 @@
     "weather_yes": "Kyllä",
     "weather_yes_unread": "Kyllä, mutta kohdetta {reason} ei voitu lukea",
     "weather_no": "Ei: {reason}",
-    "otherwise": "Muuten: ei mitään sinä päivänä",
     "supply_on": "{name} päälle",
     "supply_before": "{time} ennen venttiileitä",
     "supply_after_valves": "{time} venttiilien jälkeen",

@@ -132,8 +132,9 @@ export type WeatherVerdict =
   | { state: "unknown" }
   /** ``unread``: a check that applies but could not be read (no forecast). */
   | { state: "yes"; unread?: string }
-  /** ``reason`` is a skip condition id; ``mm`` the rain forecast behind it. */
-  | { state: "no"; reason: string; mm?: number | null };
+  /** ``reason`` is a skip condition id; ``mm`` the rain forecast behind it;
+   * ``also`` the other checks that hold the run back too (frost and wind). */
+  | { state: "no"; reason: string; mm?: number | null; also?: string[] };
 
 interface CheckLike {
   id: string;
@@ -188,30 +189,43 @@ export const weatherVerdict = (
   }
   const applies = (id: string) => conditions === null || conditions.has(id);
   const planned = !!next?.forecast_known;
-  if (next?.skipped_reason === "precipitation" && applies("precipitation")) {
-    return {
-      state: "no",
-      reason: "precipitation",
-      mm: next.forecast?.forecast_mm ?? null,
-    };
-  }
   const checks = preview?.checks;
-  if (!Array.isArray(checks)) {
-    return planned ? { state: "yes" } : { state: "unknown" };
-  }
-  const holding = checks.find(
+  // Every check that holds the run back, not the first one only: with frost
+  // and wind both, saying frost alone hid the wind (#1059).
+  const holding = (Array.isArray(checks) ? checks : []).filter(
     (c) =>
       applies(c.id) &&
       c.enabled !== false &&
       c.available !== false &&
       c.skip === true &&
-      // The planned run read the forecast for its own start, and it said go.
+      // The planned run read the forecast for its own start: it decides.
       !(c.id === "precipitation" && planned),
   );
-  if (holding) {
-    return holding.id === "precipitation"
-      ? { state: "no", reason: holding.id, mm: holding.forecast_mm ?? null }
-      : { state: "no", reason: holding.id };
+  const also = (first: string) => {
+    const others = holding.map((c) => c.id).filter((id) => id !== first);
+    return others.length ? { also: others } : {};
+  };
+  if (next?.skipped_reason === "precipitation" && applies("precipitation")) {
+    return {
+      state: "no",
+      reason: "precipitation",
+      mm: next.forecast?.forecast_mm ?? null,
+      ...also("precipitation"),
+    };
+  }
+  if (!Array.isArray(checks)) {
+    return planned ? { state: "yes" } : { state: "unknown" };
+  }
+  if (holding.length) {
+    const first = holding[0];
+    return first.id === "precipitation"
+      ? {
+          state: "no",
+          reason: first.id,
+          mm: first.forecast_mm ?? null,
+          ...also(first.id),
+        }
+      : { state: "no", reason: first.id, ...also(first.id) };
   }
   // A check that could not be read holds nothing back, but a plain "Yes" hid
   // it: without a weather service, "Rain forecast" never reads, and the flow

@@ -282,7 +282,8 @@
             "auto-update-schedule": "更新排程",
             "auto-update-time": "更新時間",
             "auto-update-interval": "氣象資料讀取間隔",
-            "auto-update-delay": "首次更新前的延遲"
+            "auto-update-delay": "首次更新前的延遲",
+            "auto-update-delay-help": "在 Home Assistant 啟動或儲存此卡片後，首次更新天氣前等待的秒數；之後依間隔更新。適用於啟動較慢的感測器或天氣整合。0（預設）：立即。"
           },
           "options": {
             "minutes": "分鐘",
@@ -295,7 +296,8 @@
           "description": "針對下方每個感測器群組：記錄群組感測器的每一次變化，而不是每次更新只記一筆讀數，讓逐小時計算與降雨量取得更細緻的資料。區域仍依排程計算，而非每次變化就計算。群組中的氣象服務仍然每次更新只讀取一次：不會產生額外的請求。",
           "labels": {
             "continuousupdates": "啟用持續更新",
-            "sensor_debounce": "感測器防彈跳"
+            "sensor_debounce": "感測器防彈跳",
+            "sensor_debounce_help": "單位為毫秒。群組中某個感測器變化後，群組會等待這段時間以接收其他變化，然後再更新其區域：一連串變化只觸發一次更新。每次變化仍會被記錄。0：每次變化都更新。"
           }
         },
         "panel-mode": {
@@ -331,7 +333,7 @@
         "control": "控制",
         "system": "系統",
         "calculation-sub": "每個區域需要多少水，以及何時計算。",
-        "control-sub": "什麼會開啟閥門，以及什麼會啟動一次執行。",
+        "control-sub": "在 Smart Irrigation 之外澆的水，以及僅計算時啟動澆水的方式。",
         "system-sub": "面板、藍圖、設定精靈，以及從 Irrigation Unlimited 轉移。"
       }
     },
@@ -767,7 +769,7 @@
         "available-water-help": "此區域土壤可為植物保存的水量（公釐）：根深（公尺）乘以每公尺土壤的保水量（FAO-56：砂土 50–110、壤土 130–180、黏土 120–200）。缺水量不會超過此值，超過容許比例（預設 50%）後，植物吸水會減少。留空：不使用。",
         "distribution-efficiency": "分布效率",
         "distribution-efficiency-help": "灑水器送出的水中，實際到達植物的比例（%）。有風或在斜坡上的噴灌會流失一部分，滴灌則幾乎不會。留空：100%。設為 80% 時，區域的澆水時間會延長 25%，並只計入所送出水量的 80%。",
-        "days-between-irrigation-help": "留空則沿用一般設定（氣象，取消灑水）。填入數字則只套用於此區域，從其上次澆水起算：1 為需要時每天澆水，3 為最多每三天一次，0 為不限制。",
+        "days-between-irrigation-help": "此區域兩次澆水之間的最少天數，從上次澆水算起：1 表示需要時每天澆水，3 表示最多每三天一次；留空或 0 表示不限制。等待期間虧缺會繼續累積，並在下次澆水時補足。",
         "soil-moisture-sensor": "土壤濕度感測器",
         "soil-moisture-sensor-hint": "當土壤濕度達到或高於閾值時，區域會略過該次執行。水量平衡會保留。",
         "soil-moisture-threshold": "達到或高於此值時略過",
@@ -1154,6 +1156,8 @@
     },
     "skip": {
       "title": "取消灑水",
+      "days-zones": "澆水間隔天數（在區域中設定）：",
+      "days": "澆水間隔天數在每個區域的設定中設定。",
       "soil-moisture": "土壤濕度是依區域設定，因為每個區域都有自己的感測器。",
       "soil-zones": "土壤濕度，於區域中設定（達到或超過即略過）：",
       "open-zones": "開啟區域"
@@ -1246,7 +1250,6 @@
   },
   "weather_skip": {
     "title": "降雨預報",
-    "description": "預報有雨時，Smart Irrigation 會減少澆水。此功能需要設定氣象服務。",
     "threshold_label": "略過執行的雨量門檻",
     "threshold_description": "預報今天與明天的降雨量（公釐）達到此最小值時，會略過灑水。",
     "effective_rain_label": "只計入能到達根部的雨量",
@@ -1266,12 +1269,6 @@
     "longitude": "經度（十進位度數）",
     "elevation": "海拔高度（公尺）",
     "current_ha_coords": "目前的 Home Assistant 座標"
-  },
-  "days_between_irrigation": {
-    "title": "灑水間隔天數",
-    "description": "同一個區域兩次澆水之間最少相隔的天數；0 表示不限制。草坪適合較短的間隔；根系較深的植物適合間隔 3 至 7 天，每次澆較多水；7 天則符合每週澆水一次的規則。每個區域也可以自行設定。",
-    "label": "灑水最小間隔天數",
-    "own": "有自己天數的區域："
   },
   "planning": {
     "now": "正在灑水",
@@ -1386,7 +1383,7 @@
     "schedule_weather": "納入氣象考量",
     "schedule_hard_deadline": "在結束時間中止執行",
     "schedule_hard_deadline_help": "執行會在結束目標時間中止：已開啟的區域會被關閉，並計入已澆的水量，尚未開始的則會略過。",
-    "condition_postponed": "延後的天數（一律開啟）",
+    "condition_postponed": "延後的日子",
     "condition_rain_sensor": "雨量感測器",
     "condition_freeze": "結冰",
     "condition_wind": "風",
@@ -1394,7 +1391,7 @@
     "condition_days_between": "距上次澆水的天數",
     "condition_soil_moisture": "土壤濕度",
     "conditions_subset": "僅這些氣象檢查",
-    "conditions_pick": "取消勾選此排程應忽略的檢查，例如溫室可忽略降雨。延後的日子一律會套用。",
+    "conditions_pick": "取消勾選此排程應忽略的檢查，例如溫室可忽略降雨。延後的日子（首頁「延後」按鈕設定的）一律適用。",
     "schedule_weather_help": "開啟時，「氣象 > 取消灑水」中的檢查可以擋下或縮短灑水：雨、霜凍、風、兩次灑水之間的天數、潮濕的土壤以及延後的天數。對不受天氣影響的溫室滴灌請關閉。",
     "pause": "暫停",
     "resume": "繼續",
@@ -1422,12 +1419,13 @@
     "adjust_seconds": "增加（+）或減少（-）的時間",
     "step_bounds_help": "依此順序套用：程式的「調整時間長度」百分比（若有生效，該設定位於程式上）、增加或減少的時間，然後是最小值與最大值（0：無）。不需要澆水的步驟會維持為零；最小值不會讓它啟動。",
     "min_deficit_mm": "只在缺水量至少達到以下值時才澆水",
-    "min_deficit_mm_help": "單位為公釐，0 表示一律澆水。設定後，此步驟會以此值取代區域本身的閾值。固定時間長度的步驟一律會澆水。",
+    "min_deficit_mm_help": "單位為毫米。留空（預設）：每個區域保留其自身的澆水閾值。填寫數值則在此步驟中取而代之：虧缺較小的區域跳過此步驟，虧缺較大的區域即使其自身閾值仍需等待也會澆水。固定時長的步驟一律澆水。",
     "min_deficit_short": "最小缺水量",
     "adjust_title": "調整時間長度",
     "adjust_none": "目前沒有生效中的調整。",
     "adjust_percent": "百分比",
     "adjust_hours": "有效時間",
+    "adjust_hours_help": "調整從現在起保持生效的小時數。留空：直到被重設。",
     "adjust_help": "讓此程式在設定之後開始的執行中澆水更久或更短。它會取代先前的調整。小時留空：持續到重設為止。",
     "adjust_apply": "套用",
     "adjust_reset": "重設",
@@ -1504,7 +1502,7 @@
     "cond_days_between": "至少 {n} 天",
     "cond_freeze": "{value} 或以下",
     "cond_off": "已關閉",
-    "cond_postponed": "首頁的「延後」按鈕",
+    "cond_postponed": "一律啟用",
     "cond_precipitation": "預報自 {value} 起",
     "cond_soil": "{n} 個區域有感測器",
     "cond_soil_one": "{n} 個區域有感測器",
@@ -1587,7 +1585,6 @@
       "sensor": "讀取 {sensor}。",
       "service": "讀取氣象服務目前的值。",
       "nothing": "沒有感測器也沒有氣象服務：此檢查不會暫緩任何執行。",
-      "same": "與感測器群組 {groups} 相同的來源，用於蒸發量。",
       "other": "就蒸發量而言，感測器群組在其他地方讀取此值：{groups}。",
       "service-short": "氣象服務",
       "static-short": "固定值",
@@ -1715,7 +1712,6 @@
     "weather_yes": "是",
     "weather_yes_unread": "是，但無法讀取{reason}",
     "weather_no": "否：{reason}",
-    "otherwise": "否則：當天不澆",
     "supply_on": "{name} 開啟",
     "supply_before": "閥門前 {time}",
     "supply_after_valves": "閥門後 {time}",

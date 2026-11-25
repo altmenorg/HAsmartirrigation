@@ -483,8 +483,8 @@ ZONE_FIELDS: dict[str, dict] = {
     ),
     const.ZONE_DAYS_BETWEEN_IRRIGATION: _field(
         "integer or null",
-        "Days between irrigation for this zone (null: the general setting; "
-        "0: no restriction).",
+        "Fewest days between two waterings of this zone (null or 0: no "
+        "restriction).",
         low=0,
         high=365,
         unit="days",

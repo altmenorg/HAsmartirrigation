@@ -282,7 +282,8 @@
             "auto-update-schedule": "Opdateringsplan",
             "auto-update-time": "Opdatér kl.",
             "auto-update-interval": "Hent vejret hver",
-            "auto-update-delay": "Forsinkelse før første opdatering"
+            "auto-update-delay": "Forsinkelse før første opdatering",
+            "auto-update-delay-help": "Sekunder at vente, efter at Home Assistant starter, eller dette kort gemmes, før den første vejropdatering; derefter følger opdateringerne intervallet. Til sensorer eller en vejrintegration, der er langsomme til at starte. 0, standard: straks."
           },
           "options": {
             "minutes": "minutter",
@@ -295,7 +296,8 @@
           "description": "Én indstilling for alle sensorgrupper nedenfor. Den registrerer hver ændring af en gruppes sensor i stedet for én måling pr. opdatering, så timeberegningen og regnen arbejder med finere data: en regnmåler, der melder hvert tiende minut, læses hvert tiende minut. Zonerne beregnes ikke igen ved hver ændring; den planlagte beregning gør det én gang ud fra de registrerede målinger. I en gruppe, der også bruger en vejrtjeneste, registreres dens sensorer, når de ændrer sig, og tjenesten læses stadig én gang pr. opdatering, så det koster ingen ekstra forespørgsler.",
           "labels": {
             "continuousupdates": "Aktivér kontinuerlige opdateringer",
-            "sensor_debounce": "Sensor-debounce"
+            "sensor_debounce": "Sensor-debounce",
+            "sensor_debounce_help": "I ms. Efter en ændring af en af dens sensorer venter en gruppe så længe på andre, før den opdaterer sine zoner: en byge af ændringer giver én opdatering. Hver ændring registreres stadig. 0: en opdatering ved hver ændring."
           }
         },
         "panel-mode": {
@@ -331,7 +333,7 @@
         "control": "Styring",
         "system": "System",
         "calculation-sub": "Hvor meget hver zone har brug for, og hvornår det beregnes.",
-        "control-sub": "Hvad der åbner ventilerne, og hvad der starter en vanding.",
+        "control-sub": "Hvad der vandes uden for Smart Irrigation og, ved kun beregning, hvad der starter en vanding.",
         "system-sub": "Panelet, blueprints, opsætningsassistenten og skiftet fra Irrigation Unlimited."
       }
     },
@@ -767,7 +769,7 @@
         "available-water-help": "Hvor meget vand jorden i denne zone rummer til planterne, i mm (rodedybden i meter gange det, jorden rummer pr. meter: omkring 50 til 110 mm for sand, 130 til 180 for muldjord, 120 til 200 for ler, ifølge FAO-56). Lad feltet stå tomt for at lade tingene være, som de er. Når det er sat, kan underskuddet ikke gå under det, og når planterne har brugt den tilladte andel af det (50 %, medmindre du ændrer det), trækker de mindre vand, så underskuddet ikke vokser lige så hurtigt.",
         "distribution-efficiency": "Fordelingseffektivitet",
         "distribution-efficiency-help": "Den andel af vandet fra dyserne, der når planterne, i %. Sprinklere i blæst eller på en skråning mister noget, drypvanding næsten intet. Lad feltet stå tomt for 100 %. En zone på 80 % vander 25 % længere for samme dybde og krediterer kun 80 % af det, den leverer.",
-        "days-between-irrigation-help": "Lad feltet stå tomt for at følge den generelle indstilling (Vejr, Spring vanding over). Et tal erstatter den generelle indstilling for denne zone alene: 1 vander den hver dag, hvis den har brug for vand, 3 højst hver tredje dag, 0 fjerner begrænsningen. Dagene tælles fra sidste gang, denne zone blev vandet.",
+        "days-between-irrigation-help": "Det mindste antal dage mellem to vandinger af denne zone, talt fra dens seneste vanding: 1 hver dag efter behov, 3 højst hver tredje dag; tom eller 0, ingen grænse. Underskuddet vokser videre, mens zonen venter, og indhentes ved næste vanding.",
         "soil-moisture-sensor": "Jordfugtsensor",
         "soil-moisture-sensor-hint": "Zonen sidder en vanding over, så længe jorden er på eller over grænsen. Vandbalancen bevares.",
         "soil-moisture-threshold": "Spring over fra",
@@ -1154,6 +1156,8 @@
     },
     "skip": {
       "title": "Spring vanding over",
+      "days-zones": "Dage mellem vandinger, indstillet på zonen:",
+      "days": "Dagene mellem vandinger indstilles på hver zone, i dens indstillinger.",
       "soil-moisture": "Jordfugtighed indstilles pr. zone, da hver zone har sin egen sensor.",
       "soil-zones": "Jordfugtighed, sat på zonen (spring over fra):",
       "open-zones": "Åbn zonerne"
@@ -1246,7 +1250,6 @@
   },
   "weather_skip": {
     "title": "Regnvarsel",
-    "description": "Når der er varslet regn, vander Smart Irrigation mindre. Denne funktion kræver, at en vejrtjeneste er konfigureret.",
     "threshold_label": "Spring vanding over fra",
     "threshold_description": "Mindste mængde nedbør (i mm) varslet for i dag og i morgen for at springe vanding over.",
     "effective_rain_label": "Tæl kun regn, der når rødderne",
@@ -1266,12 +1269,6 @@
     "longitude": "Længdegrad (decimalgrader)",
     "elevation": "Højde (meter over havets overflade)",
     "current_ha_coords": "Aktuelle Home Assistant-koordinater"
-  },
-  "days_between_irrigation": {
-    "title": "Dage mellem vanding",
-    "description": "Konfigurér det mindste antal dage, der skal gå mellem vandingsbegivenheder. Dette hjælper med at styre vandingsfrekvensen til vandbesparelse og pleje af plantesundhed.\n\nTypiske anvendelser i den virkelige verden:\n• Plænepleje: 1-2 dages intervaller forhindrer overvanding\n• Tørkerestriktioner: 6+ dages intervaller til ugentlig vanding\n• Dybtrodede planter: 3-7 dages intervaller til mindre hyppig vanding\n• Vandbesparelse: Kan tilpasses ud fra klima- og jordforhold",
-    "label": "Mindste antal dage mellem vanding",
-    "own": "Zoner med egne dage:"
   },
   "planning": {
     "now": "Vander nu",
@@ -1386,7 +1383,7 @@
     "schedule_weather": "Tag højde for vejret",
     "schedule_hard_deadline": "Afbryd kørslen ved sluttidspunktet",
     "schedule_hard_deadline_help": "Kørslen afbrydes ved slutmålet: de åbne zoner lukkes og krediteres for det, de har vandet, og det, der ikke er startet, springes over.",
-    "condition_postponed": "Udskudte dage (altid aktive)",
+    "condition_postponed": "Udskudte dage",
     "condition_rain_sensor": "Regnsensor",
     "condition_freeze": "Frost",
     "condition_wind": "Vind",
@@ -1394,7 +1391,7 @@
     "condition_days_between": "Dage siden sidste vanding",
     "condition_soil_moisture": "Jordfugtighed",
     "conditions_subset": "Kun disse vejrkontroller",
-    "conditions_pick": "Fjern fluebenet ved de kontroller, denne tidsplan skal ignorere, for eksempel regnen for et drivhus. Udsatte dage gælder altid.",
+    "conditions_pick": "Fjern fluebenet ved de kontroller, denne tidsplan skal ignorere, f.eks. regnen for et drivhus. Udskudte dage, dem fra Udskyd-knapperne på startsiden, gælder altid.",
     "schedule_weather_help": "Til: tjekkene under Vejr, Spring vanding over kan holde vandingen tilbage eller forkorte den: regn, frost, vind, dage mellem vandinger, våd jord og udskudte dage. Slå fra for en drypslange i drivhuset, som vejret ikke angår.",
     "pause": "Pause",
     "resume": "Genoptag",
@@ -1422,12 +1419,13 @@
     "adjust_seconds": "Tid lagt til (+) eller trukket fra (-)",
     "step_bounds_help": "Rækkefølge: først procenten fra programmets »Juster varigheder«, når en sådan gælder (den sættes på programmet, ikke her), så tiden lagt til eller trukket fra, så minimum og maksimum. 0 for minimum eller maksimum: intet. Et trin, der ikke behøver vand, bliver på nul: minimum starter det aldrig.",
     "min_deficit_mm": "Vand kun, når underskuddet er mindst",
-    "min_deficit_mm_help": "I mm, 0 for altid at vande. Sat, erstatter den zonens egen tærskel for dette trin. Trin med fast varighed vandes altid.",
+    "min_deficit_mm_help": "I mm. Tom, standarden: hver zone beholder sin egen vandingstærskel. Et tal erstatter den for dette trin: en zone med mindre underskud springer trinnet over, en med større vandes, også hvor dens egen tærskel ville vente. Trin med fast varighed vandes altid.",
     "min_deficit_short": "Mindste underskud",
     "adjust_title": "Juster varigheder",
     "adjust_none": "Ingen justering er gældende.",
     "adjust_percent": "Procent",
     "adjust_hours": "Gyldig i",
+    "adjust_hours_help": "Hvor mange timer justeringen gælder, fra nu. Tom: indtil den nulstilles.",
     "adjust_help": "Får dette program til at vande længere eller kortere i de kørsler, der starter efter indstillingen. Den erstatter den forrige justering. Timer tom: indtil den nulstilles.",
     "adjust_apply": "Anvend",
     "adjust_reset": "Nulstil",
@@ -1504,7 +1502,7 @@
     "cond_days_between": "mindst {n} dage",
     "cond_freeze": "ved {value} eller derunder",
     "cond_off": "slået fra",
-    "cond_postponed": "Udsæt-knapperne på startsiden",
+    "cond_postponed": "altid til",
     "cond_precipitation": "fra {value} i prognosen",
     "cond_soil": "{n} zoner med en sensor",
     "cond_soil_one": "{n} zone med en sensor",
@@ -1587,7 +1585,6 @@
       "sensor": "Læser {sensor}.",
       "service": "Læser vejrtjenestens aktuelle værdi.",
       "nothing": "Ingen sensor og ingen vejrtjeneste: denne kontrol holder intet tilbage.",
-      "same": "Samme kilde som sensorgruppen {groups}, til fordampningen.",
       "other": "Til fordampningen læser sensorgrupperne denne værdi et andet sted: {groups}.",
       "service-short": "vejrtjenesten",
       "static-short": "en fast værdi",
@@ -1715,7 +1712,6 @@
     "weather_yes": "Ja",
     "weather_yes_unread": "Ja, men {reason} kunne ikke læses",
     "weather_no": "Nej: {reason}",
-    "otherwise": "Ellers: intet den dag",
     "supply_on": "{name} tændt",
     "supply_before": "{time} før ventilerne",
     "supply_after_valves": "{time} efter ventilerne",

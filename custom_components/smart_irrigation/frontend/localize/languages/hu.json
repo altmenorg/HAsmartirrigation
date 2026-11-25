@@ -282,7 +282,8 @@
             "auto-update-schedule": "Frissítési ütemezés",
             "auto-update-time": "Frissítés ekkor",
             "auto-update-interval": "Az időjárás leolvasásának gyakorisága",
-            "auto-update-delay": "Késleltetés az első frissítés előtt"
+            "auto-update-delay": "Késleltetés az első frissítés előtt",
+            "auto-update-delay-help": "Ennyi másodpercet vár a Home Assistant indulása vagy a kártya mentése után az első időjárás-frissítés előtt; utána a frissítések az időközt követik. Lassan induló érzékelőkhöz vagy időjárás-integrációhoz. 0, alapértelmezés: azonnal."
           },
           "options": {
             "minutes": "perc",
@@ -295,7 +296,8 @@
           "description": "Egyetlen beállítás az alábbi összes érzékelőcsoporthoz. A csoport érzékelőinek minden változását rögzíti, frissítésenként egy mérés helyett, így az órás számítás és az eső finomabb adatokra épül: a tízpercenként jelentő esőmérőt tízpercenként olvassa. A zónák nem számolódnak újra minden változáskor; az ütemezett számítás egyszer teszi meg a rögzített mérésekből. Az időjárás-szolgáltatást is használó csoportban az érzékelők változáskor rögzülnek, a szolgáltatást pedig továbbra is frissítésenként egyszer olvassa, így nincs többletkérés.",
           "labels": {
             "continuousupdates": "Folyamatos frissítések engedélyezése",
-            "sensor_debounce": "Érzékelő-pergésmentesítés"
+            "sensor_debounce": "Érzékelő-pergésmentesítés",
+            "sensor_debounce_help": "ms-ban. Ha egy érzékelője megváltozik, a csoport ennyit vár további változásokra, mielőtt frissíti a zónáit: egy változássorozat egyetlen frissítést ad. Minden változás továbbra is rögzül. 0: frissítés minden változáskor."
           }
         },
         "panel-mode": {
@@ -331,7 +333,7 @@
         "control": "Vezérlés",
         "system": "Rendszer",
         "calculation-sub": "Mennyi kell az egyes zónáknak, és mikor számolódik ki.",
-        "control-sub": "Mi nyitja a szelepeket, és mi indít el egy öntözést.",
+        "control-sub": "Ami a Smart Irrigationön kívül kap vizet, és csak számításkor az, ami öntözést indít.",
         "system-sub": "A panel, a blueprintek, a beállítási segéd és az átállás az Irrigation Unlimitedről."
       }
     },
@@ -767,7 +769,7 @@
         "available-water-help": "Mennyi vizet tart a zóna talaja a növények számára, mm-ben (a gyökérmélység méterben szorozva azzal, amit a talaj méterenként tart: kb. 50–110 mm homokra, 130–180 vályogra, 120–200 agyagra, a FAO-56 szerint). Hagyd üresen, ha nem akarsz változtatni. Beállítva a hiány nem mehet alá, és miután a növények felhasználták a megengedett részét (50%, hacsak nem változtatod), kevesebb vizet vesznek fel, így a hiány már nem nő olyan gyorsan.",
         "distribution-efficiency": "Elosztási hatásfok",
         "distribution-efficiency-help": "A kifolyókból kijövő víz azon része, amely eljut a növényekhez, %-ban. A szélben vagy lejtőn működő szórófejek veszítenek valamennyit, a csepegtetés szinte semennyit. Hagyd üresen 100%-hoz. Egy 80%-os zóna 25%-kal tovább öntöz ugyanazon vízrétegért, és a kijuttatott víznek csak 80%-át számolja el.",
-        "days-between-irrigation-help": "Hagyd üresen az általános beállítás követéséhez (Időjárás, Öntözés kihagyása). Egy szám csak erre a zónára írja felül az általános beállítást: az 1 minden nap öntözi, ha vízre van szüksége, a 3 legfeljebb háromnaponta, a 0 megszünteti a korlátozást. A napokat a zóna utolsó öntözésétől számoljuk.",
+        "days-between-irrigation-help": "A zóna két öntözése közötti napok legkisebb száma, a legutóbbi öntözéstől számítva: 1 minden nap, ha kell, 3 legfeljebb minden harmadik nap; üres vagy 0, nincs korlát. A hiány a várakozás alatt tovább nő, és a következő öntözéskor pótlódik.",
         "soil-moisture-sensor": "Talajnedvesség-érzékelő",
         "soil-moisture-sensor-hint": "A zóna kihagy egy öntözést, amíg a talaj a küszöbön vagy fölötte van. A vízmérleg megmarad.",
         "soil-moisture-threshold": "Kihagyás ettől",
@@ -1154,6 +1156,8 @@
     },
     "skip": {
       "title": "Öntözés kihagyása",
+      "days-zones": "Öntözések közötti napok, a zónán beállítva:",
+      "days": "Az öntözések közötti napokat minden zónán, annak beállításaiban kell megadni.",
       "soil-moisture": "A talajnedvesség zónánként állítható, mivel minden zónának saját érzékelője van.",
       "soil-zones": "Talajnedvesség, a zónán beállítva (kihagyás ettől):",
       "open-zones": "Zónák megnyitása"
@@ -1246,7 +1250,6 @@
   },
   "weather_skip": {
     "title": "Csapadék-előrejelzés",
-    "description": "Ha csapadék van előrejelezve, a Smart Irrigation kevesebbet öntöz. Ehhez a funkcióhoz időjárás-szolgáltatás konfigurálása szükséges.",
     "threshold_label": "Öntözés kihagyása ettől",
     "threshold_description": "A mai és holnapi napra előrejelzett csapadék minimális mennyisége (mm-ben) az öntözés kihagyásához.",
     "effective_rain_label": "Csak a gyökerekhez jutó esőt számold",
@@ -1266,12 +1269,6 @@
     "longitude": "Hosszúság (tizedfok)",
     "elevation": "Magasság (méter tengerszint felett)",
     "current_ha_coords": "Jelenlegi Home Assistant koordináták"
-  },
-  "days_between_irrigation": {
-    "title": "Öntözések közötti napok",
-    "description": "Állítsa be az öntözési események között eltelő napok minimális számát. Ez segít szabályozni az öntözés gyakoriságát a vízmegtakarítás és a növények egészségének megőrzése érdekében.\n\nTipikus valós felhasználási esetek:\n• Gyepápolás: az 1-2 napos időközök megakadályozzák a túlöntözést\n• Aszálykorlátozások: 6+ napos időközök a heti öntözéshez\n• Mélygyökerű növények: 3-7 napos időközök a ritkább öntözéshez\n• Vízmegtakarítás: az éghajlat és a talajviszonyok alapján testreszabható",
-    "label": "Öntözések közötti minimális napok",
-    "own": "Saját napokkal rendelkező zónák:"
   },
   "planning": {
     "now": "Öntözés folyamatban",
@@ -1386,7 +1383,7 @@
     "schedule_weather": "Az időjárás figyelembe vétele",
     "schedule_hard_deadline": "A futás megszakítása a befejezés idején",
     "schedule_hard_deadline_help": "A futás a befejezési célnál megszakad: a nyitott zónák bezáródnak és azt kapják jóváírva, amit öntöztek, ami pedig el sem indult, kimarad.",
-    "condition_postponed": "Halasztott napok (mindig be)",
+    "condition_postponed": "Elhalasztott napok",
     "condition_rain_sensor": "Esőérzékelő",
     "condition_freeze": "Fagy",
     "condition_wind": "Szél",
@@ -1394,7 +1391,7 @@
     "condition_days_between": "Az utolsó öntözés óta eltelt napok",
     "condition_soil_moisture": "Talajnedvesség",
     "conditions_subset": "Csak ezek az időjárás-ellenőrzések",
-    "conditions_pick": "Vedd ki a pipát azokból az ellenőrzésekből, amelyeket ennek az ütemezésnek figyelmen kívül kell hagynia, például az esőt egy üvegháznál. A halasztott napok mindig érvényesek.",
+    "conditions_pick": "Vedd ki a pipát azokból az ellenőrzésekből, amelyeket ez az ütemezés figyelmen kívül hagy, például üvegháznál az esőt. Az elhalasztott napok, a kezdőlap Halasztás gombjaié, mindig érvényesek.",
     "schedule_weather_help": "Bekapcsolva az Időjárás, Öntözés kihagyása ellenőrzései visszatarthatják vagy rövidíthetik az öntözést: eső, fagy, szél, az öntözések közötti napok, nedves talaj és a halasztott napok. Kapcsold ki egy üvegházi csepegtetőnél, amelyet az időjárás nem érint.",
     "pause": "Szünet",
     "resume": "Folytatás",
@@ -1422,12 +1419,13 @@
     "adjust_seconds": "Hozzáadott (+) vagy levont (-) idő",
     "step_bounds_help": "Sorrend: először a program „Időtartamok módosítása” beállításának százaléka, ha van érvényben ilyen (a programnál állítható be, nem itt), aztán a hozzáadott vagy levont idő, aztán a minimum és a maximum. 0 a minimumnál vagy maximumnál: nincs. Az a lépés, amelynek nem kell víz, nullán marad: a minimum sosem indítja el.",
     "min_deficit_mm": "Csak akkor öntözzön, ha a hiány legalább",
-    "min_deficit_mm_help": "Mm-ben, 0 esetén mindig öntöz. Ha meg van adva, ennél a lépésnél a zóna saját küszöbét váltja fel. A rögzített idejű lépések mindig öntöznek.",
+    "min_deficit_mm_help": "mm-ben. Üresen, alapértelmezés: minden zóna megtartja a saját öntözési küszöbét. Egy szám felülírja ennél a lépésnél: a kisebb hiányú zóna kihagyja a lépést, a nagyobb hiányút megöntözi, akkor is, ha a saját küszöbe várna. A rögzített időtartamú lépéseket mindig öntözi.",
     "min_deficit_short": "Minimális hiány",
     "adjust_title": "Időtartamok módosítása",
     "adjust_none": "Nincs érvényben módosítás.",
     "adjust_percent": "Százalék",
     "adjust_hours": "Érvényes",
+    "adjust_hours_help": "Hány óráig marad érvényben a módosítás, mostantól. Üres: amíg vissza nem állítod.",
     "adjust_help": "Ez a program hosszabban vagy rövidebben öntöz azoknál a futásoknál, amelyek a beállítás után indulnak. Felváltja az előző módosítást. Üres óra: a visszaállításig.",
     "adjust_apply": "Alkalmaz",
     "adjust_reset": "Visszaállítás",
@@ -1504,7 +1502,7 @@
     "cond_days_between": "legalább {n} nap",
     "cond_freeze": "{value} vagy alatta",
     "cond_off": "kikapcsolva",
-    "cond_postponed": "a kezdőlap Halasztás gombjai",
+    "cond_postponed": "mindig be",
     "cond_precipitation": "{value} előrejelzéstől",
     "cond_soil": "{n} zóna érzékelővel",
     "cond_soil_one": "{n} zóna érzékelővel",
@@ -1587,7 +1585,6 @@
       "sensor": "{sensor} értékét olvassa.",
       "service": "Az időjárás-szolgáltatás aktuális értékét olvassa.",
       "nothing": "Nincs érzékelő és nincs időjárás-szolgáltatás: ez az ellenőrzés semmit sem tart vissza.",
-      "same": "Ugyanaz a forrás, mint a(z) {groups} érzékelőcsoportnál, a párolgáshoz.",
       "other": "A párolgáshoz az érzékelőcsoportok máshonnan olvassák ezt az értéket: {groups}.",
       "service-short": "az időjárás-szolgáltatás",
       "static-short": "rögzített érték",
@@ -1715,7 +1712,6 @@
     "weather_yes": "Igen",
     "weather_yes_unread": "Igen, de a(z) {reason} nem olvasható",
     "weather_no": "Nem: {reason}",
-    "otherwise": "Különben: aznap semmi",
     "supply_on": "{name} be",
     "supply_before": "{time} a szelepek előtt",
     "supply_after_valves": "{time} a szelepek után",

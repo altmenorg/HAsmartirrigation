@@ -2274,7 +2274,17 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     ${this._adv(this._cropFactorByMonth(zone, index, lang))}
                     ${this._adv(
                       html`${this._numRow(
-                        localize("panels.zones.labels.available-water", lang),
+                        // The help covers both rows: it sits on the first
+                        // (#1059).
+                        html`${localize(
+                            "panels.zones.labels.available-water",
+                            lang,
+                          )}<si-info
+                            >${localize(
+                              "panels.zones.labels.available-water-help",
+                              lang,
+                            )}</si-info
+                          >`,
                         output_unit(this.config, ZONE_BUCKET),
                         zone.available_water != null
                           ? Number(zone.available_water).toFixed(1)
@@ -2290,15 +2300,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                         1,
                       )}
                       ${this._numRow(
-                        html`${localize(
-                            "panels.zones.labels.allowed-depletion",
-                            lang,
-                          )}<si-info
-                            >${localize(
-                              "panels.zones.labels.available-water-help",
-                              lang,
-                            )}</si-info
-                          >`,
+                        localize("panels.zones.labels.allowed-depletion", lang),
                         "%",
                         zone.allowed_depletion != null
                           ? Number(zone.allowed_depletion).toFixed(0)
@@ -2382,7 +2384,8 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                         localize("panels.zones.labels.days", lang),
                         zone.days_between_irrigation,
                         (v) => {
-                          // Empty means "follow the general setting".
+                          // Empty: no limit, as 0 (the general setting
+                          // moved onto the zones, #1059).
                           const days = parseInt(v, 10);
                           this.handleEditZone(index, {
                             ...zone,

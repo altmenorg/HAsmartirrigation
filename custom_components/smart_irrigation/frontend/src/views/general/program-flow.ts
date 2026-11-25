@@ -40,13 +40,14 @@ export class SmartIrrigationProgramFlow extends LitElement {
       });
     }
     if (verdict.state !== "no") return this._t("weather_sub");
-    let reason = localize(
-      `panels.info.cards.decision.check-${verdict.reason}`,
-      this.lang,
-    );
+    const name = (id: string) =>
+      localize(`panels.info.cards.decision.check-${id}`, this.lang);
+    let reason = name(verdict.reason);
     if (verdict.reason === "precipitation" && verdict.mm != null) {
       reason += ` ${Math.round(verdict.mm * 10) / 10} mm`;
     }
+    // Every check that holds it back, in the order the checks are listed.
+    for (const id of verdict.also ?? []) reason += `, ${name(id)}`;
     return this._t("weather_no", { reason });
   }
 
@@ -92,7 +93,6 @@ export class SmartIrrigationProgramFlow extends LitElement {
                   <div class="title">${this._t("weather")}</div>
                   <div class="sub">${this._verdict(this.weather)}</div>
                 </div>
-                <div class="side">${this._t("otherwise")}</div>
               </div>`
           : nothing}
         ${flow.supplies.map(
@@ -311,18 +311,6 @@ export class SmartIrrigationProgramFlow extends LitElement {
       display: flex;
       justify-content: center;
     }
-    .side {
-      position: absolute;
-      left: calc(100% + 12px);
-      top: 50%;
-      transform: translateY(-50%);
-      white-space: nowrap;
-      font-size: 0.8em;
-      color: var(--secondary-text-color);
-    }
-    .side::before {
-      content: "⇢ ";
-    }
     .step {
       box-sizing: border-box;
       width: min(100%, 520px);
@@ -357,12 +345,6 @@ export class SmartIrrigationProgramFlow extends LitElement {
       opacity: 0.55;
     }
     @media (max-width: 500px) {
-      .side {
-        position: static;
-        transform: none;
-        margin-left: 8px;
-        align-self: center;
-      }
       .branch {
         flex-wrap: wrap;
       }

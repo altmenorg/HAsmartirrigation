@@ -282,7 +282,8 @@
             "auto-update-schedule": "Aktualisierungszeitplan",
             "auto-update-time": "Aktualisieren um",
             "auto-update-interval": "Wetterdaten lesen alle",
-            "auto-update-delay": "Erste Aktualisierung verzögern um"
+            "auto-update-delay": "Erste Aktualisierung verzögern um",
+            "auto-update-delay-help": "Sekunden Wartezeit nach dem Start von Home Assistant oder dem Speichern dieser Karte bis zur ersten Wetteraktualisierung; danach folgen die Aktualisierungen dem Intervall. Für Sensoren oder eine Wetterintegration, die beim Start langsam bereit sind. 0, die Vorgabe: sofort."
           },
           "options": {
             "minutes": "Minuten",
@@ -295,7 +296,8 @@
           "description": "Für alle Sensorgruppen unten: zeichnet jede Änderung ihrer Sensoren auf statt eines Werts pro Aktualisierung, für feinere Daten bei stündlicher Berechnung und Regen. Berechnet wird weiter nach Plan. Ein Wetterdienst in der Gruppe wird weiter einmal pro Aktualisierung gefragt: keine Extra-Anfragen.",
           "labels": {
             "continuousupdates": "Kontinuierliche Updates aktivieren",
-            "sensor_debounce": "Sensor-Entprellung"
+            "sensor_debounce": "Sensor-Entprellung",
+            "sensor_debounce_help": "In ms. Nach der Änderung eines seiner Sensoren wartet eine Gruppe so lange auf weitere, bevor sie ihre Zonen aktualisiert: Viele Änderungen kurz hintereinander ergeben eine Aktualisierung. Jede Änderung wird weiterhin aufgezeichnet. 0: eine Aktualisierung bei jeder Änderung."
           }
         },
         "panel-mode": {
@@ -331,7 +333,7 @@
         "control": "Steuerung",
         "system": "System",
         "calculation-sub": "Wie viel jede Zone braucht, und wann das berechnet wird.",
-        "control-sub": "Was die Ventile öffnet und was einen Durchlauf startet.",
+        "control-sub": "Was außerhalb von Smart Irrigation bewässert wird und, bei „Nur berechnen“, was eine Bewässerung startet.",
         "system-sub": "Die Oberfläche, die Blueprints, der Einrichtungsassistent und der Umzug aus Irrigation Unlimited."
       }
     },
@@ -767,7 +769,7 @@
         "available-water-help": "Wie viel Wasser der Boden der Zone für die Pflanzen hält, in mm: Wurzeltiefe in Metern mal Speicher je Meter (FAO-56: Sand 50–110, Lehm 130–180, Ton 120–200). Das Defizit wird nie größer, und über den zulässigen Anteil (50 %, einstellbar) hinaus ziehen die Pflanzen weniger. Leer: nicht genutzt.",
         "distribution-efficiency": "Verteilungseffizienz",
         "distribution-efficiency-help": "Der Anteil des ausgebrachten Wassers, der die Pflanzen erreicht, in %. Regner bei Wind oder am Hang verlieren etwas, Tropfbewässerung fast nichts. Leer: 100 %. Bei 80 % bewässert eine Zone 25 % länger und schreibt sich 80 % der Menge gut.",
-        "days-between-irrigation-help": "Leer folgt der allgemeinen Einstellung (Wetter, Bewässerung aussetzen). Eine Zahl gilt nur für diese Zone, gezählt ab ihrer letzten Bewässerung: 1 jeden Tag bei Bedarf, 3 höchstens jeden dritten Tag, 0 ohne Grenze.",
+        "days-between-irrigation-help": "Die Mindestzahl an Tagen zwischen zwei Bewässerungen dieser Zone, gezählt ab ihrer letzten Bewässerung: 1 jeden Tag bei Bedarf, 3 höchstens jeden dritten Tag; leer oder 0, keine Grenze. Das Defizit wächst während des Wartens weiter und wird bei der nächsten Bewässerung ausgeglichen.",
         "soil-moisture-sensor": "Bodenfeuchtesensor",
         "soil-moisture-sensor-hint": "Die Zone setzt einen Durchlauf aus, solange der Boden den Schwellwert erreicht oder überschreitet. Die Wasserbilanz bleibt erhalten.",
         "soil-moisture-threshold": "Überspringen ab",
@@ -1154,6 +1156,8 @@
     },
     "skip": {
       "title": "Bewässerung aussetzen",
+      "days-zones": "Tage zwischen Bewässerungen, an der Zone eingestellt:",
+      "days": "Die Tage zwischen Bewässerungen werden an jeder Zone eingestellt, in ihren Einstellungen.",
       "soil-moisture": "Die Bodenfeuchte wird je Zone eingestellt, denn jede Zone hat ihren eigenen Sensor.",
       "soil-zones": "Bodenfeuchte, in der Zone eingestellt (aussetzen ab):",
       "open-zones": "Zu den Zonen"
@@ -1246,7 +1250,6 @@
   },
   "weather_skip": {
     "title": "Regenvorhersage",
-    "description": "Wenn Regen vorhergesagt ist, bewässert Smart Irrigation weniger. Diese Funktion erfordert einen konfigurierten Wetterdienst.",
     "threshold_label": "Bewässerung überspringen ab",
     "threshold_description": "Mindestmenge an Niederschlag (in mm), die für heute und morgen vorhergesagt sein muss, um die Bewässerung zu überspringen.",
     "effective_rain_label": "Nur Regen zählen, der die Wurzeln erreicht",
@@ -1266,12 +1269,6 @@
     "longitude": "Längengrad (Dezimalgrad)",
     "elevation": "Höhe (Meter über dem Meeresspiegel)",
     "current_ha_coords": "Aktuelle Home Assistant Koordinaten"
-  },
-  "days_between_irrigation": {
-    "title": "Tage zwischen Bewässerungen",
-    "description": "Die Mindestzahl an Tagen zwischen zwei Bewässerungen einer Zone; 0 heißt keine Grenze. Rasen verträgt kurze Abstände, tiefwurzelnde Pflanzen 3 bis 7 Tage mit mehr Wasser je Lauf; 7 passt zu einer Vorgabe „einmal pro Woche“. Eine Zone kann ihren eigenen Wert haben.",
-    "label": "Mindest-Tage zwischen Bewässerungen",
-    "own": "Zonen mit eigenen Tagen:"
   },
   "planning": {
     "now": "Bewässerung läuft",
@@ -1386,7 +1383,7 @@
     "schedule_weather": "Das Wetter berücksichtigen",
     "schedule_hard_deadline": "Lauf zur Endzeit abbrechen",
     "schedule_hard_deadline_help": "Der Lauf wird zum Endziel abgebrochen: Die offenen Zonen werden geschlossen und für das gutgeschrieben, was sie bewässert haben, und was nicht begonnen hat, wird übersprungen.",
-    "condition_postponed": "Zurückgestellte Tage (immer aktiv)",
+    "condition_postponed": "Verschobene Tage",
     "condition_rain_sensor": "Regensensor",
     "condition_freeze": "Frost",
     "condition_wind": "Wind",
@@ -1394,7 +1391,7 @@
     "condition_days_between": "Tage seit der letzten Bewässerung",
     "condition_soil_moisture": "Bodenfeuchte",
     "conditions_subset": "Nur diese Wetterprüfungen",
-    "conditions_pick": "Nimm den Haken bei den Prüfungen weg, die dieser Zeitplan ignorieren soll, etwa Regen beim Gewächshaus. Zurückgestellte Tage gelten immer.",
+    "conditions_pick": "Entferne die Haken bei den Prüfungen, die dieser Zeitplan ignorieren soll, etwa den Regen für ein Gewächshaus. Verschobene Tage, die der Verschieben-Tasten der Startseite, gelten immer.",
     "schedule_weather_help": "Ein: die Prüfungen unter Wetter, Bewässerung aussetzen können den Lauf zurückhalten oder kürzen: Regen, Frost, Wind, die Tage zwischen Bewässerungen, nasser Boden und zurückgestellte Tage. Aus für eine Tropfleitung im Gewächshaus, die das Wetter nicht betrifft.",
     "pause": "Pause",
     "resume": "Fortsetzen",
@@ -1422,12 +1419,13 @@
     "adjust_seconds": "Zeit hinzu (+) oder weg (-)",
     "step_bounds_help": "Reihenfolge: der Prozentsatz von „Dauern anpassen“ des Programms, falls einer gilt (er wird am Programm eingestellt), dann die hinzugefügte oder abgezogene Zeit, dann Minimum und Maximum (0: keines). Ein Schritt ohne Wasserbedarf bleibt bei null; das Minimum startet ihn nie.",
     "min_deficit_mm": "Nur bewässern, wenn das Defizit mindestens",
-    "min_deficit_mm_help": "In mm, 0 bewässert immer. Gesetzt, ersetzt er für diesen Schritt die eigene Schwelle der Zone. Schritte mit fester Dauer werden immer bewässert.",
+    "min_deficit_mm_help": "In mm. Leer, die Vorgabe: Jede Zone behält ihre eigene Bewässerungsschwelle. Eine Zahl ersetzt sie für diesen Schritt: Eine Zone mit geringerem Defizit setzt den Schritt aus, eine mit größerem wird bewässert, auch wo ihre eigene Schwelle warten würde. Schritte mit fester Dauer werden immer bewässert.",
     "min_deficit_short": "Mindestdefizit",
     "adjust_title": "Dauern anpassen",
     "adjust_none": "Keine Anpassung aktiv.",
     "adjust_percent": "Prozent",
     "adjust_hours": "Gültig für",
+    "adjust_hours_help": "Wie viele Stunden die Anpassung ab jetzt gilt. Leer: bis sie zurückgesetzt wird.",
     "adjust_help": "Lässt dieses Programm bei den Läufen, die nach der Einstellung starten, länger oder kürzer bewässern. Sie ersetzt die vorherige Anpassung. Stunden leer: bis zum Zurücksetzen.",
     "adjust_apply": "Anwenden",
     "adjust_reset": "Zurücksetzen",
@@ -1504,7 +1502,7 @@
     "cond_days_between": "mindestens {n} Tage",
     "cond_freeze": "bei {value} oder darunter",
     "cond_off": "ausgeschaltet",
-    "cond_postponed": "die Aufschieben-Tasten der Startseite",
+    "cond_postponed": "immer aktiv",
     "cond_precipitation": "ab {value} Vorhersage",
     "cond_soil": "{n} Zonen mit Sensor",
     "cond_soil_one": "{n} Zone mit Sensor",
@@ -1587,7 +1585,6 @@
       "sensor": "Liest {sensor}.",
       "service": "Liest den aktuellen Wert des Wetterdienstes.",
       "nothing": "Kein Sensor und kein Wetterdienst: Diese Prüfung hält nichts zurück.",
-      "same": "Dieselbe Quelle wie die Sensorgruppe {groups} für die Verdunstung.",
       "other": "Für die Verdunstung lesen die Sensorgruppen diesen Wert anderswo: {groups}.",
       "service-short": "Wetterdienst",
       "static-short": "fester Wert",
@@ -1715,7 +1712,6 @@
     "weather_yes": "Ja",
     "weather_yes_unread": "Ja, aber {reason} war nicht lesbar",
     "weather_no": "Nein: {reason}",
-    "otherwise": "Sonst: an diesem Tag nichts",
     "supply_on": "{name} an",
     "supply_before": "{time} vor den Ventilen",
     "supply_after_valves": "{time} nach den Ventilen",

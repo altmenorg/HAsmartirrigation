@@ -141,8 +141,9 @@ async def test_a_run_that_waters_restarts_the_days_between_counter(hass, hass_st
 
     await _reach(hass, 6, 30)
 
-    config = await coordinator.store.async_get_config()
-    assert config[const.CONF_DAYS_SINCE_LAST_IRRIGATION] == 0
+    # The general days moved onto the zone with their count (#1059): it is
+    # the zone's counter that restarts.
+    assert coordinator.store.get_zone(0)[const.ZONE_DAYS_BETWEEN_IRRIGATION] == 2
     assert coordinator.store.get_zone(0)[const.ZONE_DAYS_SINCE_IRRIGATION] == 0
 
 

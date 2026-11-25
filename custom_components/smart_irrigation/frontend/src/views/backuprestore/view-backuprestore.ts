@@ -273,7 +273,8 @@ export class SmartIrrigationViewBackupRestore extends LitElement {
         display: none;
       }
       .br-note {
-        text-align: right;
+        /* Read as text, from the left like every note (#1059). */
+        text-align: start;
       }
       .br-msg {
         margin-top: 12px;

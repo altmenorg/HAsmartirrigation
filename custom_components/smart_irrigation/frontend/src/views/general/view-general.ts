@@ -644,91 +644,88 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         (this.config.autoupdateschedule ?? AUTO_UPDATE_SCHEDULE_HOURLY) !==
           AUTO_UPDATE_SCHEDULE_HOURLY ||
         Number(this.config.autoupdatedelay ?? 0) !== 0;
-      let r2 = html`<div class="card-content">
-        <div class="setting-row">
-          <div class="setting-label">
-            ${localize(
-              "panels.general.cards.automatic-update.labels.auto-update-enabled",
-              this.hass.language,
-            )}
-          </div>
-          <ha-switch
-            .checked=${this.config.autoupdateenabled}
-            @change=${(e: Event) =>
-              this.saveData({
-                autoupdateenabled: (e.target as any).checked,
-              })}
-          ></ha-switch>
+      // One block of rows: a separator between each, the same spacing as on
+      // every other card (#1059).
+      let r2 = html`<div class="setting-row">
+        <div class="setting-label">
+          ${localize(
+            "panels.general.cards.automatic-update.labels.auto-update-enabled",
+            this.hass.language,
+          )}
         </div>
+        <ha-switch
+          .checked=${this.config.autoupdateenabled}
+          @change=${(e: Event) =>
+            this.saveData({
+              autoupdateenabled: (e.target as any).checked,
+            })}
+        ></ha-switch>
       </div>`;
       if (this.data.autoupdateenabled) {
         r2 = html`${r2}
-          <div class="card-content">
-            <div class="setting-row">
-              <div class="setting-label">
-                ${localize(
-                  "panels.general.cards.automatic-update.labels.auto-update-interval",
-                  this.hass.language,
-                )}
-              </div>
-              <div class="combo-field">
-                <input
-                  class="field combo-num"
-                  type="number"
-                  min="1"
-                  step="1"
-                  .value=${this.data.autoupdateinterval ?? ""}
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize(
+                "panels.general.cards.automatic-update.labels.auto-update-interval",
+                this.hass.language,
+              )}
+            </div>
+            <div class="combo-field">
+              <input
+                class="field combo-num"
+                type="number"
+                min="1"
+                step="1"
+                .value=${this.data.autoupdateinterval ?? ""}
+                @change=${(e: Event) =>
+                  this.saveData({
+                    autoupdateinterval: parseInt(
+                      (e.target as HTMLInputElement).value,
+                    ),
+                  })}
+              />
+              <div class="select-wrap">
+                <select
+                  class="field"
                   @change=${(e: Event) =>
                     this.saveData({
-                      autoupdateinterval: parseInt(
-                        (e.target as HTMLInputElement).value,
-                      ),
+                      autoupdateschedule: (e.target as HTMLSelectElement).value,
                     })}
-                />
-                <div class="select-wrap">
-                  <select
-                    class="field"
-                    @change=${(e: Event) =>
-                      this.saveData({
-                        autoupdateschedule: (e.target as HTMLSelectElement)
-                          .value,
-                      })}
+                >
+                  <option
+                    value="${AUTO_UPDATE_SCHEDULE_MINUTELY}"
+                    ?selected=${this.data.autoupdateschedule ===
+                    AUTO_UPDATE_SCHEDULE_MINUTELY}
                   >
-                    <option
-                      value="${AUTO_UPDATE_SCHEDULE_MINUTELY}"
-                      ?selected=${this.data.autoupdateschedule ===
-                      AUTO_UPDATE_SCHEDULE_MINUTELY}
-                    >
-                      ${localize(
-                        "panels.general.cards.automatic-update.options.minutes",
-                        this.hass.language,
-                      )}
-                    </option>
-                    <option
-                      value="${AUTO_UPDATE_SCHEDULE_HOURLY}"
-                      ?selected=${this.data.autoupdateschedule ===
-                      AUTO_UPDATE_SCHEDULE_HOURLY}
-                    >
-                      ${localize(
-                        "panels.general.cards.automatic-update.options.hours",
-                        this.hass.language,
-                      )}
-                    </option>
-                    <option
-                      value="${AUTO_UPDATE_SCHEDULE_DAILY}"
-                      ?selected=${this.data.autoupdateschedule ===
-                      AUTO_UPDATE_SCHEDULE_DAILY}
-                    >
-                      ${localize(
-                        "panels.general.cards.automatic-update.options.days",
-                        this.hass.language,
-                      )}
-                    </option>
-                  </select>
-                  <svg class="chev" viewBox="0 0 24 24">
-                    <path d=${mdiMenuDown}></path>
-                  </svg>
-                </div>
+                    ${localize(
+                      "panels.general.cards.automatic-update.options.minutes",
+                      this.hass.language,
+                    )}
+                  </option>
+                  <option
+                    value="${AUTO_UPDATE_SCHEDULE_HOURLY}"
+                    ?selected=${this.data.autoupdateschedule ===
+                    AUTO_UPDATE_SCHEDULE_HOURLY}
+                  >
+                    ${localize(
+                      "panels.general.cards.automatic-update.options.hours",
+                      this.hass.language,
+                    )}
+                  </option>
+                  <option
+                    value="${AUTO_UPDATE_SCHEDULE_DAILY}"
+                    ?selected=${this.data.autoupdateschedule ===
+                    AUTO_UPDATE_SCHEDULE_DAILY}
+                  >
+                    ${localize(
+                      "panels.general.cards.automatic-update.options.days",
+                      this.hass.language,
+                    )}
+                  </option>
+                </select>
+                <svg class="chev" viewBox="0 0 24 24">
+                  <path d=${mdiMenuDown}></path>
+                </svg>
               </div>
             </div>
           </div>`;
@@ -740,18 +737,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         (advanced || Number(this.config.autoupdatedelay ?? 0) !== 0)
       ) {
         r2 = html`${r2}
-          <div class="card-content">
-            ${this._numRow(
-              localize(
-                "panels.general.cards.automatic-update.labels.auto-update-delay",
+        ${this._numRow(
+          html`${localize(
+              "panels.general.cards.automatic-update.labels.auto-update-delay",
+              this.hass.language,
+            )}<si-info
+              >${localize(
+                "panels.general.cards.automatic-update.labels.auto-update-delay-help",
                 this.hass.language,
-              ),
-              "s",
-              this.config.autoupdatedelay,
-              (v) => this.saveData({ autoupdatedelay: parseInt(v) }),
-              1,
-            )}
-          </div>`;
+              )}</si-info
+            >`,
+          "s",
+          this.config.autoupdatedelay,
+          (v) => this.saveData({ autoupdatedelay: parseInt(v) }),
+          1,
+        )}`;
       }
 
       r2 = html`<ha-card
@@ -768,7 +768,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ></span
           >
         </h1>
-        ${r2}</ha-card
+        <div class="card-content">${r2}</div></ha-card
       >`;
 
       // Recording every change of a sensor is for those who have a rain gauge
@@ -776,22 +776,20 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // on, so that nothing in use is hidden.
       const showContinuous =
         this.config.ui_mode === "advanced" || !!this.config.continuousupdates;
-      let r4 = html`<div class="card-content">
-        <div class="setting-row">
-          <div class="setting-label">
-            ${localize(
-              "panels.general.cards.continuousupdates.labels.continuousupdates",
-              this.hass.language,
-            )}
-          </div>
-          <ha-switch
-            .checked=${this.config.continuousupdates}
-            @change=${(e: Event) =>
-              this.handleConfigChange({
-                continuousupdates: (e.target as any).checked,
-              })}
-          ></ha-switch>
+      let r4 = html`<div class="setting-row">
+        <div class="setting-label">
+          ${localize(
+            "panels.general.cards.continuousupdates.labels.continuousupdates",
+            this.hass.language,
+          )}
         </div>
+        <ha-switch
+          .checked=${this.config.continuousupdates}
+          @change=${(e: Event) =>
+            this.handleConfigChange({
+              continuousupdates: (e.target as any).checked,
+            })}
+        ></ha-switch>
       </div>`;
       // The debounce is a developer's setting: the advanced mode only, unless
       // it was changed from its 100 ms.
@@ -800,18 +798,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         (advanced || Number(this.config.sensor_debounce ?? 100) !== 100)
       ) {
         r4 = html`${r4}
-          <div class="card-content">
-            ${this._numRow(
-              localize(
-                "panels.general.cards.continuousupdates.labels.sensor_debounce",
+        ${this._numRow(
+          html`${localize(
+              "panels.general.cards.continuousupdates.labels.sensor_debounce",
+              this.hass.language,
+            )}<si-info
+              >${localize(
+                "panels.general.cards.continuousupdates.labels.sensor_debounce_help",
                 this.hass.language,
-              ),
-              "ms",
-              this.config.sensor_debounce,
-              (v) => this.handleConfigChange({ sensor_debounce: parseInt(v) }),
-              1,
-            )}
-          </div>`;
+              )}</si-info
+            >`,
+          "ms",
+          this.config.sensor_debounce,
+          (v) => this.handleConfigChange({ sensor_debounce: parseInt(v) }),
+          1,
+        )}`;
       }
       r4 = html`<ha-card
         ><h1 class="card-header">
@@ -827,7 +828,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ></span
           >
         </h1>
-        ${r4}</ha-card
+        <div class="card-content">${r4}</div></ha-card
       > `;
 
       // Irrigation Start Triggers Card
@@ -844,9 +845,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         advanced || this.data.manual_coordinates_enabled
           ? this.renderCoordinateCard()
           : html``;
-
-      // Days Between Irrigation Card
-      const r8 = this.renderDaysBetweenIrrigationCard();
 
       // Observed Watering (closed-loop bucket) Card
       const r9 = this.renderObservedWateringCard();
@@ -885,7 +883,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // The checks that hold a run back on the weather, beside the sensors
       // they read.
       if (this.section === "skip") {
-        return this.renderSkipPage(html`${r6}${r8}`);
+        return this.renderSkipPage(html`${r6}`);
       }
       if (this.section) {
         return this.renderWateringSection(r5);
@@ -919,8 +917,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // how often it is read are on the Weather tab, with the skip checks: a
       // card here said only that, and is gone (the tab is in plain sight).
       // The master switch stays above everything it switches.
-      // The days between irrigation are on the Weather tab's skip page, with
-      // every other check that holds a run back.
+      // The days between irrigation are set on each zone (#1059), and summed
+      // up on the Weather tab's skip page with every check that holds a run back.
       const r = html`${r18} ${heading("calculation")}${r1}${r13}
       ${
         // Observed watering is on the advanced panel, the start triggers are
@@ -1503,7 +1501,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         ? t("adjust_in_force").replace("{what}", adjustText(program))
         : t("adjust_none");
       const field = (
-        label: string,
+        label: string | TemplateResult,
         unit: string,
         key: "percent" | "seconds" | "hours",
         placeholder: string,
@@ -1529,7 +1527,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ...data,
         }).then(() => this._fetchLive(false));
       return html`
-        <div class="si-section">${t("adjust_title")}</div>
+        <div class="si-section">
+          ${t("adjust_title")}<si-info>${t("adjust_help")}</si-info>
+        </div>
         <div class="si-note">${summary}</div>
         ${active
           ? html`<div class="si-actions">
@@ -1555,8 +1555,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               "seconds",
               "0",
             )}
-            ${field(t("adjust_hours"), "h", "hours", "")}
-            <div class="si-hint">${t("adjust_help")}</div>
+            ${field(
+              html`${t("adjust_hours")}<si-info
+                  >${t("adjust_hours_help")}</si-info
+                >`,
+              "h",
+              "hours",
+              "",
+            )}
             <div class="si-actions">
               ${this._actionBtn(mdiCheck, t("adjust_apply"), () => {
                 const data: Record<string, unknown> = {};
@@ -2082,10 +2088,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         <div class="setting-label">
           ${t("schedule_months")}<si-info>${t("schedule_months_help")}</si-info>
         </div>
-        <div>
+        <div class="day-grid">
           ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(
             (month) => html`
-              <label style="margin-right: 10px; white-space: nowrap;">
+              <label>
                 <input
                   type="checkbox"
                   .checked=${(schedule.months || []).includes(month + 1)}
@@ -2340,7 +2346,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                           >${t("min_deficit_mm_help")}</si-info
                         >`,
                       "mm",
-                      step.min_deficit_mm ?? 0,
+                      // Empty, not 0: unset, each zone keeps its own
+                      // irrigation threshold (#1059).
+                      step.min_deficit_mm || "",
                       (v) => patchStep({ min_deficit_mm: Math.max(0, num(v)) }),
                       1,
                       false,
@@ -2599,10 +2607,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 >${t("schedule_weekdays_help")}</si-info
               >
             </div>
-            <div>
+            <div class="day-grid">
               ${[0, 1, 2, 3, 4, 5, 6].map(
                 (day) => html`
-                  <label style="margin-right: 10px; white-space: nowrap;">
+                  <label>
                     <input
                       type="checkbox"
                       .checked=${(schedule.weekdays || []).includes(day)}
@@ -2653,10 +2661,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       : this._conditionSetting(id);
                     return html`
                       <div class=${setting ? "" : "cond-off"}>
-                        <label style="white-space: nowrap;">
+                        <label>
                           <input
                             type="checkbox"
-                            .checked=${always || active.includes(id)}
+                            .checked=${
+                              // Turned off under Skip watering: unticked, so
+                              // that no tick reads as a check in force (#1059).
+                              always || (!!setting && active.includes(id))
+                            }
                             ?disabled=${always || !setting}
                             @change=${(e: Event) => {
                               const on = (e.target as HTMLInputElement).checked;
@@ -3834,12 +3846,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       <ha-card>
         <h1 class="card-header">
           <span
-            >${localize("weather_skip.title", this.hass.language)}<si-info
-              >${localize(
-                "weather_skip.description",
-                this.hass.language,
-              )}</si-info
-            ></span
+            >${
+              // One setting, one explanation: the switch below has it (#1059).
+              localize("weather_skip.title", this.hass.language)
+            }</span
           >
         </h1>
         <div class="card-content">
@@ -4067,8 +4077,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   /**
    * The Weather tab's skip page, every check that holds a run back in one
-   * place: the forecast, what is measured, the days between irrigation, and
-   * what the zones set for themselves (edited on the zone, summed up here).
+   * place: the forecast, what is measured, and what the zones set for
+   * themselves, the days between irrigation and the soil moisture (edited on
+   * the zone, summed up here so that none acts out of sight).
    */
   renderSkipPage(cards: TemplateResult) {
     if (!this.hass) return html``;
@@ -4079,22 +4090,44 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         zone_id: zone.id ?? 0,
         zone: `${zone.name} ${zone.soil_moisture_threshold ?? 50} %`,
       }));
+    // A zone's days, 0 left out: it sets no limit (#1059).
+    const days = (this.zones || [])
+      .filter(
+        (zone) =>
+          typeof zone.days_between_irrigation === "number" &&
+          zone.days_between_irrigation > 0,
+      )
+      .map((zone) => ({
+        zone_id: zone.id ?? 0,
+        zone: `${zone.name} ${zone.days_between_irrigation} ${localize(
+          "panels.zones.labels.days",
+          lang,
+        )}`,
+      }));
+    const openZones = html`<a
+      href="/${DOMAIN}/zones"
+      @click=${(e: Event) => {
+        e.preventDefault();
+        navigate(this, `/${DOMAIN}/zones`);
+      }}
+      >${localize("panels.skip.open-zones", lang)}</a
+    >`;
     return html`
       ${cards}
       <ha-card>
         <div class="card-content skip-soil">
-          ${soil.length
-            ? html`${localize("panels.skip.soil-zones", lang)}
-              ${this._zoneLinks(soil)}`
-            : html`${localize("panels.skip.soil-moisture", lang)}
-                <a
-                  href="/${DOMAIN}/zones"
-                  @click=${(e: Event) => {
-                    e.preventDefault();
-                    navigate(this, `/${DOMAIN}/zones`);
-                  }}
-                  >${localize("panels.skip.open-zones", lang)}</a
-                >`}
+          <p>
+            ${days.length
+              ? html`${localize("panels.skip.days-zones", lang)}
+                ${this._zoneLinks(days)}`
+              : html`${localize("panels.skip.days", lang)} ${openZones}`}
+          </p>
+          <p>
+            ${soil.length
+              ? html`${localize("panels.skip.soil-zones", lang)}
+                ${this._zoneLinks(soil)}`
+              : html`${localize("panels.skip.soil-moisture", lang)} ${openZones}`}
+          </p>
         </div>
       </ha-card>
     `;
@@ -4147,8 +4180,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       )
       .join("; ");
     return html`<div class="si-hint reading-source">
-      ${from} ${same.length ? t("same", "{groups}", same.join(", ")) : ""}
-      ${!same.length && other.length ? t("other", "{groups}", elsewhere) : ""}
+      ${from}
+      ${
+        // Read from the same source as a sensor group: nothing to say (#1059).
+        // Read from another one: worth knowing, the check and the evaporation
+        // may not see the same weather.
+        !same.length && other.length ? t("other", "{groups}", elsewhere) : ""
+      }
       ${!same.length && adoptable
         ? html`<div>
             <ha-button
@@ -4635,55 +4673,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             }
                 </div>
           </div>
-        </div>
-      </ha-card>
-    `;
-  }
-
-  renderDaysBetweenIrrigationCard() {
-    if (!this.config || !this.data || !this.hass) return html``;
-    // The zones that count days of their own (0 included: no limit for them).
-    const own = (this.zones || [])
-      .filter((zone) => typeof zone.days_between_irrigation === "number")
-      .map((zone) => ({
-        zone_id: zone.id ?? 0,
-        zone: `${zone.name} ${zone.days_between_irrigation}`,
-      }));
-
-    return html`
-      <ha-card>
-        <h1 class="card-header">
-          <span
-            >${localize(
-              "days_between_irrigation.title",
-              this.hass.language,
-            )}<si-info
-              >${localize(
-                "days_between_irrigation.description",
-                this.hass.language,
-              )}</si-info
-            ></span
-          >
-        </h1>
-
-        <div class="card-content">
-          ${this._numRow(
-            localize("days_between_irrigation.label", this.hass.language),
-            "",
-            this.config.days_between_irrigation || 0,
-            (v) =>
-              this.handleConfigChange({
-                days_between_irrigation: parseInt(v),
-              }),
-            1,
-          )}
-          ${own.length
-            ? // Set on the zone, shown here so that none acts out of sight.
-              html`<div class="si-hint skip-soil">
-                ${localize("days_between_irrigation.own", this.hass.language)}
-                ${this._zoneLinks(own)}
-              </div>`
-            : ""}
         </div>
       </ha-card>
     `;
@@ -5255,6 +5244,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       .skip-soil a {
         color: var(--primary-color);
       }
+      .skip-soil p {
+        margin: 0;
+      }
+      .skip-soil p + p {
+        margin-top: var(--si-space-2);
+      }
 
       /* number + unit-select on a single line (e.g. update interval) */
       .combo-field {
@@ -5276,6 +5271,32 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       }
       .cond-off {
         opacity: 0.55;
+      }
+      /* Days, months and checks: a regular grid of ticks the size of the
+         text, each column lined up (#1059). */
+      .day-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(4.5em, 1fr));
+        gap: var(--si-space-1) var(--si-space-2);
+        flex: 1 1 16em;
+        min-width: 0;
+      }
+      .day-grid label,
+      .conditions label {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--si-space-1);
+        white-space: nowrap;
+      }
+      .day-grid input[type="checkbox"],
+      .conditions input[type="checkbox"] {
+        width: 1em;
+        height: 1em;
+        margin: 0;
+      }
+      /* Always on: as grey as the checks turned off, ticked. */
+      .conditions input[type="checkbox"]:disabled {
+        accent-color: var(--disabled-text-color, #9e9e9e);
       }
       .cond-setting {
         color: var(--secondary-text-color);

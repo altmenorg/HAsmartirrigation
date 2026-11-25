@@ -282,7 +282,8 @@
             "auto-update-schedule": "更新计划",
             "auto-update-time": "更新时间",
             "auto-update-interval": "读取天气的间隔",
-            "auto-update-delay": "首次更新前的延迟"
+            "auto-update-delay": "首次更新前的延迟",
+            "auto-update-delay-help": "在 Home Assistant 启动或保存此卡片后，首次更新天气前等待的秒数；之后按间隔更新。适用于启动较慢的传感器或天气集成。0（默认）：立即。"
           },
           "options": {
             "minutes": "分钟",
@@ -295,7 +296,8 @@
           "description": "这是对下方所有传感器组生效的同一项设置。它记录组内传感器的每一次变化，而不是每次更新只取一个读数，因此逐小时计算和降雨基于更精细的数据：每十分钟上报一次的雨量计，每十分钟读取一次。区域不会在每次变化时重新计算；由计划的计算根据记录的读数统一计算一次。在同时使用天气服务的组中，其传感器在变化时被记录，而天气服务仍然每次更新只读取一次，因此不会产生额外请求。",
           "labels": {
             "continuousupdates": "启用连续更新",
-            "sensor_debounce": "传感器防抖"
+            "sensor_debounce": "传感器防抖",
+            "sensor_debounce_help": "单位为毫秒。组中某个传感器变化后，组会等待这段时间以接收其他变化，然后再更新其区域：一连串变化只触发一次更新。每次变化仍会被记录。0：每次变化都更新。"
           }
         },
         "panel-mode": {
@@ -331,7 +333,7 @@
         "control": "控制",
         "system": "系统",
         "calculation-sub": "每个区域需要多少水，以及何时计算。",
-        "control-sub": "由什么打开阀门，由什么启动一次浇水。",
+        "control-sub": "在 Smart Irrigation 之外浇的水，以及仅计算时启动浇水的方式。",
         "system-sub": "面板、蓝图、设置向导，以及从 Irrigation Unlimited 迁移。"
       }
     },
@@ -767,7 +769,7 @@
         "available-water-help": "该区域的土壤能为植物保持多少水，单位 mm（根系深度（米）乘以每米土壤的持水量：沙土约 50 至 110 mm，壤土 130 至 180，黏土 120 至 200，依据 FAO-56）。留空则保持现状。设置后，亏缺不会超过该值，而且植物用掉允许的比例后（默认 50%，可修改）吸水会减少，所以亏缺增长得不那么快。",
         "distribution-efficiency": "分布效率",
         "distribution-efficiency-help": "从出水器流出的水中到达植物的比例，单位 %。喷头在有风或坡地上会损失一部分，滴灌几乎没有损失。留空表示 100%。效率 80% 的区域，为达到同样的水深要多浇 25% 的时间，并且只记入其出水量的 80%。",
-        "days-between-irrigation-help": "留空则遵循全局设置（天气，取消浇水）。填入数字则仅对该区域替代全局设置：1 表示只要需要就每天浇水，3 表示最多每三天一次，0 表示取消限制。天数从该区域上次浇水时算起。",
+        "days-between-irrigation-help": "此区域两次浇水之间的最少天数，从上次浇水算起：1 表示需要时每天浇水，3 表示最多每三天一次；留空或 0 表示不限制。等待期间亏缺会继续累积，并在下次浇水时补足。",
         "soil-moisture-sensor": "土壤湿度传感器",
         "soil-moisture-sensor-hint": "只要土壤湿度等于或高于阈值，该区域就跳过本次浇水。水量平衡会保留。",
         "soil-moisture-threshold": "达到或超过此值时跳过",
@@ -1154,6 +1156,8 @@
     },
     "skip": {
       "title": "取消浇水",
+      "days-zones": "浇水间隔天数（在区域中设置）：",
+      "days": "浇水间隔天数在每个区域的设置中设定。",
       "soil-moisture": "土壤湿度按区域设置，因为每个区域都有自己的传感器。",
       "soil-zones": "土壤湿度，在区域中设置（达到或超过即跳过）：",
       "open-zones": "打开区域"
@@ -1246,7 +1250,6 @@
   },
   "weather_skip": {
     "title": "降雨预报",
-    "description": "预报有降雨时，Smart Irrigation 会减少灌溉。此功能需要配置天气服务。",
     "threshold_label": "跳过运行的阈值",
     "threshold_description": "今天和明天预报的最低降水量（毫米），达到该值则跳过灌溉。",
     "effective_rain_label": "只计入能到达根部的雨量",
@@ -1266,12 +1269,6 @@
     "longitude": "经度（十进制度）",
     "elevation": "海拔（海平面以上米数）",
     "current_ha_coords": "当前 Home Assistant 坐标"
-  },
-  "days_between_irrigation": {
-    "title": "灌溉间隔天数",
-    "description": "配置两次灌溉事件之间必须经过的最少天数。这有助于控制浇水频率，以实现节水和植物健康管理。\n\n典型的实际使用场景：\n• 草坪养护：1-2 天间隔可防止过度浇水\n• 干旱限制：6 天以上间隔用于每周浇水\n• 深根植物：3-7 天间隔用于减少浇水频率\n• 节约用水：可根据气候和土壤条件自定义",
-    "label": "灌溉之间的最少天数",
-    "own": "有自己天数的区域："
   },
   "planning": {
     "now": "正在浇水",
@@ -1386,7 +1383,7 @@
     "schedule_weather": "考虑天气",
     "schedule_hard_deadline": "在结束时间中断浇水",
     "schedule_hard_deadline_help": "浇水会在结束目标时间被中断：已打开的区域会被关闭并按已浇的量计入，尚未开始的则被跳过。",
-    "condition_postponed": "推迟的日期（始终启用）",
+    "condition_postponed": "推迟的日子",
     "condition_rain_sensor": "雨量传感器",
     "condition_freeze": "霜冻",
     "condition_wind": "风",
@@ -1394,7 +1391,7 @@
     "condition_days_between": "距上次浇水的天数",
     "condition_soil_moisture": "土壤湿度",
     "conditions_subset": "仅这些天气检查",
-    "conditions_pick": "取消勾选此计划应忽略的检查，例如温室可忽略降雨。推迟的日子始终有效。",
+    "conditions_pick": "取消勾选此计划应忽略的检查，例如温室可忽略降雨。推迟的日子（主页上“推迟”按钮设定的）始终适用。",
     "schedule_weather_help": "开启时，“天气 > 取消浇水”中的检查可以阻止或缩短浇水：雨、霜冻、风、两次浇水之间的天数、潮湿的土壤以及推迟的日期。对不受天气影响的温室滴灌请关闭。",
     "pause": "暂停",
     "resume": "继续",
@@ -1422,12 +1419,13 @@
     "adjust_seconds": "增加 (+) 或减少 (-) 的时间",
     "step_bounds_help": "应用顺序：先应用程序“调整时长”中的百分比（如有生效；它在程序上设置，而不是在这里），再增加或减少的时间，然后是最小值和最大值。最小值或最大值为 0：不设。不需要水的步骤保持为零：最小值不会启动它。",
     "min_deficit_mm": "仅当亏缺至少为以下值时才浇水",
-    "min_deficit_mm_help": "单位为毫米，0 表示始终浇水。设置后，此步骤将以它代替区域自身的阈值。固定时长的步骤始终浇水。",
+    "min_deficit_mm_help": "单位为毫米。留空（默认）：每个区域保留其自身的浇水阈值。填写数值则在此步骤中取而代之：亏缺较小的区域跳过此步骤，亏缺较大的区域即使其自身阈值仍需等待也会浇水。固定时长的步骤始终浇水。",
     "min_deficit_short": "最小亏缺",
     "adjust_title": "调整时长",
     "adjust_none": "当前没有生效的调整。",
     "adjust_percent": "百分比",
     "adjust_hours": "有效时长",
+    "adjust_hours_help": "调整从现在起保持生效的小时数。留空：直到被重置。",
     "adjust_help": "让此程序在设置之后开始的浇水中浇得更久或更短。它会取代之前的调整。小时留空：直到重置。",
     "adjust_apply": "应用",
     "adjust_reset": "重置",
@@ -1504,7 +1502,7 @@
     "cond_days_between": "至少 {n} 天",
     "cond_freeze": "{value} 或以下",
     "cond_off": "已关闭",
-    "cond_postponed": "首页的推迟按钮",
+    "cond_postponed": "始终启用",
     "cond_precipitation": "预报 {value} 起",
     "cond_soil": "{n} 个区域有传感器",
     "cond_soil_one": "{n} 个区域有传感器",
@@ -1587,7 +1585,6 @@
       "sensor": "读取 {sensor}。",
       "service": "读取天气服务的当前值。",
       "nothing": "没有传感器，也没有天气服务：此检查不会阻止任何浇水。",
-      "same": "与传感器组 {groups} 的蒸发量使用相同的来源。",
       "other": "对于蒸发量，传感器组从其他位置读取此值：{groups}。",
       "service-short": "天气服务",
       "static-short": "固定值",
@@ -1715,7 +1712,6 @@
     "weather_yes": "是",
     "weather_yes_unread": "是，但无法读取{reason}",
     "weather_no": "否：{reason}",
-    "otherwise": "否则：当天不浇",
     "supply_on": "{name} 开启",
     "supply_before": "阀门前 {time}",
     "supply_after_valves": "阀门后 {time}",

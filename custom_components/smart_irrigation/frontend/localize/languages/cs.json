@@ -282,7 +282,8 @@
             "auto-update-schedule": "Plán aktualizací",
             "auto-update-time": "Aktualizovat v",
             "auto-update-interval": "Načítat počasí každých",
-            "auto-update-delay": "Zpoždění před první aktualizací"
+            "auto-update-delay": "Zpoždění před první aktualizací",
+            "auto-update-delay-help": "Sekundy čekání po spuštění Home Assistant nebo uložení této karty před první aktualizací počasí; pak aktualizace následují interval. Pro senzory nebo integraci počasí, které se pomalu spouštějí. 0, výchozí: hned."
           },
           "options": {
             "minutes": "minut",
@@ -295,7 +296,8 @@
           "description": "Jedno nastavení pro všechny skupiny senzorů níže. Zaznamenává každou změnu senzoru skupiny místo jednoho měření na aktualizaci, takže hodinový výpočet i déšť pracují s jemnějšími daty: srážkoměr, který hlásí každých deset minut, se čte každých deset minut. Zóny se při každé změně nepřepočítávají; to udělá plánovaný výpočet jednou ze zaznamenaných měření. Ve skupině, která používá i službu počasí, se její senzory zaznamenávají při každé změně a služba se dál čte jednou za aktualizaci, takže to nestojí žádné požadavky navíc.",
           "labels": {
             "continuousupdates": "Povolit průběžné aktualizace",
-            "sensor_debounce": "Debounce senzoru"
+            "sensor_debounce": "Debounce senzoru",
+            "sensor_debounce_help": "V ms. Po změně jednoho ze svých senzorů skupina čeká tuto dobu na další, než aktualizuje své zóny: série změn dá jedinou aktualizaci. Každá změna se dál zaznamenává. 0: aktualizace při každé změně."
           }
         },
         "panel-mode": {
@@ -331,7 +333,7 @@
         "control": "Ovládání",
         "system": "Systém",
         "calculation-sub": "Kolik každá zóna potřebuje a kdy se to počítá.",
-        "control-sub": "Co otevírá ventily a co spouští zavlažování.",
+        "control-sub": "Co se zavlažuje mimo Smart Irrigation a, při pouhém výpočtu, co spouští zavlažování.",
         "system-sub": "Panel, blueprinty, asistent nastavení a přechod z Irrigation Unlimited."
       }
     },
@@ -767,7 +769,7 @@
         "available-water-help": "Kolik vody půda této zóny pro rostliny udrží, v mm (hloubka kořenů v metrech krát to, co půda udrží na metr: asi 50 až 110 mm pro písek, 130 až 180 pro hlínu, 120 až 200 pro jíl, podle FAO-56). Nechte prázdné, pokud nic měnit nechcete. Když je nastaveno, deficit nemůže klesnout pod tuto hodnotu a jakmile rostliny spotřebují povolený podíl (50 %, pokud ho nezměníte), odebírají méně vody, takže deficit neroste tak rychle.",
         "distribution-efficiency": "Účinnost distribuce",
         "distribution-efficiency-help": "Podíl vody vycházející z výtoků, který se dostane k rostlinám, v %. Postřikovače ve větru nebo na svahu část ztrácejí, kapková závlaha téměř nic. Nechte prázdné pro 100 %. Zóna na 80 % zalévá o 25 % déle pro stejnou výšku vody a připočítá si jen 80 % toho, co dodá.",
-        "days-between-irrigation-help": "Nechte prázdné, aby se držela obecného nastavení (Počasí, Vynechání zalévání). Číslo nahradí obecné nastavení jen pro tuto zónu: 1 ji zalévá každý den, pokud potřebuje vodu, 3 nejvýše každý třetí den, 0 omezení ruší. Dny se počítají od posledního zalití této zóny.",
+        "days-between-irrigation-help": "Nejmenší počet dní mezi dvěma zavlažováními této zóny, počítáno od jejího posledního zavlažení: 1 každý den podle potřeby, 3 nejvýše každý třetí den; prázdné nebo 0, bez omezení. Deficit během čekání dál roste a dorovná se při dalším zavlažení.",
         "soil-moisture-sensor": "Senzor vlhkosti půdy",
         "soil-moisture-sensor-hint": "Zóna vynechá zavlažování, dokud je půda na prahu nebo nad ním. Vodní bilance se zachovává.",
         "soil-moisture-threshold": "Vynechat od",
@@ -1154,6 +1156,8 @@
     },
     "skip": {
       "title": "Vynechání zalévání",
+      "days-zones": "Dny mezi zavlažováními, nastavené u zóny:",
+      "days": "Dny mezi zavlažováními se nastavují u každé zóny, v jejím nastavení.",
       "soil-moisture": "Vlhkost půdy se nastavuje pro každou zónu zvlášť, protože každá zóna má svůj vlastní senzor.",
       "soil-zones": "Vlhkost půdy, nastavená u zóny (vynechat od):",
       "open-zones": "Otevřít zóny"
@@ -1246,7 +1250,6 @@
   },
   "weather_skip": {
     "title": "Předpověď deště",
-    "description": "Když je předpovězen déšť, Smart Irrigation zalévá méně. Tato funkce vyžaduje nakonfigurovanou meteorologickou službu.",
     "threshold_label": "Přeskočit zavlažování od",
     "threshold_description": "Minimální množství srážek (v mm) předpovězené pro dnešek a zítřek pro přeskočení zavlažování.",
     "effective_rain_label": "Počítat jen déšť, který dosáhne kořenů",
@@ -1266,12 +1269,6 @@
     "longitude": "Zeměpisná délka (desetinné stupně)",
     "elevation": "Nadmořská výška (metry nad mořem)",
     "current_ha_coords": "Aktuální souřadnice Home Assistant"
-  },
-  "days_between_irrigation": {
-    "title": "Dny mezi zavlažováními",
-    "description": "Nakonfigurujte minimální počet dnů, které musí uplynout mezi zavlažovacími událostmi. To pomáhá řídit frekvenci zavlažování pro úsporu vody a péči o zdraví rostlin.\n\nTypické případy použití z praxe:\n• Péče o trávník: intervaly 1-2 dny zabraňují přemokření\n• Omezení kvůli suchu: intervaly 6+ dnů pro týdenní zavlažování\n• Hluboce kořenící rostliny: intervaly 3-7 dnů pro méně časté zavlažování\n• Úspora vody: přizpůsobitelné podle klimatu a půdních podmínek",
-    "label": "Minimální počet dnů mezi zavlažováními",
-    "own": "Zóny s vlastními dny:"
   },
   "planning": {
     "now": "Právě se zalévá",
@@ -1386,7 +1383,7 @@
     "schedule_weather": "Zohlednit počasí",
     "schedule_hard_deadline": "Přerušit běh v čase konce",
     "schedule_hard_deadline_help": "Běh se přeruší v cílovém čase konce: otevřené zóny se zavřou a připíše se jim, co zavlažily, a co nezačalo, se přeskočí.",
-    "condition_postponed": "Odložené dny (vždy zapnuto)",
+    "condition_postponed": "Odložené dny",
     "condition_rain_sensor": "Senzor deště",
     "condition_freeze": "Mráz",
     "condition_wind": "Vítr",
@@ -1394,7 +1391,7 @@
     "condition_days_between": "Dny od posledního zavlažování",
     "condition_soil_moisture": "Vlhkost půdy",
     "conditions_subset": "Jen tyto kontroly počasí",
-    "conditions_pick": "Odškrtněte kontroly, které má tento rozvrh ignorovat, například déšť pro skleník. Odložené dny platí vždy.",
+    "conditions_pick": "Odškrtněte kontroly, které má tento plán ignorovat, například déšť u skleníku. Odložené dny, ty z tlačítek Odložit na úvodní stránce, platí vždy.",
     "schedule_weather_help": "Zapnuto: kontroly v Počasí, Vynechání zalévání mohou zalévání zadržet nebo zkrátit: déšť, mráz, vítr, dny mezi zaléváními, vlhká půda a odložené dny. Vypněte pro kapkovou závlahu ve skleníku, které se počasí netýká.",
     "pause": "Pozastavit",
     "resume": "Pokračovat",
@@ -1422,12 +1419,13 @@
     "adjust_seconds": "Čas přidaný (+) nebo ubraný (-)",
     "step_bounds_help": "Pořadí použití: nejprve procento z „Upravit doby trvání“ programu, pokud nějaké platí (nastavuje se v programu, ne zde), pak přidaný nebo ubraný čas, pak minimum a maximum. 0 pro minimum nebo maximum: žádné. Krok, který nepotřebuje vodu, zůstane na nule: minimum ho nikdy nespustí.",
     "min_deficit_mm": "Zavlažovat, jen když je deficit alespoň",
-    "min_deficit_mm_help": "V mm, 0 pro zalévání vždy. Je-li nastaven, nahrazuje pro tento krok vlastní práh zóny. Kroky s pevnou dobou se zalévají vždy.",
+    "min_deficit_mm_help": "V mm. Prázdné, výchozí: každá zóna si ponechá vlastní práh zavlažování. Číslo jej pro tento krok nahradí: zóna s menším deficitem krok vynechá, zóna s větším se zavlaží, i když by její vlastní práh čekal. Kroky s pevnou délkou se zavlažují vždy.",
     "min_deficit_short": "Minimální deficit",
     "adjust_title": "Upravit doby trvání",
     "adjust_none": "Žádná úprava není v platnosti.",
     "adjust_percent": "Procenta",
     "adjust_hours": "Platné po dobu",
+    "adjust_hours_help": "Kolik hodin úprava platí, počínaje teď. Prázdné: dokud ji nezrušíte.",
     "adjust_help": "Způsobí, že tento program zavlažuje déle nebo kratší dobu u běhů, které začnou po nastavení. Nahrazuje předchozí úpravu. Hodiny prázdné: do obnovení.",
     "adjust_apply": "Použít",
     "adjust_reset": "Obnovit",
@@ -1504,7 +1502,7 @@
     "cond_days_between": "alespoň {n} dní",
     "cond_freeze": "při {value} nebo méně",
     "cond_off": "vypnutá",
-    "cond_postponed": "tlačítka Odložit na úvodní stránce",
+    "cond_postponed": "vždy zapnuto",
     "cond_precipitation": "od {value} v předpovědi",
     "cond_soil": "Zóny se senzorem: {n}",
     "cond_soil_one": "{n} zóna se senzorem",
@@ -1587,7 +1585,6 @@
       "sensor": "Čte {sensor}.",
       "service": "Čte aktuální hodnotu meteorologické služby.",
       "nothing": "Žádný senzor ani meteorologická služba: tato kontrola nic nezadrží.",
-      "same": "Stejný zdroj jako skupina senzorů {groups}, pro výpar.",
       "other": "Pro výpar čtou skupiny senzorů tuto hodnotu jinde: {groups}.",
       "service-short": "meteorologická služba",
       "static-short": "pevná hodnota",
@@ -1715,7 +1712,6 @@
     "weather_yes": "Ano",
     "weather_yes_unread": "Ano, ale {reason} nešlo přečíst",
     "weather_no": "Ne: {reason}",
-    "otherwise": "Jinak: ten den nic",
     "supply_on": "{name} zapnuto",
     "supply_before": "{time} před ventily",
     "supply_after_valves": "{time} po ventilech",

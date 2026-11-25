@@ -282,7 +282,8 @@
             "auto-update-schedule": "Update schedule",
             "auto-update-time": "Update at",
             "auto-update-interval": "Read the weather every",
-            "auto-update-delay": "Delay before the first update"
+            "auto-update-delay": "Delay before the first update",
+            "auto-update-delay-help": "Seconds to wait, after Home Assistant starts or this card is saved, before the first weather update; the updates then follow the interval. For sensors or a weather integration slow to come up at start. 0, the default: at once."
           },
           "options": {
             "minutes": "minutes",
@@ -295,7 +296,8 @@
           "description": "For every sensor group below: records each change of a group's sensors, not one reading per update, so the hourly calculation and the rain get finer data. Zones are still calculated on schedule, not at each change. A weather service in the group is still read once per update: no extra requests.",
           "labels": {
             "continuousupdates": "Enable continuous updates",
-            "sensor_debounce": "Sensor debounce"
+            "sensor_debounce": "Sensor debounce",
+            "sensor_debounce_help": "In ms. After a change of one of its sensors, a group waits this long for others before it updates its zones: a burst of changes gives one update. Every change is still recorded. 0: an update at each change."
           }
         },
         "panel-mode": {
@@ -331,7 +333,7 @@
         "control": "Control",
         "system": "System",
         "calculation-sub": "How much each zone needs, and when it is worked out.",
-        "control-sub": "What opens the valves, and what starts a run.",
+        "control-sub": "What is watered outside Smart Irrigation and, when calculating only, what starts a run.",
         "system-sub": "The panel, the blueprints, the setup assistant and moving over from Irrigation Unlimited."
       }
     },
@@ -767,7 +769,7 @@
         "available-water-help": "How much water this zone's soil holds for the plants, in mm: root depth in metres times what the soil holds per metre (FAO-56: sand 50–110, loam 130–180, clay 120–200). The deficit never exceeds it, and past the allowed share (50% by default) the plants draw less. Empty: not used.",
         "distribution-efficiency": "Distribution efficiency",
         "distribution-efficiency-help": "The share of the water from the emitters that reaches the plants, in %. Sprinklers in wind or on a slope lose some, drip almost none. Empty: 100%. At 80% a zone waters 25% longer and credits 80% of what it delivers.",
-        "days-between-irrigation-help": "Empty follows the general setting (Weather, Skip watering). A number applies to this zone alone, counted from its last watering: 1 every day if needed, 3 at most every third day, 0 no limit.",
+        "days-between-irrigation-help": "The fewest days between two waterings of this zone, counted from its last watering: 1 every day if needed, 3 at most every third day; empty or 0, no limit. The deficit keeps building while the zone waits and is made up at its next run.",
         "soil-moisture-sensor": "Soil moisture sensor",
         "soil-moisture-sensor-hint": "The zone sits out a run while the soil is at or above the threshold. The water balance is kept.",
         "soil-moisture-threshold": "Skip at or above",
@@ -1154,6 +1156,8 @@
     },
     "skip": {
       "title": "Skip watering",
+      "days-zones": "Days between irrigation, set on the zone:",
+      "days": "The days between irrigation are set on each zone, in its settings.",
       "soil-moisture": "Soil moisture is set per zone, since each zone has its own sensor.",
       "soil-zones": "Soil moisture, set on the zone (skip at or above):",
       "open-zones": "Open the zones"
@@ -1246,7 +1250,6 @@
   },
   "weather_skip": {
     "title": "Rain forecast",
-    "description": "When rain is forecast, Smart Irrigation waters less. This feature requires a weather service to be configured.",
     "threshold_label": "Skip the run from",
     "threshold_description": "Minimum amount of precipitation (in mm) forecasted for today and tomorrow to skip irrigation.",
     "effective_rain_label": "Count only rain that reaches the roots",
@@ -1266,12 +1269,6 @@
     "longitude": "Longitude (decimal degrees)",
     "elevation": "Elevation (meters above sea level)",
     "current_ha_coords": "Current Home Assistant coordinates"
-  },
-  "days_between_irrigation": {
-    "title": "Days between irrigation",
-    "description": "The fewest days between two waterings of a zone; 0 is no limit. Lawns do well with short intervals, deep-rooted plants with 3 to 7 days and more water per run; 7 fits a once-a-week watering rule. A zone can set its own.",
-    "label": "Minimum days between irrigation",
-    "own": "Zones with days of their own:"
   },
   "planning": {
     "now": "Watering now",
@@ -1386,7 +1383,7 @@
     "schedule_weather": "Take the weather into account",
     "schedule_hard_deadline": "Cut the run at the end time",
     "schedule_hard_deadline_help": "The run is cut at the end target: the zones that are open are closed and credited for what they watered, and what did not start is skipped.",
-    "condition_postponed": "Postponed days (always on)",
+    "condition_postponed": "Postponed days",
     "condition_rain_sensor": "Rain sensor",
     "condition_freeze": "Frost",
     "condition_wind": "Wind",
@@ -1394,7 +1391,7 @@
     "condition_days_between": "Days since the last watering",
     "condition_soil_moisture": "Soil moisture",
     "conditions_subset": "Only these weather checks",
-    "conditions_pick": "Untick the checks this schedule should ignore, the rain for a greenhouse for example. Postponed days always apply.",
+    "conditions_pick": "Untick the checks this schedule should ignore, the rain for a greenhouse for example. Postponed days, those of the Postpone buttons of the Home page, always apply.",
     "schedule_weather_help": "On, the checks of Weather, Skip watering can hold the run back or shorten it: rain, frost, wind, the days between waterings, a wet soil and the days you postponed. Turn it off for a greenhouse drip line that does not care.",
     "pause": "Pause",
     "resume": "Resume",
@@ -1422,12 +1419,13 @@
     "adjust_seconds": "Time added (+) or removed (-)",
     "step_bounds_help": "Applied in this order: the program's \"Adjust durations\" percentage, if one is in force (it is set on the program), the time added or removed, then minimum and maximum (0: none). A step that needs no water stays at zero; the minimum never starts it.",
     "min_deficit_mm": "Only water when the deficit is at least",
-    "min_deficit_mm_help": "In mm, 0 to always water. Set, it replaces the zone's own threshold for this step. Fixed-duration steps are always watered.",
+    "min_deficit_mm_help": "In mm. Empty, the default: each zone keeps its own irrigation threshold. A figure replaces it for this step: a zone with less deficit sits the step out, one with more is watered even where its own threshold would wait. Fixed-duration steps are always watered.",
     "min_deficit_short": "Minimum deficit",
     "adjust_title": "Adjust durations",
     "adjust_none": "No adjustment in force.",
     "adjust_percent": "Percent",
     "adjust_hours": "Valid for",
+    "adjust_hours_help": "How many hours the adjustment stays in force, from now. Empty: until it is reset.",
     "adjust_help": "Makes this program water longer or shorter for the runs that start after it is set. It replaces the previous adjustment. Hours empty: until it is reset.",
     "adjust_apply": "Apply",
     "adjust_reset": "Reset",
@@ -1504,7 +1502,7 @@
     "cond_days_between": "at least {n} days",
     "cond_freeze": "at {value} or below",
     "cond_off": "turned off",
-    "cond_postponed": "the Postpone buttons of the Home page",
+    "cond_postponed": "always on",
     "cond_precipitation": "from {value} forecast",
     "cond_soil": "{n} zones with a sensor",
     "cond_soil_one": "{n} zone with a sensor",
@@ -1587,7 +1585,6 @@
       "sensor": "Reads {sensor}.",
       "service": "Reads the current value of the weather service.",
       "nothing": "No sensor and no weather service: this check holds nothing back.",
-      "same": "The same source as the sensor group {groups}, for the evaporation.",
       "other": "For the evaporation, the sensor groups read this value elsewhere: {groups}.",
       "service-short": "the weather service",
       "static-short": "a fixed value",
@@ -1715,7 +1712,6 @@
     "weather_yes": "Yes",
     "weather_yes_unread": "Yes, but {reason} could not be read",
     "weather_no": "No: {reason}",
-    "otherwise": "Otherwise: nothing that day",
     "supply_on": "{name} on",
     "supply_before": "{time} before the valves",
     "supply_after_valves": "{time} after the valves",

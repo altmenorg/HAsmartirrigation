@@ -282,7 +282,8 @@
             "auto-update-schedule": "Agendamento da atualização",
             "auto-update-time": "Atualizar às",
             "auto-update-interval": "Ler a meteorologia a cada",
-            "auto-update-delay": "Atraso antes da primeira atualização"
+            "auto-update-delay": "Atraso antes da primeira atualização",
+            "auto-update-delay-help": "Segundos de espera, após o arranque do Home Assistant ou ao guardar este cartão, antes da primeira atualização meteorológica; depois as atualizações seguem o intervalo. Para sensores ou uma integração meteorológica lentos a arrancar. 0, por omissão: de imediato."
           },
           "options": {
             "minutes": "minutos",
@@ -295,7 +296,8 @@
           "description": "Uma única definição para todos os grupos de sensores abaixo. Regista cada alteração de um sensor de um grupo, em vez de uma leitura por atualização, pelo que o cálculo horário e a chuva trabalham com dados mais finos: um pluviómetro que reporta a cada dez minutos é lido a cada dez minutos. As zonas não são recalculadas a cada alteração; o cálculo agendado fá-lo uma vez, a partir das leituras registadas. Num grupo que também usa um serviço meteorológico, os seus sensores são registados quando mudam e o serviço continua a ser lido uma vez por atualização, pelo que não custa pedidos a mais.",
           "labels": {
             "continuousupdates": "Ativar atualizações contínuas",
-            "sensor_debounce": "Debounce do sensor"
+            "sensor_debounce": "Debounce do sensor",
+            "sensor_debounce_help": "Em ms. Após uma alteração de um dos seus sensores, um grupo espera este tempo por outras antes de atualizar as suas zonas: uma rajada de alterações dá uma só atualização. Cada alteração continua a ser registada. 0: uma atualização a cada alteração."
           }
         },
         "panel-mode": {
@@ -331,7 +333,7 @@
         "control": "Controlo",
         "system": "Sistema",
         "calculation-sub": "Quanto precisa cada zona, e quando isso é calculado.",
-        "control-sub": "O que abre as válvulas, e o que inicia uma rega.",
+        "control-sub": "O que é regado fora do Smart Irrigation e, ao apenas calcular, o que inicia uma rega.",
         "system-sub": "O painel, os blueprints, o assistente de configuração e a mudança a partir do Irrigation Unlimited."
       }
     },
@@ -767,7 +769,7 @@
         "available-water-help": "A quantidade de água que o solo desta zona retém para as plantas, em mm (a profundidade das raízes em metros vezes o que o solo retém por metro: cerca de 50 a 110 mm para areia, 130 a 180 para solo franco, 120 a 200 para argila, segundo a FAO-56). Deixe vazio para manter as coisas como estão. Quando definido, o défice não pode ficar abaixo dele, e quando as plantas esgotam a parte permitida (50%, a menos que a altere), puxam menos água, pelo que o défice deixa de crescer tão depressa.",
         "distribution-efficiency": "Eficiência de distribuição",
         "distribution-efficiency-help": "A parte da água que sai dos emissores e chega às plantas, em %. Aspersores com vento ou em declive perdem alguma, o gota a gota quase nada. Deixe vazio para 100%. Uma zona a 80% rega 25% mais tempo para a mesma lâmina e contabiliza apenas 80% do que fornece.",
-        "days-between-irrigation-help": "Deixe vazio para seguir a definição geral (Tempo, Cancelar a rega). Um número substitui a definição geral apenas para esta zona: 1 rega-a todos os dias se precisar de água, 3 no máximo de três em três dias, 0 remove a restrição. Os dias contam-se desde a última vez que esta zona foi regada.",
+        "days-between-irrigation-help": "O número mínimo de dias entre duas regas desta zona, contados desde a sua última rega: 1 todos os dias se necessário, 3 no máximo de três em três dias; vazio ou 0, sem limite. O défice continua a aumentar durante a espera e é compensado na rega seguinte.",
         "soil-moisture-sensor": "Sensor de humidade do solo",
         "soil-moisture-sensor-hint": "A zona fica de fora de um ciclo enquanto o solo estiver no limite ou acima dele. O balanço hídrico é mantido.",
         "soil-moisture-threshold": "Ignorar a partir de",
@@ -1154,6 +1156,8 @@
     },
     "skip": {
       "title": "Cancelar a rega",
+      "days-zones": "Dias entre regas, definidos na zona:",
+      "days": "Os dias entre regas definem-se em cada zona, nas suas definições.",
       "soil-moisture": "A humidade do solo define-se por zona, pois cada zona tem o seu próprio sensor.",
       "soil-zones": "Humidade do solo, definida na zona (salta a partir de):",
       "open-zones": "Abrir as zonas"
@@ -1246,7 +1250,6 @@
   },
   "weather_skip": {
     "title": "Previsão de chuva",
-    "description": "Quando há chuva prevista, o Smart Irrigation rega menos. Esta funcionalidade requer um serviço meteorológico configurado.",
     "threshold_label": "Saltar a irrigação a partir de",
     "threshold_description": "Quantidade mínima de precipitação (em mm) prevista para hoje e amanhã para saltar a irrigação.",
     "effective_rain_label": "Contar só a chuva que chega às raízes",
@@ -1266,12 +1269,6 @@
     "longitude": "Longitude (graus decimais)",
     "elevation": "Altitude (metros acima do nível do mar)",
     "current_ha_coords": "Coordenadas atuais do Home Assistant"
-  },
-  "days_between_irrigation": {
-    "title": "Dias entre irrigações",
-    "description": "Configure o número mínimo de dias que devem decorrer entre eventos de irrigação. Isto ajuda a controlar a frequência de rega para conservação da água e gestão da saúde das plantas.\n\nCasos de uso típicos do mundo real:\n• Cuidado do relvado: intervalos de 1-2 dias evitam o excesso de rega\n• Restrições por seca: intervalos de 6+ dias para rega semanal\n• Plantas de raízes profundas: intervalos de 3-7 dias para rega menos frequente\n• Conservação da água: personalizável consoante o clima e as condições do solo",
-    "label": "Mínimo de dias entre irrigações",
-    "own": "Zonas com dias próprios:"
   },
   "planning": {
     "now": "A regar agora",
@@ -1386,7 +1383,7 @@
     "schedule_weather": "Ter o tempo em conta",
     "schedule_hard_deadline": "Interromper a execução à hora final",
     "schedule_hard_deadline_help": "A execução é interrompida à hora final: as zonas abertas são fechadas e creditadas pelo que regaram, e o que não começou é ignorado.",
-    "condition_postponed": "Dias adiados (sempre ativo)",
+    "condition_postponed": "Dias adiados",
     "condition_rain_sensor": "Sensor de chuva",
     "condition_freeze": "Geada",
     "condition_wind": "Vento",
@@ -1394,7 +1391,7 @@
     "condition_days_between": "Dias desde a última rega",
     "condition_soil_moisture": "Humidade do solo",
     "conditions_subset": "Só estas verificações do tempo",
-    "conditions_pick": "Desmarca as verificações que este horário deve ignorar, a chuva para uma estufa por exemplo. Os dias adiados aplicam-se sempre.",
+    "conditions_pick": "Desmarque as verificações que este horário deve ignorar, a chuva numa estufa por exemplo. Os dias adiados, os dos botões Adiar da página inicial, aplicam-se sempre.",
     "schedule_weather_help": "Ligado, as verificações de Tempo, Cancelar a rega podem travar ou encurtar a rega: chuva, geada, vento, dias entre regas, solo húmido e dias adiados. Desligue para um gota-a-gota de estufa que o tempo não afeta.",
     "pause": "Pausar",
     "resume": "Retomar",
@@ -1422,12 +1419,13 @@
     "adjust_seconds": "Tempo acrescentado (+) ou retirado (-)",
     "step_bounds_help": "Ordem de aplicação: primeiro a percentagem de «Ajustar durações» do programa, quando há uma em vigor (define-se no programa, não aqui), depois o tempo acrescentado ou retirado, depois o mínimo e o máximo. 0 para o mínimo ou o máximo: nenhum. Um passo que não precisa de água fica a zero: o mínimo nunca o inicia.",
     "min_deficit_mm": "Regar apenas quando o défice for de, pelo menos,",
-    "min_deficit_mm_help": "Em mm, 0 para regar sempre. Se definido, substitui o limiar da própria zona neste passo. Os passos de duração fixa são sempre regados.",
+    "min_deficit_mm_help": "Em mm. Vazio, por omissão: cada zona mantém o seu próprio limiar de rega. Um número substitui-o neste passo: uma zona com menos défice salta o passo, uma com mais é regada mesmo onde o seu próprio limiar esperaria. Os passos de duração fixa são sempre regados.",
     "min_deficit_short": "Défice mínimo",
     "adjust_title": "Ajustar durações",
     "adjust_none": "Nenhum ajuste em vigor.",
     "adjust_percent": "Percentagem",
     "adjust_hours": "Válido durante",
+    "adjust_hours_help": "Durante quantas horas o ajuste se mantém em vigor, a partir de agora. Vazio: até ser reposto.",
     "adjust_help": "Faz este programa regar mais ou menos tempo nas execuções que começam depois de definido. Substitui o ajuste anterior. Horas vazio: até ser reposto.",
     "adjust_apply": "Aplicar",
     "adjust_reset": "Repor",
@@ -1504,7 +1502,7 @@
     "cond_days_between": "pelo menos {n} dias",
     "cond_freeze": "a {value} ou menos",
     "cond_off": "desativada",
-    "cond_postponed": "os botões Adiar da página inicial",
+    "cond_postponed": "sempre ativo",
     "cond_precipitation": "a partir de {value} previstos",
     "cond_soil": "{n} zonas com sensor",
     "cond_soil_one": "{n} zona com sensor",
@@ -1587,7 +1585,6 @@
       "sensor": "Lê {sensor}.",
       "service": "Lê o valor atual do serviço meteorológico.",
       "nothing": "Sem sensor nem serviço meteorológico: esta verificação não retém nada.",
-      "same": "A mesma fonte que o grupo de sensores {groups}, para a evaporação.",
       "other": "Para a evaporação, os grupos de sensores leem este valor noutro sítio: {groups}.",
       "service-short": "o serviço meteorológico",
       "static-short": "um valor fixo",
@@ -1715,7 +1712,6 @@
     "weather_yes": "Sim",
     "weather_yes_unread": "Sim, mas não foi possível ler {reason}",
     "weather_no": "Não: {reason}",
-    "otherwise": "Senão: nada nesse dia",
     "supply_on": "{name} ligada",
     "supply_before": "{time} antes das válvulas",
     "supply_after_valves": "{time} depois das válvulas",

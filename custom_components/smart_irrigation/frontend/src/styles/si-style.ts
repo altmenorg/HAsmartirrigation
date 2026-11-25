@@ -418,9 +418,11 @@ export const siStyle = css`
   }
   .si-table .si-thead > span {
     position: sticky;
-    top: 0;
+    /* A pixel above the top, and that pixel added inside: on a phone the
+       rounding left a hairline where the rows showed through (#1059). */
+    top: -1px;
     z-index: 1;
-    padding: var(--si-space-2) var(--si-space-3);
+    padding: calc(var(--si-space-2) + 1px) var(--si-space-3) var(--si-space-2);
     background: var(--card-background-color, #fff);
     border-bottom: 1px solid var(--divider-color);
     color: var(--secondary-text-color);
@@ -653,6 +655,13 @@ export const siStyle = css`
   .setting-row > ha-switch,
   .fold-head > ha-switch {
     flex: 0 0 auto;
+  }
+  /* A card title with a switch keeps the card title's own spacing: the
+     collapsible head's tighter padding left its first setting stuck to the
+     title (#1059). It does not fold, so no hand either. */
+  h1.card-header.si-head {
+    padding: var(--si-space-5) var(--si-space-4);
+    cursor: default;
   }
 
   /* HA entity picker: sized like the other controls, but it brings its own

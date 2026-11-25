@@ -1,5 +1,5 @@
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 
 import { localize } from "../../../localize/localize";
 import { friendlyDuration } from "../../card/format";
@@ -27,6 +27,40 @@ export class SmartIrrigationProgramTimeline extends LitElement {
   @property() lang = "en";
   // When the run starts (ISO), for clock times on the axis; offsets otherwise.
   @property() start?: string;
+  // How wide the time axis is, in px: as many times as fit side by side, on a
+  // phone included (#1059).
+  @state() private _axisWidth = 0;
+  private _resize?: ResizeObserver;
+  private _watched?: Element;
+
+  updated() {
+    // The axis is drawn once there is a run: watch it then, and again if it
+    // was drawn anew.
+    const track = this.renderRoot.querySelector(".axis .track") ?? undefined;
+    if (track === this._watched) return;
+    this._resize?.disconnect();
+    this._watched = track;
+    if (!track) return;
+    this._resize ??= new ResizeObserver((entries) => {
+      const width = entries[0]?.contentRect.width ?? 0;
+      if (Math.abs(width - this._axisWidth) > 1) this._axisWidth = width;
+    });
+    this._resize.observe(track);
+  }
+
+  disconnectedCallback() {
+    this._resize?.disconnect();
+    this._watched = undefined;
+    super.disconnectedCallback();
+  }
+
+  /** How many steps between times the axis has room for. */
+  private _mostTicks(): number {
+    // The steps between marks, one fewer than the marks: a label is about
+    // 3.5 em wide.
+    if (!this._axisWidth) return 6;
+    return Math.max(1, Math.min(6, Math.floor(this._axisWidth / 56) - 1));
+  }
 
   private _t(key: string) {
     return localize(`timeline.${key}`, this.lang);
@@ -64,7 +98,7 @@ export class SmartIrrigationProgramTimeline extends LitElement {
       this.timeline?.total ?? 0,
       ...rows.flatMap((r) => r.segments.map((s) => s.end)),
     );
-    const ticks = timelineTicks(total);
+    const ticks = timelineTicks(total, this._mostTicks());
     const kinds = new Set(rows.flatMap((r) => r.segments.map((s) => s.kind)));
     return html`
       <div class="timeline" role="img" aria-label=${this._t("title")}>

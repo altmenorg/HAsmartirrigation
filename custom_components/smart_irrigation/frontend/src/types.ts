@@ -277,7 +277,7 @@ export class SmartIrrigationZone {
   maximum_duration?: number;
   maximum_bucket?: number;
   irrigation_threshold?: number;
-  days_between_irrigation?: number | null; // null: follow the general setting
+  days_between_irrigation?: number | null; // null or 0: no limit
   crop_factor_by_month?: (number | null)[] | null; // January first; null: the crop factor all year
   available_water?: number | null; // mm the soil holds for the plants; null: not set
   allowed_depletion?: number | null; // % of it the plants may use up; null: 50

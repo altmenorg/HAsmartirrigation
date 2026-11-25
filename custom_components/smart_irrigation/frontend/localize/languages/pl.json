@@ -282,7 +282,8 @@
             "auto-update-schedule": "Harmonogram aktualizacji",
             "auto-update-time": "Aktualizuj o",
             "auto-update-interval": "Pobieraj pogodę co",
-            "auto-update-delay": "Opóźnienie przed pierwszą aktualizacją"
+            "auto-update-delay": "Opóźnienie przed pierwszą aktualizacją",
+            "auto-update-delay-help": "Sekundy oczekiwania, po uruchomieniu Home Assistant lub zapisaniu tej karty, przed pierwszą aktualizacją pogody; potem aktualizacje następują zgodnie z interwałem. Dla czujników lub integracji pogodowej, które wolno startują. 0, domyślnie: od razu."
           },
           "options": {
             "minutes": "minuty",
@@ -295,7 +296,8 @@
           "description": "Jedno ustawienie dla wszystkich grup czujników poniżej. Zapisuje każdą zmianę czujnika grupy zamiast jednego odczytu na aktualizację, więc obliczenie godzinowe i deszcz opierają się na dokładniejszych danych: deszczomierz raportujący co dziesięć minut jest odczytywany co dziesięć minut. Strefy nie są przeliczane przy każdej zmianie; robi to raz zaplanowane obliczenie na podstawie zapisanych odczytów. W grupie, która używa też serwisu pogodowego, jej czujniki są zapisywane przy każdej zmianie, a serwis nadal jest odczytywany raz na aktualizację, więc nie kosztuje to dodatkowych zapytań.",
           "labels": {
             "continuousupdates": "Włącz ciągłe aktualizacje",
-            "sensor_debounce": "Opóźnienie czujnika (debounce)"
+            "sensor_debounce": "Opóźnienie czujnika (debounce)",
+            "sensor_debounce_help": "W ms. Po zmianie jednego z czujników grupa czeka tyle na kolejne, zanim zaktualizuje swoje strefy: seria zmian daje jedną aktualizację. Każda zmiana jest nadal zapisywana. 0: aktualizacja przy każdej zmianie."
           }
         },
         "panel-mode": {
@@ -331,7 +333,7 @@
         "control": "Sterowanie",
         "system": "System",
         "calculation-sub": "Ile potrzebuje każda strefa i kiedy jest to obliczane.",
-        "control-sub": "Co otwiera zawory i co uruchamia podlewanie.",
+        "control-sub": "To, co jest podlewane poza Smart Irrigation, oraz, przy samym obliczaniu, to, co uruchamia podlewanie.",
         "system-sub": "Panel, blueprinty, asystent konfiguracji i przejście z Irrigation Unlimited."
       }
     },
@@ -767,7 +769,7 @@
         "available-water-help": "Ile wody gleba tej strefy zatrzymuje dla roślin, w mm (głębokość korzeni w metrach razy to, ile gleba zatrzymuje na metr: około 50–110 mm dla piasku, 130–180 dla gliny piaszczystej, 120–200 dla iłu, według FAO-56). Zostaw puste, aby nic nie zmieniać. Po ustawieniu deficyt nie może spaść poniżej tej wartości, a gdy rośliny zużyją dozwoloną jej część (50%, o ile tego nie zmienisz), pobierają mniej wody, więc deficyt przestaje rosnąć tak szybko.",
         "distribution-efficiency": "Sprawność rozprowadzania",
         "distribution-efficiency-help": "Część wody opuszczającej zraszacze, która dociera do roślin, w %. Zraszacze na wietrze lub na zboczu tracą część, kroplowanie prawie nic. Zostaw puste dla 100%. Strefa przy 80% podlewa o 25% dłużej dla tej samej głębokości i zalicza tylko 80% tego, co dostarcza.",
-        "days-between-irrigation-help": "Zostaw puste, aby stosować ustawienie ogólne (Pogoda, Pomijanie podlewania). Liczba zastępuje ustawienie ogólne tylko dla tej strefy: 1 podlewa ją codziennie, jeśli potrzebuje wody, 3 najwyżej co trzeci dzień, 0 usuwa ograniczenie. Dni liczone są od ostatniego podlania tej strefy.",
+        "days-between-irrigation-help": "Najmniejsza liczba dni między dwoma podlewaniami tej strefy, liczona od jej ostatniego podlewania: 1 codziennie w razie potrzeby, 3 najwyżej co trzeci dzień; puste lub 0, bez limitu. Niedobór rośnie w czasie oczekiwania i jest nadrabiany przy następnym podlewaniu.",
         "soil-moisture-sensor": "Czujnik wilgotności gleby",
         "soil-moisture-sensor-hint": "Strefa pomija nawadnianie, dopóki gleba jest na progu lub powyżej. Bilans wodny jest zachowany.",
         "soil-moisture-threshold": "Pomiń od",
@@ -1154,6 +1156,8 @@
     },
     "skip": {
       "title": "Pomijanie podlewania",
+      "days-zones": "Dni między podlewaniami, ustawione w strefie:",
+      "days": "Dni między podlewaniami ustawia się w każdej strefie, w jej ustawieniach.",
       "soil-moisture": "Wilgotność gleby ustawia się dla każdej strefy, ponieważ każda strefa ma własny czujnik.",
       "soil-zones": "Wilgotność gleby, ustawiona w strefie (pomija od):",
       "open-zones": "Otwórz strefy"
@@ -1246,7 +1250,6 @@
   },
   "weather_skip": {
     "title": "Prognoza deszczu",
-    "description": "Gdy prognozowany jest deszcz, Smart Irrigation nawadnia mniej. Ta funkcja wymaga skonfigurowanej usługi pogodowej.",
     "threshold_label": "Pomiń nawadnianie od",
     "threshold_description": "Minimalna ilość opadów (w mm) prognozowana na dziś i jutro, aby pominąć nawadnianie.",
     "effective_rain_label": "Licz tylko deszcz docierający do korzeni",
@@ -1266,12 +1269,6 @@
     "longitude": "Długość geograficzna (stopnie dziesiętne)",
     "elevation": "Wysokość (metry nad poziomem morza)",
     "current_ha_coords": "Bieżące współrzędne Home Assistant"
-  },
-  "days_between_irrigation": {
-    "title": "Dni między nawadnianiem",
-    "description": "Skonfiguruj minimalną liczbę dni, które muszą upłynąć między zdarzeniami nawadniania. Pomaga to kontrolować częstotliwość podlewania w celu oszczędzania wody i dbania o zdrowie roślin.\n\nTypowe zastosowania w praktyce:\n• Pielęgnacja trawnika: odstępy 1–2 dni zapobiegają przelewaniu\n• Ograniczenia w czasie suszy: odstępy 6+ dni dla cotygodniowego podlewania\n• Rośliny głęboko ukorzenione: odstępy 3–7 dni dla rzadszego podlewania\n• Oszczędzanie wody: dostosowywalne w zależności od klimatu i warunków glebowych",
-    "label": "Minimalna liczba dni między nawadnianiem",
-    "own": "Strefy z własnymi dniami:"
   },
   "planning": {
     "now": "Trwa podlewanie",
@@ -1386,7 +1383,7 @@
     "schedule_weather": "Uwzględnij pogodę",
     "schedule_hard_deadline": "Przerwij uruchomienie o godzinie końcowej",
     "schedule_hard_deadline_help": "Uruchomienie jest przerywane o docelowej godzinie końca: otwarte strefy są zamykane i zaliczane za to, co podlały, a to, co nie ruszyło, jest pomijane.",
-    "condition_postponed": "Odłożone dni (zawsze włączone)",
+    "condition_postponed": "Przełożone dni",
     "condition_rain_sensor": "Czujnik deszczu",
     "condition_freeze": "Przymrozek",
     "condition_wind": "Wiatr",
@@ -1394,7 +1391,7 @@
     "condition_days_between": "Dni od ostatniego podlewania",
     "condition_soil_moisture": "Wilgotność gleby",
     "conditions_subset": "Tylko te sprawdzenia pogody",
-    "conditions_pick": "Odznacz kontrole, które ten harmonogram ma ignorować, na przykład deszcz dla szklarni. Odroczone dni obowiązują zawsze.",
+    "conditions_pick": "Odznacz sprawdzenia, które ten harmonogram ma pomijać, na przykład deszcz w szklarni. Przełożone dni, te z przycisków Przełóż na stronie głównej, obowiązują zawsze.",
     "schedule_weather_help": "Włączone: kontrole z Pogoda, Pomijanie podlewania mogą wstrzymać lub skrócić podlewanie: deszcz, mróz, wiatr, dni między podlewaniami, mokra gleba i odłożone dni. Wyłącz dla linii kroplującej w szklarni, której pogoda nie dotyczy.",
     "pause": "Wstrzymaj",
     "resume": "Wznów",
@@ -1422,12 +1419,13 @@
     "adjust_seconds": "Czas dodany (+) lub odjęty (-)",
     "step_bounds_help": "Kolejność: najpierw procent z „Dostosuj czasy trwania” programu, jeśli taki obowiązuje (ustawia się go w programie, nie tutaj), potem czas dodany lub odjęty, potem minimum i maksimum. 0 dla minimum lub maksimum: brak. Krok, który nie potrzebuje wody, zostaje na zerze: minimum nigdy go nie uruchamia.",
     "min_deficit_mm": "Podlewaj tylko, gdy deficyt wynosi co najmniej",
-    "min_deficit_mm_help": "W mm, 0, aby zawsze podlewać. Jeśli ustawiony, zastępuje w tym kroku własny próg strefy. Kroki o stałym czasie są zawsze podlewane.",
+    "min_deficit_mm_help": "W mm. Puste, domyślnie: każda strefa zachowuje własny próg podlewania. Liczba zastępuje go w tym kroku: strefa z mniejszym niedoborem pomija krok, a strefa z większym jest podlewana, nawet gdy jej własny próg kazałby czekać. Kroki o stałym czasie są zawsze podlewane.",
     "min_deficit_short": "Minimalny deficyt",
     "adjust_title": "Dostosuj czasy trwania",
     "adjust_none": "Brak obowiązującej korekty.",
     "adjust_percent": "Procent",
     "adjust_hours": "Ważne przez",
+    "adjust_hours_help": "Przez ile godzin korekta obowiązuje, licząc od teraz. Puste: do jej zresetowania.",
     "adjust_help": "Sprawia, że ten program podlewa dłużej lub krócej podczas uruchomień, które zaczną się po jej ustawieniu. Zastępuje poprzednią korektę. Godziny puste: do zresetowania.",
     "adjust_apply": "Zastosuj",
     "adjust_reset": "Resetuj",
@@ -1504,7 +1502,7 @@
     "cond_days_between": "co najmniej {n} dni",
     "cond_freeze": "przy {value} lub mniej",
     "cond_off": "wyłączony",
-    "cond_postponed": "przyciski Odrocz na stronie głównej",
+    "cond_postponed": "zawsze włączone",
     "cond_precipitation": "od {value} w prognozie",
     "cond_soil": "Strefy z czujnikiem: {n}",
     "cond_soil_one": "{n} strefa z czujnikiem",
@@ -1587,7 +1585,6 @@
       "sensor": "Odczytuje {sensor}.",
       "service": "Odczytuje bieżącą wartość serwisu pogodowego.",
       "nothing": "Brak czujnika i serwisu pogodowego: ta kontrola niczego nie wstrzymuje.",
-      "same": "To samo źródło co grupa czujników {groups}, dla parowania.",
       "other": "Dla parowania grupy czujników odczytują tę wartość gdzie indziej: {groups}.",
       "service-short": "serwis pogodowy",
       "static-short": "stała wartość",
@@ -1715,7 +1712,6 @@
     "weather_yes": "Tak",
     "weather_yes_unread": "Tak, ale nie udało się odczytać: {reason}",
     "weather_no": "Nie: {reason}",
-    "otherwise": "W przeciwnym razie: nic tego dnia",
     "supply_on": "{name} włączona",
     "supply_before": "{time} przed zaworami",
     "supply_after_valves": "{time} po zaworach",

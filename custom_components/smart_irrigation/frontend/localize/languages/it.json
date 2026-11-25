@@ -282,7 +282,8 @@
             "auto-update-schedule": "Programma di aggiornamento",
             "auto-update-time": "Aggiorna alle",
             "auto-update-interval": "Leggi il meteo ogni",
-            "auto-update-delay": "Ritardo prima del primo aggiornamento"
+            "auto-update-delay": "Ritardo prima del primo aggiornamento",
+            "auto-update-delay-help": "Secondi di attesa, dopo l'avvio di Home Assistant o il salvataggio di questa scheda, prima del primo aggiornamento meteo; poi gli aggiornamenti seguono l'intervallo. Per sensori o un'integrazione meteo lenti all'avvio. 0, il predefinito: subito."
           },
           "options": {
             "minutes": "minuti",
@@ -295,7 +296,8 @@
           "description": "Un'unica impostazione per tutti i gruppi di sensori qui sotto. Registra ogni variazione di un sensore di un gruppo, invece di una lettura per aggiornamento, così il calcolo orario e la pioggia lavorano su dati più fini: un pluviometro che si aggiorna ogni dieci minuti viene letto ogni dieci minuti. Le zone non vengono ricalcolate a ogni variazione; lo fa il calcolo programmato, una volta, dalle letture registrate. In un gruppo che usa anche un servizio meteo, i suoi sensori vengono registrati quando cambiano e il servizio viene sempre letto una volta per aggiornamento, quindi non costa richieste in più.",
           "labels": {
             "continuousupdates": "Abilita gli aggiornamenti continui",
-            "sensor_debounce": "Rimbalzo del sensore"
+            "sensor_debounce": "Rimbalzo del sensore",
+            "sensor_debounce_help": "In ms. Dopo la modifica di uno dei suoi sensori, un gruppo attende questo tempo altre modifiche prima di aggiornare le sue zone: una raffica di modifiche dà un solo aggiornamento. Ogni modifica viene comunque registrata. 0: un aggiornamento a ogni modifica."
           }
         },
         "panel-mode": {
@@ -331,7 +333,7 @@
         "control": "Controllo",
         "system": "Sistema",
         "calculation-sub": "Quanto serve a ogni zona e quando viene calcolato.",
-        "control-sub": "Cosa apre le valvole e cosa avvia un ciclo.",
+        "control-sub": "Ciò che viene irrigato al di fuori di Smart Irrigation e, con il solo calcolo, ciò che avvia un'irrigazione.",
         "system-sub": "Il pannello, i blueprint, l'assistente di configurazione e il passaggio da Irrigation Unlimited."
       }
     },
@@ -767,7 +769,7 @@
         "available-water-help": "Quanta acqua il terreno di questa zona trattiene per le piante, in mm (la profondità delle radici in metri per quanto il terreno trattiene per metro: circa 50-110 mm per la sabbia, 130-180 per il franco, 120-200 per l'argilla, secondo la FAO-56). Lascia vuoto per non cambiare nulla. Se impostata, il deficit non può scendere sotto di essa, e quando le piante hanno consumato la quota consentita (50% salvo modifica) assorbono meno acqua, quindi il deficit smette di crescere così in fretta.",
         "distribution-efficiency": "Efficienza di distribuzione",
         "distribution-efficiency-help": "La quota d'acqua uscita dagli erogatori che raggiunge le piante, in %. Gli irrigatori con vento o su un pendio ne perdono un po', il gocciolamento quasi niente. Lascia vuoto per 100%. Una zona all'80% irriga il 25% più a lungo per la stessa altezza d'acqua, e accredita solo l'80% di quanto eroga.",
-        "days-between-irrigation-help": "Lascia vuoto per seguire l'impostazione generale (Meteo, Annullamento dell'irrigazione). Un numero sostituisce l'impostazione generale per questa sola zona: 1 la irriga ogni giorno se ha bisogno d'acqua, 3 al massimo ogni tre giorni, 0 toglie la restrizione. I giorni si contano dall'ultima volta che questa zona è stata irrigata.",
+        "days-between-irrigation-help": "Il numero minimo di giorni tra due irrigazioni di questa zona, contati dalla sua ultima irrigazione: 1 ogni giorno se serve, 3 al massimo ogni tre giorni; vuoto o 0, nessun limite. Il deficit continua a crescere durante l'attesa e viene recuperato all'irrigazione successiva.",
         "soil-moisture-sensor": "Sensore di umidità del terreno",
         "soil-moisture-sensor-hint": "La zona salta un ciclo mentre il terreno è pari o sopra la soglia. Il bilancio idrico viene conservato.",
         "soil-moisture-threshold": "Salta da",
@@ -1154,6 +1156,8 @@
     },
     "skip": {
       "title": "Annullamento dell'irrigazione",
+      "days-zones": "Giorni tra le irrigazioni, impostati sulla zona:",
+      "days": "I giorni tra le irrigazioni si impostano su ogni zona, nelle sue impostazioni.",
       "soil-moisture": "L'umidità del suolo si imposta per zona, perché ogni zona ha il suo sensore.",
       "soil-zones": "Umidità del suolo, impostata sulla zona (salta da):",
       "open-zones": "Apri le zone"
@@ -1246,7 +1250,6 @@
   },
   "weather_skip": {
     "title": "Previsione di pioggia",
-    "description": "Quando è prevista pioggia, Smart Irrigation irriga meno. Questa funzione richiede un servizio meteo configurato.",
     "threshold_label": "Salta l'irrigazione a partire da",
     "threshold_description": "Quantità minima di precipitazioni (in mm) prevista per oggi e domani per saltare l'irrigazione.",
     "effective_rain_label": "Conta solo la pioggia che raggiunge le radici",
@@ -1266,12 +1269,6 @@
     "longitude": "Longitudine (gradi decimali)",
     "elevation": "Elevazione (metri sul livello del mare)",
     "current_ha_coords": "Coordinate attuali di Home Assistant"
-  },
-  "days_between_irrigation": {
-    "title": "Giorni tra le irrigazioni",
-    "description": "Configura il numero minimo di giorni che devono passare tra gli eventi di irrigazione. Questo aiuta a controllare la frequenza di irrigazione per la conservazione dell'acqua e la gestione della salute delle piante.\n\nCasi d'uso tipici:\n• Cura del prato: intervalli di 1-2 giorni prevengono l'eccesso di irrigazione\n• Restrizioni di siccità: intervalli di 6+ giorni per irrigazione settimanale\n• Piante a radici profonde: intervalli di 3-7 giorni per irrigazione meno frequente\n• Conservazione dell'acqua: personalizzabile in base al clima e alle condizioni del suolo",
-    "label": "Giorni minimi tra irrigazioni",
-    "own": "Zone con giorni propri:"
   },
   "planning": {
     "now": "Irrigazione in corso",
@@ -1386,7 +1383,7 @@
     "schedule_weather": "Tieni conto del meteo",
     "schedule_hard_deadline": "Interrompi il ciclo all'ora di fine",
     "schedule_hard_deadline_help": "Il ciclo viene interrotto all'obiettivo di fine: le zone aperte vengono chiuse e accreditate per ciò che hanno irrigato, e ciò che non è partito viene saltato.",
-    "condition_postponed": "Giorni rinviati (sempre attivo)",
+    "condition_postponed": "Giorni rinviati",
     "condition_rain_sensor": "Sensore di pioggia",
     "condition_freeze": "Gelo",
     "condition_wind": "Vento",
@@ -1394,7 +1391,7 @@
     "condition_days_between": "Giorni dall'ultima irrigazione",
     "condition_soil_moisture": "Umidità del suolo",
     "conditions_subset": "Solo questi controlli meteo",
-    "conditions_pick": "Togli la spunta ai controlli che questa programmazione deve ignorare, la pioggia per una serra per esempio. I giorni rinviati valgono sempre.",
+    "conditions_pick": "Togli la spunta ai controlli che questa pianificazione deve ignorare, la pioggia per una serra per esempio. I giorni rinviati, quelli dei pulsanti Rinvia della pagina iniziale, valgono sempre.",
     "schedule_weather_help": "Attivo, i controlli di Meteo, Annullamento dell'irrigazione possono trattenere o accorciare l'irrigazione: pioggia, gelo, vento, giorni tra le irrigazioni, suolo umido e giorni rinviati. Disattivalo per un'ala gocciolante in serra che il meteo non riguarda.",
     "pause": "Pausa",
     "resume": "Riprendi",
@@ -1422,12 +1419,13 @@
     "adjust_seconds": "Tempo aggiunto (+) o tolto (-)",
     "step_bounds_help": "Ordine di applicazione: prima la percentuale di «Regola le durate» del programma, quando ce n'è una in vigore (si imposta sul programma, non qui), poi il tempo aggiunto o tolto, poi il minimo e il massimo. 0 per il minimo o il massimo: nessuno. Un passo che non ha bisogno d'acqua resta a zero: il minimo non lo avvia mai.",
     "min_deficit_mm": "Irriga solo quando il deficit è almeno",
-    "min_deficit_mm_help": "In mm, 0 per irrigare sempre. Se impostato, sostituisce la soglia della zona per questo passo. I passi a durata fissa vengono sempre irrigati.",
+    "min_deficit_mm_help": "In mm. Vuoto, il predefinito: ogni zona mantiene la propria soglia di irrigazione. Un numero la sostituisce per questo passo: una zona con un deficit minore salta il passo, una con un deficit maggiore viene irrigata anche dove la propria soglia aspetterebbe. I passi a durata fissa vengono sempre irrigati.",
     "min_deficit_short": "Deficit minimo",
     "adjust_title": "Regola le durate",
     "adjust_none": "Nessuna regolazione in vigore.",
     "adjust_percent": "Percentuale",
     "adjust_hours": "Valida per",
+    "adjust_hours_help": "Per quante ore l'aggiustamento resta in vigore, da adesso. Vuoto: finché non viene azzerato.",
     "adjust_help": "Fa irrigare questo programma più a lungo o meno a lungo per i cicli che partono dopo l'impostazione. Sostituisce la regolazione precedente. Ore vuote: fino alla reimpostazione.",
     "adjust_apply": "Applica",
     "adjust_reset": "Reimposta",
@@ -1504,7 +1502,7 @@
     "cond_days_between": "almeno {n} giorni",
     "cond_freeze": "a {value} o meno",
     "cond_off": "disattivata",
-    "cond_postponed": "i pulsanti Rinvia della pagina iniziale",
+    "cond_postponed": "sempre attivo",
     "cond_precipitation": "da {value} previsti",
     "cond_soil": "{n} zone con sensore",
     "cond_soil_one": "{n} zona con sensore",
@@ -1587,7 +1585,6 @@
       "sensor": "Legge {sensor}.",
       "service": "Legge il valore attuale del servizio meteo.",
       "nothing": "Nessun sensore e nessun servizio meteo: questo controllo non trattiene nulla.",
-      "same": "La stessa fonte del gruppo di sensori {groups}, per l'evaporazione.",
       "other": "Per l'evaporazione, i gruppi di sensori leggono questo valore altrove: {groups}.",
       "service-short": "il servizio meteo",
       "static-short": "un valore fisso",
@@ -1715,7 +1712,6 @@
     "weather_yes": "Sì",
     "weather_yes_unread": "Sì, ma {reason} non è stato letto",
     "weather_no": "No: {reason}",
-    "otherwise": "Altrimenti: niente quel giorno",
     "supply_on": "{name} accesa",
     "supply_before": "{time} prima delle valvole",
     "supply_after_valves": "{time} dopo le valvole",

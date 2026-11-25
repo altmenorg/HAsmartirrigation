@@ -7,7 +7,7 @@ The **Weather** tab gathers what Smart Irrigation reads the weather from, and ev
 
 - **Weather service**: the [weather service](installation-weatherservice.md), then the location it is read for and how often it is read.
 - **Sensor groups**: which sensor or service provides each value the calculation reads, and above them, whether their sensors are recorded at every change (see [sensor groups](configuration-sensor-groups.md#continuous-updates)).
-- **Skip watering**: every check that can hold a run back, in one place: the rain forecast, the rain, frost and wind measured when a run starts, the days between irrigation, and a summary of what the zones set for themselves (soil moisture, days of their own).
+- **Skip watering**: every check that can hold a run back, in one place: the rain forecast, the rain, frost and wind measured when a run starts, and a summary of what the zones set for themselves (days between irrigation, soil moisture).
 
 ??? note "Coming from an older version"
 
@@ -99,21 +99,21 @@ It works in that direction only. A dry reading says nothing about how many milli
 <a id="days-between-irrigation-events"></a>
 ### Days between irrigation
 
-The **Days between irrigation** card, with **Minimum days between irrigation**: the fewest calendar days between two waterings. 0, the default, is no limit: watering can happen every day it is needed. Set to *N*, watering happens at most every *N* days (up to 365). It is useful for:
+The fewest calendar days between two waterings is set **on each zone**, in the **Days between irrigation** field of its [settings](configuration-zones.md). Empty or 0, the default, is no limit: the zone is watered every day it needs water. Set to *N*, it is watered at most every *N* days (up to 365). It is useful for:
 
 - **water conservation**: time enough between waterings;
 - **plant health**: the soil dries a little between waterings;
 - **local restrictions**: a watering schedule you have to keep.
 
-For example, 1 allows watering every day, 3 every third day, and 7 once a week.
+For example, 1 allows watering every day, 3 every third day, and 7 once a week. A lawn can wait three days while the flower beds are watered every day. For deep and infrequent watering, the [irrigation threshold](configuration-zones.md) of a zone is usually the better tool: it waits for the deficit, not for the calendar.
 
-The days since the last watering are counted once per calendar day, at midnight, whether or not watering happened that day. A start that comes too early is skipped and the count goes on; the first start once enough days have passed waters, and the count starts again from 0. The rain forecast and this check both have to allow a run for it to happen.
+The days are counted from the last time *that zone* was watered, once per calendar day at midnight. A zone still within its days sits the run out, and its deficit keeps building, so it is made up at its next run. The day is only skipped as a whole when every zone is still within its days. Otherwise the run goes ahead for the zones that are due.
 
-**Different days for one zone.** A zone can have its own number, in the **Days between irrigation** field of its [settings](configuration-zones.md). The card lists the zones that have days of their own, each a link to its zone.
+The Skip watering page lists the zones that have days between irrigation, each a link to its zone.
 
-- That number *replaces* this setting for that zone alone, so a lawn can wait three days while the flower beds are watered every day. Leave the zone's field empty to follow this setting.
-- The general count only restarts when a zone that follows it is watered, so a zone with days of its own, watered every day, does not keep the others from ever being due.
-- The day is only skipped as a whole when every zone is still within its days. Otherwise the run goes ahead for the zones that are due, and the others sit it out.
+??? note "Coming from an older version"
+
+    Up to 2026.11.1, a general **Days between irrigation** card applied to every zone without a number of its own. The update moves that number onto each of those zones, and leaves alone a zone that had its own: every zone waters as it did.
 
 !!! advanced
 

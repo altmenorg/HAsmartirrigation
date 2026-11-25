@@ -470,7 +470,8 @@ export class SmartIrrigationViewWeatherService extends LitElement {
       }
 
       .ws-reload-note {
-        text-align: right;
+        /* Read as text, from the left like every note (#1059). */
+        text-align: start;
       }
       .ws-msg {
         margin-top: 12px;

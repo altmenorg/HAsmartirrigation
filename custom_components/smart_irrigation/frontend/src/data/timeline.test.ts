@@ -86,6 +86,14 @@ describe("timelineTicks", () => {
     }
   });
 
+  it("marks fewer times on a narrow axis, a phone's (#1059)", () => {
+    for (const total of [900, 3 * 3600, 20000]) {
+      // Two steps at most: three times, the start included.
+      expect(timelineTicks(total, 2).length).toBeLessThanOrEqual(3);
+      expect(timelineTicks(total, 2)[0]).toBe(0);
+    }
+  });
+
   it("marks the start of an empty run", () => {
     expect(timelineTicks(0)).toEqual([0]);
   });

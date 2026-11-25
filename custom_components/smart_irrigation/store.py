@@ -955,6 +955,49 @@ class SmartIrrigationStorage:
         await self._async_choose_ui_mode()
         await self._async_split_engines_per_zone()
         await self._async_drop_orphan_engines()
+        await self._async_move_days_between_to_zones()
+
+    async def _async_move_days_between_to_zones(self) -> None:
+        """Hand the general days between irrigation to the zones, once.
+
+        The days between irrigation were set twice: in general, and on each
+        zone, the zone's own number replacing the general one. The panel now
+        sets them on the zone only. A general number above 0 goes to every
+        zone that had none of its own, so each waters as it did; a zone with
+        its own number keeps it. The general number is then 0, and a zone
+        without one has no limit.
+
+        A general number written later (an API call, a panel still cached from
+        before) still applies until the next start, which moves it the same way.
+        """
+        general = self.config.days_between_irrigation or 0
+        if general <= 0:
+            return
+        # A zone that followed the general number counted with the general
+        # counter: it takes that count along, so its next watering day stays
+        # the one it was.
+        since = getattr(self.config, "days_since_last_irrigation", None)
+        moved = []
+        for zone_id, zone in self.zones.items():
+            if zone.days_between_irrigation is None:
+                self.zones[zone_id] = attr.evolve(
+                    zone,
+                    days_between_irrigation=general,
+                    **(
+                        {"days_since_irrigation": since}
+                        if isinstance(since, (int, float))
+                        else {}
+                    ),
+                )
+                moved.append(zone.name)
+        self.config = attr.evolve(self.config, days_between_irrigation=0)
+        _LOGGER.info(
+            "The general days between irrigation (%s) now belong to the zones: "
+            "set on %s",
+            general,
+            ", ".join(moved) or "no zone (each has its own)",
+        )
+        self.async_schedule_save()
 
     async def _async_split_engines_per_zone(self) -> None:
         """Give every zone its own engine instance, once.

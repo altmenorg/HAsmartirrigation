@@ -170,6 +170,35 @@ describe("weatherVerdict", () => {
     ).toEqual({ state: "yes" });
   });
 
+  it("names every check that holds it back, frost and wind both", () => {
+    expect(
+      weatherVerdict(on, {
+        checks: [
+          check("freeze", true),
+          check("wind", true),
+          check("precipitation", false),
+        ],
+      }),
+    ).toEqual({ state: "no", reason: "freeze", also: ["wind"] });
+    // The planned run's rain forecast comes first, the others after it.
+    expect(
+      weatherVerdict(
+        on,
+        { checks: [check("wind", true)] },
+        {
+          forecast_known: true,
+          skipped_reason: "precipitation",
+          forecast: { forecast_mm: 6.2 },
+        },
+      ),
+    ).toEqual({
+      state: "no",
+      reason: "precipitation",
+      mm: 6.2,
+      also: ["wind"],
+    });
+  });
+
   it("says no with the first check that holds it back", () => {
     expect(
       weatherVerdict(on, {

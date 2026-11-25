@@ -282,7 +282,8 @@
             "auto-update-schedule": "Urnik posodabljanja",
             "auto-update-time": "Posodobi ob",
             "auto-update-interval": "Preberi vreme vsakih",
-            "auto-update-delay": "Zamik pred prvo posodobitvijo"
+            "auto-update-delay": "Zamik pred prvo posodobitvijo",
+            "auto-update-delay-help": "Sekunde čakanja po zagonu Home Assistanta ali shranjevanju te kartice pred prvo posodobitvijo vremena; nato posodobitve sledijo intervalu. Za senzorje ali vremensko integracijo, ki se počasi zaženejo. 0, privzeto: takoj."
           },
           "options": {
             "minutes": "minut",
@@ -295,7 +296,8 @@
           "description": "Ena nastavitev za vse skupine senzorjev spodaj. Zabeleži vsako spremembo senzorja skupine namesto ene meritve na posodobitev, zato urni izračun in dež temeljita na natančnejših podatkih: dežemer, ki poroča vsakih deset minut, se prebere vsakih deset minut. Cone se ob vsaki spremembi ne preračunajo; to stori načrtovani izračun enkrat iz zabeleženih meritev. V skupini, ki uporablja tudi vremensko storitev, se njeni senzorji zabeležijo, ko se spremenijo, storitev pa se še vedno prebere enkrat na posodobitev, zato ne povzroča dodatnih zahtev.",
           "labels": {
             "continuousupdates": "Vklopi neprekinjene posodobitve",
-            "sensor_debounce": "Umirjanje senzorja (debounce)"
+            "sensor_debounce": "Umirjanje senzorja (debounce)",
+            "sensor_debounce_help": "V ms. Po spremembi enega od svojih senzorjev skupina toliko časa čaka na druge, preden posodobi svoje cone: niz sprememb da eno posodobitev. Vsaka sprememba se še vedno zabeleži. 0: posodobitev ob vsaki spremembi."
           }
         },
         "panel-mode": {
@@ -331,7 +333,7 @@
         "control": "Upravljanje",
         "system": "Sistem",
         "calculation-sub": "Koliko potrebuje vsaka cona in kdaj se to izračuna.",
-        "control-sub": "Kaj odpre ventile in kaj zažene zalivanje.",
+        "control-sub": "Kar se zaliva zunaj Smart Irrigation in, pri samem izračunu, kar zažene zalivanje.",
         "system-sub": "Plošča, načrti (blueprints), pomočnik za nastavitev in prehod z Irrigation Unlimited."
       }
     },
@@ -767,7 +769,7 @@
         "available-water-help": "Koliko vode tla te cone zadržijo za rastline, v mm (globina korenin v metrih krat to, kar tla zadržijo na meter: približno 50 do 110 mm za pesek, 130 do 180 za ilovico, 120 do 200 za glino, po FAO-56). Pusti prazno, da ostane vse, kot je. Ko je nastavljeno, primanjkljaj ne more pasti pod to vrednost, in ko rastline porabijo dovoljeni delež (50 %, razen če ga spremeniš), črpajo manj vode, zato primanjkljaj ne narašča več tako hitro.",
         "distribution-efficiency": "Učinkovitost razporeditve",
         "distribution-efficiency-help": "Delež vode, ki zapusti razpršilnike in doseže rastline, v %. Razpršilniki v vetru ali na pobočju nekaj izgubijo, kapljično namakanje skoraj nič. Pusti prazno za 100 %. Cona pri 80 % zaliva 25 % dlje za enako višino in prišteje le 80 % tega, kar dovede.",
-        "days-between-irrigation-help": "Pusti prazno, da velja splošna nastavitev (Vreme, Preskok namakanja). Število nadomesti splošno nastavitev samo za to cono: 1 jo zaliva vsak dan, če potrebuje vodo, 3 največ vsak tretji dan, 0 odstrani omejitev. Dnevi se štejejo od zadnjega zalivanja te cone.",
+        "days-between-irrigation-help": "Najmanjše število dni med dvema zalivanjema te cone, šteto od njenega zadnjega zalivanja: 1 vsak dan po potrebi, 3 največ vsak tretji dan; prazno ali 0, brez omejitve. Primanjkljaj med čakanjem še naprej narašča in se nadomesti ob naslednjem zalivanju.",
         "soil-moisture-sensor": "Senzor vlažnosti tal",
         "soil-moisture-sensor-hint": "Cona izpusti zagon, dokler so tla na pragu ali nad njim. Vodna bilanca se ohrani.",
         "soil-moisture-threshold": "Preskoči pri ali nad",
@@ -1154,6 +1156,8 @@
     },
     "skip": {
       "title": "Preskok namakanja",
+      "days-zones": "Dnevi med zalivanji, nastavljeni na coni:",
+      "days": "Dneve med zalivanji nastavite na vsaki coni, v njenih nastavitvah.",
       "soil-moisture": "Vlažnost tal se nastavi za vsako cono, saj ima vsaka cona svoj senzor.",
       "soil-zones": "Vlaga tal, nastavljena pri coni (preskoči od):",
       "open-zones": "Odpri cone"
@@ -1246,7 +1250,6 @@
   },
   "weather_skip": {
     "title": "Napoved dežja",
-    "description": "Ko je napovedan dež, Smart Irrigation zaliva manj. Ta funkcija zahteva nastavljeno vremensko storitev.",
     "threshold_label": "Preskoči zagon od",
     "threshold_description": "Najmanjša količina padavin (v mm), napovedana za danes in jutri, pri kateri se namakanje preskoči.",
     "effective_rain_label": "Štej samo dež, ki doseže korenine",
@@ -1266,12 +1269,6 @@
     "longitude": "Zemljepisna dolžina (decimalne stopinje)",
     "elevation": "Nadmorska višina (metri)",
     "current_ha_coords": "Trenutne koordinate Home Assistant"
-  },
-  "days_between_irrigation": {
-    "title": "Dnevi med namakanji",
-    "description": "Nastavi najmanjše število dni, ki morajo miniti med namakanji. To pomaga nadzorovati pogostost zalivanja za varčevanje z vodo in zdravje rastlin.\n\nTipični primeri uporabe:\n• Nega trate: intervali 1-2 dni preprečujejo prekomerno zalivanje\n• Omejitve med sušo: intervali 6+ dni za tedensko zalivanje\n• Rastline z globokimi koreninami: intervali 3-7 dni za redkejše zalivanje\n• Varčevanje z vodo: prilagodljivo glede na podnebje in tla",
-    "label": "Najmanjše število dni med namakanji",
-    "own": "Cone z lastnimi dnevi:"
   },
   "planning": {
     "now": "Namakanje poteka",
@@ -1386,7 +1383,7 @@
     "schedule_weather": "Upoštevaj vreme",
     "schedule_hard_deadline": "Prekini zagon ob končnem času",
     "schedule_hard_deadline_help": "Zagon se prekine ob končnem cilju: odprte cone se zaprejo in se jim prišteje, kar so zalile, kar se ni začelo, pa se preskoči.",
-    "condition_postponed": "Odloženi dnevi (vedno vklopljeno)",
+    "condition_postponed": "Odloženi dnevi",
     "condition_rain_sensor": "Senzor dežja",
     "condition_freeze": "Zmrzal",
     "condition_wind": "Veter",
@@ -1394,7 +1391,7 @@
     "condition_days_between": "Dnevi od zadnjega zalivanja",
     "condition_soil_moisture": "Vlažnost tal",
     "conditions_subset": "Samo ta preverjanja vremena",
-    "conditions_pick": "Odkljukajte preverjanja, ki jih mora ta urnik prezreti, na primer dež za rastlinjak. Preloženi dnevi veljajo vedno.",
+    "conditions_pick": "Odznačite preverjanja, ki naj jih ta urnik prezre, na primer dež za rastlinjak. Odloženi dnevi, tisti z gumbov Odloži na začetni strani, veljajo vedno.",
     "schedule_weather_help": "Vklopljeno: preverjanja v Vreme, Preskok namakanja lahko namakanje zadržijo ali skrajšajo: dež, zmrzal, veter, dnevi med namakanji, mokra tla in odloženi dnevi. Izklopite za kapljično cev v rastlinjaku, ki je vreme ne zadeva.",
     "pause": "Začasno ustavi",
     "resume": "Nadaljuj",
@@ -1422,12 +1419,13 @@
     "adjust_seconds": "Dodani (+) ali odvzeti (-) čas",
     "step_bounds_help": "Vrstni red: najprej odstotek iz „Prilagodi trajanja“ programa, kadar ta velja (nastavi se v programu, ne tukaj), nato dodani ali odvzeti čas, nato najmanjša in največja vrednost. 0 za najmanjšo ali največjo: brez. Korak, ki ne potrebuje vode, ostane na nič: najmanjša vrednost ga nikoli ne zažene.",
     "min_deficit_mm": "Zalivaj samo, ko je primanjkljaj vsaj",
-    "min_deficit_mm_help": "V mm, 0 za vedno zalivanje. Če je nastavljen, za ta korak nadomesti lasten prag cone. Koraki s fiksnim trajanjem se vedno zalivajo.",
+    "min_deficit_mm_help": "V mm. Prazno, privzeto: vsaka cona obdrži svoj prag zalivanja. Število ga za ta korak nadomesti: cona z manjšim primanjkljajem korak preskoči, cona z večjim se zalije, tudi kjer bi njen prag čakal. Koraki s fiksnim trajanjem se vedno zalijejo.",
     "min_deficit_short": "Najmanjši primanjkljaj",
     "adjust_title": "Prilagodi trajanja",
     "adjust_none": "Nobena prilagoditev ne velja.",
     "adjust_percent": "Odstotek",
     "adjust_hours": "Velja",
+    "adjust_hours_help": "Koliko ur prilagoditev velja, od zdaj naprej. Prazno: dokler je ne ponastavite.",
     "adjust_help": "Program zaliva dlje ali krajše pri zagonih, ki se začnejo po nastavitvi. Nadomesti prejšnjo prilagoditev. Prazne ure: do ponastavitve.",
     "adjust_apply": "Uporabi",
     "adjust_reset": "Ponastavi",
@@ -1504,7 +1502,7 @@
     "cond_days_between": "vsaj {n} dni",
     "cond_freeze": "pri {value} ali manj",
     "cond_off": "izklopljen",
-    "cond_postponed": "gumbi Odloži na začetni strani",
+    "cond_postponed": "vedno vklopljeno",
     "cond_precipitation": "od {value} v napovedi",
     "cond_soil": "Cone s senzorjem: {n}",
     "cond_soil_one": "{n} cona s senzorjem",
@@ -1587,7 +1585,6 @@
       "sensor": "Bere {sensor}.",
       "service": "Bere trenutno vrednost vremenske storitve.",
       "nothing": "Ni senzorja in ni vremenske storitve: to preverjanje ne zadrži ničesar.",
-      "same": "Isti vir kot skupina senzorjev {groups}, za izhlapevanje.",
       "other": "Za izhlapevanje skupine senzorjev to vrednost berejo drugje: {groups}.",
       "service-short": "vremenska storitev",
       "static-short": "fiksna vrednost",
@@ -1715,7 +1712,6 @@
     "weather_yes": "Da",
     "weather_yes_unread": "Da, vendar {reason} ni bilo mogoče prebrati",
     "weather_no": "Ne: {reason}",
-    "otherwise": "Sicer: ta dan nič",
     "supply_on": "{name} vklopljena",
     "supply_before": "{time} pred ventili",
     "supply_after_valves": "{time} po ventilih",

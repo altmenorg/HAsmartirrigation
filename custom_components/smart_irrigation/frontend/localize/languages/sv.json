@@ -282,7 +282,8 @@
             "auto-update-schedule": "Uppdateringsschema",
             "auto-update-time": "Uppdatera kl.",
             "auto-update-interval": "Hämta vädret var",
-            "auto-update-delay": "Fördröjning före första uppdateringen"
+            "auto-update-delay": "Fördröjning före första uppdateringen",
+            "auto-update-delay-help": "Sekunder att vänta, efter att Home Assistant startat eller detta kort sparats, innan den första väderuppdateringen; sedan följer uppdateringarna intervallet. För sensorer eller en väderintegration som är långsamma att starta. 0, standard: direkt."
           },
           "options": {
             "minutes": "minuter",
@@ -295,7 +296,8 @@
           "description": "Inställningen gäller alla sensorgrupper nedan. Varje nytt sensorvärde registreras när det ändras. Det ger tätare mätserier för timberäkningen och nederbörden. En regnmätare som rapporterar var tionde minut läses till exempel av var tionde minut. Zonerna beräknas fortfarande vid den schemalagda tidpunkten, utifrån de insamlade värdena. Om en grupp även använder en vädertjänst registreras sensorernas ändringar på samma sätt. Vädertjänsten anropas bara en gång per uppdatering.",
           "labels": {
             "continuousupdates": "Aktivera kontinuerliga uppdateringar",
-            "sensor_debounce": "Fördröjning vid snabba sensorändringar"
+            "sensor_debounce": "Fördröjning vid snabba sensorändringar",
+            "sensor_debounce_help": "I ms. Efter en ändring av en av dess sensorer väntar en grupp så länge på andra innan den uppdaterar sina zoner: en skur av ändringar ger en uppdatering. Varje ändring registreras fortfarande. 0: en uppdatering vid varje ändring."
           }
         },
         "panel-mode": {
@@ -331,7 +333,7 @@
         "control": "Styrning",
         "system": "System",
         "calculation-sub": "Hur mycket vatten varje zon behöver och när behovet beräknas.",
-        "control-sub": "Hur ventilerna öppnas och vad som startar bevattningen.",
+        "control-sub": "Det som bevattnas utanför Smart Irrigation och, vid endast beräkning, det som startar en bevattning.",
         "system-sub": "Panelen, mallar för automationer och skript (blueprints), installationsguiden och import från Irrigation Unlimited."
       }
     },
@@ -767,7 +769,7 @@
         "available-water-help": "Ange hur mycket växttillgängligt vatten jorden i zonen kan hålla, i mm. Multiplicera rotdjupet i meter med mängden växttillgängligt vatten per meter jord. Enligt FAO-56 är det cirka 50–110 mm för sand, 130–180 mm för blandjord (loam) och 120–200 mm för lera. Lämna fältet tomt för att behålla nuvarande beräkningssätt. Om du anger ett värde begränsas underskottet till den vattenmängden. När växterna har förbrukat den tillåtna andelen (normalt 50 %) minskar vattenupptaget och underskottet växer långsammare.",
         "distribution-efficiency": "Fördelningseffektivitet",
         "distribution-efficiency-help": "Så stor andel av bevattningsvattnet når växterna, i procent. Spridare kan förlora vatten vid blåst eller i en sluttning, medan förlusten vid droppbevattning är liten. Lämna fältet tomt för 100 %. Vid 80 % behöver zonen vattnas 25 % längre för att växterna ska få samma vattenmängd. Då räknas 80 % av det tillförda vattnet in i vattenbalansen.",
-        "days-between-irrigation-help": "Lämna fältet tomt för att använda värdet under Väder → Hoppa över bevattning. Ett eget värde gäller bara för den här zonen. Med 1 kan zonen vattnas varje dag om det behövs och med 3 högst var tredje dag. Med 0 tas begränsningen bort. Dagarna räknas från zonens senaste bevattning.",
+        "days-between-irrigation-help": "Minsta antal dagar mellan två bevattningar av den här zonen, räknat från dess senaste bevattning: 1 varje dag vid behov, 3 högst var tredje dag; tomt eller 0, ingen gräns. Underskottet fortsätter att växa medan zonen väntar och tas igen vid nästa bevattning.",
         "soil-moisture-sensor": "Markfuktsensor",
         "soil-moisture-sensor-hint": "Bevattningen hoppas över så länge markfuktigheten är lika med eller över gränsvärdet. Zonens vattenbalans behålls.",
         "soil-moisture-threshold": "Hoppa över vid detta värde eller högre",
@@ -1154,6 +1156,8 @@
     },
     "skip": {
       "title": "Hoppa över bevattning",
+      "days-zones": "Dagar mellan bevattningar, inställt på zonen:",
+      "days": "Dagarna mellan bevattningar ställs in på varje zon, i dess inställningar.",
       "soil-moisture": "Markfuktighet ställs in per zon, eftersom varje zon har sin egen sensor.",
       "soil-zones": "Markfuktighet, inställd på zonen (hoppa över från):",
       "open-zones": "Öppna zonerna"
@@ -1246,7 +1250,6 @@
   },
   "weather_skip": {
     "title": "Regnprognos",
-    "description": "När väderprognosen visar regn minskar Smart Irrigation bevattningen. Funktionen kräver att du har ställt in en vädertjänst.",
     "threshold_label": "Regnmängd för att hoppa över bevattningen",
     "threshold_description": "Bevattningen hoppas över om den väntade nederbörden når den här gränsen. Med timprognos räknas de 48 timmarna från bevattningens start. Med dygnsprognos räknas startdagen och följande dag.",
     "effective_rain_label": "Räkna bara regn som når rötterna",
@@ -1266,12 +1269,6 @@
     "longitude": "Longitud (decimalgrader)",
     "elevation": "Höjd (meter över havet)",
     "current_ha_coords": "Aktuella Home Assistant-koordinater"
-  },
-  "days_between_irrigation": {
-    "title": "Dagar mellan bevattningstillfällen",
-    "description": "Ange hur många dagar som minst ska gå mellan bevattningstillfällena. Anpassa intervallet efter växternas behov och hur du vill hushålla med vattnet.\n\nExempel:\n• Gräsmattor: 1–2 dagars intervall för att undvika övervattning\n• Bevattningsrestriktioner vid torka: minst 6 dagars intervall för bevattning en gång i veckan\n• Växter med djupa rötter: 3–7 dagars intervall för glesare bevattning\n• Vattenbesparing: anpassa intervallet efter klimat och markförhållanden",
-    "label": "Minsta antal dagar mellan bevattningstillfällena",
-    "own": "Zoner med egna dagar:"
   },
   "planning": {
     "now": "Bevattnar nu",
@@ -1386,7 +1383,7 @@
     "schedule_weather": "Ta hänsyn till vädret",
     "schedule_hard_deadline": "Avbryt körningen vid sluttiden",
     "schedule_hard_deadline_help": "Bevattningen avbryts vid sluttiden. Öppna zonventiler stängs och vattnet som hunnit tillföras räknas in i zonernas vattenbalans. Steg som ännu inte startat hoppas över.",
-    "condition_postponed": "Uppskjutna dagar (alltid på)",
+    "condition_postponed": "Uppskjutna dagar",
     "condition_rain_sensor": "Regnsensor",
     "condition_freeze": "Frost",
     "condition_wind": "Vind",
@@ -1394,7 +1391,7 @@
     "condition_days_between": "Dagar sedan senaste vattningen",
     "condition_soil_moisture": "Markfuktighet",
     "conditions_subset": "Bara de här vädervillkoren",
-    "conditions_pick": "Avmarkera de kontroller som schemat ska bortse från, till exempel regn i ett växthus. Uppskjutna dagar gäller alltid.",
+    "conditions_pick": "Avmarkera de kontroller som det här schemat ska ignorera, till exempel regnet för ett växthus. Uppskjutna dagar, de från Skjut upp-knapparna på startsidan, gäller alltid.",
     "schedule_weather_help": "På: kontrollerna under Väder, Hoppa över bevattning kan hålla tillbaka eller korta bevattningen: regn, frost, vind, dagar mellan bevattningar, blöt mark och uppskjutna dagar. Stäng av för en droppslang i växthuset som vädret inte berör.",
     "pause": "Pausa",
     "resume": "Återuppta",
@@ -1422,12 +1419,13 @@
     "adjust_seconds": "Tid som läggs till (+) eller dras av (-)",
     "step_bounds_help": "Först tillämpas en eventuell procentsats från programmets inställning ”Justera bevattningstider”. Sedan läggs tid till eller dras av. Till sist tillämpas den kortaste och längsta tillåtna tiden. Ange 0 för att ta bort respektive gräns. Om steget inte behöver något vatten förblir bevattningstiden noll även om en minimitid har angetts.",
     "min_deficit_mm": "Vattna bara när underskottet är minst",
-    "min_deficit_mm_help": "Ange vattenunderskottet i mm. Ange 0 för att alltid bevattna. Ett angivet värde ersätter zonens egen bevattningströskel i det här steget. Steg med fast bevattningstid körs alltid.",
+    "min_deficit_mm_help": "I mm. Tomt, standard: varje zon behåller sin egen bevattningströskel. Ett tal ersätter den för detta steg: en zon med mindre underskott hoppar över steget, en med större bevattnas, även där dess egen tröskel skulle vänta. Steg med fast varaktighet bevattnas alltid.",
     "min_deficit_short": "Minsta underskott",
     "adjust_title": "Justera bevattningstider",
     "adjust_none": "Ingen justering gäller.",
     "adjust_percent": "Procent",
     "adjust_hours": "Giltig i",
+    "adjust_hours_help": "Hur många timmar justeringen gäller, från nu. Tomt: tills den återställs.",
     "adjust_help": "Ändrar bevattningstiden för körningar som startar efter att justeringen har sparats. Den ersätter föregående justering. Lämna antalet timmar tomt för att behålla justeringen tills du återställer den.",
     "adjust_apply": "Tillämpa",
     "adjust_reset": "Återställ",
@@ -1504,7 +1502,7 @@
     "cond_days_between": "minst {n} dagar",
     "cond_freeze": "vid {value} eller lägre",
     "cond_off": "avstängt",
-    "cond_postponed": "knapparna ”Skjut upp” på startsidan",
+    "cond_postponed": "alltid på",
     "cond_precipitation": "från {value} i prognosen",
     "cond_soil": "antal zoner med sensor: {n}",
     "cond_soil_one": "{n} zon med sensor",
@@ -1587,7 +1585,6 @@
       "sensor": "Läser {sensor}.",
       "service": "Läser vädertjänstens aktuella värde.",
       "nothing": "Ingen sensor eller vädertjänst har angetts. Det här villkoret hindrar därför aldrig bevattningen.",
-      "same": "Sensorgruppen {groups} använder samma källa för att beräkna avdunstningen.",
       "other": "För beräkning av avdunstningen använder sensorgrupperna en annan källa för värdet: {groups}.",
       "service-short": "vädertjänsten",
       "static-short": "ett fast värde",
@@ -1715,7 +1712,6 @@
     "weather_yes": "Ja",
     "weather_yes_unread": "Ja, men {reason} kunde inte läsas",
     "weather_no": "Nej: {reason}",
-    "otherwise": "Annars: inget den dagen",
     "supply_on": "{name} på",
     "supply_before": "{time} före ventilerna",
     "supply_after_valves": "{time} efter ventilerna",

@@ -282,7 +282,8 @@
             "auto-update-schedule": "Updateschema",
             "auto-update-time": "Bijwerken om",
             "auto-update-interval": "Het weer lezen elke",
-            "auto-update-delay": "Vertraging voor de eerste update"
+            "auto-update-delay": "Vertraging voor de eerste update",
+            "auto-update-delay-help": "Seconden wachten, na het starten van Home Assistant of het opslaan van deze kaart, vóór de eerste weerupdate; daarna volgen de updates het interval. Voor sensoren of een weerintegratie die traag opstarten. 0, de standaard: meteen."
           },
           "options": {
             "minutes": "minuten",
@@ -295,7 +296,8 @@
           "description": "Eén instelling voor alle sensorgroepen hieronder. Legt elke wijziging van een sensor van een groep vast, in plaats van één meting per update, zodat de berekening per uur en de regen met fijnere gegevens werken: een regenmeter die elke tien minuten meldt, wordt elke tien minuten gelezen. De zones worden niet bij elke wijziging opnieuw berekend; de geplande berekening doet dat één keer, uit de vastgelegde metingen. In een groep die ook een weerdienst gebruikt, worden de sensoren vastgelegd wanneer ze veranderen en wordt de dienst nog steeds één keer per update gelezen, dus het kost geen extra verzoeken.",
           "labels": {
             "continuousupdates": "Continue updates inschakelen",
-            "sensor_debounce": "Sensor-debounce"
+            "sensor_debounce": "Sensor-debounce",
+            "sensor_debounce_help": "In ms. Na een wijziging van een van haar sensoren wacht een groep zo lang op andere voordat ze haar zones bijwerkt: een reeks wijzigingen geeft één update. Elke wijziging wordt nog steeds vastgelegd. 0: een update bij elke wijziging."
           }
         },
         "panel-mode": {
@@ -331,7 +333,7 @@
         "control": "Aansturing",
         "system": "Systeem",
         "calculation-sub": "Hoeveel elke zone nodig heeft, en wanneer dat wordt berekend.",
-        "control-sub": "Wat de ventielen opent, en wat een ronde start.",
+        "control-sub": "Wat buiten Smart Irrigation water krijgt en, bij alleen berekenen, wat een beregening start.",
         "system-sub": "Het paneel, de blueprints, de installatieassistent en de overstap van Irrigation Unlimited."
       }
     },
@@ -767,7 +769,7 @@
         "available-water-help": "Hoeveel water de bodem van deze zone voor de planten vasthoudt, in mm (de worteldiepte in meter maal wat de bodem per meter vasthoudt: ongeveer 50 tot 110 mm voor zand, 130 tot 180 voor leem, 120 tot 200 voor klei, volgens FAO-56). Laat leeg om alles te laten zoals het is. Als het is ingesteld, kan het tekort er niet onder komen, en zodra de planten het toegestane deel ervan hebben opgebruikt (50% tenzij je het verandert) nemen ze minder water op, zodat het tekort minder snel groeit.",
         "distribution-efficiency": "Verdelingsefficiëntie",
         "distribution-efficiency-help": "Het deel van het water uit de sproeiers dat de planten bereikt, in %. Sproeiers in de wind of op een helling verliezen wat, druppelen bijna niets. Laat leeg voor 100%. Een zone op 80% bewatert 25% langer voor dezelfde hoogte, en rekent maar 80% van wat ze afgeeft als aanvulling.",
-        "days-between-irrigation-help": "Laat leeg om de algemene instelling te volgen (Weer, Bewatering overslaan). Een getal vervangt de algemene instelling voor alleen deze zone: 1 bewatert haar elke dag als ze water nodig heeft, 3 hooguit om de derde dag, 0 heft de beperking op. De dagen worden geteld vanaf de laatste keer dat deze zone is bewaterd.",
+        "days-between-irrigation-help": "Het minimum aantal dagen tussen twee beregeningen van deze zone, geteld vanaf haar laatste beregening: 1 elke dag indien nodig, 3 hoogstens om de drie dagen; leeg of 0, geen limiet. Het tekort blijft oplopen tijdens het wachten en wordt bij de volgende beregening ingehaald.",
         "soil-moisture-sensor": "Bodemvochtsensor",
         "soil-moisture-sensor-hint": "De zone slaat een ronde over zolang de bodem op of boven de drempel zit. De waterbalans blijft bewaard.",
         "soil-moisture-threshold": "Overslaan vanaf",
@@ -1154,6 +1156,8 @@
     },
     "skip": {
       "title": "Bewatering overslaan",
+      "days-zones": "Dagen tussen beregeningen, ingesteld op de zone:",
+      "days": "De dagen tussen beregeningen stel je per zone in, in haar instellingen.",
       "soil-moisture": "Bodemvocht wordt per zone ingesteld, omdat elke zone een eigen sensor heeft.",
       "soil-zones": "Bodemvochtigheid, ingesteld op de zone (overslaan vanaf):",
       "open-zones": "Zones openen"
@@ -1246,7 +1250,6 @@
   },
   "weather_skip": {
     "title": "Regenverwachting",
-    "description": "Wanneer regen wordt verwacht, bewatert Smart Irrigation minder. Voor deze functie moet een weerdienst zijn geconfigureerd.",
     "threshold_label": "Irrigatie overslaan vanaf",
     "threshold_description": "Minimale hoeveelheid neerslag (in mm) die voor vandaag en morgen wordt voorspeld om de irrigatie over te slaan.",
     "effective_rain_label": "Alleen regen tellen die de wortels bereikt",
@@ -1266,12 +1269,6 @@
     "longitude": "Lengtegraad (decimale graden)",
     "elevation": "Hoogte (meters boven zeeniveau)",
     "current_ha_coords": "Huidige Home Assistant coördinaten"
-  },
-  "days_between_irrigation": {
-    "title": "Dagen Tussen Irrigaties",
-    "description": "Configureer het minimum aantal dagen dat moet verstrijken tussen irrigatie gebeurtenissen. Dit helpt bij het controleren van de bevloeiingsfrequentie voor waterbesparing en plantgezondheid beheer.\n\nTypische gebruikssituaties:\n• Gazonverzorging: 1-2 dag intervallen voorkomen overbewatering\n• Droogte beperkingen: 6+ dag intervallen voor wekelijkse bewatering\n• Diepwortelende planten: 3-7 dag intervallen voor minder frequente bewatering\n• Waterbesparing: aanpasbaar op basis van klimaat en bodemcondities",
-    "label": "Minimum dagen tussen irrigaties",
-    "own": "Zones met eigen dagen:"
   },
   "planning": {
     "now": "Nu aan het bewateren",
@@ -1386,7 +1383,7 @@
     "schedule_weather": "Het weer meenemen",
     "schedule_hard_deadline": "De ronde afbreken op de eindtijd",
     "schedule_hard_deadline_help": "De ronde wordt afgebroken op het eindmoment: de geopende zones worden gesloten en gecrediteerd voor wat ze bewaterd hebben, en wat niet gestart is, wordt overgeslagen.",
-    "condition_postponed": "Uitgestelde dagen (altijd aan)",
+    "condition_postponed": "Uitgestelde dagen",
     "condition_rain_sensor": "Regensensor",
     "condition_freeze": "Vorst",
     "condition_wind": "Wind",
@@ -1394,7 +1391,7 @@
     "condition_days_between": "Dagen sinds de laatste bewatering",
     "condition_soil_moisture": "Bodemvocht",
     "conditions_subset": "Alleen deze weercontroles",
-    "conditions_pick": "Vink de controles uit die dit schema moet negeren, de regen voor een kas bijvoorbeeld. Uitgestelde dagen gelden altijd.",
+    "conditions_pick": "Vink de controles uit die dit schema moet negeren, de regen voor een kas bijvoorbeeld. Uitgestelde dagen, die van de Uitstellen-knoppen op de startpagina, gelden altijd.",
     "schedule_weather_help": "Aan: de controles van Weer, Bewatering overslaan kunnen de beurt tegenhouden of inkorten: regen, vorst, wind, de dagen tussen bewateringen, natte grond en uitgestelde dagen. Zet het uit voor een druppelslang in de kas die het weer niet raakt.",
     "pause": "Pauzeren",
     "resume": "Hervatten",
@@ -1422,12 +1419,13 @@
     "adjust_seconds": "Tijd erbij (+) of eraf (-)",
     "step_bounds_help": "Volgorde: eerst het percentage van “Duren aanpassen” van het programma, als er een geldt (dat stel je in op het programma, niet hier), dan de tijd erbij of eraf, dan het minimum en het maximum. 0 voor minimum of maximum: geen. Een stap die geen water nodig heeft blijft op nul: het minimum start hem nooit.",
     "min_deficit_mm": "Alleen bewateren als het tekort minstens",
-    "min_deficit_mm_help": "In mm, 0 om altijd te sproeien. Ingesteld vervangt hij voor deze stap de eigen drempel van de zone. Stappen met een vaste duur worden altijd besproeid.",
+    "min_deficit_mm_help": "In mm. Leeg, de standaard: elke zone houdt haar eigen beregeningsdrempel. Een getal vervangt die voor deze stap: een zone met een kleiner tekort slaat de stap over, een met een groter tekort krijgt water, ook waar haar eigen drempel zou wachten. Stappen met een vaste duur krijgen altijd water.",
     "min_deficit_short": "Minimaal tekort",
     "adjust_title": "Duren aanpassen",
     "adjust_none": "Geen aanpassing van kracht.",
     "adjust_percent": "Procent",
     "adjust_hours": "Geldig voor",
+    "adjust_hours_help": "Hoeveel uur de aanpassing van kracht blijft, vanaf nu. Leeg: tot ze wordt teruggezet.",
     "adjust_help": "Laat dit programma langer of korter bewateren voor de rondes die starten nadat het is ingesteld. Het vervangt de vorige aanpassing. Uren leeg: tot het wordt gereset.",
     "adjust_apply": "Toepassen",
     "adjust_reset": "Resetten",
@@ -1504,7 +1502,7 @@
     "cond_days_between": "minstens {n} dagen",
     "cond_freeze": "bij {value} of lager",
     "cond_off": "uitgeschakeld",
-    "cond_postponed": "de Uitstellen-knoppen van de startpagina",
+    "cond_postponed": "altijd aan",
     "cond_precipitation": "vanaf {value} voorspeld",
     "cond_soil": "{n} zones met een sensor",
     "cond_soil_one": "{n} zone met een sensor",
@@ -1587,7 +1585,6 @@
       "sensor": "Leest {sensor}.",
       "service": "Leest de huidige waarde van de weerdienst.",
       "nothing": "Geen sensor en geen weerdienst: deze controle houdt niets tegen.",
-      "same": "Dezelfde bron als de sensorgroep {groups}, voor de verdamping.",
       "other": "Voor de verdamping lezen de sensorgroepen deze waarde ergens anders: {groups}.",
       "service-short": "de weerdienst",
       "static-short": "een vaste waarde",
@@ -1715,7 +1712,6 @@
     "weather_yes": "Ja",
     "weather_yes_unread": "Ja, maar {reason} kon niet worden gelezen",
     "weather_no": "Nee: {reason}",
-    "otherwise": "Anders: niets die dag",
     "supply_on": "{name} aan",
     "supply_before": "{time} voor de kleppen",
     "supply_after_valves": "{time} na de kleppen",
