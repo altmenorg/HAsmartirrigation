@@ -3403,7 +3403,10 @@ function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(4.5em, 1fr));
         gap: var(--si-space-1) var(--si-space-2);
-        flex: 1 1 16em;
+        /* Rows as tall as a tick, not spread over the row's height. */
+        align-content: start;
+        /* No basis: in the column a phone stacks, it would be a height. */
+        flex: 1 1 auto;
         min-width: 0;
       }
       .day-grid label,
