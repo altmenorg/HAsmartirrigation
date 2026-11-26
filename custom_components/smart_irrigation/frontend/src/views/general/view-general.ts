@@ -2660,7 +2660,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       ? t("cond_postponed")
                       : this._conditionSetting(id);
                     return html`
-                      <div class=${setting ? "" : "cond-off"}>
+                      <div class="check-row ${setting ? "" : "cond-off"}">
                         <label>
                           <input
                             type="checkbox"
@@ -2833,7 +2833,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
         ${choices.map(
           (choice) => html`
-            <div>
+            <div class="check-row">
               <label>
                 <input
                   type="checkbox"
@@ -5276,26 +5276,40 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
          text, each column lined up (#1059). */
       .day-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(4.5em, 1fr));
-        gap: var(--si-space-1) var(--si-space-2);
+        /* Columns as wide as their name, not spread over the row (#1059). */
+        grid-template-columns: repeat(auto-fill, minmax(4.5em, auto));
+        justify-content: start;
+        gap: var(--si-space-1) var(--si-space-3);
         /* Rows as tall as a tick, not spread over the row's height. */
         align-content: start;
         /* No basis: in the column a phone stacks, it would be a height. */
         flex: 1 1 auto;
         min-width: 0;
       }
+      /* One tick list everywhere (days, checks, notifications): the
+         browser's own box, centred on its text (#1059). */
       .day-grid label,
-      .conditions label {
+      .check-row label {
         display: inline-flex;
         align-items: center;
         gap: var(--si-space-1);
+      }
+      .day-grid label {
         white-space: nowrap;
       }
       .day-grid input[type="checkbox"],
-      .conditions input[type="checkbox"] {
-        width: 1em;
-        height: 1em;
+      .check-row input[type="checkbox"] {
         margin: 0;
+      }
+      .check-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        column-gap: var(--si-space-1);
+        padding: 4px 0;
+      }
+      .conditions {
+        padding-top: var(--si-space-2);
       }
       /* Always on: as grey as the checks turned off, ticked. */
       .conditions input[type="checkbox"]:disabled {

@@ -1179,8 +1179,14 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
           : check.source;
       return html`
         <span
-          >${this.t("cards.decision.detail-now")}: ${this._reading(check.value)}
-          ${check.unit ?? ""}</span
+          >${
+            // Where "now" was read, next to it: on a line of its own it read
+            // as belonging to every figure, or to none (#1059).
+            source
+              ? `${this.t("cards.decision.detail-now")} (${source})`
+              : this.t("cards.decision.detail-now")
+          }:
+          ${this._reading(check.value)} ${check.unit ?? ""}</span
         >
         <span
           >${this.t("cards.decision.detail-threshold")}:
@@ -1192,7 +1198,6 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
               ${this._reading(check.forecast_low)} ${check.unit ?? ""}</span
             >`
           : ""}
-        <span>${source ?? ""}</span>
       `;
     }
     if (check.id === "rain_sensor") {
