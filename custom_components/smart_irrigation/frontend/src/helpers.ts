@@ -96,8 +96,15 @@ export function localizedDateTime(
   }
   const language =
     hass?.locale?.language ?? hass?.language ?? navigator.language;
+  // The user's profile can ask for the server's time zone instead of the
+  // browser's (#1071).
+  const serverZone =
+    hass?.locale?.time_zone === "server" ? hass?.config?.time_zone : undefined;
   try {
-    return new Intl.DateTimeFormat(language, options).format(date);
+    return new Intl.DateTimeFormat(language, {
+      ...options,
+      ...(serverZone && !options.timeZone ? { timeZone: serverZone } : {}),
+    }).format(date);
   } catch {
     // An unknown language tag: the system default still beats a crash.
     return date.toLocaleString();

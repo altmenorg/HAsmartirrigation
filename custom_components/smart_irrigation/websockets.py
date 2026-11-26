@@ -2,6 +2,7 @@
 
 import datetime
 import logging
+import re
 from http import HTTPStatus
 
 import voluptuous as vol
@@ -42,6 +43,38 @@ from .skip_conditions import SkipConditionsMixin, thresholds_for_display
 from .units import zone_from_display, zone_to_display
 
 _LOGGER = logging.getLogger(__name__)
+
+# A naive date and time, as ``datetime.now()`` writes it: "2026-11-26T03:25:00".
+_NAIVE_STAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?$")
+
+
+def _with_offset(value):
+    """The panel's copy of a payload, its naive times carrying their offset.
+
+    The integration keeps times as ``datetime.now()`` gives them: the wall
+    clock of the machine Home Assistant runs on, without a time zone. The
+    browser read "2026-11-26T03:25:00" as its own local time, so where that
+    clock is UTC (a Docker install without TZ) a user in Auckland saw every
+    time 13 hours off (#1071). Each one now leaves with the offset of the
+    clock that wrote it, and the browser shows the right moment.
+    """
+    if isinstance(value, dict):
+        return {key: _with_offset(item) for key, item in value.items()}
+    if isinstance(value, list | tuple):
+        return [_with_offset(item) for item in value]
+    if isinstance(value, datetime.datetime):
+        return value.astimezone() if value.tzinfo is None else value
+    if isinstance(value, str) and _NAIVE_STAMP.match(value):
+        try:
+            return datetime.datetime.fromisoformat(value).astimezone().isoformat()
+        except ValueError:
+            return value
+    return value
+
+
+def _send_result(connection, msg_id, result=None):
+    """Send a websocket result, its times with their offset (see above)."""
+    connection.send_result(msg_id, _with_offset(result))
 
 
 def _safe_parse_datetime(value):
@@ -86,7 +119,7 @@ async def handle_subscribe_updates(hass: HomeAssistant, connection, msg):
     connection.subscriptions[msg["id"]] = async_dispatcher_connect(
         hass, const.DOMAIN + "_update_frontend", async_handle_event
     )
-    connection.send_result(msg["id"])
+    _send_result(connection, msg["id"])
 
 
 CONFIG_SAVE_SCHEMA = vol.Schema(
@@ -526,7 +559,7 @@ def _last_zone_id(saved, coordinator):
 @async_response
 async def websocket_get_config(hass: HomeAssistant, connection, msg):
     """Publish config data."""
-    connection.send_result(msg["id"], await async_config_for_display(hass))
+    _send_result(connection, msg["id"], await async_config_for_display(hass))
 
 
 async def async_config_for_display(hass: HomeAssistant) -> dict:
@@ -572,7 +605,8 @@ async def websocket_get_zones(hass: HomeAssistant, connection, msg):
     zones = await coordinator.store.async_get_zones()
     # Stored in metric, shown in the unit system (units.py).
     metric = hass.config.units is METRIC_SYSTEM
-    connection.send_result(
+    _send_result(
+        connection,
         msg["id"],
         [
             {
@@ -668,7 +702,8 @@ async def websocket_get_modules(hass: HomeAssistant, connection, msg):
     modules = await coordinator.store.async_get_modules()
     mappings = await coordinator.store.async_get_mappings()
     zones = await coordinator.store.async_get_zones()
-    connection.send_result(
+    _send_result(
+        connection,
         msg["id"],
         [
             {
@@ -722,7 +757,8 @@ async def websocket_get_all_modules(hass: HomeAssistant, connection, msg):
     """
     coordinator = hass.data[const.DOMAIN]["coordinator"]
     modules = await coordinator.async_get_all_modules()
-    connection.send_result(
+    _send_result(
+        connection,
         msg["id"],
         [
             {
@@ -741,7 +777,7 @@ async def websocket_get_mappings(hass: HomeAssistant, connection, msg):
     coordinator = hass.data[const.DOMAIN]["coordinator"]
     _LOGGER.debug("websocket_get_mappings called")
     mappings = await coordinator.store.async_get_mappings()
-    connection.send_result(msg["id"], mappings)
+    _send_result(connection, msg["id"], mappings)
 
 
 def _project_days_between_to_start(skip_preview, skip_days):
@@ -904,7 +940,8 @@ async def websocket_get_planning(hass: HomeAssistant, connection, msg):
         connection.send_error(msg["id"], "not_ready", "Smart Irrigation is loading")
         return
     days = msg.get("days", 3)
-    connection.send_result(
+    _send_result(
+        connection,
         msg["id"],
         sequence_planning(
             await coordinator.async_planning(days),
@@ -920,7 +957,8 @@ async def websocket_put_back_zone(hass: HomeAssistant, connection, msg):
     if coordinator is None:
         connection.send_error(msg["id"], "not_ready", "Smart Irrigation is loading")
         return
-    connection.send_result(
+    _send_result(
+        connection,
         msg["id"],
         {"put_back": await coordinator.async_put_back_zone(int(msg["zone_id"]))},
     )
@@ -936,8 +974,8 @@ async def websocket_program_preview(hass: HomeAssistant, connection, msg):
     if coordinator is None:
         connection.send_error(msg["id"], "not_ready", "Smart Irrigation is loading")
         return
-    connection.send_result(
-        msg["id"], await coordinator.async_program_preview(msg["program"])
+    _send_result(
+        connection, msg["id"], await coordinator.async_program_preview(msg["program"])
     )
 
 
@@ -992,7 +1030,8 @@ async def websocket_get_programs_state(hass: HomeAssistant, connection, msg):
         connection.send_error(msg["id"], "not_ready", "Smart Irrigation is loading")
         return
     programs = await coordinator.async_program_overview()
-    connection.send_result(
+    _send_result(
+        connection,
         msg["id"],
         {
             "programs": programs,
@@ -1370,7 +1409,7 @@ async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
         # unknown error from a KeyError.
         connection.send_error(msg["id"], "not_ready", "Smart Irrigation is loading")
         return
-    connection.send_result(msg["id"], await build_irrigation_info(hass, coordinator))
+    _send_result(connection, msg["id"], await build_irrigation_info(hass, coordinator))
 
 
 @async_response
@@ -1392,7 +1431,7 @@ async def websocket_get_weather_records(hass: HomeAssistant, connection, msg):
 
         if not mapping:
             _LOGGER.warning("Mapping with ID %s not found", mapping_id)
-            connection.send_result(msg["id"], [])
+            _send_result(connection, msg["id"], [])
             return
 
         # Get weather data from the mapping
@@ -1400,7 +1439,7 @@ async def websocket_get_weather_records(hass: HomeAssistant, connection, msg):
 
         if not mapping_data or not isinstance(mapping_data, list):
             _LOGGER.debug("No weather data found for mapping %s", mapping_id)
-            connection.send_result(msg["id"], [])
+            _send_result(connection, msg["id"], [])
             return
 
         # Process and format the weather records
@@ -1470,7 +1509,7 @@ async def websocket_get_weather_records(hass: HomeAssistant, connection, msg):
             "Error retrieving weather records for mapping %s: %s", mapping_id, e
         )
         records = []
-    connection.send_result(msg["id"], records)
+    _send_result(connection, msg["id"], records)
 
 
 @async_response
@@ -1486,7 +1525,7 @@ async def websocket_get_watering_calendar(hass: HomeAssistant, connection, msg):
             zone_id = int(zone_id)
 
         calendar_data = await coordinator.async_generate_watering_calendar(zone_id)
-        connection.send_result(msg["id"], calendar_data)
+        _send_result(connection, msg["id"], calendar_data)
 
     except Exception as e:
         _LOGGER.error("Error generating watering calendar for zone %s: %s", zone_id, e)
@@ -1607,7 +1646,8 @@ async def websocket_get_weather_service_history(hass: HomeAssistant, connection,
         _LOGGER.error("Error retrieving weather service history: %s", e)
         records = []
 
-    connection.send_result(
+    _send_result(
+        connection,
         msg["id"],
         {"fields": list(WEATHER_SERVICE_HISTORY_FIELDS), "records": records},
     )
@@ -1635,7 +1675,7 @@ async def websocket_get_irrigation_history(hass: HomeAssistant, connection, msg)
         _LOGGER.error("Error retrieving irrigation history: %s", e)
         runs = []
 
-    connection.send_result(msg["id"], {"records": runs})
+    _send_result(connection, msg["id"], {"records": runs})
 
 
 # Only an administrator may see or change how this install talks to its weather
@@ -1656,7 +1696,8 @@ async def websocket_get_irrigation_history(hass: HomeAssistant, connection, msg)
 async def websocket_get_weather_service(hass: HomeAssistant, connection, msg):
     """Publish the currently configured weather service so the panel can show/edit it."""
     data = hass.data.get(const.DOMAIN, {})
-    connection.send_result(
+    _send_result(
+        connection,
         msg["id"],
         {
             const.CONF_USE_WEATHER_SERVICE: bool(
@@ -1804,7 +1845,7 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
         )
 
     _LOGGER.info("Weather service updated via panel (use=%s, service=%s)", use, service)
-    connection.send_result(msg["id"], {"success": True})
+    _send_result(connection, msg["id"], {"success": True})
 
 
 @websocket_api.require_admin
@@ -1826,15 +1867,15 @@ async def websocket_iu_import_preview(hass: HomeAssistant, connection, msg):
     except iu_import_ha.IUImportError as err:
         connection.send_error(msg["id"], err.code, str(err))
         return
-    connection.send_result(msg["id"], preview)
+    _send_result(connection, msg["id"], preview)
 
 
 @websocket_api.require_admin
 @async_response
 async def websocket_iu_import_sources(hass: HomeAssistant, connection, msg):
     """The Irrigation Unlimited configurations there are to import."""
-    connection.send_result(
-        msg["id"], {"sources": await iu_import_ha.async_sources(hass)}
+    _send_result(
+        connection, msg["id"], {"sources": await iu_import_ha.async_sources(hass)}
     )
 
 
@@ -1872,7 +1913,7 @@ async def websocket_iu_import_apply(hass: HomeAssistant, connection, msg):
         connection.send_error(msg["id"], err.code, str(err))
         return
     async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")
-    connection.send_result(msg["id"], result)
+    _send_result(connection, msg["id"], result)
 
 
 @websocket_api.require_admin
@@ -1883,8 +1924,8 @@ async def websocket_iu_import_status(hass: HomeAssistant, connection, msg):
     if coordinator is None:
         connection.send_error(msg["id"], "not_ready", "Smart Irrigation is not set up.")
         return
-    connection.send_result(
-        msg["id"], await iu_import_ha.async_status(hass, coordinator)
+    _send_result(
+        connection, msg["id"], await iu_import_ha.async_status(hass, coordinator)
     )
 
 
@@ -1906,7 +1947,7 @@ async def websocket_iu_import_cutover(hass: HomeAssistant, connection, msg):
         connection.send_error(msg["id"], "iu_failed", str(err))
         return
     async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")
-    connection.send_result(msg["id"], result)
+    _send_result(connection, msg["id"], result)
 
 
 class SmartIrrigationExportView(HomeAssistantView):

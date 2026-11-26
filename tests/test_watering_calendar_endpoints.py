@@ -13,6 +13,7 @@ from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.exceptions import SmartIrrigationError
 from custom_components.smart_irrigation.websockets import (
     SmartIrrigationWateringCalendarView,
+    _with_offset,
     websocket_get_watering_calendar,
 )
 
@@ -53,14 +54,14 @@ async def test_the_calendar_is_served_as_built_and_an_unknown_zone_is_an_error()
     # Websocket: every zone, then one zone by id.
     connection = MagicMock()
     await websocket_get_watering_calendar.__wrapped__(hass, connection, {"id": 3})
-    connection.send_result.assert_called_once_with(3, _CALENDAR)
+    connection.send_result.assert_called_once_with(3, _with_offset(_CALENDAR))
     connection.send_error.assert_not_called()
 
     connection = MagicMock()
     await websocket_get_watering_calendar.__wrapped__(
         hass, connection, {"id": 4, "zone_id": "1"}
     )
-    connection.send_result.assert_called_once_with(4, _CALENDAR)
+    connection.send_result.assert_called_once_with(4, _with_offset(_CALENDAR))
     assert coordinator.async_generate_watering_calendar.await_args_list[-1].args == (1,)
 
     connection = MagicMock()
