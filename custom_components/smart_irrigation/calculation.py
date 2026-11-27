@@ -2363,7 +2363,24 @@ class CalculationMixin:
                     self.hass, description=m["description"], config=m["config"]
                 )
                 break
+        self._place_module(modinst)
         return modinst
+
+    def _place_module(self, modinst):
+        """Give a module the site the rest of the calculation uses.
+
+        A module reads Home Assistant's own latitude and elevation when it is
+        made; with manual coordinates the hourly equation used those and the
+        daily one Home Assistant's, so the two priced different places (#1076).
+        """
+        if modinst is None:
+            return
+        latitude = getattr(self, "_effective_latitude", None)
+        elevation = getattr(self, "_effective_elevation", None)
+        if latitude is not None and hasattr(modinst, "_latitude"):
+            modinst._latitude = latitude
+        if elevation is not None and hasattr(modinst, "_elevation"):
+            modinst._elevation = elevation
 
     async def calculate_module(self, zone, weatherdata, forecastdata):
         """Calculate irrigation values for a zone using the specified weather and forecast data.

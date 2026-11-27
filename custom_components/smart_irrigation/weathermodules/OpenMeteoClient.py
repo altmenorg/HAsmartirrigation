@@ -201,6 +201,17 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
             params["elevation"] = self.elevation
         return params
 
+    def _with_elevation(self, params):
+        """The request's parameters with the configured elevation, when set.
+
+        Open-Meteo takes the elevation of its 90 m terrain model otherwise,
+        and uses it to downscale temperature, pressure and ET0.
+        """
+        elevation = getattr(self, "elevation", None)
+        if elevation is None or "elevation" in params:
+            return params
+        return {**params, "elevation": elevation}
+
     def _request(self, params):
         """GET the forecast endpoint through the shared gate; the response or None.
 
@@ -214,6 +225,10 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         (#911).
         """
         global _paused_until, _failing  # noqa: PLW0603
+        # Every request carries the configured elevation, so the hourly series
+        # (ET0, radiation, history, forecast) are downscaled for the same site
+        # as the daily one (#1073).
+        params = self._with_elevation(params)
         key = json.dumps(params, sort_keys=True, default=str)
         with _GATE:
             now = time.monotonic()
