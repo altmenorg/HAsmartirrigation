@@ -1,6 +1,6 @@
 """Store constants."""
 
-VERSION = "v2026.11.2-rc1"
+VERSION = "v2026.11.2-rc2"
 NAME = "Smart Irrigation"
 MANUFACTURER = "@altmenorg"
 
